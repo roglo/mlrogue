@@ -1,0 +1,50 @@
+Movement
+        With SHIFT or CTRL to move until you hit             %y %k %u
+        an obstacle                                           \ | /
+                                                             %h-+- %l
+        %m<dir>  Move onto something without taking it        / | \
+        %,       Pick up item at your location               %b %j %n
+        %.       Rest
+
+Command Keys
+%s         Search                    %i               Inventory
+%f         Fight                     %F               Fight (to the death)
+%e         Eat                       %q               Quaff
+%r         Read a scroll             %d               Drop
+%P         Put on ring               %R               Remove a ring
+CTRL-P     See previous message      %>               Descend level
+%<         Ascend level              %)               List weapons
+%]         List armour               %=               List rings
+%^         Identify trap             %I               Short inventory
+%T         Take off                  %W               Wear armour
+%w         Wield weapon              %c               Call something a name
+%z         Zap something             %t<direction>    Throw something
+%v         Version                   %Q               Quit
+%@         Change language           %S               Save game
+%D         Discovered                %X               Save screen
+
+fr:
+Mouvement
+        Avec touche MAJ ou CTRL pour se déplacer             %y %k %u
+        jusqu'à ce qu'on rencontre un obstacle                \ | /
+                                                             %h-+- %l
+        %m<direction>  Aller sur qqch sans le prendre         / | \
+        %,             Prendre un objet là où on est         %b %j %n
+        %.             Repos
+
+Touches de commande
+%s         Chercher                  %i               Inventaire
+%f         Combattre                 %F               Combattre (à mort)
+%e         Manger                    %q               Boire
+%r         Lire un parchemin         %d               Jeter
+%P         Mettre une bague          %R               Enlever une bague
+CTRL-P     Voir message précédent    %>             Descendre d'un niveau
+%<         Remonter d'un niveau      %)               Liste des armes
+%]         Liste des armures         %=               Liste des bagues
+%^         Identifier un piège       %I              Inventaire court
+%T         Retirer une armure        %W               Enfiler une armure
+%w         Brandir une arme          %c               Nommer quelque chose
+%z         Zapper                    %t<direction>    Lancer quelque chose
+%v         Version                   %Q               Partir
+%@         Changer de langue         %S               Sauver le jeu
+%D         Choses découvertes        %X              Sauver l'écran

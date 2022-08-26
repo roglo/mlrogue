@@ -1,0 +1,35 @@
+ROGBOT IN ONE COMMAND
+
+Rogbot is included in 'rogue' with the option -r. The command:
+    ./rogue -r 1
+plays rogue with the rogbot at speed 1. The speed is a float number:
+0.5 plays slower, 2 plays twice faster, 1000 plays very fast.
+
+ROGBOT IN TWO COMMANDS COMMUNICATING WITH SOCKETS
+
+Rogbot can also run independently, the two programs communicating with
+a local socket:
+    ./rogue -r file
+and in another terminal:
+    ./rogbot -speed 1 file
+
+REMARK
+
+Rogbot must speak English. Possibly run it with option -lang en if it
+does not speak English by default.
+
+MAKE ANOTHER ROBOT IN OCAML OR C PLAYING THIS VERSION OF ROGUE
+
+It is possible to write another rogbot. The file 'rogbot.ml' contains a
+skeleton of the robot. Change the function 'play' to adapt to one's
+strategy. In directory 'etc', the file 'rogbot.c' is another skeleton
+for people prefering programming in C.
+
+MAKE ROGBOT PLAY ANOTHER ROGUE CLONE
+
+It is possible to make 'rogbot' talk with other rogue clones (no
+guarantee, because of possible different features that rogbot is not
+able to understand. If this clone is written in C, add the file
+'etc/rogbotio.c' which contains two functions, one to initialize the
+socket (rogbotio_socket), the other one to be called each time an
+input character (as rogue command) is required (rogbotio_getchar).

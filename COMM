@@ -1,0 +1,1 @@
+ROGUEOPTS="name=$(date +'%Y-%m-%d %H:%M'),fast" ./rogue -lang fr-tt

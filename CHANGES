@@ -1,0 +1,59 @@
+Version 1.05
+  - Prevent throwing by mistake protected used armors (must be removed
+    first).
+  - Updated for recent version of OCaml (pb strings vs bytes)
+
+Version 1.04
+  - Only in utf-8 now; removed option -u
+  - Changed for compilation with OCaml 4.02
+  - Fixed bug error message not displayed when # of lines < 24
+
+Version 1.03
+  - Fixed bug: when frozen by ice monster, disappearing monsters (leprechaun
+    or nymph) could hit another time even after disappeared.
+  - Fixed bug: when levitating, time did not advance when moving on objects
+  - Fixed bug: monsters or objects could appear on hidden places
+  - Write | instead of ) in inventory of uncursed unidentified weapons
+  - Moving with "ctrl" in a room now stops when a new monster enters the room
+  - Fixed bug in drinking raise level potion when last exp
+  - Now ask when picking up scroll of scare monster if already experienced
+  - When killed, display rogue and level objects (backspace to redisplay)
+  - Fixed bug: change in polymorphed monsters in mazes was not visible
+  - Changed to be compilable by Camlp5 5.00 strict
+
+Version 1.02
+  - Changed for Camlp5
+
+Version 1.01
+  - Added option -u for displaying in utf-8 terminals.
+  - Adapted for Camlp4s 4.02
+
+Version 1.00
+  - Minor bugs fixes and improvements. After many tests, I am relatively
+    happy of the behaviour. In short, it works well.
+
+Version 0.03
+
+  - Display the list of unidentified things when killed.
+
+Version 0.02
+
+  - Many bug fixes (never fails now, even after hundreds of plays) and
+    probably a lot of things that I did not write here because I could not
+    be bothered doing it.
+
+Version 0.01
+
+  features added from initial version of linuxrogue :
+
+  - Internationalization: speaks English (en), French (fr), French with use
+    of the familias 'tu' (fr-tt), and few (very few) German (de). Note that
+    other languages can be added by editing "rogue.lexicon", "rogue.instr"
+    and "rogue.win". Specific grammatical features can be used in the
+    lexicon. See file "translate.ml". Added option "-lang" to specify
+    language, command "@" to change language while playing, otherwise
+    language is read from variable LANG.
+
+  - Added command "D" for discovered objects.
+
+  - Improved wizard interface for adding objects.

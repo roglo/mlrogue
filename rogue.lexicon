@@ -1,0 +1,1687 @@
+# $Id: rogue.lexicon,v 1.68 2015/11/13 01:53:08 deraugla Exp $
+#
+# rogue.lexicon
+#
+#   Initial version by Daniel de Rauglaudre (Sep 2005)
+#
+
+     -- More --
+de:  -- Noch --
+en:  -- More --
+fr:  -- Suite --
+
+     -- Press space or backspace --
+en:  -- Press space or backspace --
+fr:  -- Tapez espace ou efface --
+fr-tt:  -- Tape espace ou efface --
+
+     -- Press space or letter --
+de:  -- Tippen Sie Raum oder Letter : .
+en:  -- Press space or letter --
+fr:  -- Tapez espace ou lettre : .
+fr-tt:  -- Tape espace ou lettre : .
+
+     -- Press space to continue --
+de:  -- Tippen Sie Raum um zu weitermachen --
+en:  -- Press space to continue --
+fr:  -- Tapez espace pour continuer --
+fr-tt:  -- Tape espace pour continuer --
+
+    %d pieces of gold.
+de: %d Goldstücke.
+en: %d pieces of gold.
+fr: %d pièces d'or.
+
+    %d rations of
+de: %d rationen@(1-)@(&)
+en: %d rations of
+fr: %d rations de
+
+    %d times
+en: %d times
+fr: %d fois
+
+    <%c> is %s
+de: <%c> ist %s
+en: <%c> is %s
+fr: <%c>, c'est %s
+
+    A cloak of darkness falls around you.
+en: A cloak of darkness falls around you.
+fr: Une cape de ténèbres tombe sur vous.
+fr-tt: Une cape de ténèbres tombe sur toi.
+
+    a door
+en: a door
+fr: une porte
+
+    a floor tile
+en: a floor tile
+fr: un carreau du sol
+
+    A gush of water hits you on the head.
+en: A gush of water hits you on the head.
+fr: Vous recevez une douche sur la tête.
+fr-tt: Tu reçois une douche sur la tête.
+
+    A small dart just hit you in the shoulder.
+en: A small dart just hit you in the shoulder.
+fr: Un petit dard vous atteint derrière l'épaule.
+fr-tt: Un petit dard t'atteint derrière l'épaule.
+
+    A strange white mist envelops you and you fall asleep.
+en: A strange white mist envelops you and you fall asleep.
+fr: Un nuage étrange vous enveloppe et vous vous endormez.
+fr-tt: Un nuage étrange t'enveloppe et tu t'endors.
+
+    a suit of armour
+de: eine Rüstung
+en: a suit of armour
+fr: une armure complète
+
+    a total winner
+de: ein total Gewinner
+en: a total winner
+fr: un gagnant total
+
+    a trap
+en: a trap
+fr: un piège
+
+    a tunnel
+en: a tunnel
+fr: un tunnel
+
+    a wand or staff
+en: a wand or staff
+fr: une baguette ou un bâton
+
+    a weapon
+en: a weapon
+fr: une arme
+
+    A@(n?n)
+de: Ein@(f?e)
+en: A@(n?n)
+fr: Un@(m?:e)
+
+    a@(n?n)
+de: ein@(f?e:A?m?en)
+en: a@(n?n)
+fr: un@(m?:e)
+
+    ABCDEFGHIJKLMNOPQRSTUVWXYZ
+de: AFZDEBPHIJTLQNOGMKSRUVWXYC
+en: ABCDEFGHIJKLMNOPQRSTUVWXYZ
+fr: AWKDEBPLGJXHMNOFQRSTUVICYZ
+fr-bb: WFINXPQGEVTJLSAHYDZKOURBCM
+
+    agate
+en: agate
+fr: @(s?:avec une )agate@(3-)
+
+    amethyst
+en: amethyst
+fr: @(s?:avec une )améthyste@(3-)
+
+    amulet
+de: Amulett
+en: amulet
+fr: amulette@(e)
+
+    aquator@(n)
+en: aquator@(n)
+fr: aquator@(me)
+
+    armor
+de: Rüstung@(f)
+en: armor
+fr: armure@(e)
+
+    arrow
+de: Pfeil@(m)
+en: arrow
+fr: flèche
+
+    arrows
+de: Pfeile@(m)
+en: arrows
+fr: flèches@(p)
+
+    balsa
+en: balsa
+fr: @(s?:de )balsa@(2-)
+
+    banded mail
+en: banded mail
+fr: une armure à bandes
+
+    bat
+de: Fledermaus@(f)
+en: bat
+fr: wombat@(m)
+
+    Bear trap.
+en: Bear trap.
+fr: Piège à loup.
+
+    beige
+en: beige
+fr: beige@(p?s:)@(1-)
+
+    being worn
+en: being worn
+fr: sur vous
+fr-tt: sur toi
+
+    birch
+en: birch
+fr: @(s?:de )bouleau@(2-)
+
+    black
+de: schwarz@(p?e:m?A?en:er:f?e:n?es)
+en: black
+fr: noir@(m?:e)@(p?s:)@(1-)
+
+# schwarz@(p?e:m?A?en:er:f?e:n?es):
+#   if p (plural) then e
+#   else if m (maskulinum) then if A (akkusativ) then en else er
+#   else if w (femininum) then e
+#   else if n (neutrum) then es
+
+    black unicorn
+en: black unicorn
+fr: unicorne noir@(me)
+
+    blue
+de: blau@(p?e:m?A?en:er:f?e:n?es)
+en: blue
+fr: bleu@(m?:e)@(p?s:)@(1-)
+
+    bronze
+en: bronze
+fr: @(s?:de )bronze@(2-)
+
+    brown
+de: braun@(p?e:m?A?en:er:f?e:n?es)
+en: brown
+fr: brune@(p?s:)@(1-)
+
+    burgundy
+de: weinrot@(p?e:m?A?en:er:f?e:n?es)
+en: burgundy
+fr: bordeaux@(1-)
+
+    Call it:
+de: Nennen es:
+en: Call it:
+fr: L'appeler :
+
+    Call what?
+de: Nennen was?
+en: Call what?
+fr: Appeler quoi ?
+
+    called
+de: gennant
+en: called
+fr: appelé@(m?:e)@(p?s)
+
+    cannot open file
+en: cannot open file
+fr: impossible d'ouvrir le fichier
+
+    Cannot read/write/create score file.
+en: Cannot read/write/create score file.
+fr: Impossible de lire/d'écrire/de créer le fichier des scores.
+
+    carbon
+en: carbon
+fr: @(s?:de )carbone@(2-)
+
+    cedar
+en: cedar
+fr: @(s?:de )cèdre@(2-)
+
+    centaur
+de: Zentaur@(m)
+en: centaur
+fr: kroston@(m)
+
+    chain mail
+en: chain mail
+fr: une cotte de mailles
+
+    cherry
+en: cherry
+fr: @(s?:de )cerisier@(2-)
+
+    Choose:
+en: Choose:
+fr: Choisissez :
+
+    chrome
+de: Chrom@(k)
+en: chrome
+fr: @(s?:de )chrome@(2-)
+
+    clear
+de: durchsichtig@(p?e:m?A?en:er:f?e:n?es)
+en: clear
+fr: transparent@(m?:e)@(p?s:)@(1-)
+
+    cobalt
+en: cobalt
+fr: @(s?:de )cobalt@(2-)
+
+    confused
+en: confused
+fr: déconcerté
+
+    copper
+en: copper
+fr: @(s?:de )cuivre@(2-)
+
+    dagger
+en: dagger
+fr: poignard@(m)
+
+    daggers
+en: daggers
+fr: poignards@(mp)
+
+    dart
+de: Stachel@(m)
+en: dart
+fr: dard@(m)
+
+    darts
+de: Stacheln@(mp)
+en: darts
+fr: dards@(mp)
+
+    Defeated the %s.
+de: Sie haben d@(m?en:f?ie:as) %s besiegt.
+en: Defeated the %s.
+fr: Vous avez vaincu @(n?:le?':m?e :a )%s.
+fr-tt: Tu as vaincu @(n?:le?':m?e :a )%s.
+
+    diamond
+en: diamond
+fr: @(s?:avec un )diamant@(3-)
+
+    Died of hypothermia
+en: Died of hypothermia
+fr: Mort d'hypothermie
+
+    died of hypothermia
+en: died of hypothermia
+fr: mort d'hypothermie
+
+    Died of starvation
+en: Died of starvation
+fr: Mort de faim
+
+    died of starvation
+en: died of starvation
+fr: mort de faim
+
+    Direction?
+en: Direction?
+fr: Direction ?
+
+    dragon
+de: Drache@(m)
+en: dragon
+fr: dragon@(m)
+
+    Drop what?
+de: Werfen was?
+en: Drop what?
+fr: Jeter quoi ?
+
+    Dropped
+de: Sie haben geworfen@(A)@(1--)
+en: Dropped
+fr: Jeté
+
+    Eat what?
+en: Eat what?
+fr: Manger quoi ?
+
+    elm
+en: elm
+fr: @(s?:d')orme@(1-)
+
+    emerald
+en: emerald
+fr: @(s?:avec une )émeraude@(3-)
+
+    emu@(n)
+de: Emu@(n)
+en: emu@(n)
+fr: émeu@(me)
+
+    entitled:
+de: betitelt:
+en: entitled:
+fr: intitulé@(p?s:) :
+
+    Everything looks so boring now.
+en: Everything looks so boring now.
+fr: Tout parait ennuyeux, maintenant.
+
+    faint
+en: faint
+fr: épuisé
+
+    File name?
+en: File name?
+fr: Nom du fichier ?
+
+    flame
+en: flame
+fr: flamme
+
+    food
+de: Nahrung@(f)
+en: food
+fr: nourriture
+
+    Game not saved.
+en: Game not saved.
+fr: Fichier non sauvé.
+
+    garnet
+en: garnet
+fr: @(s?:avec un )grenat@(3-)
+
+    gold
+en: gold
+fr: @(s?:d')or@(1-)
+
+    green
+de: grün@(p?e:m?A?en:er:f?e:n?es)
+en: green
+fr: vert@(m?:e)@(p?s:)@(1-)
+
+    grey
+de: grau@(p?e:m?A?en:er:f?e:n?es)
+en: grey
+fr: gris@(m?:e)@(p?s:)@(1-)
+
+    griffin
+en: griffin
+fr: ptérodactyle@(m)
+
+    Hello %s, just a moment while I dig the dungeon...
+de: Gruss %s, nur ein Moment, während ich den Bergfried mache...
+en: Hello %s, just a moment while I dig the dungeon...
+fr: Bonjour %s, juste un moment le temps que je fabrique le donjon...
+
+    Help file not on line.
+en: Help file not on line.
+fr: Fichier d'aide non accessible.
+
+    hit.
+de: trifft.
+en: hit.
+fr: touche.
+
+    Hmm ... this potion tastes like %sjuice.
+en: Hmm ... this potion tastes like %sjuice.
+fr: Hmm... cette potion a un goût d@(e?':e )%s.
+
+    hobgoblin
+de: streunend@(A?en:er) Kobold@(m)
+en: hobgoblin
+fr: lutin vagabond@(m)
+
+    hungry
+de: hunger
+en: hungry
+fr: faim
+
+    I don't know what <%c> is either
+en: I don't know what <%c> is either
+fr: Je ne sais pas ce que c'est que <%c>
+
+    I see no monster there.
+en: I see no monster there.
+fr: Je ne vois pas de monstre ici.
+
+    I see no way down.
+en: I see no way down.
+fr: Je ne vois pas de chemin vers le bas.
+
+    I see no way up.
+en: I see no way up.
+fr: Je ne vois pas de chemin vers le haut.
+
+    ice monster@(n)
+de: Eisungeheuer
+en: ice monster@(n)
+fr: monstre de glace@(m)
+
+    in hand
+de: in Hand
+en: in hand
+fr: en main
+
+    In use
+de: Still in Hand
+en: In use
+fr: Déjà en main
+
+    Inventory what?
+en: Inventory what?
+fr: Inventorier quoi ?
+
+    iron
+en: iron
+fr: @(s?:de )fer@(2-)
+
+    ivory
+en: ivory
+fr: @(s?:d')ivoire@(1-)
+
+    jabberwock
+en: jabberwock
+fr: jaguar@(m)
+
+    kestrel
+de: Turmfalke@(m)@(A?n)
+en: kestrel
+fr: xénique@(m)
+
+    Killed by
+de: Durch@(A) getötet@(1--)
+en: Killed by
+fr: Tué par
+
+    killed by
+de: durch@(A) getötet@(1--)
+en: killed by
+fr: tué par
+
+    Killed by a dart
+en: Killed by a dart
+fr: Tué par un dard
+
+    killed by a dart
+en: killed by a dart
+fr: tué par un dard
+
+    l
+en: l
+fr: g
+
+    Language:
+de: Sprache:
+en: Language:
+fr: Langue:
+
+    lapi-lazuli
+de: Lapilazuli@(k)@(&)
+en: lapi-lazuli
+fr: @(s?:avec un )lapi-lazuli@(3-)
+
+    leather armor
+en: leather armor
+fr: une armure de cuir
+
+    Left or right hand?
+en: Left or right hand?
+fr: Main droite ou gauche ?
+
+    leprechaun
+en: leprechaun
+fr: hamadryas@(me)
+
+    Level: 99 Gold: 999999 Hp: 999(999) Str: 99(99) Arm: 99 Exp: 21/10000000
+de: Niveau: 99 Gld: 999999 LP: 999(999) Str: 99(99) Arm: 99 Exp: 21/10000000
+en: Level: 99 Gold: 999999 Hp: 999(999) Str: 99(99) Arm: 99 Exp: 21/10000000
+fr: Niveau: 99 Or: 999999 Pv: 999(999) Forc: 99(99) Arm: 99 Exp: 21/10000000
+
+    long sword
+de: langes Schwert@(n)
+en: long sword
+fr: longue épée
+
+    mace
+de: Keule@(f)
+en: mace
+fr: massue
+
+    magnesium
+en: magnesium
+fr: @(s?:de )magnésium@(2-)
+
+    mahogany
+de: Mahagoni@(k)
+en: mahogany
+fr: @(s?:d')acajou@(1-)
+
+    maple
+en: maple
+fr: @(s?:d')érable@(1-)
+
+    medusa
+de: Qualle@(f)
+en: medusa
+fr: méduse
+
+    misses.
+de: blitzt ab.
+en: misses.
+fr: rate.
+
+    moved onto
+de: Auf@(A) gegangen@(1--)
+en: Moved onto
+fr: Vous passez sur
+fr-tt: Tu passes sur
+
+    Must be played on a %d x %d or better screen
+en: Must be played on a %d x %d or better screen
+fr: Doit être joué sur un écran %d x %d ou plus
+
+    My, that was a yummy %s.
+en: My, that was a yummy %s.
+fr: Hmmm, c'était un@(m?:e) %s vachement bon@(m?:ne).
+
+    nickel
+en: nickel
+fr: @(s?:de )nickel@(2-)
+
+    No such item.
+en: No such item.
+fr: Il n'y en a pas.
+
+    No such item. Try again.
+en: No such item. Try again.
+fr: Il n'y en a pas. Merci de réessayer.
+
+    No trap there.
+en: No trap there.
+fr: Pas de piège ici.
+
+    Not wearing any
+de: Sie tragen nichts
+en: Not wearing any
+fr: Vous ne portez rien
+fr-tt: Tu ne portes rien
+
+    Not wearing any rings.
+de: Sie tragen Keinen Ring.
+en: Not wearing any rings.
+fr: Vous ne portez aucune bague.
+fr-tt: Tu ne portes aucune bague.
+
+    Not wearing anything.
+de: Sie tragen keine Rüstung.
+en: Not wearing anything.
+fr: Vous ne portez aucune armure.
+fr-tt: Tu ne portes aucune armure.
+
+    Not wielding anything.
+de: Sie schwenken keine Waffe.
+en: Not wielding anything.
+fr: Vous ne brandissez aucune arme.
+fr-tt: Tu ne brandis aucune arme.
+
+    Not wizard anymore.
+en: Not wizard anymore.
+fr: Vous n'êtes plus sorcier.
+fr-tt: Tu n'es plus sorcier.
+
+    Nothing appropriate.
+de: Nichts angemessen.
+en: Nothing appropriate.
+fr: Rien d'approprié.
+
+    Nothing happens
+en: Nothing happens
+fr: Rien ne se passe
+
+    Nothing here.
+en: Nothing here.
+fr: Il n'y a rien ici.
+
+    nymph
+de: Nymphe@(f)
+en: nymph
+fr: nymphe
+
+    oak
+en: oak
+fr: @(s?:de )chêne@(2-)
+
+    of add strength
+en: of add strength
+fr: de renforcement
+
+    of adornment
+en: of adornment
+fr: d'ornement
+
+    of aggravate monster
+en: of aggravate monster
+fr: d'aggravation des monstres
+
+    of blindness
+en: of blindness
+fr: de cécité
+
+    of cancellation
+en: of cancellation
+fr: d'annulation
+
+    of confuse monster
+en: of confuse monster
+fr: qui déconcerte@(p?nt) les monstres
+
+    of confusion
+en: of confusion
+fr: de confusion
+
+    of create monster
+en: of create monster
+fr: de création de monstre
+
+    of detect monster
+en: of detect monster
+fr: de détection des monstres
+
+    of detect things
+en: of detect things
+fr: de détection des objets
+
+    of dexterity
+en: of dexterity
+fr: de dextérité
+
+    of do nothing
+en: of do nothing
+fr: qui ne fait rien
+
+    of enchant armor
+en: of enchant armor
+fr: d'enchantement d'armure
+
+    of enchant weapon
+en: of enchant weapon
+fr: d'enchantement d'arme
+
+    of extra healing
+en: of extra healing
+fr: de guérison supplémentaire
+
+    of hallucination
+en: of hallucination
+fr: hallucinogène
+
+    of haste monster
+en: of haste monster
+fr: d'accélération de monstre
+
+    of haste self
+en: of haste self
+fr: d'accélération
+
+    of healing
+en: of healing
+fr: de guérison
+
+    of hold monster
+en: of hold monster
+fr: d'immobilisation de monstre
+
+    of identify
+en: of identify
+fr: d'identification
+
+    of increase strength
+en: of increase strength
+fr: de renforcement
+
+    of invisibility
+en: of invisibility
+fr: d'invisibilité
+
+    of levitation
+en: of levitation
+fr: de lévitation
+
+    of magic mapping
+en: of magic mapping
+fr: de plan magique
+
+    of magic missile
+en: of magic missile
+fr: de missile magique
+
+    of maintain armor
+en: of maintain armor
+fr: de protection d'armure
+
+    of poison
+en: of poison
+fr: de poison
+
+    of polymorph
+en: of polymorph
+fr: de transformation
+
+    of protect armor
+en: of protect armor
+fr: de protection d'armure
+
+    of raise level
+en: of raise level
+fr: de passage au niveau supérieur
+
+    of regeneration
+en: of regeneration
+fr: de régénération
+
+    of remove curse
+en: of remove curse
+fr: de désenvoûtement
+
+    of restore strength
+en: of restore strength
+fr: de restauration de la force
+
+    of scare monster
+en: of scare monster
+fr: qui effraie@(p?nt) les monstres
+
+    of searching
+en: of searching
+fr: de recherche
+
+    of see invisible
+en: of see invisible
+fr: de vision de l'invisible
+
+    of sleep
+en: of sleep
+fr: de sommeil
+
+    of slow digestion
+en: of slow digestion
+fr: de digestion lente
+
+    of slow monster
+en: of slow monster
+fr: de ralentissement de monstre
+
+    of stealth
+en: of stealth
+fr: de discrétion
+
+    of sustain strength
+en: of sustain strength
+fr: de maintien de la force
+
+    of teleport away
+en: of teleport away
+fr: de téléportation de monstre
+
+    of teleportation
+en: of teleportation
+fr: de téléportation
+
+    Oh wow, everything seems so cosmic.
+en: Oh wow, everything seems so cosmic.
+fr: Oh, la vache, tout parait bizarre.
+
+    on left hand
+en: on left hand
+fr: à la main gauche
+
+    on level %d
+de: im Niveau %d
+en: on level %d
+fr: au niveau %d
+
+    on right hand
+en: on right hand
+fr: à la main droite
+
+    opal
+en: opal
+fr: @(s?:avec une )opale@(3-)
+
+    orc@(n)
+en: orc@(n)
+fr: orque@(em)
+
+    Pack full.
+en: Pack full.
+fr: Sac plein.
+
+    Pack too full.
+en: Pack too full.
+fr: Sac trop plein.
+
+    palm
+en: palm
+fr: @(s?:de )palmier@(2-)
+
+    pearl
+de: Perle@(k)
+en: pearl
+fr: @(s?:avec une )perle@(3-)
+
+    phantom
+de: Gespenst@(n)
+en: phantom
+fr: fantôme@(m)
+
+    pine
+en: pine
+fr: @(s?:de )pin@(2-)
+
+    pink
+de: rosarot@(p?e:m?A?en:er:f?e:n?es)
+en: pink
+fr: rose@(p?s:)@(1-)
+
+    plaid
+de: scottisch@(p?e:m?A?en:er:f?e:n?es)
+en: plaid
+fr: écossais@(m?:e)@(p?s:)@(1-)
+
+    plate mail
+en: plate mail
+fr: une armure de plates
+
+    platinum
+en: platinum
+fr: @(s?:de )platine@(2-)
+
+    Poison dart trap.
+en: Poison dart trap.
+fr: Piège à dard empoisonné.
+
+    potion
+de: Trank@(m)
+en: potion
+fr: potion
+
+    potions
+de: Tränke@(mp)
+en: potions
+fr: potions@(p)
+
+    purple
+de: purpurrot@(p?e:m?A?en:er:f?e:n?es)
+en: purple
+fr: pourpre@(p?s:)@(1-)
+
+    Put on what?
+en: Put on what?
+fr: Mettre quoi ?
+
+    Quaff what?
+de: Trinken was?
+en: Quaff what?
+fr: Boire quoi ?
+
+    quagga
+en: quagga
+fr: quartanier@(m)
+
+    quartz
+en: quartz
+fr: @(s?:avec un )quartz@(3-)
+
+    Quit
+en: Quit
+fr: Parti
+
+    quit
+de: verlassen@(1--)
+en: quit
+fr: parti
+
+    r
+en: r
+fr: d
+
+    R-Hp: %.2d, E-Hp: %.2d (!: %d, V: %d)
+en: R-Hp: %.2d, E-Hp: %.2d (!: %d, V: %d)
+fr: PV-R: %.2d, PV-E: %.2d (!: %d, V: %d)
+
+    Rank   Score   Name
+de: Rang   Pktstnd Name
+en: Rank   Score   Name
+fr: Rang   Score   Nom
+
+    rattlesnake
+de: Klapperschange@(f)
+en: rattlesnake
+fr: renard@(m)
+
+    Read what?
+de: Lesen was?
+en: Read what?
+fr: Lire quoi ?
+
+    Really pick up scroll? (y/n)
+en: Really pick up scroll? (y/n)
+fr: Vraiment prendre le parchemin? (o/n)
+
+    Really quit? (y/n)
+en: Really quit? (y/n)
+fr: Vraiment partir ? (o/n)
+
+    red
+de: rot@(p?e:m?A?en:er:f?e:n?es)
+en: red
+fr: rouge@(p?s:)@(1-)
+
+    redwood
+en: redwood
+fr: @(s?:de )séquoia@(2-)
+
+    Removed
+en: Removed
+fr: Enlevé
+
+    ring
+de: @(k?r:R)ing@(m)
+en: ring
+fr: bague
+
+    ring mail
+en: ring mail
+fr: une armure annelée
+
+    rings
+en: rings
+fr: bagues
+
+    ruby
+en: ruby
+fr: @(s?:avec un )rubis@(3-)
+
+    Rust trap.
+en: Rust trap.
+fr: Piège douche.
+
+    sapphire
+en: sapphire
+fr: @(s?:avec un )saphir@(3-)
+
+    scale mail
+en: scale mail
+fr: une armure d'écailles
+
+    scroll
+de: Pergament@(m)
+en: scroll
+fr: parchemin@(m)
+
+    scrolls
+de: Pergamente@(m)
+en: scrolls
+fr: parchemins@(mp)
+
+    She stole
+de: Sie hat gestohlen@(A)@(1--)
+en: She stole
+fr: Elle vole
+
+    short bow
+de: kurz@(A?en:er) Bogen@(m)
+en: short bow
+fr: arc court@(me)
+
+    shuriken
+en: shuriken
+fr: churikène
+
+    shurikens
+en: shurikens
+fr: churikènes@(p)
+
+    silicon
+en: silicon
+fr: @(s?:de )silicone@(2-)
+
+    silver
+en: silver
+fr: @(s?:d')argent@(1-)
+
+    Sleeping gas trap.
+en: Sleeping gas trap.
+fr: Piège à gaz soporifique.
+
+    slime-mold
+en: slime-mold
+fr: champignon@(m)
+
+    snake
+de: Schlange@(f)
+en: snake
+fr: serpent@(m)
+
+    Some
+de:
+en: Some
+fr: D@(m?u:e la)
+
+    some
+en: some
+fr: d@(m?u:e la)
+
+    some food
+en: some food
+fr: de la nourriture
+
+    some gold
+en: some gold
+fr: de l'or
+
+    something
+de: Etwas@(n)
+en: something
+fr: @(M?Q:q)uelque chose@(n)
+
+    Sorry
+en: Sorry
+fr: Désolé
+
+    splint mail
+en: splint mail
+fr: une armure feuilletée
+
+    staff
+de: @(k?s:S)tock@(m)
+en: staff
+fr: bâton@(m)
+
+    staffs and wands
+en: staffs and wands
+fr: bâtons et baguettes
+
+    stairs
+en: stairs
+fr: un escalier
+
+    steel
+de: Stahl@(k)
+en: steel
+fr: @(s?:d')acier@(1-)
+
+    stibotantalite
+en: stibotantalite
+fr: @(s?:avec une )stibiotantalite@(3-)
+
+    Surely you already know what that's called!
+en: Surely you already know what that's called!
+fr: Vous ne savez pas déjà comment ça s'appelle ?
+fr-tt: Tu ne sais pas déjà comment ça s'appelle ?
+
+    teak
+en: teak
+fr: @(s?:de )tek@(2-)
+
+    Teleport trap.
+en: Teleport trap.
+fr: Piège à téléportation.
+
+    That ring is already being worn.
+en: That ring is already being worn.
+fr: Vous portez déjà cette bague.
+fr-tt: Tu portes déjà cette bague.
+
+    That's not a ring!
+en: That's not a ring!
+fr: Ce n'est pas une bague !
+
+    The %s
+de: D@(m?er:f?ie:as) %s
+en: The %s
+fr: @(n?:Le?':m?e :a )%s
+
+    The %s hit.
+de: D@(m?er:f?ie:as) %s trifft.
+en: The %s hit.
+fr: @(n?:Le?':m?e :a )%s touche.@(M)
+
+    The %s misses.
+de: D@(m?er:f?ie:as) %s blitzt ab.
+en: The %s misses.
+fr: @(n?:Le?':m?e :a )%s rate.@(M)
+
+    The %s vanishes as it hits the ground.
+en: The %s vanishes as it hits the ground.
+fr: L@(e?':m?e :a )%s s'évanouit en touchant le sol.
+
+    The %s's bite has weakened you.
+de: Der Biss @(f?der:des) %s@(f?:s) hat Sie geschwächt.
+en: The %s's bite has weakened you.
+fr: La morsure d@(e?e l':m?u :e la )%s vous affaiblit.
+fr-tt: La morsure d@(e?e l':m?u :e la )%s t'affaiblit.
+
+    The Amulet of Yendor
+en: The Amulet of Yendor
+fr: L'Amulette de Yendor
+
+    The amulet of Yendor
+de: Das Amulett von Yendor
+en: The amulet of Yendor
+fr: L'amulette de Yendor
+
+    The gaze of the %s has confused you.
+en: The gaze of the %s has confused you.
+fr: Le regard d@(e?e l':m?u :e la )%s vous a déconcerté.
+fr-tt: Le regard d@(e?e l':m?u :e la )%s t'a déconcerté.
+
+    The monster freezes.
+en: The monster freezes.
+fr: Le monstre gèle.
+
+    The monsters around you freeze.
+en: The monsters around you freeze.
+fr: Les monstres autour de vous gèlent.
+fr-tt: Les monstres autour de toi gèlent.
+
+    The rust vanishes instantly.
+en: The rust vanishes instantly.
+fr: Le flot s'évanouit instantanément
+
+    The scroll turns to dust as you pick it up.
+en: The scroll turns to dust as you pick it up.
+fr: Le parchemin tombe en poussière au moment où vous le prenez.
+fr-tt: Le parchemin tombe en poussière au moment où tu le prends.
+
+    The trap failed.
+en: The trap failed.
+fr: Le piège échoue.
+
+    The veil of darkness lifts.
+en: The veil of darkness lifts.
+fr: Le voile de ténèbres se lève.
+
+    the wall
+en: the wall
+fr: un mur
+
+    There's already something there.
+en: There's already something there.
+fr: Il y a déjà quelque chose ici.
+
+    This is a scroll of identify.
+en: This is a scroll of identify.
+fr: C'est un parchemin d'identification.
+
+    This scroll seems to have a map on it.
+en: This scroll seems to have a map on it.
+fr: Ce parchemin semble montrer un plan.
+
+    This tastes great, you feel warm all over.
+en: This tastes great, you feel warm all over.
+fr: C'est délicieux, vous vous sentez tout chaud.
+fr-tt: C'est délicieux, tu te sens tout chaud.
+
+    Throw what?
+de: Schießen was?
+en: Throw what?
+fr: Lancer quoi ?
+
+    tiger-eye
+en: tiger-eye
+fr: @(s?:avec un )oeil-de-tigre@(3-)
+
+    tin
+en: tin
+fr: @(s?:d')étain@(1-)
+
+    titanium
+en: titanium
+fr: @(s?:de )titane@(2-)
+
+    Top  Rogueists
+en: Top  Rogueists
+fr: Meilleurs  Roguistes
+
+    Trap door.
+en: Trap door.
+fr: Trappe.
+
+    trippy
+en: trippy
+fr: chtarbé
+
+    troll
+en: troll
+fr: troll@(m)
+
+    turquoise
+en: turquoise
+fr: @(s?:avec une )turquoise@(3-)
+
+    two-handed sword
+en: two-handed sword
+fr: épée à deux mains@(ef)
+
+    Unknown command
+en: Unknown command
+fr: Commande inconnue
+
+    Value      Item
+en: Value      Item
+fr: Valeur     Objet
+
+    vampire
+de: Vampir@(m)
+en: vampire
+fr: vampire@(m)
+
+    venus fly-trap
+en: venus fly-trap
+fr: bouledogue@(m)
+
+    Wait, that's a %s!
+en: Wait, that's a %s!
+fr: Hé, c'est un@(m?:e) %s !
+
+    walnut
+en: walnut
+fr: @(s?:de )noyer@(2-)
+
+    wand
+de: @(k?s:S)tab@(m)
+en: wand
+fr: baguette
+
+    Was wearing
+de: Sie trageten@(A)
+en: Was wearing
+fr: Vous portiez
+fr-tt: Tu portais
+
+    weak
+en: weak
+fr: faible
+
+    Wear what?
+de: Tragen was?
+en: Wear what?
+fr: Porter quoi ?
+
+    Wearing
+de: Sie tragen@(A)
+en: Wearing
+fr: Vous portez
+fr-tt: Tu portes
+
+    Wearing two rings already.
+en: Wearing two rings already.
+fr: Vous portez déjà deux bagues.
+fr-tt: Tu portes déjà deux bagues.
+
+    Welcome to experience level %d!
+de: Wilkommen in Erfahrungniveau %d!
+en: Welcome to experience level %d!
+fr: Bienvenue au niveau d'expérience %d !
+
+    Welcome, mighty wizard!
+en: Welcome, mighty wizard!
+fr: Bienvenue, puissant sorcier !
+
+    What a trippy feeling.
+en: What a trippy feeling.
+fr: Ouah, les mecs !
+
+    What character would you like to know?
+en: What character would you like to know?
+fr: Quel caractère voulez-vous connaître ?
+fr-tt: Quel caractère veux-tu connaître ?
+
+    What would you like to identify?
+en: What would you like to identify?
+fr: Que voulez-vous identifier ?
+fr-tt: Que veux-tu identifier ?
+
+    Which object kind
+en: Which object kind
+fr: Quel type d'objet
+
+    white
+de: weiss@(p?e:m?A?en:er:f?e:n?es)
+en: white
+fr: blanc@(m?:he)@(p?s:)@(1-)
+
+    Wield what?
+de: Zücken was?
+en: Wield what?
+fr: Brandir quoi ?
+
+    Wielding
+de: Sie zücken@(A)
+en: Wielding
+fr: Vous brandissez
+fr-tt: Tu brandis
+
+    with %d gold
+de: mit %d Goldstücke
+en: with %d gold
+fr: avec %d pièces d'or
+
+    with amulet
+de: mit Amulett
+en: with amulet
+fr: avec amulette
+
+    Wizard's password:
+en: Wizard's password:
+fr: Mot de passe sorcier :
+
+    wooden
+en: wooden
+fr: @(s?:de )bois@(2-)
+
+    wraith
+en: wraith
+fr: incube@(me)
+
+    xeroc
+en: xeroc
+fr: copieur@(m)
+
+    y
+en: y
+fr: o
+
+    yellow
+de: gelb@(p?e:m?A?en:er:f?e:n?es)
+en: yellow
+fr: jaune@(p?s:)@(1-)
+
+    yeti
+en: yeti
+fr: yéti@(m)
+
+    you
+en: you
+fr: vous-même
+fr-tt: toi-même
+
+    You are being held.
+en: You are being held.
+fr: Vous êtes immobilisé.
+fr-tt: Tu es immobilisé.
+
+    You are caught in a bear trap.
+en: You are caught in a bear trap.
+fr: Vous êtes pris dans un piège à loup.
+fr-tt: Tu es pris dans un piège à loup.
+
+    You are frozen.
+de: Sie sind in Eis verwandeln.
+en: You are frozen.
+fr: Vous êtes gelé.
+fr-tt: Tu es gelé.
+
+    You are still stuck in the bear trap.
+en: You are still stuck in the bear trap.
+fr: Vous êtes toujours retenu dans le piège à loup.
+fr-tt: Tu es toujours retenu dans le piège à loup.
+
+    You begin to feel better.
+en: You begin to feel better.
+fr: Vous commencez à vous sentir mieux.
+fr-tt: Tu commences à te sentir mieux.
+
+    You begin to feel much better.
+en: You begin to feel much better.
+fr: Vous commencez à vous sentir beaucoup mieux.
+fr-tt: Tu commences à te sentir beaucoup mieux.
+
+    You can move again.
+de: Sie können sich wieder rühren.
+en: You can move again.
+fr: Vous pouvez bouger de nouveau.
+fr-tt: Tu peux bouger de nouveau.
+
+    You can't drink that!
+de: Sie konnen das nich trinken!
+en: You can't drink that!
+fr: Vous ne pouvez pas boire ça !
+fr-tt: Tu ne peux pas boire ça !
+
+    You can't eat that!
+en: You can't eat that!
+fr: Vous ne pouvez pas manger ça !
+fr-tt: Tu ne peux pas manger ça !
+
+    You can't read that!
+en: You can't read that!
+fr: Vous ne pouvez pas lire ça !
+fr-tt: Tu ne peux pas pas lire ça !
+
+    You can't see to read the scroll.
+en: You can't see to read the scroll.
+fr: Vous ne pouvez pas lire de parchemin : vous ne voyez rien.
+fr-tt: Tu ne peux pas lire de parchemin : tu ne vois rien.
+
+    You can't wear that
+en: You can't wear that
+fr: Vous ne pouvez pas porter ça
+fr-tt: Tu ne peux pas porter ça
+
+    You can't wield %s
+en: You can't wield %s
+fr: Vous ne pouvez pas brandir d@(e?':e )%s
+fr-tt: Tu ne peux pas brandir d@(e?':e )%s
+
+    You can't zap with that
+en: You can't zap with that
+fr: Vous ne pouvez pas zapper avec ça
+fr-tt: Tu ne peux pas pas zapper avec ça
+
+    You can't, it appears to be cursed.
+de: Sie können nicht, es scheint verflucht.
+en: You can't, it appears to be cursed.
+fr: Vous ne pouvez pas, il semble maudit.
+fr-tt: Tu ne peux pas, il semble maudit.
+
+    you faint
+en: you faint
+fr: Vous vous écroulez
+fr-tt: Tu t'écroules
+
+    You fall asleep.
+en: You fall asleep.
+fr: Vous tombez endormi.
+fr-tt: Tu tombes endormi.
+
+    You feel a strange sense of loss.
+en: You feel a strange sense of loss.
+fr: Vous avez l'étrange impression d'avoir raté quelque chose.
+fr-tt: Tu as l'étrange impression d'avoir raté quelque chose.
+
+    You feel a wrenching sensation in your gut.
+en: You feel a wrenching sensation in your gut.
+fr: Vous avez une sensation d'arrachement dans le ventre.
+fr-tt: Tu as une sensation d'arrachement dans le ventre.
+
+    You feel as though someone is watching over you.
+en: You feel as though someone is watching over you.
+fr: Vous avez l'impression que quelqu'un veille sur vous.
+fr-tt: Tu as l'impression que quelqu'un veille sur toi.
+
+    You feel confused.
+en: You feel confused.
+fr: Vous vous sentez déconcerté.
+fr-tt: Tu te sens déconcerté.
+
+    You feel in touch with the universal oneness.
+en: You feel in touch with the universal oneness.
+fr: Vous vous sentez en connexion avec l'Unité Universelle.
+fr-tt: Tu te sens en connexion avec l'Unité Universelle.
+
+    You feel less %s now.
+en: You feel less %s now.
+fr: Vous vous sentez moins %s maintenant.
+fr-tt: Tu te sens moins %s maintenant.
+
+    You feel stronger now, what bulging muscles!
+en: You feel stronger now, what bulging muscles!
+fr: Vous vous sentez fort, quels gros muscles !
+fr-tt: Tu te sens fort, quels gros muscles !
+
+    You feel very sick now.
+en: You feel very sick now.
+fr: Vous vous sentez vraiment malade, maintenant.
+fr-tt: Tu te sens vraiment malade, maintenant.
+
+    You feel weaker.
+en: You feel weaker.
+fr: Vous vous sentez faiblir.
+fr-tt: Tu te sens faiblir.
+
+    You feel yourself moving much faster.
+en: You feel yourself moving much faster.
+fr: Vous sentez que vous accélérez.
+fr-tt: Tu sens que tu accélères.
+
+    You feel yourself slowing down.
+en: You feel yourself slowing down.
+fr: Vous vous sentez ralentir.
+fr-tt: Tu te sens ralentir.
+
+    You fell down a trap.
+en: You fell down a trap.
+fr: Vous tombez dans une trappe.
+fr-tt: Tu tombes dans une trappe.
+
+    You float gently to the ground.
+en: You float gently to the ground.
+fr: Vous retombez doucement sur le sol.
+fr-tt: Tu retombes doucement sur le sol.
+
+    You have a strange feeling for a moment, then it passes.
+en: You have a strange feeling for a moment, then it passes.
+fr: Vous avez une étrange sensation pendant un moment, et puis ça passe.
+fr-tt: Tu as une étrange sensation pendant un moment, et puis ça passe.
+
+    You have nothing to drop.
+en: You have nothing to drop.
+fr: Vous n'avez rien à jeter.
+fr-tt: Tu n'as rien à jeter.
+
+    You hear a faint cry of anguish in the distance.
+en: You hear a faint cry of anguish in the distance.
+fr: Vous entendez un faible cri d'angoisse au loin.
+fr-tt: Tu entends un faible cri d'angoisse au loin.
+
+    You hear a high pitched humming noise.
+en: You hear a high pitched humming noise.
+fr: Vous entendez un bourdonnement aigu.
+fr-tt: Tu entends un bourdonnement aigu.
+
+    You hear a maniacal laughter in the distance.
+en: You hear a maniacal laughter in the distance.
+fr: Vous entendez des rires maniaques au loin.
+fr-tt: Tu entends des rires maniaques au loin.
+
+    You hit.
+de: Sie treffen.
+en: You hit.
+fr: Vous touchez.
+fr-tt: Tu touches.
+
+    You miss.
+de: Sie blizten ab.
+en: You miss.
+fr: Vous ratez.
+fr-tt: Tu rates.
+
+    You start to float in the air.
+en: You start to float in the air.
+fr: Vous commencez à flotter dans l'air.
+fr-tt: Tu commences à flotter dans l'air.
+
+    You're already wearing some.
+en: You're already wearing some.
+fr: Vous en portez déjà.
+fr-tt: Tu en portes déjà.
+
+    You're floating in the air!
+en: You're floating in the air!
+fr: Vous flottez dans l'air !
+fr-tt: Tu flottes dans l'air !
+
+    Your %s glow%s %s for a moment.
+en: Your %s glow%s %s for a moment.
+fr: Vo@(p?s:tre) %s devien@(p?nen:)t@(_?%s:)@(1-) %s l'espace d'un instant.
+fr-tt: T@(p?es:e?on:m?on:a) %s devien@(p?nen:)t@(_?%s:)@(1-) %s l'espace d'un instant.
+
+    Your acne seems to have disappeared.
+en: Your acne seems to have disappeared.
+fr: Votre acné semble avoir disparu.
+fr-tt: Ton acné semble avoir disparu.
+
+    Your armor glows %sfor a moment.
+de: Ihre Rüstung wird %swährend eines Moments.
+en: Your armor glows %sfor a moment.
+fr: Votre armure devient@(1-) %sl'espace d'un instant.
+fr-tt: Ton armure devient@(1-) %sl'espace d'un instant.
+
+    Your armor is covered by a shimmering gold shield.
+en: Your armor is covered by a shimmering gold shield.
+fr: Votre armure est couverte d'un bouclier d'or.
+fr-tt: Ton armure est couverte d'un bouclier d'or.
+
+    Your armor weakens.
+en: Your armor weakens.
+fr: Votre armure faiblit.
+fr-tt: Ton armure faiblit.
+
+    Your hands tingle.
+en: Your hands tingle.
+fr: Vous sentez des picotements dans les mains.
+fr-tt: Tu sens des picotements dans les mains.
+
+    Your pack is empty.
+en: Your pack is empty.
+fr: Votre sac est vide.
+fr-tt: Ton sac est vide.
+
+    Your purse feels lighter.
+en: Your purse feels lighter.
+fr: Votre bourse parait plus légère.
+fr-tt: Ta bourse parait plus légère.
+
+    Your skin crawls.
+en: Your skin crawls.
+fr: Vous avez la chair de poule.
+fr-tt: Tu as la chair de poule.
+
+    Your way is magically blocked.
+en: Your way is magically blocked.
+fr: Une force magique vous empêche de passer.
+fr-tt: Une force magique t'empêche de passer.
+
+    Yuk, that food tasted awful.
+en: Yuk, that food tasted awful.
+fr: Berk, cette bouffe avait un sale goût.
+
+    Yum, that tasted good.
+en: Yum, that tasted good.
+fr: Miam miam, c'était bon.
+
+    Zap with what?
+en: Zap with what?
+fr: Zapper avec quoi ?
+
+    zombie
+en: zombie
+fr: zombie@(m)
