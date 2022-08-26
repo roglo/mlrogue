@@ -1,0 +1,8 @@
+*.cm[iox]
+*.defo
+*.o
+rogbot
+rogbot.opt
+rogue
+rogue.opt
+.rogue.scores
