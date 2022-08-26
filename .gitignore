@@ -1,3 +1,4 @@
+*.bak
 *.cm[iox]
 *.defo
 *.o
