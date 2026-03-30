@@ -6,7 +6,8 @@ This is linuxrogue translated from C into ocaml.
 
 REQUIREMENTS
 
-You need OCaml and Camlp5 to compile, freely distributed in the Web.
+You need OCaml to compile. The present version can be compiled with
+ocaml 4.06.1.
 
 COMPILATION
 
