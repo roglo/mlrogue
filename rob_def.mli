@@ -1,12 +1,8 @@
 (* $Id: rob_def.mli,v 1.29 2010/07/03 14:47:59 deraugla Exp $ *)
 
-open Rob_position;
+open Rob_position
 
-type dung =
-  { tab : array string;
-    nrow : int;
-    ncol : int }
-;
+type dung = { tab : string array; nrow : int; ncol : int }
 
 type status_line =
   { sl_level : int;
@@ -18,85 +14,78 @@ type status_line =
     sl_exp : int;
     sl_max_exp : int;
     sl_hunger : string }
-;
 
-type room = (int * int * int * int);
-type door_dir = [ DoorUp | DoorRight | DoorDown | DoorLeft ];
+type room = int * int * int * int
+type door_dir = DoorUp | DoorRight | DoorDown | DoorLeft
 
-type graph = array (array node)
-and node =
-  { connection : array bool;
-    search : mutable search }
-and search =
-  [ ToSearch | SearchFailed | NotToSearch ]
-;
+type graph = node array array
+and node = { connection : bool array; mutable search : search }
+and search = ToSearch | SearchFailed | NotToSearch
 
 type game =
   { dung : dung;
     rogtime : int;
     time : int;
-    status_line : option status_line;
+    status_line : status_line option;
     is_message_more : bool;
     move_result : move_result;
     random_state : Random.State.t;
     level : int;
-    lang : mutable string;
-    speed : mutable float;
-    time_in_level : mutable int;
-    trail : mutable Rob_position.PosMap.t int;
-    rogue_pos : mutable option position;
-    sure_stairs_pos : mutable option position;
-    rogue_room_and_door : option (room * option door_dir);
-    on_something_at : mutable option (position * bool);
-    pack : mutable list (char * (int * pack_obj));
-    pack_full : mutable bool;
-    worn_armor : mutable option (char * armor_obj);
-    main_sword : mutable char;
-    armor_cursed : mutable bool;
-    weapon_cursed : mutable bool;
-    ring_of_slow_digestion_on_hand : mutable (option char);
-    garbage : mutable list position;
-    scare_pos : mutable list position;
-    graph : mutable option graph;
-    visited : array (array bool);
-    map_showed_since : mutable int;
-    mon_detected : mutable bool;
-    confused : mutable bool;
-    hallucinated : mutable bool;
-    was_hallucinated : mutable bool;
-    blind : mutable bool;
-    held : mutable bool;
-    attacked : mutable int;
-    attacked_by_invisible : mutable bool;
-    attacked_by_flame : mutable int;
-    frozen_monsters : mutable list (position * char);
-    regrets : mutable list position;
-    blindness_discovered : mutable bool;
-    hallucination_discovered : mutable bool;
-    teleport_discovered : mutable bool;
-    after_first_pack_full : mutable bool;
-    nb_of_reinit_search : mutable int;
-    traps : Hashtbl.t position (option (option trap_kind));
-    paradise : mutable bool;
-    hist_dung : mutable list (array string);
-    dead : mutable bool }
+    mutable lang : string;
+    mutable speed : float;
+    mutable time_in_level : int;
+    mutable trail : int Rob_position.PosMap.t;
+    mutable rogue_pos : position option;
+    mutable sure_stairs_pos : position option;
+    rogue_room_and_door : (room * door_dir option) option;
+    mutable on_something_at : (position * bool) option;
+    mutable pack : (char * (int * pack_obj)) list;
+    mutable pack_full : bool;
+    mutable worn_armor : (char * armor_obj) option;
+    mutable main_sword : char;
+    mutable armor_cursed : bool;
+    mutable weapon_cursed : bool;
+    mutable ring_of_slow_digestion_on_hand : char option;
+    mutable garbage : position list;
+    mutable scare_pos : position list;
+    mutable graph : graph option;
+    visited : bool array array;
+    mutable map_showed_since : int;
+    mutable mon_detected : bool;
+    mutable confused : bool;
+    mutable hallucinated : bool;
+    mutable was_hallucinated : bool;
+    mutable blind : bool;
+    mutable held : bool;
+    mutable attacked : int;
+    mutable attacked_by_invisible : bool;
+    mutable attacked_by_flame : int;
+    mutable frozen_monsters : (position * char) list;
+    mutable regrets : position list;
+    mutable blindness_discovered : bool;
+    mutable hallucination_discovered : bool;
+    mutable teleport_discovered : bool;
+    mutable after_first_pack_full : bool;
+    mutable nb_of_reinit_search : int;
+    traps : (position, trap_kind option option) Hashtbl.t;
+    mutable paradise : bool;
+    mutable hist_dung : string array list;
+    mutable dead : bool }
 and pack_obj =
-  [ Parmor of armor_obj
+    Parmor of armor_obj
   | Ppotion of potion_obj
   | Pscroll of scroll_obj
   | Pweapon of weapon_obj
   | Pring of ring_obj
   | Pwand of wand_obj
   | Pfood
-  | Pamulet ]
-and armor_obj =
-  { ar_value : option int;
-    ar_protected : bool }
+  | Pamulet
+and armor_obj = { ar_value : int option; ar_protected : bool }
 and potion_obj =
-  [ Ipotion of potion_kind
-  | Upotion of string ]
+    Ipotion of potion_kind
+  | Upotion of string
 and potion_kind =
-  [ PKacceler
+    PKacceler
   | PKblindness
   | PKdetect_mon
   | PKdetect_obj
@@ -107,12 +96,12 @@ and potion_kind =
   | PKraise_level
   | PKrestore_str
   | PKsee_invis
-  | PKother ]
+  | PKother
 and scroll_obj =
-  [ Iscroll of scroll_kind
-  | Uscroll of string ]
+    Iscroll of scroll_kind
+  | Uscroll of string
 and scroll_kind =
-  [ SKaggr_mon
+    SKaggr_mon
   | SKench_ar
   | SKench_wea
   | SKhold_mon
@@ -122,88 +111,78 @@ and scroll_kind =
   | SKscare_mon
   | SKteleport
   | SKuncurse
-  | SKother ]
-and weapon_obj =
-  { we_kind : weapon_kind;
-    we_value : option int }
+  | SKother
+and weapon_obj = { we_kind : weapon_kind; we_value : int option }
 and weapon_kind =
-  [ WKtwo_handed_sword
+    WKtwo_handed_sword
   | WKlong_sword
   | WKmace
   | WKshort_bow
   | WKarrows
-  | WKother ]
+  | WKother
 and ring_obj =
-  [ Iring of ring_kind
-  | Uring of string ]
-and ring_kind =
-  [ RKslow_digestion
-  | RKother ]
+    Iring of ring_kind
+  | Uring of string
+and ring_kind = RKslow_digestion | RKother
 and wand_obj =
-  [ Iwand of wand_kind and option int
-  | Uwand of string ]
-and wand_kind =
-  [ AKcancel
-  | AKmagic_miss
-  | AKother ]
-and trap_kind =
-  [ TKtrap_door
-  | TKother ]
-and move = {di : int; dj : int}
-and move_result = [ MRcaught | MRteleported | MRok ];
+    Iwand of wand_kind * int option
+  | Uwand of string
+and wand_kind = AKcancel | AKmagic_miss | AKother
+and trap_kind = TKtrap_door | TKother
+and move = { di : int; dj : int }
+and move_result = MRcaught | MRteleported | MRok
 
 type command =
-  [ Cmov of move
+    Cmov of move
   | Cansw_left
   | Cansw_yes
-  | Coth of char ]
-;
+  | Coth of char
 
 type next_action =
-  [ NAalone_in_room of alone_room
-  | NAcheck_no_trap of position and position
-  | NAdrop_scare of option char and next_action
+    NAalone_in_room of alone_room
+  | NAcheck_no_trap of position * position
+  | NAdrop_scare of char option * next_action
   | NAdrop_scare_and_kill of drop_scare
-  | NAfight of char and bool and next_action
+  | NAfight of char * bool * next_action
   | NAfind_another_room_and_return of find_another_room_and_return
-  | NAglobal_search1 of global_path and around
-  | NAglobal_search2 of graph and around and int
-  | NAgo_and_kill of global_path and char
-  | NAgo_identify_trap of global_path and string and next_action
+  | NAglobal_search1 of global_path * around
+  | NAglobal_search2 of graph * around * int
+  | NAgo_and_kill of global_path * char
+  | NAgo_identify_trap of global_path * string * next_action
   | NAgo_in_corridor_and_hit of corridor_excursion
   | NAgo_to of global_path
   | NAgo_to_door of global_path
-  | NAgo_to_stairs of global_path and bool
+  | NAgo_to_stairs of global_path * bool
   | NAgo_to_shelter_and_test_scrolls of global_path
   | NAgo_unblock_monster of unblock_monster
-  | NAlet_come of char and move
-  | NAmove of move and next_action
-  | NAmove_in_corridor of position and global_path and list position
-  | NAmove_throw1 of list move and position and char
-  | NAmove_throw2 of position and char and string
+  | NAlet_come of char * move
+  | NAmove of move * next_action
+  | NAmove_in_corridor of position * global_path * position list
+  | NAmove_throw1 of move list * position * char
+  | NAmove_throw2 of position * char * string
   | NAnone
-  | NAput_ring of char and next_action and int
-  | NAread_scroll_for_best_armor of char and next_action and wear_read_state
+  | NAput_ring of char * next_action * int
+  | NAread_scroll_for_best_armor of char * next_action * wear_read_state
   | NArestore_health of next_action
-  | NAreturn_to_base of global_path and next_action
-  | NArun_away of char and list move and next_action
-  | NAsearch_and_back of move and around and int
-  | NAseek_gold_or_monster of global_path and bool
+  | NAreturn_to_base of global_path * next_action
+  | NArun_away of char * move list * next_action
+  | NAsearch_and_back of move * around * int
+  | NAseek_gold_or_monster of global_path * bool
   | NAseek_object of global_path
-  | NAstring of string and bool and next_action
-  | NAtest_monster of list (test_monster * position * char) and next_action
-  | NAtest_potions of char and int
-  | NAthrow_away of char and string
-  | NAthrow_in_the_garbage of char and global_path and next_action and string
-  | NAuse_object of use_object and next_action
-  | NAwear of char and int and next_action
-  | NAwear_armor_and_test_scrolls of char and char and wear_read_state
-  | NAwield_bow_test_moving of position and char and int
-  | NAzap of move and char and next_action and int ]
+  | NAstring of string * bool * next_action
+  | NAtest_monster of (test_monster * position * char) list * next_action
+  | NAtest_potions of char * int
+  | NAthrow_away of char * string
+  | NAthrow_in_the_garbage of char * global_path * next_action * string
+  | NAuse_object of use_object * next_action
+  | NAwear of char * int * next_action
+  | NAwear_armor_and_test_scrolls of char * char * wear_read_state
+  | NAwield_bow_test_moving of position * char * int
+  | NAzap of move * char * next_action * int
 and find_another_room_and_return =
   { fa_state : string;
     fa_gp : global_path;
-    fa_doors : list position;
+    fa_doors : position list;
     fa_base : position }
 and corridor_excursion =
   { ce_base : position;
@@ -215,32 +194,29 @@ and unblock_monster =
     um_mpos : position;
     um_gp : global_path;
     um_kont : next_action }
-and global_path =
-  { epos : position;
-    tpos : position;
-    path : list position }
+and global_path = { epos : position; tpos : position; path : position list }
 and wear_read_state =
-  [ WStoken_off
+    WStoken_off
   | WSwear_what
   | WSarmor_worn of char
-  | WSscroll_read ]
+  | WSscroll_read
 and alone_room =
   { ar_state : alone_room_state;
     ar_room : room;
-    ar_doors : list alone_room_door;
+    ar_doors : alone_room_door list;
     ar_trip_cnt : int }
 and alone_room_state =
-  [ ARgo_and_put_scare of position
+    ARgo_and_put_scare of position
   | ARseek_object of global_path
   | ARgo_and_kill of global_path
-  | ARgo_to_door of bool and global_path
-  | ARforce_kill of move and alone_room_state
-  | ARcommand of string ]
+  | ARgo_to_door of bool * global_path
+  | ARforce_kill of move * alone_room_state
+  | ARcommand of string
 and alone_room_door =
   { ard_pos : position;
     ard_dir : door_dir;
     ard_trip_cnt : int;
-    ard_monster_perhaps_blocked : option (list position * int) }
+    ard_monster_perhaps_blocked : (position list * int) option }
 and drop_scare =
   { ds_base : position;
     ds_state : drop_scare_state;
@@ -248,56 +224,50 @@ and drop_scare =
     ds_nb_killed_in_corr : int;
     ds_nb_attempt : int;
     ds_outside_tested : bool;
-    ds_monster_perhaps_blocked : option (list position * int) }
+    ds_monster_perhaps_blocked : (position list * int) option }
 and drop_scare_state =
-  [ DSdrop of char
+    DSdrop of char
   | DSdropped of int
-  | DSfree_monster of global_path and move and move and int
+  | DSfree_monster of global_path * move * move * int
   | DSforce_kill of char
   | DScheck_monsters
-  | DSgive_them_chance of string and int
-  | DSgo_and_hit of global_path and int
+  | DSgive_them_chance of string * int
+  | DSgo_and_hit of global_path * int
   | DSseek_object of global_path
-  | DStest_move of int and array (array char)
-  | DStest_out_in of move and array (array char) and int ]
-and test_monster =
-  [ TMstay
-  | TMforward
-  | TMbackward ]
+  | DStest_move of int * char array array
+  | DStest_out_in of move * char array array * int
+and test_monster = TMstay | TMforward | TMbackward
 and use_object =
-  [ UOeat_food of char and string
-  | UOquaff_potion of char and quaff_state
-  | UOread_scroll of char and read_state
-  | UOthrow_unuseful_objects of char and int
-  | UOwield_sword of char and string ]
+    UOeat_food of char * string
+  | UOquaff_potion of char * quaff_state
+  | UOread_scroll of char * read_state
+  | UOthrow_unuseful_objects of char * int
+  | UOwield_sword of char * string
 and read_state =
-  [ RSread_what
+    RSread_what
   | RSscroll_read
   | RSidentify_what
   | RSidentify of char
   | RScontinue
-  | RSput_ring of char ]
-and quaff_state =
-  [ QSquaff_what
-  | QSquaffed ]
-and around = { ar : string };
+  | RSput_ring of char
+and quaff_state = QSquaff_what | QSquaffed
+and around = { ar : string }
 
 type t =
-  { t_prev_pos : option game;
-    t_prev_game : option game;
+  { t_prev_pos : game option;
+    t_prev_game : game option;
     t_speed : float;
     t_monpow_fname : string;
     t_move_trace : bool;
     t_no_lang_dep : bool;
-    t_slow_at_level : option int;
-    t_slow_at_time : option int;
+    t_slow_at_level : int option;
+    t_slow_at_time : int option;
     t_stop_at_paradise : bool;
     t_breakpoint : int;
-    t_prev_comm : option command;
-    t_prev_mov : option move;
+    t_prev_comm : command option;
+    t_prev_mov : move option;
     t_on_stairs : bool;
     t_next_action : next_action }
-;
 
 type lang =
   { scan_status_line : string -> status_line;
@@ -388,6 +358,7 @@ type lang =
     is_weapon : string -> bool;
     message_more : string -> string;
     monsters : string }
-;
 
-type alt 'a 'b = [ Left of 'a | Right of 'b ];
+type ('a, 'b) alt =
+    Left of 'a
+  | Right of 'b

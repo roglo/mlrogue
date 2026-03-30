@@ -9,7 +9,7 @@ LIBS=unix.cma -I $$(camlp5 -where) gramlib.cma
 ROGBOT_OBJS=$(ROBOBJS) rogbot.cmo
 SRCS=$(OBJS:.cmo=.ml)
 ROGBOT_SRCS=rogbot.ml
-EXT=ext/pa_more.cmo ext/pa_if_match.cmo
+EXT=
 CAMLP5=camlp5r
 CAMLP5OPTS=-I ext
 
@@ -88,19 +88,13 @@ ext/%.cmo: ext/%.ml
 .SUFFIXES: .ml .mli .cmo .cmx .cmi .def .defo
 
 .ml.cmo:
-	$(CAMLP5) $(CAMLP5OPTS) $< -o $*.ppo
-	$(OCAMLC) -g $(OCOPTS) -I $$(camlp5 -where) -c -impl $*.ppo
-	rm -f $*.ppo
+	$(OCAMLC) -g $(OCOPOTS) -c $*.ml
 
 .ml.cmx:
-	$(CAMLP5) $(CAMLP5OPTS) $< -o $*.ppo
-	$(OCAMLOPT) $(OCOPTS) -I $$(camlp5 -where) -c -impl $*.ppo
-	rm -f $*.ppo
+	$(OCAMLOPT) -g $(OCOPOTS) -c $*.ml
 
 .mli.cmi:
-	$(CAMLP5) $(CAMLP5OPTS) $< -o $*.ppi
-	$(OCAMLC) -g $(OCOPTS) -c -intf $*.ppi
-	rm -f $*.ppi
+	$(OCAMLC) -g $(OCOPOTS) -c $*.mli
 
 .def.defo:
 	@touch $@
