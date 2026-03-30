@@ -1,46 +1,56 @@
 (* $Id: rfield.ml,v 1.4 2010/05/03 17:12:57 deraugla Exp $ *)
 
 type player_species =
-  [ PSsocket of Unix.file_descr
+    PSsocket of Unix.file_descr
   | PSrobot of Robot.t
-  | PShuman ]
-;
+  | PShuman
 
 type env =
-  [ Earray of array int
-  | Ebackup of option (string * int)
+    Earray of int array
+  | Ebackup of (string * int) option
   | Ebool of bool
   | Eint of int
   | Eplayer of player_species
-  | Erandom of option Random.State.t ]
-;
+  | Erandom of Random.State.t option
 
-value f_array =
+let f_array =
   Efield.make_fun "an array"
-    (fun [ Earray x -> Some x | _ -> None ], fun x -> Earray x)
-;
+    ((function
+        Earray x -> Some x
+      | _ -> None),
+     (fun x -> Earray x))
 
-value f_backup =
+let f_backup =
   Efield.make_fun "a backup"
-    (fun [ Ebackup x -> Some x | _ -> None ], fun x -> Ebackup x)
-;
+    ((function
+        Ebackup x -> Some x
+      | _ -> None),
+     (fun x -> Ebackup x))
 
-value f_bool =
+let f_bool =
   Efield.make_fun "a bool"
-    (fun [ Ebool x -> Some x | _ -> None ], fun x -> Ebool x)
-;
+    ((function
+        Ebool x -> Some x
+      | _ -> None),
+     (fun x -> Ebool x))
 
-value f_int =
+let f_int =
   Efield.make_fun "an int"
-    (fun [ Eint x -> Some x | _ -> None ], fun x -> Eint x)
-;
+    ((function
+        Eint x -> Some x
+      | _ -> None),
+     (fun x -> Eint x))
 
-value f_player_species =
+let f_player_species =
   Efield.make_fun "a player species"
-    (fun [ Eplayer x -> Some x | _ -> None ], fun x -> Eplayer x)
-;
+    ((function
+        Eplayer x -> Some x
+      | _ -> None),
+     (fun x -> Eplayer x))
 
-value f_random =
+let f_random =
   Efield.make_fun "a random"
-    (fun [ Erandom x -> Some x | _ -> None ], fun x -> Erandom x)
-;
+    ((function
+        Erandom x -> Some x
+      | _ -> None),
+     (fun x -> Erandom x))

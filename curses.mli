@@ -1,30 +1,30 @@
 (* $Id: curses.mli,v 1.16 2013/01/29 14:00:23 deraugla Exp $ *)
 
-type attribute = [ A_standout | A_bold ];
+type attribute = A_standout | A_bold
 
-value addch : char -> unit;
-value addstr : string -> unit;
-value attron : list attribute -> unit;
-value attroff : list attribute -> unit;
-value clear : unit -> unit;
-value clrtoeol : unit -> unit;
-value color_get : int -> int -> (int * int);
-value color_set : int -> int -> unit;
-value cols : unit -> int;
-value endwin : unit -> unit;
-value getch : unit -> char;
-value home : unit -> unit;
-value initscr : unit -> unit;
-value lines : unit -> int;
-value move : int -> int -> unit;
-value mvaddch : int -> int -> char -> unit;
-value mvaddnstr : int -> int -> string -> int -> int -> unit;
-value mvaddstr : int -> int -> string -> unit;
-value mvinch : int -> int -> char;
-value pos_get : unit -> (int * int);
-value refresh : unit -> unit;
-value standend : unit -> unit;
-value standout : unit -> unit;
-value wrefresh_curscr : unit -> unit;
+val addch : char -> unit
+val addstr : string -> unit
+val attron : attribute list -> unit
+val attroff : attribute list -> unit
+val clear : unit -> unit
+val clrtoeol : unit -> unit
+val color_get : int -> int -> int * int
+val color_set : int -> int -> unit
+val cols : unit -> int
+val endwin : unit -> unit
+val getch : unit -> char
+val home : unit -> unit
+val initscr : unit -> unit
+val lines : unit -> int
+val move : int -> int -> unit
+val mvaddch : int -> int -> char -> unit
+val mvaddnstr : int -> int -> string -> int -> int -> unit
+val mvaddstr : int -> int -> string -> unit
+val mvinch : int -> int -> char
+val pos_get : unit -> int * int
+val refresh : unit -> unit
+val standend : unit -> unit
+val standout : unit -> unit
+val wrefresh_curscr : unit -> unit
 
-value no_output : unit -> unit;
+val no_output : unit -> unit

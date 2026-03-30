@@ -1,11 +1,11 @@
 (* utf8 strings *)
 
-type t = 'abstract;
+type t
 
-value of_string : string → t;
-value to_string : t → string;
-value length : t → int;
-value is_empty : t → bool;
-value last_char : t → char;
-value but_last : t → t;
-value append_char : t → char → t;
+val of_string : string -> t
+val to_string : t -> string
+val length : t -> int
+val is_empty : t -> bool
+val last_char : t -> char
+val but_last : t -> t
+val append_char : t -> char -> t

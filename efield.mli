@@ -1,11 +1,9 @@
 (* $Id: efield.mli,v 1.4 2010/04/27 11:46:10 deraugla Exp $ *)
 
-type t 'a = 'abstract;
+type 'a t
 
-type field_fun 'a 'b =
-  { get : t 'a -> string -> 'b -> 'b;
-    set : t 'a -> string -> 'b -> unit }
-;
+type ('a, 'b) field_fun =
+  { get : 'a t -> string -> 'b -> 'b; set : 'a t -> string -> 'b -> unit }
 
-value make : unit -> t 'a;
-value make_fun : string -> ('a -> option 'b * 'b -> 'a)  -> field_fun 'a 'b;
+val make : unit -> 'a t
+val make_fun : string -> ('a -> 'b option) * ('b -> 'a) -> ('a, 'b) field_fun
