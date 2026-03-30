@@ -1,49 +1,51 @@
 (* $Id: finish.ml,v 1.43 2018/04/26 09:52:36 deraugla Exp $ *)
 
-#load "pa_more.cmo";
-#use "rogue.def";
+(* #load "pa_more.cmo" *)
+(* #use "rogue.def" *)
 
-open Rogue;
-open Rfield;
-open Dialogue;
-open Imisc;
-open Object;
-open Printf;
-open Translate;
 
-value string_create = Bytes.create;
-value string_length = Bytes.length;
-value string_of_bytes = Bytes.to_string;
+open Rogue
+open Rfield
+open Dialogue
+open Imisc
+open Object
+open Printf
+open Translate
 
-value win_message g =
+let string_create = Bytes.create
+let string_length = Bytes.length
+let string_of_bytes = Bytes.to_string
+
+let win_message g =
   let f = Curses.mvaddstr in
-  match try Some (open_in "rogue.win") with [ Sys_error _ -> None ] with
-  [ Some ic -> do {
+  match try Some (open_in "rogue.win") with Sys_error _ -> None with
+    Some ic ->
       if g.lang <> "" then
-        try
-          loop () where rec loop () =
+        begin try
+          let rec loop () =
             let line = input_line ic in
             try
               let i = String.index line ':' in
               if string_eq g.lang 0 line 0 i then () else raise Not_found
-            with
-            [ Not_found -> loop () ]
-        with
-        [ End_of_file -> seek_in ic 0 ]
-      else ();
+            with Not_found -> loop ()
+          in
+          loop ()
+        with End_of_file -> seek_in ic 0
+        end;
       Curses.clear ();
-      try
-        loop 7 where rec loop i =
+      begin try
+        let rec loop i =
           let line = input_line ic in
           if String.contains line ':' then ()
-          else do { f i 11 line; loop (i + 1) }
-      with
-      [ End_of_file -> () ];
+          else begin f i 11 line; loop (i + 1) end
+        in
+        loop 7
+      with End_of_file -> ()
+      end;
       close_in ic;
-      message g "" True;
-      message g "" True
-    }
-  | None -> do {
+      message g "" true;
+      message g "" true
+  | None ->
       Curses.clear ();
       f 10 11 "@   @  @@@   @   @      @  @  @   @@@   @   @   @";
       f 11 11 " @ @  @   @  @   @      @  @  @  @   @  @@  @   @";
@@ -53,12 +55,10 @@ value win_message g =
       f 17 11 "Congratulations,  you have  been admitted  to  the";
       f 18 11 "Fighters' Guild.   You return home,  sell all your";
       f 19 11 "treasures at great profit and retire into comfort.";
-      message g "" False;
-      message g "" False
-    } ]
-;
+      message g "" false;
+      message g "" false
 
-value id_all g pack = do {
+let id_all g pack =
   Array.fill g.id_potions 0 (Array.length g.id_potions) Identified;
   Array.fill g.id_rings 0 (Array.length g.id_rings) Identified;
   Array.fill g.id_scrolls 0 (Array.length g.id_scrolls) Identified;
@@ -66,26 +66,24 @@ value id_all g pack = do {
   List.iter
     (fun obj ->
        match obj.ob_kind with
-       [ Armor a -> a.ar_identified := True
-       | Ring r -> r.rg_identified := True
-       | Wand w -> w.wa_identified := True
-       | Weapon w -> w.we_identified := True
-       | Scroll _ | Potion _ | Food _ | Gold | Amulet -> () ])
+         Armor a -> a.ar_identified <- true
+       | Ring r -> r.rg_identified <- true
+       | Wand w -> w.wa_identified <- true
+       | Weapon w -> w.we_identified <- true
+       | Scroll _ | Potion _ | Food _ | Gold | Amulet -> ())
     pack
-};
 
-value get_value g obj =
+let get_value g obj =
   match obj.ob_kind with
-  [ Weapon w ->
+    Weapon w ->
       let v = weapon_tab.(int_of_weapon w.we_kind).o_value in
       let v =
         match w.we_kind with
-        [ Arrow | Dagger | Shuriken | Dart -> v * obj.ob_quantity
-        | _ -> v ]
+          Arrow | Dagger | Shuriken | Dart -> v * obj.ob_quantity
+        | _ -> v
       in
       let v = v + w.we_d_enchant * 85 in
-      let v = v + w.we_hit_enchant * 85 in
-      v
+      let v = v + w.we_hit_enchant * 85 in v
   | Armor a ->
       let v = armor_tab.(int_of_armor a.ar_kind).o_value in
       let v = v + a.ar_enchant * 75 in
@@ -95,37 +93,33 @@ value get_value g obj =
   | Potion p -> potion_tab.(int_of_potion p).o_value * obj.ob_quantity
   | Amulet -> 5000
   | Ring r -> ring_tab.(int_of_ring r.rg_kind).o_value * (r.rg_class + 1)
-  | _ -> 0 ]
-;
+  | _ -> 0
 
-value sell_pack g = do {
+let sell_pack g =
   Curses.clear ();
   Curses.mvaddstr 1 0 (transl g.lang "Value      Item");
   let _ =
     List.fold_left
       (fun row (_, obj) ->
          match obj.ob_kind with
-         [ Food _ -> row
-         | _ -> do {
+           Food _ -> row
+         | _ ->
              let v = max 10 (get_value g obj) in
-             g.rogue.gold add_eq v;
-             if row < DROWS then
-               let d = get_desc g obj True in
-               let line = sprintf "%5d      %s" v (etransl d) in
-               Curses.mvaddstr row 0 line
-             else ();
-             row + 1
-           } ])
+             g.rogue.gold <- g.rogue.gold + v;
+             if row < 24 then
+               begin let d = get_desc g obj true in
+                 let line = sprintf "%5d      %s" v (etransl d) in
+                 Curses.mvaddstr row 0 line
+               end;
+             row + 1)
       2 (List.sort (fun (a, _) (b, _) -> compare a b) g.rogue.pack)
   in
-  Curses.refresh ();
-  message g "" False
-};
+  Curses.refresh (); message g "" false
 
-DEFINE MAXRANK = 15;
+(* *)
 
-value score_magic = "RGSC0001";
-value score_file = ".rogue.scores";
+let score_magic = "RGSC0001"
+let score_file = ".rogue.scores"
 
 type score_type =
   { sc_score : int;
@@ -133,93 +127,79 @@ type score_type =
     sc_ending : ending;
     sc_level : int;
     sc_with_amulet : bool }
-;
 
-value read_scores () =
+let read_scores () =
   let ic =
-    match try Some (open_in_bin score_file) with [ Sys_error _ -> None ] with
-    [ Some ic -> do {
+    match try Some (open_in_bin score_file) with Sys_error _ -> None with
+      Some ic ->
         let b = string_create (String.length score_magic) in
         really_input ic b 0 (string_length b);
-	let b = string_of_bytes b in
-        if b <> score_magic then do { close_in ic; None } else Some ic
-      }
-    | None -> None ]
+        let b = string_of_bytes b in
+        if b <> score_magic then begin close_in ic; None end else Some ic
+    | None -> None
   in
   match ic with
-  [ Some ic -> do {
-      let v : list score_type = input_value ic in
-      close_in ic;
-      v
-    }
+    Some ic -> let v : score_type list = input_value ic in close_in ic; v
   | None ->
       [{sc_score = 100; sc_name = "john"; sc_ending = Monster "hobgoblin";
-        sc_level = 3; sc_with_amulet = False};
+        sc_level = 3; sc_with_amulet = false};
        {sc_score = 25; sc_name = "bob"; sc_ending = Starvation; sc_level = 4;
-        sc_with_amulet = False}] ]
-;
+        sc_with_amulet = false}]
 
-value write_scores scores =
-  match try Some (open_out_bin score_file) with [ Sys_error _ -> None ] with
-  [ Some oc -> do {
+let write_scores scores =
+  match try Some (open_out_bin score_file) with Sys_error _ -> None with
+    Some oc ->
       let scores =
-        if List.length scores > MAXRANK then
-          List.rev (List.tl (List.rev scores))
+        if List.length scores > 15 then List.rev (List.tl (List.rev scores))
         else scores
       in
       output_string oc score_magic;
-      output_value oc (scores : list score_type);
+      output_value oc (scores : score_type list);
       close_out oc
-    }
-  | None -> () ]
-;
+  | None -> ()
 
-value insert_score sc =
-  loop False 1 where rec loop inserted rank scl =
-    if rank = MAXRANK + 1 then
-      if not inserted then ([sc], rank)
+let insert_score sc =
+  let rec loop inserted rank scl =
+    if rank = 15 + 1 then
+      if not inserted then [sc], rank
       else
         match scl with
-        [ [sc1 :: _] -> ([sc1], -1)
-        | [] -> ([], -1) ]
+          sc1 :: _ -> [sc1], -1
+        | [] -> [], -1
     else
       match scl with
-      [ [sc1 :: scl] ->
+        sc1 :: scl ->
           if not inserted then
             if sc1.sc_score < sc.sc_score then
-              let (scl, _) = loop True (rank + 1) [sc1 :: scl] in
-              ([sc :: scl], rank)
+              let (scl, _) = loop true (rank + 1) (sc1 :: scl) in
+              sc :: scl, rank
             else
-              let (scl, rank) = loop False (rank + 1) scl in
-              ([sc1 :: scl], rank)
-          else
-            let (scl, _) = loop True (rank + 1) scl in
-            ([sc1 :: scl], -1)
-      | [] -> if not inserted then ([sc], rank) else ([], -1) ]
-;
+              let (scl, rank) = loop false (rank + 1) scl in sc1 :: scl, rank
+          else let (scl, _) = loop true (rank + 1) scl in sc1 :: scl, -1
+      | [] -> if not inserted then [sc], rank else [], -1
+  in
+  loop false 1
 
-value text_of_ending lang =
-  fun
-  [ Monster name ->
+let text_of_ending lang =
+  function
+    Monster name ->
       let art = transl lang "a@(n?n)" in
       transl lang "killed by" ^ " " ^ art ^ " " ^ transl lang name
   | Hypothermia -> transl lang "died of hypothermia"
   | Starvation -> transl lang "died of starvation"
   | PoisonDart -> transl lang "killed by a dart"
   | Quit -> transl lang "quit"
-  | Win -> transl lang "a total winner" ]
-;
+  | Win -> transl lang "a total winner"
 
-value clean_up estr = do {
+let clean_up estr =
   Curses.mvaddstr (Curses.lines () - 1) 0 estr;
   Curses.refresh ();
   Curses.endwin ();
   printf "\n";
   flush stdout;
   exit 0
-};
 
-value ending_reason_line lang score =
+let ending_reason_line lang score =
   let s =
     text_of_ending lang score.sc_ending ^ " " ^
     sprintf (ftransl lang "on level %d") score.sc_level ^
@@ -228,13 +208,12 @@ value ending_reason_line lang score =
      else "")
   in
   etransl s
-;
 
-value put_scores lang score_only g_ending = do {
+let put_scores lang score_only g_ending =
   let scores = read_scores () in
   let (scores, n) =
     match g_ending with
-    [ Some (g, ending) -> do {
+      Some (g, ending) ->
         (* ... *)
         Curses.refresh ();
         let score =
@@ -243,14 +222,10 @@ value put_scores lang score_only g_ending = do {
            sc_ending = ending; sc_level = g.max_level;
            sc_with_amulet = has_amulet g}
         in
-        if f_bool.Efield.get g.env "batch" False then do {
-          let s = ending_reason_line lang score in
-          printf "%s" s;
-        }
-        else ();
+        if f_bool.Efield.get g.env "batch" false then
+          (let s = ending_reason_line lang score in printf "%s" s);
         insert_score score scores
-      }
-    | _ -> (scores, MAXRANK+1) ]
+    | _ -> scores, 15 + 1
   in
   if score_only then () else write_scores scores;
   Curses.clear ();
@@ -259,54 +234,49 @@ value put_scores lang score_only g_ending = do {
   let _ =
     List.fold_left
       (fun rank score ->
-         if rank > MAXRANK && rank <> n then rank + 1
-         else do {
+         if rank > 15 && rank <> n then rank + 1
+         else
            let buf = ending_reason_line lang score in
            let txt =
              sprintf "%s    %6d   %s: %s"
-               (if rank > MAXRANK || score_only && rank = n then ".."
+               (if rank > 15 || score_only && rank = n then ".."
                 else
                   let rank =
-                    if score_only && rank > n then rank - 1
-                    else rank
+                    if score_only && rank > n then rank - 1 else rank
                   in
                   sprintf "%2d" rank)
                score.sc_score score.sc_name buf
            in
            let txt =
              if rank = n then
-               let len = DCOLS - String.length txt - 2 in
+               let len = 80 - String.length txt - 2 in
                txt ^ String.make (max 0 len) ' '
              else txt
            in
            Curses.move (6 + rank) 0;
-           if not score_only && rank = n then Curses.standout () else ();
+           if not score_only && rank = n then Curses.standout ();
            Curses.addstr txt;
-           if not score_only && rank = n then Curses.standend () else ();
-           rank + 1
-         })
+           if not score_only && rank = n then Curses.standend ();
+           rank + 1)
       1 scores
   in
-  ();
-  Curses.refresh ()
-};
+  (); Curses.refresh ()
 
-value win g = do {
+let win g =
   (* ... *)
   win_message g;
   id_all g (List.map snd g.rogue.pack);
   sell_pack g;
   put_scores g.lang g.score_only (Some (g, Win));
-  message g "" False;
+  message g "" false;
   check_message g;
   clean_up ""
-};
 
-value has_unidentifed_objects g pack =
+let has_unidentifed_objects g pack =
   List.exists
     (fun (_, obj) ->
        match obj.ob_kind with
-       [ Armor a -> not a.ar_identified
+         Armor a -> not a.ar_identified
        | Weapon w -> not w.we_identified
        | Potion p -> g.id_potions.(int_of_potion p) <> Identified
        | Scroll s -> g.id_scrolls.(int_of_scroll s) <> Identified
@@ -316,65 +286,66 @@ value has_unidentifed_objects g pack =
        | Wand w ->
            not w.wa_identified ||
            g.id_wands.(int_of_wand w.wa_kind) <> Identified
-       | _ -> False ])
+       | _ -> false)
     pack
-;
 
-value select_unidentified g (_, obj) =
+let select_unidentified g (_, obj) =
   match obj.ob_kind with
-  [ Armor a ->
-      if a.ar_identified then False else do { a.ar_identified := True; True }
+    Armor a ->
+      if a.ar_identified then false
+      else begin a.ar_identified <- true; true end
   | Weapon w ->
-      if w.we_identified then False else do { w.we_identified := True; True }
+      if w.we_identified then false
+      else begin w.we_identified <- true; true end
   | Potion p ->
-      if g.id_potions.(int_of_potion p) = Identified then False
-      else do { g.id_potions.(int_of_potion p) := Identified; True }
+      if g.id_potions.(int_of_potion p) = Identified then false
+      else begin g.id_potions.(int_of_potion p) <- Identified; true end
   | Scroll s ->
-      if g.id_scrolls.(int_of_scroll s) = Identified then False
-      else do { g.id_scrolls.(int_of_scroll s) := Identified; True }
+      if g.id_scrolls.(int_of_scroll s) = Identified then false
+      else begin g.id_scrolls.(int_of_scroll s) <- Identified; true end
   | Ring r ->
       if r.rg_identified && g.id_rings.(int_of_ring r.rg_kind) = Identified
       then
-        False
-      else do {
-        r.rg_identified := True;
-        g.id_rings.(int_of_ring r.rg_kind) := Identified;
-        True
-      }
+        false
+      else
+        begin
+          r.rg_identified <- true;
+          g.id_rings.(int_of_ring r.rg_kind) <- Identified;
+          true
+        end
   | Wand w ->
       if w.wa_identified && g.id_wands.(int_of_wand w.wa_kind) = Identified
       then
-        False
-      else do {
-        w.wa_identified := True;
-        g.id_wands.(int_of_wand w.wa_kind) := Identified;
-        True
-      }
-  | Food _ | Gold | Amulet -> False ]
-;
+        false
+      else
+        begin
+          w.wa_identified <- true;
+          g.id_wands.(int_of_wand w.wa_kind) <- Identified;
+          true
+        end
+  | Food _ | Gold | Amulet -> false
 
-value killed_by g death = do {
-  if death <> Quit then g.rogue.gold := g.rogue.gold * 9 / 10 else ();
+let killed_by g death =
+  if death <> Quit then g.rogue.gold <- g.rogue.gold * 9 / 10;
   let buf =
     match death with
-    [ Monster mon_name ->
+      Monster mon_name ->
         let art = transl g.lang "a@(n?n)" in
         transl g.lang "Killed by" ^ " " ^ art ^ " " ^ transl g.lang mon_name
     | Hypothermia -> transl g.lang "Died of hypothermia"
     | Starvation -> transl g.lang "Died of starvation"
     | PoisonDart -> transl g.lang "Killed by a dart"
     | Quit -> transl g.lang "Quit"
-    | Win -> "win?" ]
+    | Win -> "win?"
   in
   let buf =
     buf ^ " " ^ sprintf (ftransl g.lang "with %d gold") g.rogue.gold
   in
   let buf = etransl buf in
-  match death with
-  [ Monster _ | Hypothermia | Starvation | PoisonDart
-    when g.show_skull -> do {
+  begin match death with
+    Monster _ | Hypothermia | Starvation | PoisonDart when g.show_skull ->
       let center row buf =
-        let margin = (DCOLS - String.length buf) / 2 in
+        let margin = (80 - String.length buf) / 2 in
         Curses.mvaddstr row margin buf
       in
       Curses.clear ();
@@ -397,41 +368,42 @@ value killed_by g death = do {
       center 21 (if g.nick_name <> "" then g.nick_name else g.login_name);
       center 22 buf;
       check_message g;
-      message g "" False
-    }
-  | _ -> message g (buf ^ ".") False ];
-  message g "" False;
+      message g "" false
+  | _ -> message g (buf ^ ".") false
+  end;
+  message g "" false;
   let pack_opt =
     if g.rogue.pack <> [] && has_unidentifed_objects g g.rogue.pack then
-      let pack = List.filter (select_unidentified g) g.rogue.pack in
-      Some pack
+      let pack = List.filter (select_unidentified g) g.rogue.pack in Some pack
     else None
   in
   id_all g g.level_objects;
   let prompt2 =
     match pack_opt with
-    [ Some _ -> transl g.lang " -- Press space or backspace --"
-    | None -> transl g.lang " -- Press space to continue --" ]
+      Some _ -> transl g.lang " -- Press space or backspace --"
+    | None -> transl g.lang " -- Press space to continue --"
   in
   let term2 =
     match pack_opt with
-    [ Some _ -> " \027\b\127"
-    | None -> " \027" ]
+      Some _ -> " \027\b\127"
+    | None -> " \027"
   in
-  loop () where rec loop () = do {
-    match pack_opt with
-    [ Some pack -> inventory g pack (fun _ -> True)
-    | None -> () ];
+  begin let rec loop () =
+    begin match pack_opt with
+      Some pack -> inventory g pack (fun _ -> true)
+    | None -> ()
+    end;
     let retc =
-      inv_sel g (List.map (fun obj -> ('.', obj)) g.level_objects)
-        (fun _ -> True) prompt2 term2
+      inv_sel g (List.map (fun obj -> '.', obj) g.level_objects)
+        (fun _ -> true) prompt2 term2
     in
     match retc with
-    [ Some ('\b' | '\127') -> loop ()
-    | Some _ | None -> () ]
-  };
+      Some ('\b' | '\127') -> loop ()
+    | Some _ | None -> ()
+  in
+    loop ()
+  end;
   put_scores g.lang g.score_only (Some (g, death));
-  message g "" False;
+  message g "" false;
   check_message g;
   clean_up ""
-};

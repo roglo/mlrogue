@@ -1,7 +1,9 @@
 asttypes.cmi : location.cmi
-attack.cmo : attack.cmi
-attack.cmx : attack.cmi
-attack.cmi :
+attack.cmo : translate.cmi rogue.cmi object.cmi monster.cmi misc.cmi \
+    level.cmi imonster.cmi imisc.cmi dialogue.cmi curses.cmi attack.cmi
+attack.cmx : translate.cmx rogue.cmi object.cmx monster.cmx misc.cmx \
+    level.cmx imonster.cmx imisc.cmx dialogue.cmx curses.cmx attack.cmi
+attack.cmi : rogue.cmi
 curses.cmo : curses.cmi
 curses.cmx : curses.cmi
 curses.cmi :
@@ -13,9 +15,11 @@ dialogue.cmi : rogue.cmi
 efield.cmo : efield.cmi
 efield.cmx : efield.cmi
 efield.cmi :
-finish.cmo : finish.cmi
-finish.cmx : finish.cmi
-finish.cmi :
+finish.cmo : translate.cmi rogue.cmi rfield.cmi object.cmi imisc.cmi \
+    efield.cmi dialogue.cmi curses.cmi finish.cmi
+finish.cmx : translate.cmx rogue.cmi rfield.cmx object.cmx imisc.cmx \
+    efield.cmx dialogue.cmx curses.cmx finish.cmi
+finish.cmi : rogue.cmi
 fstream.cmo : fstream.cmi
 fstream.cmx : fstream.cmi
 fstream.cmi :
@@ -43,17 +47,29 @@ level.cmx : rogue.cmi rfield.cmx object.cmx imonster.cmx imisc.cmx \
 level.cmi : rogue.cmi
 location.cmi : warnings.cmi
 longident.cmi :
-main.cmo :
-main.cmx :
-misc.cmo : misc.cmi
-misc.cmx : misc.cmi
-misc.cmi :
-monster.cmo : monster.cmi
-monster.cmx : monster.cmi
-monster.cmi :
-move.cmo : move.cmi
-move.cmx : move.cmi
-move.cmi :
+main.cmo : ustring.cmi use.cmi translate.cmi rogue.cmi robot.cmi rfield.cmi \
+    object.cmi move.cmi monster.cmi misc.cmi level.cmi init.cmi imonster.cmi \
+    imisc.cmi finish.cmi efield.cmi dialogue.cmi curses.cmi attack.cmi
+main.cmx : ustring.cmx use.cmx translate.cmx rogue.cmi robot.cmx rfield.cmx \
+    object.cmx move.cmx monster.cmx misc.cmx level.cmx init.cmx imonster.cmx \
+    imisc.cmx finish.cmx efield.cmx dialogue.cmx curses.cmx attack.cmx
+misc.cmo : translate.cmi rogue.cmi rfield.cmi imonster.cmi efield.cmi \
+    dialogue.cmi curses.cmi misc.cmi
+misc.cmx : translate.cmx rogue.cmi rfield.cmx imonster.cmx efield.cmx \
+    dialogue.cmx curses.cmx misc.cmi
+misc.cmi : rogue.cmi
+monster.cmo : translate.cmi rogue.cmi misc.cmi imonster.cmi imisc.cmi \
+    finish.cmi dialogue.cmi curses.cmi monster.cmi
+monster.cmx : translate.cmx rogue.cmi misc.cmx imonster.cmx imisc.cmx \
+    finish.cmx dialogue.cmx curses.cmx monster.cmi
+monster.cmi : rogue.cmi
+move.cmo : translate.cmi rogue.cmi rfield.cmi object.cmi monster.cmi \
+    misc.cmi level.cmi imonster.cmi imisc.cmi finish.cmi efield.cmi \
+    dialogue.cmi curses.cmi attack.cmi move.cmi
+move.cmx : translate.cmx rogue.cmi rfield.cmx object.cmx monster.cmx \
+    misc.cmx level.cmx imonster.cmx imisc.cmx finish.cmx efield.cmx \
+    dialogue.cmx curses.cmx attack.cmx move.cmi
+move.cmi : rogue.cmi
 object.cmo : rogue.cmi imisc.cmi object.cmi
 object.cmx : rogue.cmi imisc.cmx object.cmi
 object.cmi : rogue.cmi
@@ -100,8 +116,8 @@ robot.cmo : rob_position.cmi rob_path.cmi rob_object.cmi rob_monster.cmi \
 robot.cmx : rob_position.cmx rob_path.cmx rob_object.cmx rob_monster.cmx \
     rob_misc.cmx rob_def.cmi rob_action.cmx robot.cmi
 robot.cmi :
-rogbot.cmo :
-rogbot.cmx :
+rogbot.cmo : robot.cmi
+rogbot.cmx : robot.cmx
 rogbotio.cmo : curses.cmi rogbotio.cmi
 rogbotio.cmx : curses.cmx rogbotio.cmi
 rogbotio.cmi :
@@ -109,9 +125,11 @@ rogue.cmi : rfield.cmi efield.cmi
 translate.cmo : translate.cmi
 translate.cmx : translate.cmi
 translate.cmi : rogue.cmi
-use.cmo : use.cmi
-use.cmx : use.cmi
-use.cmi :
+use.cmo : translate.cmi rogue.cmi object.cmi move.cmi monster.cmi misc.cmi \
+    imonster.cmi imisc.cmi dialogue.cmi curses.cmi use.cmi
+use.cmx : translate.cmx rogue.cmi object.cmx move.cmx monster.cmx misc.cmx \
+    imonster.cmx imisc.cmx dialogue.cmx curses.cmx use.cmi
+use.cmi : rogue.cmi
 ustring.cmo : ustring.cmi
 ustring.cmx : ustring.cmi
 ustring.cmi :

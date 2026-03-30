@@ -1,62 +1,59 @@
 (* $Id: attack.ml,v 1.34 2018/04/26 09:52:36 deraugla Exp $ *)
 
-#load "pa_more.cmo";
+(* #load "pa_more.cmo" *)
 
-#use "rogue.def";
-#use "keyboard.def";
+(* #use "rogue.def" *)
 
-open Rogue;
-open Dialogue;
-open Imisc;
-open Misc;
-open Printf;
-open Translate;
 
-value check_imitator g monster =
-  if monster.mn_flags land IMITATES <> 0 then do {
-    wake_up monster;
-    if g.rogue.blind = 0 then do {
-      Curses.mvaddch monster.mn_row monster.mn_col
-        (get_dungeon_char g monster.mn_row monster.mn_col);
-      check_message g;
-      let mess =
-        sprintf (ftransl g.lang "Wait, that's a %s!")
-          (transl g.lang (Monster.mon_name g monster))
-      in
-      message g (etransl mess) True
-    }
-    else ();
-    True
-  }
-  else False
-;
+(* #use "keyboard.def" *)
 
-value to_hit =
-  fun
-  [ None -> 1
-  | Some (_, w) ->
-      let (n, _, _) = w.we_damage in
-      n + w.we_hit_enchant ]
-;
 
-value get_hit_chance g weapon =
+open Rogue
+open Dialogue
+open Imisc
+open Misc
+open Printf
+open Translate
+
+let check_imitator g monster =
+  if monster.mn_flags land 0o20000000 <> 0 then
+    begin
+      wake_up monster;
+      if g.rogue.blind = 0 then
+        begin
+          Curses.mvaddch monster.mn_row monster.mn_col
+            (get_dungeon_char g monster.mn_row monster.mn_col);
+          check_message g;
+          let mess =
+            sprintf (ftransl g.lang "Wait, that's a %s!")
+              (transl g.lang (Monster.mon_name g monster))
+          in
+          message g (etransl mess) true
+        end;
+      true
+    end
+  else false
+
+let to_hit =
+  function
+    None -> 1
+  | Some (_, w) -> let (n, _, _) = w.we_damage in n + w.we_hit_enchant
+
+let get_hit_chance g weapon =
   let hit_chance = 40 in
   let hit_chance = hit_chance + 3 * to_hit weapon in
   hit_chance + 2 * g.rogue.exp + 2 * g.rogue.ring_exp - g.rogue.r_rings
-;
 
-value get_w_damage g weapon =
+let get_w_damage g weapon =
   match weapon with
-  [ None -> -1
+    None -> -1
   | Some (_, w) ->
       let (n, d, _) = w.we_damage in
       let to_hit = n + w.we_hit_enchant in
       let damage = d + w.we_d_enchant in
-      let new_damage = (to_hit, damage, None) in
-      get_damage g new_damage True ]
-;
+      let new_damage = to_hit, damage, None in get_damage g new_damage true
 
-value damage_for_strength g =
+let damage_for_strength g =
   let strength = g.rogue.str_current + g.rogue.add_strength in
   if strength <= 6 then strength - 5
   else if strength <= 14 then 1
@@ -66,43 +63,40 @@ value damage_for_strength g =
   else if strength <= 21 then 6
   else if strength <= 30 then 7
   else 8
-;
 
-value get_weapon_damage g weapon =
+let get_weapon_damage g weapon =
   let damage = get_w_damage g weapon in
   let damage = damage + damage_for_strength g in
   damage + (g.rogue.exp + g.rogue.ring_exp - g.rogue.r_rings + 1) / 2
-;
 
-value coughable g row col =
-  if row < MIN_ROW || row > DROWS - 2 || col < 0 || col > DCOLS - 1 then False
+let coughable g row col =
+  if row < 1 || row > 24 - 2 || col < 0 || col > 80 - 1 then false
   else if
-    g.dungeon.(row).(col) land (OBJECT lor STAIRS lor TRAP lor HIDDEN) = 0 &&
-    g.dungeon.(row).(col) land (TUNNEL lor FLOOR lor DOOR) <> 0
+    g.dungeon.(row).(col) land (0o1 lor 0o4 lor 0o400 lor 0o1000) = 0 &&
+    g.dungeon.(row).(col) land (0o200 lor 0o100 lor 0o40) <> 0
   then
-    True
-  else False
-;
+    true
+  else false
 
-value cough_up g monster =
+let cough_up g monster =
   if g.cur_level < g.max_level then ()
   else
     let obj =
-      if monster.mn_flags land STEALS_GOLD <> 0 then
+      if monster.mn_flags land 0o20000 <> 0 then
         let q = get_rand (g.cur_level * 15) (g.cur_level * 30) in
         Some (Object.get_gold (Some q))
       else if not (rand_percent monster.mn_drop_percent) then None
       else Some (Object.gr_object g)
     in
     match obj with
-    [ Some obj ->
+      Some obj ->
         let row = monster.mn_row in
         let col = monster.mn_col in
-        let add_in_set x s = if List.mem x s then s else [x :: s] in
-        loop_n 0 where rec loop_n n =
+        let add_in_set x s = if List.mem x s then s else x :: s in
+        let rec loop_n n =
           if n <= 4 then
             let list =
-              loop_i [] (-n) where rec loop_i list i =
+              let rec loop_i list i =
                 if i <= n then
                   let list =
                     if coughable g (row + n) (col + i) then
@@ -132,421 +126,370 @@ value cough_up g monster =
                     else list
                   in
                   loop_i list (-n)
+              in
+              loop_i [] (-n)
             in
             if list = [] then loop_n (n + 1)
-            else do {
+            else
               let r = get_rand 0 (List.length list - 1) in
               let (row, col) = List.nth list r in
               Level.place_at g obj row col;
               if row <> g.rogue.row || col <> g.rogue.col then
-                if g.dungeon.(row).(col) land MONSTER = 0 then
+                if g.dungeon.(row).(col) land 0o2 = 0 then
                   Curses.mvaddch row col (get_dungeon_char g row col)
                 else
                   let mon = monster_at g row col in
-                  mon.mn_trail_char := get_mask_char obj
-              else ()
-            }
-          else ()
-    | None -> () ]
-;
+                  mon.mn_trail_char <- get_mask_char obj
+        in
+        loop_n 0
+    | None -> ()
 
-value mon_damage g monster damage = do {
-  monster.mn_hp_to_kill sub_eq damage;
-  if monster.mn_hp_to_kill <= 0 then do {
+let mon_damage g monster damage =
+  monster.mn_hp_to_kill <- monster.mn_hp_to_kill - damage;
+  if monster.mn_hp_to_kill <= 0 then
     let row = monster.mn_row in
     let col = monster.mn_col in
-    g.dungeon.(row).(col) land_eq lnot MONSTER;
+    g.dungeon.(row).(col) <- g.dungeon.(row).(col) land lnot 0o2;
     Curses.mvaddch row col (get_dungeon_char g row col);
-    g.rogue.fight_monster := None;
+    g.rogue.fight_monster <- None;
     cough_up g monster;
     let mn = transl g.lang (Monster.mon_name g monster) in
     let msg = sprintf (ftransl g.lang "Defeated the %s.") mn in
     (*
     let msg = msg ^ sprintf " (%d-%d<=0)." (monster.mn_hp_to_kill + damage) damage in
     *)
-    message g (g.hit_message ^ etransl msg) True;
-    g.hit_message := "";
+    message g (g.hit_message ^ etransl msg) true;
+    g.hit_message <- "";
     add_exp g monster.mn_kill_exp hp_raise;
     take_from_monsters g monster;
-    if monster.mn_flags land HOLDS <> 0 then g.rogue.being_held := False
-    else ();
-    False
-  }
-  else True
-};
+    if monster.mn_flags land 0o4000 <> 0 then g.rogue.being_held <- false;
+    false
+  else true
 
-value check_gold_seeker g monster = monster.mn_flags land_eq lnot SEEKS_GOLD;
+let check_gold_seeker g monster =
+  monster.mn_flags <- monster.mn_flags land lnot 0o1000000
 
-value rogue_hit g monster force_hit =
+let rogue_hit g monster force_hit =
   if check_imitator g monster then ()
-  else do {
+  else
     let hit_chance =
       if force_hit then 100 else get_hit_chance g g.rogue.weapon
     in
     let hit_chance = if g.wizard then hit_chance * 2 else hit_chance in
     if not (rand_percent hit_chance) then
-      if g.rogue.fight_monster = None then
-        g.hit_message := etransl (transl g.lang "You miss.") ^ " "
-      else ()
+      (if g.rogue.fight_monster = None then
+         g.hit_message <- etransl (transl g.lang "You miss.") ^ " ")
     else
-      let damage = get_weapon_damage g g.rogue.weapon in
-      let damage = if g.wizard then damage * 3 else damage in
-      if mon_damage g monster damage then
-        if g.rogue.fight_monster = None then do {
-          g.hit_message := etransl (transl g.lang "You hit.") ^ " ";
-          let row = monster.mn_row in
-          let col = monster.mn_col in
-          show_monster g row col monster (gmc g monster);
-        }
-        else ()
-      else ();
+      begin let damage = get_weapon_damage g g.rogue.weapon in
+        let damage = if g.wizard then damage * 3 else damage in
+        if mon_damage g monster damage then
+          if g.rogue.fight_monster = None then
+            begin
+              g.hit_message <- etransl (transl g.lang "You hit.") ^ " ";
+              let row = monster.mn_row in
+              let col = monster.mn_col in
+              show_monster g row col monster (gmc g monster)
+            end
+      end;
     check_gold_seeker g monster;
     wake_up monster
-  }
-;
 
-value tele_away g monster = do {
-  if monster.mn_flags land HOLDS <> 0 then g.rogue.being_held := False
-  else ();
-  let (row, col, _) =
-    gr_row_col g (FLOOR lor TUNNEL lor STAIRS lor OBJECT) 0
-  in
+let tele_away g monster =
+  if monster.mn_flags land 0o4000 <> 0 then g.rogue.being_held <- false;
+  let (row, col, _) = gr_row_col g (0o100 lor 0o200 lor 0o4 lor 0o1) 0 in
   Curses.mvaddch monster.mn_row monster.mn_col monster.mn_trail_char;
-  g.dungeon.(monster.mn_row).(monster.mn_col) land_eq lnot MONSTER;
-  monster.mn_row := row;
-  monster.mn_col := col;
-  g.dungeon.(row).(col) or_eq MONSTER;
-  monster.mn_trail_char := Curses.mvinch row col;
+  g.dungeon.(monster.mn_row).(monster.mn_col) <-
+    g.dungeon.(monster.mn_row).(monster.mn_col) land lnot 0o2;
+  monster.mn_row <- row;
+  monster.mn_col <- col;
+  g.dungeon.(row).(col) <- g.dungeon.(row).(col) lor 0o2;
+  monster.mn_trail_char <- Curses.mvinch row col;
   if g.rogue.detect_monster || rogue_can_see g row col then
-(*
-    Curses.mvaddch row col (gmc g monster)
-*)
     show_monster g row col monster (gmc g monster)
-(**)
-  else ()
-};
 
-value zap_monster g monster wand =
+let zap_monster g monster wand =
   let row = monster.mn_row in
   let col = monster.mn_col in
   match wand with
-  [ SlowMonster ->
-      if monster.mn_flags land HASTED <> 0 then
-        monster.mn_flags land_eq lnot HASTED
-      else do {
-        monster.mn_slowed_toggle := False;
-        monster.mn_flags or_eq SLOWED
-      }
+    SlowMonster ->
+      if monster.mn_flags land 0o1 <> 0 then
+        monster.mn_flags <- monster.mn_flags land lnot 0o1
+      else
+        begin
+          monster.mn_slowed_toggle <- false;
+          monster.mn_flags <- monster.mn_flags lor 0o2
+        end
   | HasteMonster ->
-      if monster.mn_flags land SLOWED <> 0 then
-        monster.mn_flags land_eq lnot SLOWED
-      else monster.mn_flags or_eq HASTED
+      if monster.mn_flags land 0o2 <> 0 then
+        monster.mn_flags <- monster.mn_flags land lnot 0o2
+      else monster.mn_flags <- monster.mn_flags lor 0o1
   | TeleportAway -> tele_away g monster
-  | ConfuseMonster -> do {
-      monster.mn_flags or_eq CONFUSED;
-      monster.mn_moves_confused add_eq get_rand 12 22
-    }
-  | Invisibility -> monster.mn_flags or_eq INVISIBLE
-  | Polymorph -> do {
-      if monster.mn_flags land HOLDS <> 0 then g.rogue.being_held := False
-      else ();
+  | ConfuseMonster ->
+      monster.mn_flags <- monster.mn_flags lor 0o1000;
+      monster.mn_moves_confused <- monster.mn_moves_confused + get_rand 12 22
+  | Invisibility -> monster.mn_flags <- monster.mn_flags lor 0o4
+  | Polymorph ->
+      if monster.mn_flags land 0o4000 <> 0 then g.rogue.being_held <- false;
       let tc = monster.mn_trail_char in
       take_from_monsters g monster;
       let monster = Imonster.gr_monster g None in
-      monster.mn_row := row;
-      monster.mn_col := col;
-      g.level_monsters := g.level_monsters @ [monster];
-      monster.mn_trail_char := tc;
-      if monster.mn_flags land IMITATES = 0 then wake_up monster else ();
+      monster.mn_row <- row;
+      monster.mn_col <- col;
+      g.level_monsters <- g.level_monsters @ [monster];
+      monster.mn_trail_char <- tc;
+      if monster.mn_flags land 0o20000000 = 0 then wake_up monster;
       if g.rogue.detect_monster || rogue_can_see g row col then
-(*
-        Curses.mvaddch row col (gmc g monster)
-*)
         show_monster g row col monster (gmc g monster)
-(**)
-      else ()
-    }
-  | PutToSleep -> do {
-      monster.mn_flags or_eq ASLEEP lor NAPPING;
-      monster.mn_nap_length := get_rand 3 6
-    }
-  | MagicMissile -> rogue_hit g monster True
-  | Cancellation -> do {
-      if monster.mn_flags land HOLDS <> 0 then g.rogue.being_held := False
-      else ();
-      if monster.mn_flags land STEALS_ITEM <> 0 then
-        monster.mn_drop_percent := 0
-      else ();
-      monster.mn_flags land_eq
+  | PutToSleep ->
+      monster.mn_flags <- monster.mn_flags lor (0o10 lor 0o200000000);
+      monster.mn_nap_length <- get_rand 3 6
+  | MagicMissile -> rogue_hit g monster true
+  | Cancellation ->
+      if monster.mn_flags land 0o4000 <> 0 then g.rogue.being_held <- false;
+      if monster.mn_flags land 0o40000 <> 0 then monster.mn_drop_percent <- 0;
+      monster.mn_flags <-
+        monster.mn_flags land
         lnot
-          (FLIES lor FLITS lor SPECIAL_HIT lor INVISIBLE lor FLAMES lor
-           IMITATES lor CONFUSES lor SEEKS_GOLD lor HOLDS)
-    }
-  | DoNothing -> message g (transl g.lang "Nothing happens" ^ ".") False ]
-;
+          (0o100 lor 0o200 lor 0o776000 lor 0o4 lor 0o40000000 lor
+           0o20000000 lor 0o10000000 lor 0o1000000 lor 0o4000)
+  | DoNothing -> message g (transl g.lang "Nothing happens" ^ ".") false
 
-value get_zapped_monster g dir =
-  loop_o g.rogue.row g.rogue.col where rec loop_o orow ocol =
-    let (row, col) = get_dir_rc dir orow ocol False in
+let get_zapped_monster g dir =
+  let rec loop_o orow ocol =
+    let (row, col) = get_dir_rc dir orow ocol false in
     if row = orow && col = ocol ||
-       g.dungeon.(row).(col) land (HORWALL lor VERTWALL) <> 0 ||
-       g.dungeon.(row).(col) = NOTHING
+       g.dungeon.(row).(col) land (0o10 lor 0o20) <> 0 ||
+       g.dungeon.(row).(col) = 0o0
     then
       None
-    else if g.dungeon.(row).(col) land MONSTER <> 0 then
+    else if g.dungeon.(row).(col) land 0o2 <> 0 then
       if not (imitating g row col) then Some (monster_at g row col, row, col)
       else loop_o row col
     else loop_o row col
-;
+  in
+  loop_o g.rogue.row g.rogue.col
 
-value zap g = do {
+let zap g =
   let dir =
-    loop True where rec loop first_miss =
+    let rec loop first_miss =
       let ch = rgetchar g in
-      if not (is_direction ch) then do {
-        sound_bell ();
-        if first_miss then message g (transl g.lang "Direction?") False
-        else ();
-        loop False
-      }
+      if not (is_direction ch) then
+        begin
+          sound_bell ();
+          if first_miss then message g (transl g.lang "Direction?") false;
+          loop false
+        end
       else ch
+    in
+    loop true
   in
   check_message g;
-  if dir = ROGUE_KEY_CANCEL then False
+  if dir = '\027' then false
   else
     let ch =
       pack_letter g (transl g.lang "Zap with what?")
-        (fun
-         [ Wand _ -> True
-         | _ -> False ])
+        (function
+           Wand _ -> true
+         | _ -> false)
     in
-    if ch = ROGUE_KEY_CANCEL then False
-    else do {
-      check_message g;
-      match get_letter_object g ch False with
-      [ None -> False
-      | Some {ob_kind = Wand w} -> do {
-          if w.wa_hits = 0 then
-            message g (transl g.lang "Nothing happens" ^ ".") False
-          else do {
-            w.wa_hits --;
-            match get_zapped_monster g dir with
-            [ Some (monster, row, col) -> do {
-                wake_up monster;
-                zap_monster g monster w.wa_kind;
-                relight g
-              }
-            | None -> () ]
-          };
-          True
-        }
-      | Some _ -> do {
-          message g (transl g.lang "You can't zap with that" ^ ".") False;
-          False
-        } ]
-    }
-};
+    if ch = '\027' then false
+    else
+      begin
+        check_message g;
+        match get_letter_object g ch false with
+          None -> false
+        | Some {ob_kind = Wand w} ->
+            if w.wa_hits = 0 then
+              message g (transl g.lang "Nothing happens" ^ ".") false
+            else
+              begin
+                w.wa_hits <- w.wa_hits - 1;
+                match get_zapped_monster g dir with
+                  Some (monster, row, col) ->
+                    wake_up monster;
+                    zap_monster g monster w.wa_kind;
+                    relight g
+                | None -> ()
+              end;
+            true
+        | Some _ ->
+            message g (transl g.lang "You can't zap with that" ^ ".") false;
+            false
+      end
 
-value throw_at_monster g monster obj = do {
+let throw_at_monster g monster obj =
   let weapon =
     match obj.ob_kind with
-    [ Weapon w -> Some (' ', w)
-    | _ -> None ]
+      Weapon w -> Some (' ', w)
+    | _ -> None
   in
   let hit_chance = get_hit_chance g weapon in
   let damage = get_weapon_damage g weapon in
   let (damage, hit_chance) =
-    match (obj.ob_kind, g.rogue.weapon) with
-    [ (Weapon {we_kind = Arrow}, Some (_, {we_kind = Bow})) ->
+    match obj.ob_kind, g.rogue.weapon with
+      Weapon {we_kind = Arrow}, Some (_, {we_kind = Bow}) ->
         let damage = damage + get_weapon_damage g g.rogue.weapon in
         let damage = damage * 2 / 3 in
-        let hit_chance = hit_chance + hit_chance / 3 in
-        (damage, hit_chance)
-    | (Weapon {we_kind = Dagger | Shuriken | Dart; we_in_use = True}, _) ->
+        let hit_chance = hit_chance + hit_chance / 3 in damage, hit_chance
+    | Weapon {we_kind = Dagger | Shuriken | Dart; we_in_use = true}, _ ->
         let damage = damage * 3 / 2 in
-        let hit_chance = hit_chance + hit_chance / 3 in
-        (damage, hit_chance)
-    | _ -> (damage, hit_chance) ]
+        let hit_chance = hit_chance + hit_chance / 3 in damage, hit_chance
+    | _ -> damage, hit_chance
   in
   let t = obj.ob_quantity in
-  obj.ob_quantity := 1;
+  obj.ob_quantity <- 1;
   let mess = sprintf (ftransl g.lang "The %s") (name_of g obj) in
-  obj.ob_quantity := t;
-  if not (rand_percent hit_chance) then do {
-    g.hit_message := etransl (mess ^ " " ^ transl g.lang "misses." ^ " ");
-    False
-  }
-  else do {
-    g.hit_message := etransl (mess ^ " " ^ transl g.lang "hit." ^ " ");
-    match obj.ob_kind with
-    [ Wand {wa_kind = wk} ->
-        if rand_percent 75 then zap_monster g monster wk
-        else
-          let _ : bool = mon_damage g monster damage in
-          ()
-    | _ ->
-        let _ : bool = mon_damage g monster damage in
-        () ];
-    True
-  }
-};
-
-value tempo g =
-  if fast g then ()
+  obj.ob_quantity <- t;
+  if not (rand_percent hit_chance) then
+    begin
+      g.hit_message <- etransl (mess ^ " " ^ transl g.lang "misses." ^ " ");
+      false
+    end
   else
-    let (_, _, _) = Unix.select [] [] [] 0.05 in
-    ()
-;
+    begin
+      g.hit_message <- etransl (mess ^ " " ^ transl g.lang "hit." ^ " ");
+      begin match obj.ob_kind with
+        Wand {wa_kind = wk} ->
+          if rand_percent 75 then zap_monster g monster wk
+          else let _ = (mon_damage g monster damage : bool) in ()
+      | _ -> let _ = (mon_damage g monster damage : bool) in ()
+      end;
+      true
+    end
 
-value get_thrown_at_monster g obj dir orow ocol =
+let tempo g =
+  if fast g then () else let (_, _, _) = Unix.select [] [] [] 0.05 in ()
+
+let get_thrown_at_monster g obj dir orow ocol =
   let rogue = g.rogue in
   let ch = get_mask_char obj in
-  loop orow ocol 0 where rec loop orow ocol i =
+  let rec loop orow ocol i =
     if i < 24 then
-      let (row, col) = get_dir_rc dir orow ocol False in
-      if g.dungeon.(row).(col) = NOTHING ||
-         g.dungeon.(row).(col) land (HORWALL lor VERTWALL lor HIDDEN) <> 0 &&
-         g.dungeon.(row).(col) land TRAP = 0
+      let (row, col) = get_dir_rc dir orow ocol false in
+      if g.dungeon.(row).(col) = 0o0 ||
+         g.dungeon.(row).(col) land (0o10 lor 0o20 lor 0o1000) <> 0 &&
+         g.dungeon.(row).(col) land 0o400 = 0
       then
-        (None, orow, ocol)
-      else do {
-        if i <> 0 && rogue_can_see g orow ocol then do {
-          tempo g;
-          Curses.mvaddch orow ocol (get_dungeon_char g orow ocol);
-          Curses.move rogue.row rogue.col
-        }
-        else ();
-        if rogue_can_see g row col then do {
-          if g.dungeon.(row).(col) land MONSTER = 0 then do {
-            if i = 0 then tempo g else ();
-            Curses.mvaddch row col ch;
-            Curses.move rogue.row rogue.col
-          }
-          else ();
-          Curses.refresh ()
-        }
-        else ();
-        if g.dungeon.(row).(col) land MONSTER <> 0 &&
-           not (imitating g row col)
-        then do {
-          if rogue_can_see g row col then do {
-            Curses.mvaddch row col ch;
-            Curses.move rogue.row rogue.col;
-            Curses.refresh ()
-          }
-          else ();
-          tempo g;
-          (Some (monster_at g row col), row, col)
-        }
-        else
-          let i =
-            if g.dungeon.(row).(col) land TUNNEL <> 0 then i + 2 else i
-          in
-          loop row col (i + 1)
-      }
-    else (None, orow, ocol)
-;
-
-value extract_copy_of_weapon obj =
-  let copy_object_kind =
-    fun
-    [ Weapon w -> Weapon {(w) with we_kind = w.we_kind; we_in_use = False}
-    | x -> x ]
+        None, orow, ocol
+      else
+        begin
+          if i <> 0 && rogue_can_see g orow ocol then
+            begin
+              tempo g;
+              Curses.mvaddch orow ocol (get_dungeon_char g orow ocol);
+              Curses.move rogue.row rogue.col
+            end;
+          if rogue_can_see g row col then
+            begin
+              if g.dungeon.(row).(col) land 0o2 = 0 then
+                begin
+                  if i = 0 then tempo g;
+                  Curses.mvaddch row col ch;
+                  Curses.move rogue.row rogue.col
+                end;
+              Curses.refresh ()
+            end;
+          if g.dungeon.(row).(col) land 0o2 <> 0 && not (imitating g row col)
+          then
+            begin
+              if rogue_can_see g row col then
+                begin
+                  Curses.mvaddch row col ch;
+                  Curses.move rogue.row rogue.col;
+                  Curses.refresh ()
+                end;
+              tempo g;
+              Some (monster_at g row col), row, col
+            end
+          else
+            let i =
+              if g.dungeon.(row).(col) land 0o200 <> 0 then i + 2 else i
+            in
+            loop row col (i + 1)
+        end
+    else None, orow, ocol
   in
-  {(obj) with ob_kind = copy_object_kind obj.ob_kind; ob_quantity = 1}
-;
+  loop orow ocol 0
 
-value flop_weapon g obj row col =
+let extract_copy_of_weapon obj =
+  let copy_object_kind =
+    function
+      Weapon w -> Weapon {w with we_kind = w.we_kind; we_in_use = false}
+    | x -> x
+  in
+  {obj with ob_kind = copy_object_kind obj.ob_kind; ob_quantity = 1}
+
+let flop_weapon g obj row col =
   let (found, i, row, col) =
-    loop row col 0 where rec loop row col i =
-      if i < 9 && row < DROWS - 1 && row >= MIN_ROW && col < DCOLS &&
-         col >= 0 &&
-         g.dungeon.(row).(col) land
-         lnot (FLOOR lor TUNNEL lor DOOR lor MONSTER) <>
+    let rec loop row col i =
+      if i < 9 && row < 24 - 1 && row >= 1 && col < 80 && col >= 0 &&
+         g.dungeon.(row).(col) land lnot (0o100 lor 0o200 lor 0o40 lor 0o2) <>
            0
       then
         let (row, col) = rand_around g i row col in
         let i = i + 1 in
-        if row > DROWS - 2 || row < MIN_ROW || col > DCOLS - 1 || col < 0 ||
+        if row > 24 - 2 || row < 1 || col > 80 - 1 || col < 0 ||
            g.dungeon.(row).(col) = 0 ||
            g.dungeon.(row).(col) land
-           lnot (FLOOR lor TUNNEL lor DOOR lor MONSTER) <>
+           lnot (0o100 lor 0o200 lor 0o40 lor 0o2) <>
              0
         then
           loop row col i
-        else (True, i, row, col)
-      else (False, i, row, col)
+        else true, i, row, col
+      else false, i, row, col
+    in
+    loop row col 0
   in
-  if found || i = 0 then do {
+  if found || i = 0 then
     let new_obj = extract_copy_of_weapon obj in
     Level.place_at g new_obj row col;
-    if rogue_can_see g row col && (row <> g.rogue.row || col <> g.rogue.col)
-    then do {
-      let mon = g.dungeon.(row).(col) land MONSTER in
-      g.dungeon.(row).(col) land_eq lnot MONSTER;
-      let dch = get_dungeon_char g row col in
-      if mon <> 0 then do {
-        let mch = Curses.mvinch row col in
-        let monster = monster_at g row col in
-        monster.mn_trail_char := dch;
-        if mch < 'A' || mch > 'Z' then Curses.mvaddch row col dch else ()
-      }
-      else Curses.mvaddch row col dch;
-      g.dungeon.(row).(col) or_eq mon
-    }
-    else ()
-  }
-  else do {
+    (if rogue_can_see g row col && (row <> g.rogue.row || col <> g.rogue.col)
+     then
+       let mon = g.dungeon.(row).(col) land 0o2 in
+       g.dungeon.(row).(col) <- g.dungeon.(row).(col) land lnot 0o2;
+       let dch = get_dungeon_char g row col in
+       if mon <> 0 then
+         let mch = Curses.mvinch row col in
+         let monster = monster_at g row col in
+         monster.mn_trail_char <- dch;
+         (if mch < 'A' || mch > 'Z' then Curses.mvaddch row col dch)
+       else Curses.mvaddch row col dch;
+       g.dungeon.(row).(col) <- g.dungeon.(row).(col) lor mon)
+  else
     let t = obj.ob_quantity in
-    obj.ob_quantity := 1;
+    obj.ob_quantity <- 1;
     let msg =
       sprintf (ftransl g.lang "The %s vanishes as it hits the ground.")
         (name_of g obj)
     in
-    obj.ob_quantity := t;
-    message g (etransl msg) False
-  }
-;
+    obj.ob_quantity <- t; message g (etransl msg) false
 
-value one_throw g dir (ch, obj) = do {
+let one_throw g dir (ch, obj) =
   let rogue = g.rogue in
   let row = rogue.row in
   let col = rogue.col in
   let just_once =
     match obj with
-    [ {ob_kind = Weapon {we_in_use = True}; ob_quantity = 1} -> do {
-        unwield g;
-        True
-      }
-    | {ob_kind = Armor {ar_in_use = True}} -> do {
-        Monster.mv_aquators g;
-        unwear g;
-        print_stats g STAT_ARMOR;
-        True
-      }
-    | {ob_kind = Ring ({rg_in_use = Some _} as r)} -> do {
-        un_put_on g r;
-        True
-      }
-    | _ -> False ]
+      {ob_kind = Weapon {we_in_use = true}; ob_quantity = 1} ->
+        unwield g; true
+    | {ob_kind = Armor {ar_in_use = true}} ->
+        Monster.mv_aquators g; unwear g; print_stats g 0o20; true
+    | {ob_kind = Ring ({rg_in_use = Some _} as r)} -> un_put_on g r; true
+    | _ -> false
   in
   let (monster, row, col) = get_thrown_at_monster g obj dir row col in
   show_rogue g;
   Curses.refresh ();
   if rogue_can_see g row col && (row <> rogue.row || col <> rogue.col) then
-    Curses.mvaddch row col (get_dungeon_char g row col)
-  else ();
+    Curses.mvaddch row col (get_dungeon_char g row col);
   let just_once =
     match monster with
-    [ Some monster -> do {
+      Some monster ->
         wake_up monster;
         check_gold_seeker g monster;
-        if not (throw_at_monster g monster obj) then flop_weapon g obj row col
-        else ();
-        True
-      }
-    | None -> do { flop_weapon g obj row col; just_once } ]
+        if not (throw_at_monster g monster obj) then
+          flop_weapon g obj row col;
+        true
+    | None -> flop_weapon g obj row col; just_once
   in
-  vanish g ch obj;
-  just_once
-};
+  vanish g ch obj; just_once

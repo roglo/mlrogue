@@ -3,10 +3,11 @@
 OCAMLC=ocamlc.opt
 OCAMLOPT=ocamlopt.opt
 OCOPTS=
+CAMLP5_OBJS=ploc.cmo versdep.cmo plexing.cmo gramext.cmo fstream.cmo grammar.cmo plexer.cmo
 ROBOBJS=rob_position.cmo rob_misc.cmo rob_object.cmo rob_monster.cmo rob_path.cmo rob_action.cmo robot.cmo
-OBJS=$(ROBOBJS) ustring.cmo efield.cmo rfield.cmo imisc.cmo imonster.cmo object.cmo level.cmo translate.cmo curses.cmo rogbotio.cmo init.cmo dialogue.cmo misc.cmo finish.cmo monster.cmo attack.cmo move.cmo use.cmo main.cmo 
-LIBS=unix.cma -I $$(camlp5 -where) gramlib.cma
-ROGBOT_OBJS=$(ROBOBJS) rogbot.cmo
+OBJS=$(CAMLP5_OBJS) $(ROBOBJS) ustring.cmo efield.cmo rfield.cmo imisc.cmo imonster.cmo object.cmo level.cmo translate.cmo curses.cmo rogbotio.cmo init.cmo dialogue.cmo misc.cmo finish.cmo monster.cmo attack.cmo move.cmo use.cmo main.cmo 
+LIBS=unix.cma
+ROGBOT_OBJS=$(CAMLP5_OBJS) $(ROBOBJS) rogbot.cmo
 SRCS=$(OBJS:.cmo=.ml)
 ROGBOT_SRCS=rogbot.ml
 EXT=
