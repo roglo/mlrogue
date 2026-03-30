@@ -25,37 +25,13 @@ opt: rogue.opt rogbot.opt
 	cp rogbot.opt rogbot
 
 clean:
-	rm -f *.cm[oix] *.ppo *.defo *.o ext/*.ppo ext/*.cm[oi]
+	rm -f *.cm[oix] *.ppo *.defo *.o
 	rm -f rogue rogbot *.opt *.out
 
 depend:
 	-ocamldep *.ml *.mli > .depend.new
 	mv .depend .depend.old
 	mv .depend.new .depend
-
-i18n: $(EXT) ext/pr_transl.cmo
-	@(cat $(SRCS) | egrep 'm_name =' | \
-	sed -e 's/^.*m_name = "//' -e s'/".*$$//'; \
-	cat $(SRCS) | egrep 't_title =' | \
-	sed -e 's/^.*t_title = "//' -e s'/".*$$//'; \
-	cat $(SRCS) | egrep 't_mess =' | \
-	sed -e 's/^.*t_mess = "//' -e s'/".*$$//'; \
-	cat $(SRCS) | grep 'o_title =' | \
-	sed -e 's/^.*o_title = "//' -e s'/".*$$//'; \
-	cat init.ml | sed -n -e '/value gems/,/|]/p' | \
-	tail +2 | sed -e 's/\[|//' -e 's/|]//' -e 's/"//g' | \
-	tr ';' '\n' | sed -e 's/ //g'; \
-	cat init.ml | sed -n -e '/value wand_materials/,/|]/p' | \
-	tail +2 | sed -e 's/\[|//' -e 's/|]//' -e 's/"//g' | \
-	tr ';' '\n' | sed -e 's/ //g'; \
-	cat object.ml | sed -n -e '/value colours/,/|]/p' | \
-	tail +2 | sed -e 's/\[|//' -e 's/|]//' -e 's/"//g' | \
-	tr ';' '\n' | sed -e 's/ //g'; \
-	for i in $(SRCS); do \
-	  camlp5r $(CAMLP5OPTS) pr_transl.cmo $$i; \
-	done) | \
-	sed -e 's/ $$/ ./' | grep -v '^$$' | \
-	LC_ALL=C sort -f | uniq
 
 rogue.out: $(EXT) $(OBJS)
 	$(OCAMLC) -g $(LIBS) $(OBJS) -o rogue.out
@@ -70,11 +46,6 @@ rogbot.opt: $(ROGBOT_OBJS:.cmo=.cmx)
 	$(OCAMLOPT) $(LIBS:.cma=.cmxa) $(ROGBOT_OBJS:.cmo=.cmx) -o $@
 
 $(OBJS) $(OBJS:.cmo=.cmx): $(EXT)
-
-ext/%.cmo: ext/%.ml
-	camlp5r $(CAMLP5OPTS) -loc loc $< -o ext/$*.ppo
-	$(OCAMLC) $(OCOPTS) -I $$(camlp5 -where) -c -impl ext/$*.ppo
-	rm -f ext/$*.ppo
 
 .SUFFIXES: .ml .mli .cmo .cmx .cmi .def .defo
 
