@@ -1,17 +1,15 @@
 (* $Id: rob_path.ml,v 1.7 2015/04/09 15:14:20 deraugla Exp $ *)
 
-open Rob_def;
-open Rob_misc;
-open Rob_position;
-open Printf;
+open Rob_def
+open Rob_misc
+open Rob_position
+open Printf
 
-value run_around_list2 =
-  [(0, 3); (1, 2); (2, 3); (3, 2); (4, 2); (5, 3); (6, 2); (7, 3)]
-;
+let run_around_list2 = [0, 3; 1, 2; 2, 3; 3, 2; 4, 2; 5, 3; 6, 2; 7, 3]
 
-value compare_dist (d1, _, _) (d2, _, _) = compare d1 d2;
+let compare_dist (d1, _, _) (d2, _, _) = compare d1 d2
 
-value f_inc_dd g interesting_objects pos2 =
+let f_inc_dd g interesting_objects pos2 =
   if is_trap g pos2 then 1000
   else if
     not (List.mem pos2 g.garbage) &&
@@ -21,12 +19,11 @@ value f_inc_dd g interesting_objects pos2 =
   else if List.mem pos2 g.garbage then 20
   else if List.mem (dung_char g.dung pos2) list_obj_ch then 20
   else 10
-;
 
-value gen_path g f_excl f_connected f_inc_dd pos pred =
-  loop PosSet.empty [(0, pos, [])] where rec loop scanned =
-    fun
-    [ [(dist, pos1, path) :: rest] ->
+let gen_path g f_excl f_connected f_inc_dd pos pred =
+  let rec loop scanned =
+    function
+      (dist, pos1, path) :: rest ->
         if pred path pos1 then Some (pos1, path)
         else if PosSet.mem pos1 scanned then loop scanned rest
         else
@@ -34,11 +31,11 @@ value gen_path g f_excl f_connected f_inc_dd pos pred =
           if f_excl pos1 then loop scanned rest
           else if List.mem pos1 path then loop scanned rest
           else
-            let path = [pos1 :: path] in
+            let path = pos1 :: path in
             let rest =
-              loop rest run_around_list2 where rec loop rest =
-                fun
-                [ [(k, ddist) :: kl] ->
+              let rec loop rest =
+                function
+                  (k, ddist) :: kl ->
                     let mov = mov_of_k k in
                     let pos2 = add_mov pos1 mov in
                     let ddist =
@@ -49,219 +46,202 @@ value gen_path g f_excl f_connected f_inc_dd pos pred =
                       if not (PosSet.mem pos2 scanned) &&
                          f_connected pos1 pos2 k
                       then
-                        [(dist+ddist, pos2, path) :: rest]
+                        (dist + ddist, pos2, path) :: rest
                       else rest
                     in
                     loop rest kl
-                | [] -> rest ]
+                | [] -> rest
+              in
+              loop rest run_around_list2
             in
             loop scanned (List.sort compare_dist rest)
-    | [] ->
-        None ]
-;
+    | [] -> None
+  in
+  loop PosSet.empty [0, pos, []]
 
-value monster_path g pos tpos =
+let monster_path g pos tpos =
   let f_excl pos = List.mem pos g.scare_pos in
-  let f_connected pos1 pos2 k = do {
+  let f_connected pos1 pos2 k =
     let in_room_or_at_door = current_room_possibly_at_door g pos1 <> None in
     old_can_move_to g in_room_or_at_door pos1 pos2
-  }
   in
   let f_inc_dd _ = 0 in
-  let pred pos = \= tpos in
+  let pred pos = (=) tpos in
   match gen_path g f_excl f_connected f_inc_dd pos pred with
-  [ Some (tpos, rev_path) -> Some (List.tl (List.rev [tpos :: rev_path]))
-  | None -> None ]
-;
+    Some (tpos, rev_path) -> Some (List.tl (List.rev (tpos :: rev_path)))
+  | None -> None
 
-value direct_path_excl g excl pos pred =
+let direct_path_excl g excl pos pred =
   let f_excl pos = List.mem pos excl in
-  let f_connected pos1 pos2 k = do {
+  let f_connected pos1 pos2 k =
     let in_room_or_at_door = current_room_possibly_at_door g pos1 <> None in
     old_can_move_to g in_room_or_at_door pos1 pos2
-  }
   in
   let interesting_objects = Rob_object.interesting_objects g in
   let f_inc_dd = f_inc_dd g interesting_objects in
   match gen_path g f_excl f_connected f_inc_dd pos pred with
-  [ Some (tpos, rev_path) -> do {
-      let path = List.tl (List.rev [tpos :: rev_path]) in
-      Some (path, tpos)
-    }
-  | None -> None ]
-;
+    Some (tpos, rev_path) ->
+      let path = List.tl (List.rev (tpos :: rev_path)) in Some (path, tpos)
+  | None -> None
 
-value gen_path_in_room_to g room f_excl pos tpos =
+let gen_path_in_room_to g room f_excl pos tpos =
   let f_connected pos1 pos2 k =
     (inside_room room pos2 || is_at_door g pos2) &&
-    old_can_move_to g True pos1 pos2
+    old_can_move_to g true pos1 pos2
   in
-  let pred _ = \= tpos in
+  let pred _ = (=) tpos in
   let interesting_objects = Rob_object.interesting_objects g in
   let f_inc_dd = f_inc_dd g interesting_objects in
   gen_path g f_excl f_connected f_inc_dd pos pred
-;
 
-value move_path_of_position_path =
-  loop [] where rec loop path opos =
-    fun
-    [ [pos :: rest] ->
-        let mov = {di = opos.row-pos.row; dj = opos.col-pos.col} in
-        loop [mov :: path] pos rest
-   | [] -> path ]
-;
+let move_path_of_position_path =
+  let rec loop path opos =
+    function
+      pos :: rest ->
+        let mov = {di = opos.row - pos.row; dj = opos.col - pos.col} in
+        loop (mov :: path) pos rest
+    | [] -> path
+  in
+  loop []
 
-value path_in_room_to2 g room excl pos tpos =
+let path_in_room_to2 g room excl pos tpos =
   match
     gen_path_in_room_to g room (fun pos -> List.mem pos excl) pos tpos
   with
-  [ Some (tpos, rev_path) -> Some (List.tl (List.rev [tpos :: rev_path]))
-  | None -> None ]
-;
+    Some (tpos, rev_path) -> Some (List.tl (List.rev (tpos :: rev_path)))
+  | None -> None
 
-value path_in_room_to g room excl pos tpos =
+let path_in_room_to g room excl pos tpos =
   match
     gen_path_in_room_to g room (fun pos -> List.mem pos excl) pos tpos
   with
-  [ Some (tpos, rev_path) -> Some (move_path_of_position_path tpos rev_path)
-  | None -> None ]
-;
+    Some (tpos, rev_path) -> Some (move_path_of_position_path tpos rev_path)
+  | None -> None
 
-value one_step_to g tpos =
+let one_step_to g tpos =
   let pos = rogue_pos g in
   match g.rogue_room_and_door with
-  [ Some (room, Some dir) -> do {
-      let mov = one_step_to_enter_room dir in
-      (mov, [])
-    }
-  | Some (room, None) -> do {
-      match path_in_room_to g room [] pos tpos with
-      [ Some [mov :: path] -> (mov, path)
+    Some (room, Some dir) -> let mov = one_step_to_enter_room dir in mov, []
+  | Some (room, None) ->
+      begin match path_in_room_to g room [] pos tpos with
+        Some (mov :: path) -> mov, path
       | Some [] | None ->
           failwith
-            (sprintf "one_step_to (%d,%d)->(%d,%d)" pos.row pos.col
-               tpos.row tpos.col) ]
-    }
-  | None -> assert False ]
-;
+            (sprintf "one_step_to (%d,%d)->(%d,%d)" pos.row pos.col tpos.row
+               tpos.col)
+      end
+  | None -> assert false
 
-value one_step_to2 g tpos =
+let one_step_to2 g tpos =
   let pos = rogue_pos g in
   match g.rogue_room_and_door with
-  [ Some (room, Some dir) -> do {
-      let mov = one_step_to_enter_room dir in
-      (add_mov pos mov, [])
-    }
-  | Some (room, None) -> do {
-      match path_in_room_to2 g room [] pos tpos with
-      [ Some [pos1 :: path] -> (pos1, path)
+    Some (room, Some dir) ->
+      let mov = one_step_to_enter_room dir in add_mov pos mov, []
+  | Some (room, None) ->
+      begin match path_in_room_to2 g room [] pos tpos with
+        Some (pos1 :: path) -> pos1, path
       | Some [] | None ->
           failwith
-            (sprintf "one_step_to2 (%d,%d)->(%d,%d)" pos.row pos.col
-               tpos.row tpos.col) ]
-    }
-  | None -> assert False ]
-;
+            (sprintf "one_step_to2 (%d,%d)->(%d,%d)" pos.row pos.col tpos.row
+               tpos.col)
+      end
+  | None -> assert false
 
-value path_excl_from_to g excl pos tpos =
-  let pred _ = \= tpos in
+let path_excl_from_to g excl pos tpos =
+  let pred _ = (=) tpos in
   match direct_path_excl g excl pos pred with
-  [ Some (path, _) -> Some {epos = pos; tpos = tpos; path = path}
-  | None -> None ]
-;
-value old_path_excl_from_to g excl pos tpos s =
+    Some (path, _) -> Some {epos = pos; tpos = tpos; path = path}
+  | None -> None
+let old_path_excl_from_to g excl pos tpos s =
   match path_excl_from_to g excl pos tpos with
-  [ Some gp -> gp
-  | None -> failwith (sprintf "old_path_excl_from_to %d" s) ]
-;
+    Some gp -> gp
+  | None -> failwith (sprintf "old_path_excl_from_to %d" s)
 
-value path_to g pos tpos =
+let path_to g pos tpos =
   match path_excl_from_to g [] pos tpos with
-  [ Some gp -> do {
-      match gp.path with
-      [ [pos1 :: path] -> Some {epos = pos1; tpos = tpos; path = path}
-      | [] -> Some gp ]
-    }
-  | None -> None ]
-;
-value old_path_to g pos tpos =
+    Some gp ->
+      begin match gp.path with
+        pos1 :: path -> Some {epos = pos1; tpos = tpos; path = path}
+      | [] -> Some gp
+      end
+  | None -> None
+let old_path_to g pos tpos =
   match path_to g pos tpos with
-  [ Some gp -> gp
-  | None -> failwith "old_path_to" ]
-;
+    Some gp -> gp
+  | None -> failwith "old_path_to"
 
-value path_in_room_excl_mon g room pos tpos = do {
+let path_in_room_excl_mon g room pos tpos =
   let excl =
     let (rmin, cmin, rmax, cmax) = room in
-    loop [] {row = rmin; col = cmin} where rec loop excl pos =
+    let rec loop excl pos =
       if pos.row > rmax then excl
       else if pos.col > cmax then loop excl {row = pos.row + 1; col = cmin}
       else
         let ch = dung_char g.dung pos in
-        let excl =
-          if (*ch = '^' ||*) is_monster ch then [pos :: excl] else excl
-        in
+        let excl = if is_monster ch then pos :: excl else excl in
         loop excl (pos_right pos)
+    in
+    loop [] {row = rmin; col = cmin}
   in
   let path =
     match path_in_room_to2 g room excl pos tpos with
-    [ Some path -> path
+      Some path -> path
     | None ->
         match path_in_room_to2 g room [] pos tpos with
-        [ Some path -> path
-        | None -> assert False ] ]
+          Some path -> path
+        | None -> assert false
   in
   match path with
-  [ [pos1 :: path] -> {epos = pos1; tpos = tpos; path = path}
-  | [] -> assert False ]
-};
+    pos1 :: path -> {epos = pos1; tpos = tpos; path = path}
+  | [] -> assert false
 
-value paths_in_corridors_from g ipos pos =
-  loop [] [] [(pos, [])] where rec loop paths_ended paths_running =
-    fun
-    [ [(lpos, path) :: rest] ->
+let paths_in_corridors_from g ipos pos =
+  let rec loop paths_ended paths_running =
+    function
+      (lpos, path) :: rest ->
         let (paths_ended, paths_running) =
-          if path <> [] && lpos = ipos then (paths_ended, paths_running)
+          if path <> [] && lpos = ipos then paths_ended, paths_running
           else
             let list =
-              loop [] (shuffle g run_around_list) where rec loop list =
-                fun
-                [ [k :: kl] ->
+              let rec loop list =
+                function
+                  k :: kl ->
                     let mov = mov_of_k k in
                     let npos = add_mov lpos mov in
                     if in_dung g npos then
                       let already =
                         List.exists
-                          (fun (pos, path) -> List.mem npos [pos :: path])
+                          (fun (pos, path) -> List.mem npos (pos :: path))
                           paths_running ||
                         List.exists
-                          (fun (pos, path) -> List.mem npos [pos :: path])
+                          (fun (pos, path) -> List.mem npos (pos :: path))
                           rest
                       in
-                      if not (old_can_move_to g False lpos npos) ||
-                        is_inside_room g npos ||
-                        List.mem npos path || already ||
-                        List.exists
-                          (fun (pos, path) -> List.mem npos [pos :: path])
-                          paths_ended
+                      if not (old_can_move_to g false lpos npos) ||
+                         is_inside_room g npos || List.mem npos path ||
+                         already ||
+                         List.exists
+                           (fun (pos, path) -> List.mem npos (pos :: path))
+                           paths_ended
                       then
                         loop list kl
-                      else
-                        if already then []
-                        else loop [npos :: list] kl
+                      else if already then []
+                      else loop (npos :: list) kl
                     else loop list kl
-                | [] -> list ]
+                | [] -> list
+              in
+              loop [] (shuffle g run_around_list)
             in
             match list with
-            [ [] -> ([(lpos, path) :: paths_ended], paths_running)
+              [] -> (lpos, path) :: paths_ended, paths_running
             | _ ->
                 let paths_running =
                   List.fold_right
                     (fun npos paths_running ->
-                       [(npos, [lpos :: path]) :: paths_running])
+                       (npos, lpos :: path) :: paths_running)
                     list paths_running
                 in
-                (paths_ended, paths_running) ]
+                paths_ended, paths_running
         in
         loop paths_ended paths_running rest
     | [] ->
@@ -270,63 +250,64 @@ value paths_in_corridors_from g ipos pos =
           List.fold_left
             (fun pl (tpos, path) ->
                if tpos = ipos then pl
-               else if
-                 List.exists (fun (_, tpos1) -> tpos = tpos1) pl
-               then pl
+               else if List.exists (fun (_, tpos1) -> tpos = tpos1) pl then pl
                else
-                 let path = List.tl (List.rev [tpos :: path]) in
-                 [(path, tpos) :: pl])
+                 let path = List.tl (List.rev (tpos :: path)) in
+                 (path, tpos) :: pl)
             [] pl
-        else loop paths_ended [] paths_running ]
-;
+        else loop paths_ended [] paths_running
+  in
+  loop [] [] [pos, []]
 
-value path_to_closest2 g pos pred = do {
+let path_to_closest2 g pos pred =
   match direct_path_excl g [] pos pred with
-  [ Some (path, tpos) -> Some {epos = pos; tpos = tpos; path = path}
-  | None -> None ]
-};
+    Some (path, tpos) -> Some {epos = pos; tpos = tpos; path = path}
+  | None -> None
 
-value list_cannot_move_to = ['-'; '|'];
+let list_cannot_move_to = ['-'; '|']
 
-value has_door_above g (rmin, cmin, rmax, cmax) =
-  loop cmin where rec loop col =
-    if col > cmax then False
+let has_door_above g (rmin, cmin, rmax, cmax) =
+  let rec loop col =
+    if col > cmax then false
     else if g.dung.tab.(rmin-1).[col] = '-' then loop (col + 1)
-    else True
-;
+    else true
+  in
+  loop cmin
 
-value has_door_below g (rmin, cmin, rmax, cmax) =
-  loop cmin where rec loop col =
-    if col > cmax then False
+let has_door_below g (rmin, cmin, rmax, cmax) =
+  let rec loop col =
+    if col > cmax then false
     else if g.dung.tab.(rmax+1).[col] = '-' then loop (col + 1)
-    else True
-;
+    else true
+  in
+  loop cmin
 
-value has_door_at_left g (rmin, cmin, rmax, cmax) =
-  loop rmin where rec loop row =
-    if row > rmax then False
+let has_door_at_left g (rmin, cmin, rmax, cmax) =
+  let rec loop row =
+    if row > rmax then false
     else if g.dung.tab.(row).[cmin-1] = '|' then loop (row + 1)
-    else True
-;
+    else true
+  in
+  loop rmin
 
-value has_door_at_right g (rmin, cmin, rmax, cmax) =
-  loop rmin where rec loop row =
-    if row > rmax then False
+let has_door_at_right g (rmin, cmin, rmax, cmax) =
+  let rec loop row =
+    if row > rmax then false
     else if g.dung.tab.(row).[cmax+1] = '|' then loop (row + 1)
-    else True
-;
+    else true
+  in
+  loop rmin
 
-value make_graph g insist = do {
+let make_graph g insist =
   let graph =
     Array.init g.dung.nrow
       (fun row ->
          Array.init g.dung.ncol
            (fun col ->
               let pos = {row = row; col = col} in
-              if row = 0 || row = g.dung.nrow - 1 then do {
-                let conn = Array.make 8 False in
+              if row = 0 || row = g.dung.nrow - 1 then
+                let conn = Array.make 8 false in
                 {connection = conn; search = NotToSearch}
-              }
               else
                 let room = current_room g pos in
                 let in_room = room <> None in
@@ -334,41 +315,39 @@ value make_graph g insist = do {
                 if List.mem g.dung.tab.(row).[col] list_cannot_move_to ||
                    g.dung.tab.(row).[col] = ' ' && not in_room
                 then
-                  let conn = Array.make 8 False in
+                  let conn = Array.make 8 false in
                   {connection = conn; search = NotToSearch}
-                else do {
-                  let conn = Array.make 8 True in
-                  for k = 0 to 7 do {
+                else
+                  let conn = Array.make 8 true in
+                  for k = 0 to 7 do
                     let mov = mov_of_k k in
                     let tpos = add_mov pos mov in
                     if in_dung g tpos then
-                      if old_can_move_to g (in_room || at_door) pos tpos
-                      then
+                      if old_can_move_to g (in_room || at_door) pos tpos then
                         ()
-                      else conn.(k) := False
-                    else conn.(k) := False;
-                  };
+                      else conn.(k) <- false
+                    else conn.(k) <- false
+                  done;
                   let to_search =
                     match room with
-                    [ Some ((rmin, cmin, rmax, cmax) as room) ->
+                      Some (rmin, cmin, rmax, cmax as room) ->
                         let rr = room_row room in
                         let rc = room_col room in
-                        g.level >= 3 &&
-                        g.dung.tab.(row).[col] <> '^' &&
-                          (row = rmin && rr <> 0 &&
-                             (insist || not g.visited.(rr-1).(rc)) &&
-                             not (has_door_above g room) ||
-                           col = cmin && rc <> 0 &&
-                             (insist || not g.visited.(rr).(rc-1)) &&
-                             not (has_door_at_left g room) ||
-                           row = rmax && rr <> 2 &&
-                             (insist || not g.visited.(rr+1).(rc)) &&
-                             not (has_door_below g room) ||
-                           col = cmax && rc <> 2 &&
-                             (insist || not g.visited.(rr).(rc+1)) &&
-                             not (has_door_at_right g room))
+                        g.level >= 3 && g.dung.tab.(row).[col] <> '^' &&
+                        (row = rmin && rr <> 0 &&
+                         (insist || not g.visited.(rr-1).(rc)) &&
+                         not (has_door_above g room) ||
+                         col = cmin && rc <> 0 &&
+                         (insist || not g.visited.(rr).(rc-1)) &&
+                         not (has_door_at_left g room) ||
+                         row = rmax && rr <> 2 &&
+                         (insist || not g.visited.(rr+1).(rc)) &&
+                         not (has_door_below g room) ||
+                         col = cmax && rc <> 2 &&
+                         (insist || not g.visited.(rr).(rc+1)) &&
+                         not (has_door_at_right g room))
                     | None ->
-                        if insist then True
+                        if insist then true
                         else
                           let n =
                             List.fold_left
@@ -376,113 +355,100 @@ value make_graph g insist = do {
                                  if connected then cnt + 1 else cnt)
                               0 (Array.to_list conn)
                           in
-                          n = 1 || n = 3 ]
+                          n = 1 || n = 3
                   in
                   let search = if to_search then ToSearch else NotToSearch in
-                  {connection = conn; search = search}
-                }))
+                  {connection = conn; search = search}))
   in
-  for row = 1 to g.dung.nrow - 2 do {
-    for col = 0 to g.dung.ncol - 1 do {
+  for row = 1 to g.dung.nrow - 2 do
+    for col = 0 to g.dung.ncol - 1 do
       let pos = {row = row; col = col} in
       if is_at_door g pos then
         if in_dung g (pos_left pos) &&
-             dung_char g.dung (pos_left pos) = ' ' &&
-             not graph.(row).(col-1).connection.(4) ||
+           dung_char g.dung (pos_left pos) = ' ' &&
+           not graph.(row).(col-1).connection.(4) ||
            in_dung g (pos_right pos) &&
-             dung_char g.dung (pos_right pos) = ' ' &&
-             not graph.(row).(col+1).connection.(3) ||
-           in_dung g (pos_up pos) &&
-             dung_char g.dung (pos_up pos) = ' ' &&
-             not graph.(row-1).(col).connection.(6) ||
+           dung_char g.dung (pos_right pos) = ' ' &&
+           not graph.(row).(col+1).connection.(3) ||
+           in_dung g (pos_up pos) && dung_char g.dung (pos_up pos) = ' ' &&
+           not graph.(row-1).(col).connection.(6) ||
            in_dung g (pos_down pos) &&
-             dung_char g.dung (pos_down pos) = ' ' &&
-             not graph.(row+1).(col).connection.(1)
+           dung_char g.dung (pos_down pos) = ' ' &&
+           not graph.(row+1).(col).connection.(1)
         then
-          graph.(row).(col).search := ToSearch
-        else ()
-      else ();
-    };
-  };
-  match g.graph with
-  [ Some gr ->
-      for row = 1 to g.dung.nrow - 2 do {
-        for col = 0 to g.dung.ncol - 1 do {
+          graph.(row).(col).search <- ToSearch
+    done
+  done;
+  begin match g.graph with
+    Some gr ->
+      for row = 1 to g.dung.nrow - 2 do
+        for col = 0 to g.dung.ncol - 1 do
           if graph.(row).(col).search = ToSearch &&
              gr.(row).(col).search = SearchFailed
           then
-            graph.(row).(col).search := SearchFailed
-          else ();
-        }
-      }
-  | None -> () ];
-  g.graph := Some graph;
+            graph.(row).(col).search <- SearchFailed
+        done
+      done
+  | None -> ()
+  end;
+  g.graph <- Some graph;
   graph
-};
 
-value reinit_graph_search g graph =
-  for row = 1 to g.dung.nrow - 2 do {
-    for col = 0 to g.dung.ncol - 1 do {
+let reinit_graph_search g graph =
+  for row = 1 to g.dung.nrow - 2 do
+    for col = 0 to g.dung.ncol - 1 do
       if graph.(row).(col).search <> NotToSearch then
-        graph.(row).(col).search := ToSearch
-      else ();
-    }
-  }
-;
+        graph.(row).(col).search <- ToSearch
+    done
+  done
 
-value nothing_to_search graph =
+let nothing_to_search graph =
   List.for_all
-     (fun line ->
-        List.for_all (fun node -> node.search <> ToSearch)
-          (Array.to_list line))
-     (Array.to_list graph)
-;
+    (fun line ->
+       List.for_all (fun node -> node.search <> ToSearch)
+         (Array.to_list line))
+    (Array.to_list graph)
 
-value path_to_closest g graph pos =
+let path_to_closest g graph pos =
   if nothing_to_search graph then None
   else
     let pred _ tpos =
-      let node = graph.(tpos.row).(tpos.col) in
-      node.search = ToSearch
+      let node = graph.(tpos.row).(tpos.col) in node.search = ToSearch
     in
-    let f_excl pos = False in
+    let f_excl pos = false in
     let f_connected pos1 pos2 k =
       graph.(pos1.row).(pos1.col).connection.(k)
     in
     let interesting_objects = Rob_object.interesting_objects g in
     let f_inc_dd = f_inc_dd g interesting_objects in
     match gen_path g f_excl f_connected f_inc_dd pos pred with
-    [ Some (tpos, rev_path) ->
-       let path = List.tl (List.rev [tpos :: rev_path]) in
-       Some (path, tpos, around_pos g tpos)
-   | None -> None ]
-;
+      Some (tpos, rev_path) ->
+        let path = List.tl (List.rev (tpos :: rev_path)) in
+        Some (path, tpos, around_pos g tpos)
+    | None -> None
 
-value path_to_closest_gold g t pos = do {
+let path_to_closest_gold g t pos =
   let pred _ pos =
     let ch = dung_char g.dung pos in
     ch = '*' || is_gold_seeker_monster g ch && not (is_moving g t pos)
   in
   path_to_closest2 g pos pred
-};
 
-value path_to_closest_static_monster g t pos = do {
+let path_to_closest_static_monster g t pos =
   let pred _ pos =
-    let ch = dung_char g.dung pos in
-    is_monster ch && not (is_moving g t pos)
+    let ch = dung_char g.dung pos in is_monster ch && not (is_moving g t pos)
   in
   path_to_closest2 g pos pred
-};
 
-value find_random_around g ch =
+let find_random_around g ch =
   let pos = rogue_pos g in
-  loop (shuffle g run_around_list) where rec loop =
-    fun
-    [ [k :: kl] -> do {
+  let rec loop =
+    function
+      k :: kl ->
         let mov = mov_of_k k in
         let pos1 = add_mov pos mov in
         if in_dung g pos1 && dung_char g.dung pos1 = ch then Some pos1
         else loop kl
-      }
-    | [] -> None ]
-;
+    | [] -> None
+  in
+  loop (shuffle g run_around_list)

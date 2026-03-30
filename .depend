@@ -64,9 +64,11 @@ ploc.cmi :
 rfield.cmo : rfield.cmi
 rfield.cmx : rfield.cmi
 rfield.cmi :
-rob_action.cmo : rob_action.cmi
-rob_action.cmx : rob_action.cmi
-rob_action.cmi :
+rob_action.cmo : rob_position.cmi rob_path.cmi rob_object.cmi \
+    rob_monster.cmi rob_misc.cmi rob_def.cmi rob_action.cmi
+rob_action.cmx : rob_position.cmx rob_path.cmx rob_object.cmx \
+    rob_monster.cmx rob_misc.cmx rob_def.cmi rob_action.cmi
+rob_action.cmi : rob_position.cmi rob_misc.cmi rob_def.cmi
 rob_def.cmi : rob_position.cmi
 rob_misc.cmo : rob_position.cmi rob_def.cmi rob_misc.cmi
 rob_misc.cmx : rob_position.cmx rob_def.cmi rob_misc.cmi
@@ -79,14 +81,18 @@ rob_monster.cmi : rob_position.cmi rob_misc.cmi rob_def.cmi
 rob_object.cmo : rob_position.cmi rob_misc.cmi rob_def.cmi rob_object.cmi
 rob_object.cmx : rob_position.cmx rob_misc.cmx rob_def.cmi rob_object.cmi
 rob_object.cmi : rob_position.cmi rob_def.cmi
-rob_path.cmo : rob_path.cmi
-rob_path.cmx : rob_path.cmi
-rob_path.cmi :
+rob_path.cmo : rob_position.cmi rob_object.cmi rob_misc.cmi rob_def.cmi \
+    rob_path.cmi
+rob_path.cmx : rob_position.cmx rob_object.cmx rob_misc.cmx rob_def.cmi \
+    rob_path.cmi
+rob_path.cmi : rob_position.cmi rob_def.cmi
 rob_position.cmo : rob_position.cmi
 rob_position.cmx : rob_position.cmi
 rob_position.cmi :
-robot.cmo : robot.cmi
-robot.cmx : robot.cmi
+robot.cmo : rob_position.cmi rob_path.cmi rob_object.cmi rob_monster.cmi \
+    rob_misc.cmi rob_def.cmi rob_action.cmi robot.cmi
+robot.cmx : rob_position.cmx rob_path.cmx rob_object.cmx rob_monster.cmx \
+    rob_misc.cmx rob_def.cmi rob_action.cmx robot.cmi
 robot.cmi :
 rogbot.cmo :
 rogbot.cmx :
