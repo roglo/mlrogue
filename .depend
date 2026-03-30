@@ -1,3 +1,4 @@
+asttypes.cmi : location.cmi
 attack.cmo : attack.cmi
 attack.cmx : attack.cmi
 attack.cmi :
@@ -34,6 +35,8 @@ init.cmi :
 level.cmo : level.cmi
 level.cmx : level.cmi
 level.cmi :
+location.cmi : warnings.cmi
+longident.cmi :
 main.cmo :
 main.cmx :
 misc.cmo : misc.cmi
@@ -48,11 +51,12 @@ move.cmi :
 object.cmo : object.cmi
 object.cmx : object.cmi
 object.cmi :
-plexer.cmo : ploc.cmi plexing.cmi plexer.cmi
-plexer.cmx : ploc.cmx plexing.cmx plexer.cmi
+parsetree.cmi : longident.cmi location.cmi asttypes.cmi
+plexer.cmo : versdep.cmo ploc.cmi plexing.cmi plexer.cmi
+plexer.cmx : versdep.cmx ploc.cmx plexing.cmx plexer.cmi
 plexer.cmi : plexing.cmi
-plexing.cmo : ploc.cmi plexing.cmi
-plexing.cmx : ploc.cmx plexing.cmi
+plexing.cmo : versdep.cmo ploc.cmi plexing.cmi
+plexing.cmx : versdep.cmx ploc.cmx plexing.cmi
 plexing.cmi : ploc.cmi
 ploc.cmo : ploc.cmi
 ploc.cmx : ploc.cmi
@@ -101,3 +105,6 @@ use.cmi :
 ustring.cmo : ustring.cmi
 ustring.cmx : ustring.cmi
 ustring.cmi :
+versdep.cmo : parsetree.cmi longident.cmi location.cmi asttypes.cmi
+versdep.cmx : parsetree.cmi longident.cmi location.cmi asttypes.cmi
+warnings.cmi :
