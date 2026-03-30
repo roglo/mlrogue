@@ -15,7 +15,7 @@ let gram = Grammar.gcreate (Plexer.gmake ())
 let mon_pow_line = Grammar.Entry.create gram "mon_pow_line"
 
 let _ =
-  Grammar.safe_extend
+  Grammar.extend
     (let _ = (mon_pow_line : 'mon_pow_line Grammar.Entry.e) in
      let grammar_entry_create s =
        Grammar.create_local_entry (Grammar.of_entry mon_pow_line) s
@@ -25,48 +25,38 @@ let _ =
      and signed_int : 'signed_int Grammar.Entry.e =
        grammar_entry_create "signed_int"
      in
-     [Grammar.extension (mon_pow_line : 'mon_pow_line Grammar.Entry.e) None
-        [None, None,
-         [Grammar.production
-            (Grammar.r_next
-               (Grammar.r_next
-                  (Grammar.r_next
-                     (Grammar.r_next Grammar.r_stop
-                        (Grammar.s_token ("UIDENT", "")))
-                     (Grammar.s_token ("INT", "")))
-                  (Grammar.s_list1sep
-                     (Grammar.s_nterm (armv_pow : 'armv_pow Grammar.Entry.e))
-                     (Grammar.s_token ("", "/")) false))
-               (Grammar.s_token ("EOI", "")),
-             (fun _ (v : 'armv_pow list) (lev : string) (ch : string)
-                  (loc : Ploc.t) ->
-                (let ch = Plexing.eval_char ch in
-                 let lev = int_of_string lev in (ch, lev), v :
-                 'mon_pow_line)))]];
-      Grammar.extension (armv_pow : 'armv_pow Grammar.Entry.e) None
-        [None, None,
-         [Grammar.production
-            (Grammar.r_next
-               (Grammar.r_next
-                  (Grammar.r_next Grammar.r_stop
-                     (Grammar.s_nterm
-                        (signed_int : 'signed_int Grammar.Entry.e)))
-                  (Grammar.s_token ("", ",")))
-               (Grammar.s_token ("INT", "")),
-             (fun (pow : string) _ (armv : 'signed_int) (loc : Ploc.t) ->
-                (armv, int_of_string pow : 'armv_pow)))]];
-      Grammar.extension (signed_int : 'signed_int Grammar.Entry.e) None
-        [None, None,
-         [Grammar.production
-            (Grammar.r_next
-               (Grammar.r_next Grammar.r_stop (Grammar.s_token ("", "-")))
-               (Grammar.s_token ("INT", "")),
-             (fun (i : string) _ (loc : Ploc.t) ->
-                (-int_of_string i : 'signed_int)));
-          Grammar.production
-            (Grammar.r_next Grammar.r_stop (Grammar.s_token ("INT", "")),
-             (fun (i : string) (loc : Ploc.t) ->
-                (int_of_string i : 'signed_int)))]]])
+     [Grammar.Entry.obj (mon_pow_line : 'mon_pow_line Grammar.Entry.e), None,
+      [None, None,
+       [[Gramext.Stoken ("UIDENT", ""); Gramext.Stoken ("INT", "");
+         Gramext.Slist1sep
+           (Gramext.Snterm
+              (Grammar.Entry.obj (armv_pow : 'armv_pow Grammar.Entry.e)),
+            Gramext.Stoken ("", "/"), false);
+         Gramext.Stoken ("EOI", "")],
+        Gramext.action
+          (fun _ (v : 'armv_pow list) (lev : string) (ch : string)
+               (loc : Ploc.t) ->
+             (let ch = Plexing.eval_char ch in
+              let lev = int_of_string lev in (ch, lev), v :
+              'mon_pow_line))]];
+      Grammar.Entry.obj (armv_pow : 'armv_pow Grammar.Entry.e), None,
+      [None, None,
+       [[Gramext.Snterm
+           (Grammar.Entry.obj (signed_int : 'signed_int Grammar.Entry.e));
+         Gramext.Stoken ("", ","); Gramext.Stoken ("INT", "")],
+        Gramext.action
+          (fun (pow : string) _ (armv : 'signed_int) (loc : Ploc.t) ->
+             (armv, int_of_string pow : 'armv_pow))]];
+      Grammar.Entry.obj (signed_int : 'signed_int Grammar.Entry.e), None,
+      [None, None,
+       [[Gramext.Stoken ("", "-"); Gramext.Stoken ("INT", "")],
+        Gramext.action
+          (fun (i : string) _ (loc : Ploc.t) ->
+             (-int_of_string i : 'signed_int));
+        [Gramext.Stoken ("INT", "")],
+        Gramext.action
+          (fun (i : string) (loc : Ploc.t) ->
+             (int_of_string i : 'signed_int))]]])
 
 let parse_mon_pow_line line =
   Grammar.Entry.parse mon_pow_line (Stream.of_string line)

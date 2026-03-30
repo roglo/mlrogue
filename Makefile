@@ -10,8 +10,6 @@ ROGBOT_OBJS=$(ROBOBJS) rogbot.cmo
 SRCS=$(OBJS:.cmo=.ml)
 ROGBOT_SRCS=rogbot.ml
 EXT=
-CAMLP5=camlp5r
-CAMLP5OPTS=-I ext
 
 all: opt
 
@@ -29,16 +27,8 @@ clean:
 	rm -f *.cm[oix] *.ppo *.defo *.o ext/*.ppo ext/*.cm[oi]
 	rm -f rogue rogbot *.opt *.out
 
-depend: $(EXT)
-	for i in *.mli $(SRCS) $(ROGBOT_SRCS); do \
-	  $(CAMLP5) $(CAMLP5OPTS) pr_depend.cmo $$i; \
-	done > .depend.new
-	grep '#use' *.ml | sed -e 's/.ml:/.cmo:/' \
-	  -e 's/#use "/ /' -e 's/def";/defo/' >> .depend.new
-	grep '#use' *.ml | sed -e 's/.ml:/.cmx:/' \
-	  -e 's/#use "/ /' -e 's/def";/defo/' >> .depend.new
-	grep '#use' *.def | sed -e 's/.def:/.defo:/' \
-	  -e 's/#use "/ /' -e 's/def";/defo/' >> .depend.new
+depend:
+	-ocamldep *.ml *.mli > .depend.new
 	mv .depend .depend.old
 	mv .depend.new .depend
 
