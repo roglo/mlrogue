@@ -3,7 +3,7 @@
 OCAMLC=ocamlc.opt
 OCAMLOPT=ocamlopt.opt
 OCOPTS=
-CAMLP5_OBJS=stream.cmo ploc.cmo versdep.cmo plexing.cmo gramext.cmo fstream.cmo gram/grammar.cmo plexer.cmo
+CAMLP5_OBJS=stream.cmo gram/ploc.cmo versdep.cmo plexing.cmo gramext.cmo fstream.cmo gram/grammar.cmo plexer.cmo
 ROBOBJS=rob_position.cmo rob_misc.cmo rob_object.cmo rob_monster.cmo rob_path.cmo rob_action.cmo robot.cmo
 OBJS=$(CAMLP5_OBJS) $(ROBOBJS) ustring.cmo efield.cmo rfield.cmo imisc.cmo imonster.cmo object.cmo level.cmo translate.cmo curses.cmo rogbotio.cmo init.cmo dialogue.cmo misc.cmo finish.cmo monster.cmo attack.cmo move.cmo use.cmo main.cmo 
 LIBS=unix.cma
@@ -50,13 +50,13 @@ $(OBJS) $(OBJS:.cmo=.cmx): $(EXT)
 .SUFFIXES: .ml .mli .cmo .cmx .cmi .def .defo
 
 .ml.cmo:
-	$(OCAMLC) -g $(OCOPOTS) -c $*.ml
+	$(OCAMLC) -g $(OCOPOTS) -I gram -c $*.ml
 
 .ml.cmx:
 	$(OCAMLOPT) -g $(OCOPOTS) -I gram -c $*.ml
 
 .mli.cmi:
-	$(OCAMLC) -g $(OCOPOTS) -c $*.mli
+	$(OCAMLC) -g $(OCOPOTS) -I gram -c $*.mli
 
 .def.defo:
 	@touch $@
