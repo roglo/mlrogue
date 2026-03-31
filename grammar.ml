@@ -5,9 +5,6 @@
 (* #load "pa_fstream.cmo" *)
 
 open Gramext;;
-
-let stderr = stderr;;
-
 open Format;;
 
 let rec flatten_tree =
