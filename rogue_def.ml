@@ -1,0 +1,111 @@
+(* $Id: rogue.def,v 1.20 2009/06/09 12:43:25 deraugla Exp $ *)
+
+let _NOTHING = 0o0
+let _OBJECT = 0o1
+let _MONSTER = 0o2
+let _STAIRS = 0o4
+let _HORWALL = 0o10
+let _VERTWALL = 0o20
+let _DOOR = 0o40
+let _FLOOR = 0o100
+let _TUNNEL = 0o200
+let _TRAP = 0o400
+let _HIDDEN = 0o1000
+
+let _MAX_PACK_COUNT = 24
+
+let _STEALTH_FACTOR = 3
+let _R_TELE_PERCENT = 8
+
+let _DROWS = 24
+let _DCOLS = 80
+let _MAX_TITLE_LENGTH = 30
+
+let _GOLD_PERCENT = 46
+
+let _INIT_HP = 12
+
+let _MAXROOMS = 9
+let _BIG_ROOM = 10
+
+let _AMULET_LEVEL = 26
+
+let _R_NOTHING = 0o1
+let _R_ROOM = 0o2
+let _R_MAZE = 0o4
+let _R_DEADEND = 0o10
+let _R_CROSS = 0o20
+
+let _MAX_EXP_LEVEL = 21
+let _MAX_EXP = 10000000
+let _MAX_GOLD = 900000
+let _MAX_HP = 800
+let _MAX_ARMOR = 99
+let _MAX_STRENGTH = 99
+let _LAST_DUNGEON = 99
+
+let _STAT_LEVEL = 0x1
+let _STAT_GOLD = 0o2
+let _STAT_HP = 0o4
+let _STAT_STRENGTH = 0o10
+let _STAT_ARMOR = 0o20
+let _STAT_EXP = 0o40
+let _STAT_HUNGER = 0o100
+let _STAT_LABEL = 0o200
+let _STAT_ALL = 0o377
+
+let _PARTY_TIME = 10
+
+let _MAX_TRAPS = 10
+
+let _HIDE_PERCENT = 12
+
+let _HASTED = 0o1
+let _SLOWED = 0o2
+let _INVISIBLE = 0o4
+let _ASLEEP = 0o10
+let _WAKENS = 0o20
+let _WANDERS = 0o40
+let _FLIES = 0o100
+let _FLITS = 0o200
+let _CAN_FLIT = 0o400
+let _CONFUSED = 0o1000
+let _RUSTS = 0o2000
+let _HOLDS = 0o4000
+let _FREEZES = 0o10000
+let _STEALS_GOLD = 0o20000
+let _STEALS_ITEM = 0o40000
+let _STINGS = 0o100000
+let _DRAINS_LIFE = 0o200000
+let _DROPS_LEVEL = 0o400000
+let _SEEKS_GOLD = 0o1000000
+let _FREEZING_ROGUE = 0o2000000
+let _RUST_VANISHED = 0o4000000
+let _CONFUSES = 0o10000000
+let _IMITATES = 0o20000000
+let _FLAMES = 0o40000000
+let _STATIONARY = 0o100000000
+let _NAPPING = 0o200000000
+let _ALREADY_MOVED = 0o400000000
+
+let _SPECIAL_HIT =
+  (_RUSTS lor _HOLDS lor _FREEZES lor _STEALS_GOLD lor _STEALS_ITEM lor
+   _STINGS lor _DRAINS_LIFE lor _DROPS_LEVEL)
+
+
+let _WAKE_PERCENT = 45
+let _FLIT_PERCENT = 33
+let _PARTY_WAKE_PERCENT = 75
+
+let _ROW1 = 7
+let _ROW2 = 15
+
+let _COL1 = 26
+let _COL2 = 52
+
+let _HUNGRY = 300
+let _WEAK = 150
+let _FAINT = 20
+let _STARVE = 0
+
+let _MIN_ROW = 1
