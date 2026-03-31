@@ -29,7 +29,7 @@ clean:
 	rm -f rogue rogbot *.opt *.out
 
 depend:
-	-ocamldep *.ml *.mli gram/*.ml gram/*.mli > .depend.new
+	-ocamldep -I gram *.ml *.mli gram/*.ml gram/*.mli > .depend.new
 	mv .depend .depend.old
 	mv .depend.new .depend
 
