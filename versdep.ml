@@ -704,7 +704,7 @@ let list_rev_map = List.rev_map;;
 
 let list_sort = List.sort;;
 
-let pervasives_set_binary_mode_out = Pervasives.set_binary_mode_out;;
+let pervasives_set_binary_mode_out = set_binary_mode_out;;
 
 let printf_ksprintf = Printf.ksprintf;;
 

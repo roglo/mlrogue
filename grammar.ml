@@ -5,9 +5,10 @@
 (* #load "pa_fstream.cmo" *)
 
 open Gramext;;
-open Format;;
 
-let stderr = Pervasives.stderr;;
+let stderr = stderr;;
+
+open Format;;
 
 let rec flatten_tree =
   function
