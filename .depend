@@ -90,40 +90,37 @@ fstream.cmx : \
     fstream.cmi
 fstream.cmi :
 gram/grammar.cmo : \
-    stream.cmi \
     plexing.cmi \
     gramext.cmi \
     fstream.cmi \
     gram/grammar.cmi
 gram/grammar.cmx : \
-    stream.cmx \
     plexing.cmx \
     gramext.cmx \
     fstream.cmx \
     gram/grammar.cmi
 gram/grammar.cmi : \
-    stream.cmi \
     plexing.cmi \
     gramext.cmi
 gram/ploc.cmo : \
-    stream.cmi \
     gram/ploc.cmi
 gram/ploc.cmx : \
-    stream.cmx \
     gram/ploc.cmi
 gram/ploc.cmi :
+gram/stream.cmo : \
+    gram/stream.cmi
+gram/stream.cmx : \
+    gram/stream.cmi
+gram/stream.cmi :
 gramext.cmo : \
-    stream.cmi \
     plexing.cmi \
     fstream.cmi \
     gramext.cmi
 gramext.cmx : \
-    stream.cmx \
     plexing.cmx \
     fstream.cmx \
     gramext.cmi
 gramext.cmi : \
-    stream.cmi \
     plexing.cmi \
     fstream.cmi
 imisc.cmo : \
@@ -324,26 +321,21 @@ parsetree.cmi : \
     asttypes.cmi
 plexer.cmo : \
     versdep.cmo \
-    stream.cmi \
     plexing.cmi \
     plexer.cmi
 plexer.cmx : \
     versdep.cmx \
-    stream.cmx \
     plexing.cmx \
     plexer.cmi
 plexer.cmi : \
     plexing.cmi
 plexing.cmo : \
     versdep.cmo \
-    stream.cmi \
     plexing.cmi
 plexing.cmx : \
     versdep.cmx \
-    stream.cmx \
     plexing.cmi
-plexing.cmi : \
-    stream.cmi
+plexing.cmi :
 rfield.cmo : \
     robot.cmi \
     efield.cmi \
@@ -389,7 +381,6 @@ rob_misc.cmi : \
     rob_position.cmi \
     rob_def.cmi
 rob_monster.cmo : \
-    stream.cmi \
     rob_object.cmi \
     rob_misc.cmi \
     rob_def.cmi \
@@ -398,7 +389,6 @@ rob_monster.cmo : \
     gramext.cmi \
     rob_monster.cmi
 rob_monster.cmx : \
-    stream.cmx \
     rob_object.cmx \
     rob_misc.cmx \
     rob_def.cmi \
@@ -476,11 +466,6 @@ rogbotio.cmi :
 rogue.cmi : \
     rfield.cmi \
     efield.cmi
-stream.cmo : \
-    stream.cmi
-stream.cmx : \
-    stream.cmi
-stream.cmi :
 translate.cmo : \
     translate.cmi
 translate.cmx : \

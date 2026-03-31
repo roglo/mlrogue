@@ -3,11 +3,11 @@
 OCAMLC=ocamlc.opt
 OCAMLOPT=ocamlopt.opt
 OCOPTS=
-CAMLP5_OBJS=stream.cmo gram/ploc.cmo versdep.cmo plexing.cmo gramext.cmo fstream.cmo gram/grammar.cmo plexer.cmo
+GRAM_OBJS=gram/stream.cmo gram/ploc.cmo versdep.cmo plexing.cmo gramext.cmo fstream.cmo gram/grammar.cmo plexer.cmo
 ROBOBJS=rob_position.cmo rob_misc.cmo rob_object.cmo rob_monster.cmo rob_path.cmo rob_action.cmo robot.cmo
-OBJS=$(CAMLP5_OBJS) $(ROBOBJS) ustring.cmo efield.cmo rfield.cmo imisc.cmo imonster.cmo object.cmo level.cmo translate.cmo curses.cmo rogbotio.cmo init.cmo dialogue.cmo misc.cmo finish.cmo monster.cmo attack.cmo move.cmo use.cmo main.cmo 
+OBJS=$(GRAM_OBJS) $(ROBOBJS) ustring.cmo efield.cmo rfield.cmo imisc.cmo imonster.cmo object.cmo level.cmo translate.cmo curses.cmo rogbotio.cmo init.cmo dialogue.cmo misc.cmo finish.cmo monster.cmo attack.cmo move.cmo use.cmo main.cmo 
 LIBS=unix.cma
-ROGBOT_OBJS=$(CAMLP5_OBJS) $(ROBOBJS) rogbot.cmo
+ROGBOT_OBJS=$(GRAM_OBJS) $(ROBOBJS) rogbot.cmo
 SRCS=$(OBJS:.cmo=.ml)
 ROGBOT_SRCS=rogbot.ml
 EXT=
@@ -25,7 +25,7 @@ opt: rogue.opt rogbot.opt
 	cp rogbot.opt rogbot
 
 clean:
-	rm -f *.cm[oix] *.ppo *.defo *.o
+	rm -f *.cm[oix] *.ppo *.defo *.o gram/*.cm[iox] gram/*.o
 	rm -f rogue rogbot *.opt *.out
 
 depend:
