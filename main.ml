@@ -717,38 +717,38 @@ let rec play_level g =
             else if ch = _ROGUE_KEY_WIELD then Use.wield g
             else if ch = _ROGUE_KEY_CALL then call_it g
             else if ch = _ROGUE_KEY_ZAPP then
-              if Attack.zap g then Move.reg_move g
-              else if ch = _ROGUE_KEY_THROW then throw g (max 1 count)
-              else if ch = _ROGUE_KEY_VERSION then
-                message g
-                  (sprintf "mlrogue %s (%s %s)" version g.nick_name
-                     g.login_name)
-                  false
-              else if ch = _ROGUE_KEY_QUIT then quit g false
-              else if ch = _ROGUE_KEY_NOP then ()
-              else if ch = _ROGUE_KEY_CANCEL then ()
-              else if ch = _ROGUE_KEY_WIZ_INVENTORY then
-                if g.wizard then
-                  inventory g (List.map (fun obj -> '.', obj) g.level_objects)
-                    (fun _ -> true)
-                else unknown_command g ch
-              else if ch = _ROGUE_KEY_WIZ_MAGIC_MAP then
-                if g.wizard then Use.draw_magic_map g true
-                else unknown_command g ch
-              else if ch = _ROGUE_KEY_WIZ_SHOW_TRAPS then
-                if g.wizard then show_traps g else unknown_command g ch
-              else if ch = _ROGUE_KEY_WIZ_SHOW_OBJS then
-                if g.wizard then Use.show_objects g else unknown_command g ch
-              else if ch = _ROGUE_KEY_SHOW_AV_HP then show_average_hp g
-              else if ch = _ROGUE_KEY_WIZ_NEW_OBJ then
-                if g.wizard then new_object_for_wizard g
-                else unknown_command g ch
-              else if ch = _ROGUE_KEY_WIZ_SHOW_MONST then
-                if g.wizard then show_monsters g else unknown_command g ch
-              else if ch = _ROGUE_KEY_SAVE_GAME then save_game g
-              else if ch = _ROGUE_KEY_PICK_UP then Move.kick_into_pack g
-              else if ch = _ROGUE_KEY_WHATISIT then whatisit g
-              else unknown_command g ch;
+              if Attack.zap g then Move.reg_move g else ()
+            else if ch = _ROGUE_KEY_THROW then throw g (max 1 count)
+            else if ch = _ROGUE_KEY_VERSION then
+              message g
+                (sprintf "mlrogue %s (%s %s)" version g.nick_name
+                   g.login_name)
+                false
+            else if ch = _ROGUE_KEY_QUIT then quit g false
+            else if ch = _ROGUE_KEY_NOP then ()
+            else if ch = _ROGUE_KEY_CANCEL then ()
+            else if ch = _ROGUE_KEY_WIZ_INVENTORY then
+              if g.wizard then
+                inventory g (List.map (fun obj -> '.', obj) g.level_objects)
+                  (fun _ -> true)
+              else unknown_command g ch
+            else if ch = _ROGUE_KEY_WIZ_MAGIC_MAP then
+              if g.wizard then Use.draw_magic_map g true
+              else unknown_command g ch
+            else if ch = _ROGUE_KEY_WIZ_SHOW_TRAPS then
+              if g.wizard then show_traps g else unknown_command g ch
+            else if ch = _ROGUE_KEY_WIZ_SHOW_OBJS then
+              if g.wizard then Use.show_objects g else unknown_command g ch
+            else if ch = _ROGUE_KEY_SHOW_AV_HP then show_average_hp g
+            else if ch = _ROGUE_KEY_WIZ_NEW_OBJ then
+              if g.wizard then new_object_for_wizard g
+              else unknown_command g ch
+            else if ch = _ROGUE_KEY_WIZ_SHOW_MONST then
+              if g.wizard then show_monsters g else unknown_command g ch
+            else if ch = _ROGUE_KEY_SAVE_GAME then save_game g
+            else if ch = _ROGUE_KEY_PICK_UP then Move.kick_into_pack g
+            else if ch = _ROGUE_KEY_WHATISIT then whatisit g
+            else unknown_command g ch;
             true
           end
       in
