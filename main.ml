@@ -693,6 +693,7 @@ let rec play_level g =
               inventory g g.rogue.pack (fun _ -> true)
             else if ch = _ROGUE_KEY_FIGHT then Move.fight g false
             else if ch = _ROGUE_KEY_FIGHT_TO_DEATH then Move.fight g true
+            else if ch = _ROGUE_KEY_CANCEL then ()
             else if is_direction ch then Move.one_move_rogue g ch true
             else if is_direction_shift ch then Move.multiple_move_rogue g ch
             else if is_direction_ctrl ch then Move.multiple_move_rogue g ch
@@ -726,7 +727,6 @@ let rec play_level g =
                 false
             else if ch = _ROGUE_KEY_QUIT then quit g false
             else if ch = _ROGUE_KEY_NOP then ()
-            else if ch = _ROGUE_KEY_CANCEL then ()
             else if ch = _ROGUE_KEY_WIZ_INVENTORY then
               if g.wizard then
                 inventory g (List.map (fun obj -> '.', obj) g.level_objects)
