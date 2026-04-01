@@ -355,7 +355,7 @@ let get_dir_rc dir row col allow_off_screen =
     if allow_off_screen || row < _DROWS - 2 && col < _DCOLS - 1 then
       row + 1, col + 1
     else row, col
-  else invalid_arg "get_dir_rc"
+  else invalid_arg (Printf.sprintf "get_dir_rc %c" dir)
 
 let direction_list =
   [_ROGUE_KEY_WEST; _ROGUE_KEY_SOUTH; _ROGUE_KEY_NORTH; _ROGUE_KEY_EAST;
