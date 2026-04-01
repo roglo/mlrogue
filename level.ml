@@ -1,8 +1,6 @@
 (* $Id: level.ml,v 1.67 2010/04/27 11:46:10 deraugla Exp $ *)
 
-(* #use "rogue.def" *)(* $Id: level.ml,v 1.67 2010/04/27 11:46:10 deraugla Exp $ *)
-
-
+open Rogue_def
 (* #load "pa_more.cmo" *)
 
 open Rogue
@@ -31,13 +29,13 @@ let trap_string t = (List.assoc t trap_strings).t_title
 let trap_mess t = (List.assoc t trap_strings).t_mess
 
 let clear_level g =
-  for i = 0 to 9 - 1 do
-    g.rooms.(i).is_room <- 0o1;
+  for i = 0 to _MAXROOMS - 1 do
+    g.rooms.(i).is_room <- _R_NOTHING;
     for j = 0 to 3 do g.rooms.(i).doors.(j) <- None done
   done;
-  for i = 0 to 10 - 1 do g.traps.(i) <- None done;
-  for i = 0 to 24 - 1 do
-    for j = 0 to 80 - 1 do g.dungeon.(i).(j) <- 0o0 done
+  for i = 0 to _MAX_TRAPS - 1 do g.traps.(i) <- None done;
+  for i = 0 to _DROWS - 1 do
+    for j = 0 to _DCOLS - 1 do g.dungeon.(i).(j) <- _NOTHING done
   done;
   g.rogue.detect_monster <- false;
   g.rogue.see_invisible <- false;
@@ -53,7 +51,7 @@ type dir = Up | Right | Down | Left
 
 let rec make_maze g r c tr br lc rc =
   let dirs = [| Up; Down; Left; Right |] in
-  g.dungeon.(r).(c) <- 0o200;
+  g.dungeon.(r).(c) <- _TUNNEL;
   if rand_percent 33 then
     for i = 0 to 9 do
       let t1 = get_rand 0 3 in
@@ -63,29 +61,31 @@ let rec make_maze g r c tr br lc rc =
   for i = 0 to 3 do
     match dirs.(i) with
       Up ->
-        if r - 1 >= tr && g.dungeon.(r-1).(c) <> 0o200 &&
-           (c - 1 < lc || g.dungeon.(r-1).(c-1) <> 0o200) &&
-           (c + 1 > rc || g.dungeon.(r-1).(c+1) <> 0o200) &&
-           g.dungeon.(r-2).(c) <> 0o200
+        if r - 1 >= tr && g.dungeon.(r-1).(c) <> _TUNNEL &&
+           (c - 1 < lc || g.dungeon.(r-1).(c-1) <> _TUNNEL) &&
+           (c + 1 > rc || g.dungeon.(r-1).(c+1) <> _TUNNEL) &&
+           g.dungeon.(r-2).(c) <> _TUNNEL
         then
           make_maze g (r - 1) c tr br lc rc
     | Down ->
-        if r + 1 <= br && g.dungeon.(r+1).(c) <> 0o200 &&
-           (c - 1 < lc || g.dungeon.(r+1).(c-1) <> 0o200) &&
-           (c + 1 > rc || g.dungeon.(r+1).(c+1) <> 0o200) &&
-           g.dungeon.(r+2).(c) <> 0o200
+        if r + 1 <= br && g.dungeon.(r+1).(c) <> _TUNNEL &&
+           (c - 1 < lc || g.dungeon.(r+1).(c-1) <> _TUNNEL) &&
+           (c + 1 > rc || g.dungeon.(r+1).(c+1) <> _TUNNEL) &&
+           g.dungeon.(r+2).(c) <> _TUNNEL
         then
           make_maze g (r + 1) c tr br lc rc
     | Left ->
-        if c - 1 >= lc && g.dungeon.(r).(c-1) <> 0o200 &&
-           g.dungeon.(r-1).(c-1) <> 0o200 && g.dungeon.(r+1).(c-1) <> 0o200 &&
-           (c - 2 < lc || g.dungeon.(r).(c-2) <> 0o200)
+        if c - 1 >= lc && g.dungeon.(r).(c-1) <> _TUNNEL &&
+           g.dungeon.(r-1).(c-1) <> _TUNNEL &&
+           g.dungeon.(r+1).(c-1) <> _TUNNEL &&
+           (c - 2 < lc || g.dungeon.(r).(c-2) <> _TUNNEL)
         then
           make_maze g r (c - 1) tr br lc rc
     | Right ->
-        if c + 1 <= rc && g.dungeon.(r).(c+1) <> 0o200 &&
-           g.dungeon.(r-1).(c+1) <> 0o200 && g.dungeon.(r+1).(c+1) <> 0o200 &&
-           (c + 2 > rc || g.dungeon.(r).(c+2) <> 0o200)
+        if c + 1 <= rc && g.dungeon.(r).(c+1) <> _TUNNEL &&
+           g.dungeon.(r-1).(c+1) <> _TUNNEL &&
+           g.dungeon.(r+1).(c+1) <> _TUNNEL &&
+           (c + 2 > rc || g.dungeon.(r).(c+2) <> _TUNNEL)
         then
           make_maze g r (c + 1) tr br lc rc
   done
@@ -104,8 +104,8 @@ let hide_boxed_passage g row1 col1 row2 col2 n =
           if j < 10 then
             let row = get_rand (row1 + row_cut) (row2 - row_cut) in
             let col = get_rand (col1 + col_cut) (col2 - col_cut) in
-            if g.dungeon.(row).(col) = 0o200 then
-              g.dungeon.(row).(col) <- g.dungeon.(row).(col) lor 0o1000
+            if g.dungeon.(row).(col) = _TUNNEL then
+              g.dungeon.(row).(col) <- g.dungeon.(row).(col) lor _HIDDEN
             else loop_j (j + 1)
         in
         loop_j 0
@@ -113,18 +113,18 @@ let hide_boxed_passage g row1 col1 row2 col2 n =
 
 let add_mazes g =
   if g.cur_level > 1 then
-    let start = get_rand 0 (9 - 1) in
+    let start = get_rand 0 (_MAXROOMS - 1) in
     let maze_percent =
       let v = g.cur_level * 5 / 4 in
       if g.cur_level > 15 then v + g.cur_level else v
     in
-    for i = 0 to 9 - 1 do
-      let j = (start + i) mod 9 in
+    for i = 0 to _MAXROOMS - 1 do
+      let j = (start + i) mod _MAXROOMS in
       let rm = g.rooms.(j) in
-      if rm.is_room land 0o1 <> 0 then
+      if rm.is_room land _R_NOTHING <> 0 then
         if rand_percent maze_percent then
           begin
-            rm.is_room <- 0o4;
+            rm.is_room <- _R_MAZE;
             make_maze g (get_rand (rm.top_row + 1) (rm.bottom_row - 1))
               (get_rand (rm.left_col + 1) (rm.right_col - 1)) rm.top_row
               rm.bottom_row rm.left_col rm.right_col;
@@ -136,22 +136,23 @@ let add_mazes g =
 let make_room g rn r1 r2 r3 =
   let (left_col, right_col, top_row, bottom_row) =
     match rn with
-      0 -> 0, 26 - 1, 1, 7 - 1
-    | 1 -> 26 + 1, 52 - 1, 1, 7 - 1
-    | 2 -> 52 + 1, 80 - 1, 1, 7 - 1
-    | 3 -> 0, 26 - 1, 7 + 1, 15 - 1
-    | 4 -> 26 + 1, 52 - 1, 7 + 1, 15 - 1
-    | 5 -> 52 + 1, 80 - 1, 7 + 1, 15 - 1
-    | 6 -> 0, 26 - 1, 15 + 1, 24 - 2
-    | 7 -> 26 + 1, 52 - 1, 15 + 1, 24 - 2
-    | 8 -> 52 + 1, 80 - 1, 15 + 1, 24 - 2
-    | 10 ->
-        get_rand 0 10, get_rand (80 - 11) (80 - 1), get_rand 1 (1 + 5),
-        get_rand (24 - 7) (24 - 2)
-    | _ -> assert false
+      0 -> 0, _COL1 - 1, _MIN_ROW, _ROW1 - 1
+    | 1 -> _COL1 + 1, _COL2 - 1, _MIN_ROW, _ROW1 - 1
+    | 2 -> _COL2 + 1, _DCOLS - 1, _MIN_ROW, _ROW1 - 1
+    | 3 -> 0, _COL1 - 1, _ROW1 + 1, _ROW2 - 1
+    | 4 -> _COL1 + 1, _COL2 - 1, _ROW1 + 1, _ROW2 - 1
+    | 5 -> _COL2 + 1, _DCOLS - 1, _ROW1 + 1, _ROW2 - 1
+    | 6 -> 0, _COL1 - 1, _ROW2 + 1, _DROWS - 2
+    | 7 -> _COL1 + 1, _COL2 - 1, _ROW2 + 1, _DROWS - 2
+    | 8 -> _COL2 + 1, _DCOLS - 1, _ROW2 + 1, _DROWS - 2
+    | _ ->
+        if rn = _BIG_ROOM then
+          get_rand 0 10, get_rand (_DCOLS - 11) (_DCOLS - 1),
+          get_rand _MIN_ROW (_MIN_ROW + 5), get_rand (_DROWS - 7) (_DROWS - 2)
+        else assert false
   in
   let (left_col, right_col, top_row, bottom_row) =
-    if rn <> 10 then
+    if rn <> _BIG_ROOM then
       let height = get_rand 4 (bottom_row - top_row + 1) in
       let width = get_rand 7 (right_col - left_col - 2) in
       let row_offset = get_rand 0 (bottom_row - top_row - height + 1) in
@@ -161,21 +162,23 @@ let make_room g rn r1 r2 r3 =
       left_col, left_col + width - 1, top_row, top_row + height - 1
     else left_col, right_col, top_row, bottom_row
   in
-  let rn0 = if rn = 10 then 0 else rn in
-  if rn <> 10 && rn <> r1 && rn <> r2 && rn <> r3 && rand_percent 40 then ()
+  let rn0 = if rn = _BIG_ROOM then 0 else rn in
+  if rn <> _BIG_ROOM && rn <> r1 && rn <> r2 && rn <> r3 && rand_percent 40
+  then
+    ()
   else
     begin
-      g.rooms.(rn0).is_room <- 0o2;
+      g.rooms.(rn0).is_room <- _R_ROOM;
       for i = top_row to bottom_row do
         for j = left_col to right_col do
           g.dungeon.(i).(j) <-
-            if i = top_row || i = bottom_row then 0o10
+            if i = top_row || i = bottom_row then _HORWALL
             else if
               i <> top_row && i <> bottom_row &&
               (j = left_col || j = right_col)
             then
-              0o20
-            else 0o100
+              _VERTWALL
+            else _FLOOR
         done
       done
     end;
@@ -185,11 +188,11 @@ let make_room g rn r1 r2 r3 =
   g.rooms.(rn0).right_col <- right_col
 
 let mix_random_rooms g =
-  for i = 0 to 3 * 9 - 1 do
+  for i = 0 to 3 * _MAXROOMS - 1 do
     let (x, y) =
       let rec loop () =
-        let x = get_rand 0 (9 - 1) in
-        let y = get_rand 0 (9 - 1) in if x = y then loop () else x, y
+        let x = get_rand 0 (_MAXROOMS - 1) in
+        let y = get_rand 0 (_MAXROOMS - 1) in if x = y then loop () else x, y
       in
       loop ()
     in
@@ -201,7 +204,7 @@ let same_row room1 room2 = room1 / 3 = room2 / 3
 let same_col room1 room2 = room1 mod 3 = room2 mod 3
 
 let put_door g rm dir =
-  let wall_width = if rm.is_room land 0o4 <> 0 then 0 else 1 in
+  let wall_width = if rm.is_room land _R_MAZE <> 0 then 0 else 1 in
   let (row, col) =
     match dir with
       Up | Down ->
@@ -210,7 +213,7 @@ let put_door g rm dir =
           let col =
             get_rand (rm.left_col + wall_width) (rm.right_col - wall_width)
           in
-          if g.dungeon.(row).(col) land (0o10 lor 0o200) = 0 then loop ()
+          if g.dungeon.(row).(col) land (_HORWALL lor _TUNNEL) = 0 then loop ()
           else row, col
         in
         loop ()
@@ -220,14 +223,14 @@ let put_door g rm dir =
           let row =
             get_rand (rm.top_row + wall_width) (rm.bottom_row - wall_width)
           in
-          if g.dungeon.(row).(col) land (0o20 lor 0o200) = 0 then loop ()
+          if g.dungeon.(row).(col) land (_VERTWALL lor _TUNNEL) = 0 then loop ()
           else row, col
         in
         loop ()
   in
-  if rm.is_room land 0o2 <> 0 then g.dungeon.(row).(col) <- 0o40;
-  if g.cur_level > 2 && rand_percent 12 then
-    g.dungeon.(row).(col) <- g.dungeon.(row).(col) lor 0o1000;
+  if rm.is_room land _R_ROOM <> 0 then g.dungeon.(row).(col) <- _DOOR;
+  if g.cur_level > 2 && rand_percent _HIDE_PERCENT then
+    g.dungeon.(row).(col) <- g.dungeon.(row).(col) lor _HIDDEN;
   row, col
 
 let draw_simple_passage g row1 col1 row2 col2 dir =
@@ -237,31 +240,31 @@ let draw_simple_passage g row1 col1 row2 col2 dir =
         if col1 > col2 then row2, col2, row1, col1 else row1, col1, row2, col2
       in
       let middle = get_rand (col1 + 1) (col2 - 1) in
-      for i = col1 + 1 to middle - 1 do g.dungeon.(row1).(i) <- 0o200 done;
+      for i = col1 + 1 to middle - 1 do g.dungeon.(row1).(i) <- _TUNNEL done;
       if row1 > row2 then
-        for i = row1 downto row2 + 1 do g.dungeon.(i).(middle) <- 0o200 done
-      else for i = row1 to row2 - 1 do g.dungeon.(i).(middle) <- 0o200 done;
-      for i = middle to col2 - 1 do g.dungeon.(row2).(i) <- 0o200 done;
+        for i = row1 downto row2 + 1 do g.dungeon.(i).(middle) <- _TUNNEL done
+      else for i = row1 to row2 - 1 do g.dungeon.(i).(middle) <- _TUNNEL done;
+      for i = middle to col2 - 1 do g.dungeon.(row2).(i) <- _TUNNEL done;
       row1, col1, row2, col2
     else
       let (row1, col1, row2, col2) =
         if row1 > row2 then row2, col2, row1, col1 else row1, col1, row2, col2
       in
       let middle = get_rand (row1 + 1) (row2 - 1) in
-      for i = row1 + 1 to middle - 1 do g.dungeon.(i).(col1) <- 0o200 done;
+      for i = row1 + 1 to middle - 1 do g.dungeon.(i).(col1) <- _TUNNEL done;
       if col1 > col2 then
-        for i = col1 downto col2 + 1 do g.dungeon.(middle).(i) <- 0o200 done
-      else for i = col1 to col2 - 1 do g.dungeon.(middle).(i) <- 0o200 done;
-      for i = middle to row2 - 1 do g.dungeon.(i).(col2) <- 0o200 done;
+        for i = col1 downto col2 + 1 do g.dungeon.(middle).(i) <- _TUNNEL done
+      else for i = col1 to col2 - 1 do g.dungeon.(middle).(i) <- _TUNNEL done;
+      for i = middle to row2 - 1 do g.dungeon.(i).(col2) <- _TUNNEL done;
       row1, col1, row2, col2
   in
-  if rand_percent 12 then hide_boxed_passage g row1 col1 row2 col2 1
+  if rand_percent _HIDE_PERCENT then hide_boxed_passage g row1 col1 row2 col2 1
 
 let not_impl x = failwith ("not implemented: " ^ x)
 
 let connect_rooms g room1 room2 =
-  if g.rooms.(room1).is_room land (0o2 lor 0o4) = 0 ||
-     g.rooms.(room2).is_room land (0o2 lor 0o4) = 0
+  if g.rooms.(room1).is_room land (_R_ROOM lor _R_MAZE) = 0 ||
+     g.rooms.(room2).is_room land (_R_ROOM lor _R_MAZE) = 0
   then
     false
   else
@@ -319,20 +322,21 @@ let rec visit_rooms g rooms_visited rn =
   done
 
 let is_all_connected g =
-  let rooms_visited = Array.make 9 false in
+  let rooms_visited = Array.make _MAXROOMS false in
   let starting_room =
     let rec loop i =
-      if i = 9 then i
-      else if g.rooms.(i).is_room land (0o2 lor 0o4) <> 0 then i
+      if i = _MAXROOMS then i
+      else if g.rooms.(i).is_room land (_R_ROOM lor _R_MAZE) <> 0 then i
       else loop (i + 1)
     in
     loop 0
   in
   visit_rooms g rooms_visited starting_room;
   let rec loop i =
-    if i = 9 then true
+    if i = _MAXROOMS then true
     else if
-      g.rooms.(i).is_room land (0o2 lor 0o4) <> 0 && not rooms_visited.(i)
+      g.rooms.(i).is_room land (_R_ROOM lor _R_MAZE) <> 0 &&
+      not rooms_visited.(i)
     then
       false
     else loop (i + 1)
@@ -353,12 +357,13 @@ let mask_room g rn mask =
   loop_i g.rooms.(rn).top_row
 
 let rec recursive_deadend g rn offsets srow scol =
-  g.rooms.(rn).is_room <- 0o10;
-  g.dungeon.(srow).(scol) <- 0o200;
+  g.rooms.(rn).is_room <- _R_DEADEND;
+  g.dungeon.(srow).(scol) <- _TUNNEL;
   for i = 0 to 3 do
     let de = rn + offsets.(i) in
-    if de < 0 || de >= 9 || not (same_row rn de || same_col rn de) then ()
-    else if g.rooms.(de).is_room land 0o1 = 0 then ()
+    if de < 0 || de >= _MAXROOMS || not (same_row rn de || same_col rn de) then
+      ()
+    else if g.rooms.(de).is_room land _R_NOTHING = 0 then ()
     else
       let drow = (g.rooms.(de).top_row + g.rooms.(de).bottom_row) / 2 in
       let dcol = (g.rooms.(de).left_col + g.rooms.(de).right_col) / 2 in
@@ -395,9 +400,9 @@ let fill_it g rn do_rec_de =
     if i >= 4 then ()
     else
       let target_room = rn + offsets.(i) in
-      if target_room < 0 || target_room >= 9 ||
+      if target_room < 0 || target_room >= _MAXROOMS ||
          not (same_row rn target_room || same_col rn target_room) ||
-         g.rooms.(target_room).is_room land (0o2 lor 0o4) = 0
+         g.rooms.(target_room).is_room land (_R_ROOM lor _R_MAZE) = 0
       then
         loop (i + 1)
       else
@@ -422,7 +427,7 @@ let fill_it g rn do_rec_de =
           let (nrow, ncol) =
             match
               if not do_rec_de || !did_this then None
-              else mask_room g rn 0o200
+              else mask_room g rn _TUNNEL
             with
               Some v -> v
             | None ->
@@ -432,8 +437,8 @@ let fill_it g rn do_rec_de =
           let (drow, dcol) = put_door g g.rooms.(target_room) door_dir in
           incr rooms_found;
           draw_simple_passage g nrow ncol drow dcol tunnel_dir;
-          g.rooms.(rn).is_room <- 0o10;
-          g.dungeon.(nrow).(ncol) <- 0o200;
+          g.rooms.(rn).is_room <- _R_DEADEND;
+          g.dungeon.(nrow).(ncol) <- _TUNNEL;
           if i < 3 && not !did_this then
             begin did_this := true; if coin_toss () then loop (i + 1) end;
           if !rooms_found < 2 && do_rec_de then
@@ -444,10 +449,10 @@ let fill_it g rn do_rec_de =
 let fill_out_level g =
   mix_random_rooms g;
   g.r_de <- None;
-  for i = 0 to 9 - 1 do
+  for i = 0 to _MAXROOMS - 1 do
     let rn = g.random_rooms.(i) in
-    if g.rooms.(rn).is_room land 0o1 <> 0 ||
-       g.rooms.(rn).is_room land 0o20 <> 0 && coin_toss ()
+    if g.rooms.(rn).is_room land _R_NOTHING <> 0 ||
+       g.rooms.(rn).is_room land _R_CROSS <> 0 && coin_toss ()
     then
       fill_it g rn true
   done;
@@ -458,11 +463,11 @@ let fill_out_level g =
 let place_at g obj row col =
   obj.ob_row <- row;
   obj.ob_col <- col;
-  g.dungeon.(row).(col) <- g.dungeon.(row).(col) lor 0o1;
+  g.dungeon.(row).(col) <- g.dungeon.(row).(col) lor _OBJECT;
   g.level_objects <- g.level_objects @ [obj]
 
 let rand_place g obj =
-  let (row, col, _) = gr_row_col g (0o100 lor 0o200) 0 in
+  let (row, col, _) = gr_row_col g (_FLOOR lor _TUNNEL) 0 in
   place_at g obj row col
 
 let put_amulet g = rand_place g (Object.get_amulet None)
@@ -479,28 +484,30 @@ let make g =
     | _ -> assert false
   in
   let big_room = g.cur_level = g.party_counter && rand_percent 1 in
-  if big_room then make_room g 10 0 0 0
+  if big_room then make_room g _BIG_ROOM 0 0 0
   else
     begin
-      for i = 0 to 9 - 1 do
+      for i = 0 to _MAXROOMS - 1 do
         make_room g i must_exist1 must_exist2 must_exist3
       done;
       add_mazes g;
       mix_random_rooms g;
       let rec loop j =
-        if j = 9 then ()
+        if j = _MAXROOMS then ()
         else
           let i = g.random_rooms.(j) in
-          if i < 9 - 1 then
+          if i < _MAXROOMS - 1 then
             (let _ = (connect_rooms g i (i + 1) : bool) in ());
-          if i < 9 - 3 then
+          if i < _MAXROOMS - 3 then
             (let _ = (connect_rooms g i (i + 3) : bool) in ());
-          if i < 9 - 2 then
-            if g.rooms.(i+1).is_room land 0o1 <> 0 then
-              if connect_rooms g i (i + 2) then g.rooms.(i+1).is_room <- 0o20;
-          if i < 9 - 6 then
-            if g.rooms.(i+3).is_room land 0o1 <> 0 then
-              if connect_rooms g i (i + 6) then g.rooms.(i+3).is_room <- 0o20;
+          if i < _MAXROOMS - 2 then
+            if g.rooms.(i+1).is_room land _R_NOTHING <> 0 then
+              if connect_rooms g i (i + 2) then
+                g.rooms.(i+1).is_room <- _R_CROSS;
+          if i < _MAXROOMS - 6 then
+            if g.rooms.(i+3).is_room land _R_NOTHING <> 0 then
+              if connect_rooms g i (i + 6) then
+                g.rooms.(i+3).is_room <- _R_CROSS;
           if is_all_connected g then () else loop (j + 1)
       in
       loop 0; fill_out_level g
@@ -508,8 +515,8 @@ let make g =
 
 let gr_room g =
   let rec loop () =
-    let i = get_rand 0 (9 - 1) in
-    if g.rooms.(i).is_room land (0o2 lor 0o4) = 0 then loop () else i
+    let i = get_rand 0 (_MAXROOMS - 1) in
+    if g.rooms.(i).is_room land (_R_ROOM lor _R_MAZE) = 0 then loop () else i
   in
   loop ()
 
@@ -527,7 +534,7 @@ let party_objects g rn =
           let row = get_rand (rm.top_row + 1) (rm.bottom_row - 1) in
           let col = get_rand (rm.left_col + 1) (rm.right_col - 1) in
           let found =
-            g.dungeon.(row).(col) = 0o100 || g.dungeon.(row).(col) = 0o200
+            g.dungeon.(row).(col) = _FLOOR || g.dungeon.(row).(col) = _TUNNEL
           in
           if found then
             let obj = Object.gr_object g in
@@ -544,7 +551,7 @@ let no_room_for_monster g rn =
     if i < g.rooms.(rn).bottom_row then
       let rec loop_j j =
         if j < g.rooms.(rn).right_col then
-          if g.dungeon.(i).(j) land 0o2 = 0 then false else loop_j (j + 1)
+          if g.dungeon.(i).(j) land _MONSTER = 0 then false else loop_j (j + 1)
         else loop_i (i + 1)
       in
       loop_j (g.rooms.(rn).left_col + 1)
@@ -564,12 +571,12 @@ let party_monsters g rn n =
           if j < 250 then
             let row = get_rand (rm.top_row + 1) (rm.bottom_row - 1) in
             let col = get_rand (rm.left_col + 1) (rm.right_col - 1) in
-            if g.dungeon.(row).(col) land 0o2 = 0 &&
-               g.dungeon.(row).(col) land (0o100 lor 0o200) <> 0
+            if g.dungeon.(row).(col) land _MONSTER = 0 &&
+               g.dungeon.(row).(col) land (_FLOOR lor _TUNNEL) <> 0
             then
               let monster = Imonster.gr_monster g (Some shift_lev) in
-              if monster.mn_flags land 0o20000000 = 0 then
-                monster.mn_flags <- monster.mn_flags lor 0o20;
+              if monster.mn_flags land _IMITATES = 0 then
+                monster.mn_flags <- monster.mn_flags lor _WAKENS;
               put_m_at g row col monster;
               loop_i (i + 1)
             else loop_j (j + 1)
@@ -587,10 +594,10 @@ let make_party g =
 
 let next_party g =
   let n =
-    let rec loop n = if n mod 10 <> 0 then loop (n + 1) else n in
+    let rec loop n = if n mod _PARTY_TIME <> 0 then loop (n + 1) else n in
     loop g.cur_level
   in
-  get_rand (n + 1) (n + 10)
+  get_rand (n + 1) (n + _PARTY_TIME)
 
 let plant_gold g row col is_maze =
   let q = get_rand (2 * g.cur_level) (16 * g.cur_level) in
@@ -598,18 +605,18 @@ let plant_gold g row col is_maze =
   let obj = Object.get_gold (Some q) in place_at g obj row col
 
 let put_gold g =
-  for i = 0 to 9 - 1 do
+  for i = 0 to _MAXROOMS - 1 do
     let rn = g.rooms.(i) in
-    let is_maze = rn.is_room land 0o4 <> 0 in
-    let is_room = rn.is_room land 0o2 <> 0 in
+    let is_maze = rn.is_room land _R_MAZE <> 0 in
+    let is_room = rn.is_room land _R_ROOM <> 0 in
     if not (is_room || is_maze) then ()
-    else if is_maze || rand_percent 46 then
+    else if is_maze || rand_percent _GOLD_PERCENT then
       let rec loop j =
         if j = 50 then ()
         else
           let row = get_rand (rn.top_row + 1) (rn.bottom_row - 1) in
           let col = get_rand (rn.left_col + 1) (rn.right_col - 1) in
-          if g.dungeon.(row).(col) = 0o100 || g.dungeon.(row).(col) = 0o200
+          if g.dungeon.(row).(col) = _FLOOR || g.dungeon.(row).(col) = _TUNNEL
           then
             plant_gold g row col is_maze
           else loop (j + 1)
@@ -638,8 +645,8 @@ let add_traps g =
     else if g.cur_level <= 11 then get_rand 1 2
     else if g.cur_level <= 16 then get_rand 2 3
     else if g.cur_level <= 21 then get_rand 2 4
-    else if g.cur_level <= 26 then get_rand 3 5
-    else get_rand 5 10
+    else if g.cur_level <= _AMULET_LEVEL then get_rand 3 5
+    else get_rand 5 _MAX_TRAPS
   in
   for i = 0 to n - 1 do
     let tt =
@@ -655,9 +662,9 @@ let add_traps g =
                 let row = get_rand (rm.top_row + 1) (rm.bottom_row - 1) in
                 let col = get_rand (rm.left_col + 1) (rm.right_col - 1) in
                 if (g.dungeon.(row).(col) land
-                    (0o1 lor 0o4 lor 0o400 lor 0o200) <>
+                    (_OBJECT lor _STAIRS lor _TRAP lor _TUNNEL) <>
                       0 ||
-                    g.dungeon.(row).(col) = 0o0) &&
+                    g.dungeon.(row).(col) = _NOTHING) &&
                    tries < 15
                 then
                   loop (tries + 1)
@@ -666,27 +673,31 @@ let add_traps g =
               loop 1
             in
             if tries >= 15 then
-              let (row, col, _) = gr_row_col g (0o100 lor 0o2) 0 in row, col
+              let (row, col, _) = gr_row_col g (_FLOOR lor _MONSTER) 0 in
+              row, col
             else row, col
         | None ->
-            let (row, col, _) = gr_row_col g (0o100 lor 0o2) 0 in row, col
-      else let (row, col, _) = gr_row_col g (0o100 lor 0o2) 0 in row, col
+            let (row, col, _) = gr_row_col g (_FLOOR lor _MONSTER) 0 in row, col
+      else let (row, col, _) = gr_row_col g (_FLOOR lor _MONSTER) 0 in row, col
     in
     let trap = {trap_type = tt; trap_row = row; trap_col = col} in
     g.traps.(i) <- Some trap;
-    g.dungeon.(row).(col) <- g.dungeon.(row).(col) lor (0o400 lor 0o1000)
+    g.dungeon.(row).(col) <- g.dungeon.(row).(col) lor (_TRAP lor _HIDDEN)
   done
 
 let put_stairs g =
-  let (row, col, _) = gr_row_col g (0o100 lor 0o200) 0 in
-  g.dungeon.(row).(col) <- g.dungeon.(row).(col) lor 0o4
+  let (row, col, _) = gr_row_col g (_FLOOR lor _TUNNEL) 0 in
+  g.dungeon.(row).(col) <- g.dungeon.(row).(col) lor _STAIRS
 
 let put_mons g =
   let n = get_rand 4 6 in
   for i = 0 to n - 1 do
     let monster = Imonster.gr_monster g (Some 0) in
-    if monster.mn_flags land 0o40 <> 0 && coin_toss () then wake_up monster;
-    let (row, col, _) = gr_row_col g (0o100 lor 0o200 lor 0o4 lor 0o1) 0 in
+    if monster.mn_flags land _WANDERS <> 0 && coin_toss () then
+      wake_up monster;
+    let (row, col, _) =
+      gr_row_col g (_FLOOR lor _TUNNEL lor _STAIRS lor _OBJECT) 0
+    in
     put_m_at g row col monster
   done
 
@@ -697,27 +708,27 @@ let put_player g nr =
         let rec loop rn row col misses =
           if misses < 2 && rn = nr then
             let (row, col, rn) =
-              gr_row_col g (0o100 lor 0o200 lor 0o1 lor 0o4) 0
+              gr_row_col g (_FLOOR lor _TUNNEL lor _OBJECT lor _STAIRS) 0
             in
             loop rn row col (misses + 1)
           else row, col, rn
         in
         loop nr 0 0 0
-    | None -> gr_row_col g (0o100 lor 0o200 lor 0o1 lor 0o4) 0
+    | None -> gr_row_col g (_FLOOR lor _TUNNEL lor _OBJECT lor _STAIRS) 0
   in
   g.rogue.row <- row;
   g.rogue.col <- col;
   g.cur_room <-
-    if g.dungeon.(row).(col) land 0o200 <> 0 then None else Some rn
+    if g.dungeon.(row).(col) land _TUNNEL <> 0 then None else Some rn
 
 let create g =
-  if g.cur_level < 99 then g.cur_level <- g.cur_level + 1;
+  if g.cur_level < _LAST_DUNGEON then g.cur_level <- g.cur_level + 1;
   if g.cur_level > g.max_level then g.max_level <- g.cur_level;
   let rec loop () =
     clear_level g; make g; if is_all_connected g then () else loop ()
   in
   loop ();
-  if not (has_amulet g) && g.cur_level >= 26 then put_amulet g;
+  if not (has_amulet g) && g.cur_level >= _AMULET_LEVEL then put_amulet g;
   put_objects g;
   put_stairs g;
   add_traps g;

@@ -1,8 +1,7 @@
 (* $Id: monster.ml,v 1.84 2013/05/16 19:24:40 deraugla Exp $ *)
 
 (* #load "pa_more.cmo" *)
-(* #use "rogue.def" *)
-
+open Rogue_def
 
 open Rogue
 open Dialogue
@@ -22,18 +21,18 @@ let mon_can_go g monster row col =
   then
     false
   else if
-    not (is_passable g row col) || g.dungeon.(row).(col) land 0o2 <> 0
+    not (is_passable g row col) || g.dungeon.(row).(col) land _MONSTER <> 0
   then
     false
   else if
     monster.mn_row <> row && monster.mn_col <> col &&
-    (g.dungeon.(row).(col) land 0o40 <> 0 ||
-     g.dungeon.(monster.mn_row).(monster.mn_col) land 0o40 <> 0)
+    (g.dungeon.(row).(col) land _DOOR <> 0 ||
+     g.dungeon.(monster.mn_row).(monster.mn_col) land _DOOR <> 0)
   then
     false
   else
     let r =
-      if monster.mn_flags land (0o200 lor 0o1000 lor 0o400) = 0 &&
+      if monster.mn_flags land (_FLITS lor _CONFUSED lor _CAN_FLIT) = 0 &&
          monster.mn_target = None
       then
         if monster.mn_row < g.rogue.row && row < monster.mn_row ||
@@ -46,7 +45,7 @@ let mon_can_go g monster row col =
       else true
     in
     if not r then false
-    else if g.dungeon.(row).(col) land 0o1 <> 0 then
+    else if g.dungeon.(row).(col) land _OBJECT <> 0 then
       match object_at g row col with
         {ob_kind = Scroll ScareMonster} -> false
       | _ -> true
@@ -56,7 +55,7 @@ let mon_sees g monster row col =
   match get_room_number g row col with
     Some rn ->
       if get_room_number g monster.mn_row monster.mn_col = Some rn &&
-         g.rooms.(rn).is_room land 0o4 = 0
+         g.rooms.(rn).is_room land _R_MAZE = 0
       then
         true
       else
@@ -94,15 +93,16 @@ let dr_course g monster entering =
       | None -> assert false
     in
     if entering then
-      let tried = Array.make 9 false in
+      let tried = Array.make _MAXROOMS false in
       let rec loop_i i =
-        if i < 9 then
-          let rr = get_rand 0 (9 - 1) in
+        if i < _MAXROOMS then
+          let rr = get_rand 0 (_MAXROOMS - 1) in
           if tried.(rr) then loop_i i
           else
             begin
               tried.(rr) <- true;
-              if g.rooms.(rr).is_room land (0o2 lor 0o4) = 0 || rr = rn then
+              if g.rooms.(rr).is_room land (_R_ROOM lor _R_MAZE) = 0 || rr = rn
+              then
                 loop_i (i + 1)
               else
                 let rec loop_k k =
@@ -128,7 +128,7 @@ let dr_course g monster entering =
               let rec loop_j list j =
                 if j <= g.rooms.(rn).right_col then
                   if (i <> monster.mn_row || j <> monster.mn_col) &&
-                     g.dungeon.(i).(j) land 0o40 <> 0
+                     g.dungeon.(i).(j) land _DOOR <> 0
                   then
                     loop_j ((i, j) :: list) (j + 1)
                   else loop_j list (j + 1)
@@ -140,7 +140,7 @@ let dr_course g monster entering =
               monster.mn_target <- Some (List.nth list r)
             else
               let rec loop_i i =
-                if i < 9 then
+                if i < _MAXROOMS then
                   let rec loop_j j =
                     if j < 4 then
                       match g.rooms.(i).doors.(j) with
@@ -171,8 +171,8 @@ let dr_course g monster entering =
 let move_mon_to g monster row col =
   let mrow = monster.mn_row in
   let mcol = monster.mn_col in
-  g.dungeon.(mrow).(mcol) <- g.dungeon.(mrow).(mcol) land lnot 0o2;
-  g.dungeon.(row).(col) <- g.dungeon.(row).(col) lor 0o2;
+  g.dungeon.(mrow).(mcol) <- g.dungeon.(mrow).(mcol) land lnot _MONSTER;
+  g.dungeon.(row).(col) <- g.dungeon.(row).(col) lor _MONSTER;
   let c = Curses.mvinch mrow mcol in
   if c >= 'A' && c <= 'Z' then
     begin
@@ -184,14 +184,14 @@ let move_mon_to g monster row col =
   monster.mn_trail_char <- Curses.mvinch row col;
   if g.rogue.blind = 0 && (g.rogue.detect_monster || rogue_can_see g row col)
   then
-    if monster.mn_flags land 0o4 = 0 || g.rogue.detect_monster ||
+    if monster.mn_flags land _INVISIBLE = 0 || g.rogue.detect_monster ||
        g.rogue.see_invisible || g.rogue.r_see_invisible
     then
       show_monster g row col monster (gmc g monster);
-  if g.dungeon.(row).(col) land 0o40 <> 0 then
+  if g.dungeon.(row).(col) land _DOOR <> 0 then
     begin match get_room_number g row col with
       Some rn ->
-        if g.cur_room <> Some rn && g.dungeon.(mrow).(mcol) = 0o100 &&
+        if g.cur_room <> Some rn && g.dungeon.(mrow).(mcol) = _FLOOR &&
            g.rogue.blind = 0
         then
           Curses.mvaddch mrow mcol ' '
@@ -199,17 +199,17 @@ let move_mon_to g monster row col =
     end;
   monster.mn_row <- row;
   monster.mn_col <- col;
-  if g.dungeon.(row).(col) land 0o40 <> 0 then
-    dr_course g monster (g.dungeon.(mrow).(mcol) land 0o200 <> 0)
+  if g.dungeon.(row).(col) land _DOOR <> 0 then
+    dr_course g monster (g.dungeon.(mrow).(mcol) land _TUNNEL <> 0)
 
 let mtry g monster row col =
-  if row < 1 || row >= 24 || col < 0 || col >= 80 then false
+  if row < _MIN_ROW || row >= _DROWS || col < 0 || col >= _DCOLS then false
   else if mon_can_go g monster row col then
     begin move_mon_to g monster row col; true end
   else false
 
 let flit g monster =
-  if not (rand_percent 33) then false
+  if not (rand_percent _FLIT_PERCENT) then false
   else if rand_percent 10 then true
   else
     let row = monster.mn_row in
@@ -226,7 +226,7 @@ let flit g monster =
 
 let mon_name g monster =
   if g.rogue.blind > 0 ||
-     monster.mn_flags land 0o4 <> 0 &&
+     monster.mn_flags land _INVISIBLE <> 0 &&
      not
        (g.rogue.detect_monster || g.rogue.see_invisible ||
         g.rogue.r_see_invisible)
@@ -245,10 +245,10 @@ let confuse g =
 let m_confuse g monster =
   if not (rogue_can_see g monster.mn_row monster.mn_col) then false
   else if rand_percent 45 then
-    begin monster.mn_flags <- monster.mn_flags land lnot 0o10000000; false end
+    begin monster.mn_flags <- monster.mn_flags land lnot _CONFUSES; false end
   else if rand_percent 55 then
     begin
-      monster.mn_flags <- monster.mn_flags land lnot 0o10000000;
+      monster.mn_flags <- monster.mn_flags land lnot _CONFUSES;
       confuse g;
       let msg =
         sprintf (ftransl g.lang "The gaze of the %s has confused you.")
@@ -262,14 +262,14 @@ let rogue_damage g d monster =
   if d >= g.rogue.hp_current then
     begin
       g.rogue.hp_current <- 0;
-      print_stats g 0o4;
+      print_stats g _STAT_HP;
       let i = Char.code monster.mn_char - Char.code 'A' in
       Finish.killed_by g (Monster (Imonster.visible_mon_name g i))
     end
   else
     begin
       g.rogue.hp_current <- g.rogue.hp_current - d;
-      print_stats g 0o4;
+      print_stats g _STAT_HP;
       show_rogue g
     end
 
@@ -290,7 +290,7 @@ let sting g monster =
       in
       message g (etransl msg) false;
       rogue.str_current <- rogue.str_current - 1;
-      print_stats g 0o10
+      print_stats g _STAT_STRENGTH
 
 let rust g monster =
   match g.rogue.armor with
@@ -300,24 +300,24 @@ let rust g monster =
       else if a.ar_is_protected || g.rogue.maintain_armor then
         match monster with
           Some monster ->
-            if monster.mn_flags land 0o4000000 = 0 then
+            if monster.mn_flags land _RUST_VANISHED = 0 then
               begin
                 message g (transl g.lang "The rust vanishes instantly.")
                   false;
-                monster.mn_flags <- monster.mn_flags lor 0o4000000
+                monster.mn_flags <- monster.mn_flags lor _RUST_VANISHED
               end
         | None -> ()
       else
         begin
           a.ar_enchant <- a.ar_enchant - 1;
           message g (transl g.lang "Your armor weakens.") false;
-          print_stats g 0o20
+          print_stats g _STAT_ARMOR
         end
 
 let disappear g monster =
   let row = monster.mn_row in
   let col = monster.mn_col in
-  g.dungeon.(row).(col) <- g.dungeon.(row).(col) land lnot 0o2;
+  g.dungeon.(row).(col) <- g.dungeon.(row).(col) land lnot _MONSTER;
   if rogue_can_see g row col then
     Curses.mvaddch row col (get_dungeon_char g row col);
   take_from_monsters g monster;
@@ -343,7 +343,7 @@ let drain_life g =
           rogue.str_current <- rogue.str_current - 1;
           if coin_toss () then rogue.str_max <- rogue.str_max - 1
         end;
-    print_stats g (0o10 lor 0o4)
+    print_stats g (_STAT_STRENGTH lor _STAT_HP)
 
 let drop_level g =
   let rogue = g.rogue in
@@ -368,7 +368,7 @@ let steal_gold g monster =
     let amount = min amount g.rogue.gold in
     g.rogue.gold <- g.rogue.gold - amount;
     message g (transl g.lang "Your purse feels lighter.") false;
-    print_stats g 0o2;
+    print_stats g _STAT_GOLD;
     disappear g monster
 
 let in_use obj =
@@ -418,12 +418,12 @@ let get_closer row col trow tcol =
   row, col
 
 let move_confused g monster =
-  if monster.mn_flags land 0o10 = 0 then
+  if monster.mn_flags land _ASLEEP = 0 then
     begin
       monster.mn_moves_confused <- monster.mn_moves_confused - 1;
       if monster.mn_moves_confused <= 0 then
-        monster.mn_flags <- monster.mn_flags land lnot 0o1000;
-      if monster.mn_flags land 0o100000000 <> 0 then coin_toss ()
+        monster.mn_flags <- monster.mn_flags land lnot _CONFUSED;
+      if monster.mn_flags land _STATIONARY <> 0 then coin_toss ()
       else if rand_percent 15 then true
       else
         let row = monster.mn_row in
@@ -454,7 +454,7 @@ let rec mv_mons g =
          else
            let init_pos = Some (monster.mn_row, monster.mn_col) in
            let nm =
-             if monster.mn_flags land 0o1 <> 0 then
+             if monster.mn_flags land _HASTED <> 0 then
                begin
                  g.mon_disappeared <- false;
                  mv_monster g monster g.rogue.row g.rogue.col None;
@@ -463,7 +463,7 @@ let rec mv_mons g =
              else 2
            in
            let nm =
-             if nm = 2 && monster.mn_flags land 0o2 <> 0 then
+             if nm = 2 && monster.mn_flags land _SLOWED <> 0 then
                begin
                  monster.mn_slowed_toggle <- not monster.mn_slowed_toggle;
                  if monster.mn_slowed_toggle then 1 else 0
@@ -471,7 +471,7 @@ let rec mv_mons g =
              else nm
            in
            let nm =
-             if nm <> 1 && monster.mn_flags land 0o1000 <> 0 &&
+             if nm <> 1 && monster.mn_flags land _CONFUSED <> 0 &&
                 move_confused g monster
              then
                1
@@ -479,8 +479,8 @@ let rec mv_mons g =
            in
            if nm <> 1 then
              let flew =
-               if monster.mn_flags land 0o100 <> 0 &&
-                  monster.mn_flags land 0o200000000 = 0 &&
+               if monster.mn_flags land _FLIES <> 0 &&
+                  monster.mn_flags land _NAPPING = 0 &&
                   not (mon_can_go g monster g.rogue.row g.rogue.col)
                then
                  begin
@@ -494,36 +494,36 @@ let rec mv_mons g =
                mv_monster g monster g.rogue.row g.rogue.col init_pos)
       g.level_monsters
 and mv_monster g monster row col init_pos_opt =
-  if monster.mn_flags land 0o10 <> 0 then
-    (if monster.mn_flags land 0o200000000 <> 0 then
+  if monster.mn_flags land _ASLEEP <> 0 then
+    (if monster.mn_flags land _NAPPING <> 0 then
        begin
          monster.mn_nap_length <- monster.mn_nap_length - 1;
          if monster.mn_nap_length <= 0 then
-           monster.mn_flags <-
-             monster.mn_flags land lnot (0o200000000 lor 0o10)
+           monster.mn_flags <- monster.mn_flags land lnot (_NAPPING lor _ASLEEP)
        end
      else if
-       monster.mn_flags land 0o20 <> 0 &&
+       monster.mn_flags land _WAKENS <> 0 &&
        rogue_is_around g monster.mn_row monster.mn_col &&
        rand_percent
-         (if g.rogue.stealthy > 0 then 45 / (3 + g.rogue.stealthy) else 45)
+         (if g.rogue.stealthy > 0 then
+            _WAKE_PERCENT / (_STEALTH_FACTOR + g.rogue.stealthy)
+          else _WAKE_PERCENT)
      then
        wake_up monster)
-  else if monster.mn_flags land 0o400000000 <> 0 then
-    monster.mn_flags <- monster.mn_flags land lnot 0o400000000
-  else if monster.mn_flags land 0o200 <> 0 && flit g monster then ()
+  else if monster.mn_flags land _ALREADY_MOVED <> 0 then
+    monster.mn_flags <- monster.mn_flags land lnot _ALREADY_MOVED
+  else if monster.mn_flags land _FLITS <> 0 && flit g monster then ()
   else if
-    monster.mn_flags land 0o100000000 <> 0 &&
+    monster.mn_flags land _STATIONARY <> 0 &&
     not (mon_can_go g monster g.rogue.row g.rogue.col)
   then
     ()
-  else if monster.mn_flags land 0o2000000 <> 0 then ()
-  else if monster.mn_flags land 0o10000000 <> 0 && m_confuse g monster then ()
+  else if monster.mn_flags land _FREEZING_ROGUE <> 0 then ()
+  else if monster.mn_flags land _CONFUSES <> 0 && m_confuse g monster then ()
   else if mon_can_go g monster g.rogue.row g.rogue.col then
     mon_hit g monster "" false
-  else if monster.mn_flags land 0o40000000 <> 0 && flame_broil g monster then
-    ()
-  else if monster.mn_flags land 0o1000000 <> 0 && seek_gold g monster then ()
+  else if monster.mn_flags land _FLAMES <> 0 && flame_broil g monster then ()
+  else if monster.mn_flags land _SEEKS_GOLD <> 0 && seek_gold g monster then ()
   else
     let (row, col) =
       match monster.mn_target with
@@ -543,12 +543,12 @@ and mv_monster g monster row col init_pos_opt =
       else if monster.mn_col < col then monster.mn_col + 1
       else col
     in
-    if g.dungeon.(row).(monster.mn_col) land 0o40 <> 0 &&
+    if g.dungeon.(row).(monster.mn_col) land _DOOR <> 0 &&
        mtry g monster row monster.mn_col
     then
       ()
     else if
-      g.dungeon.(monster.mn_row).(col) land 0o40 <> 0 &&
+      g.dungeon.(monster.mn_row).(col) land _DOOR <> 0 &&
       mtry g monster monster.mn_row col
     then
       ()
@@ -577,7 +577,7 @@ and mv_monster g monster row col init_pos_opt =
       end;
       if monster.mn_row = monster.mn_o_row &&
          monster.mn_col = monster.mn_o_col ||
-         monster.mn_flags land 0o1 <> 0 &&
+         monster.mn_flags land _HASTED <> 0 &&
          (match init_pos_opt with
             Some (init_row, init_col) ->
               monster.mn_row = init_row && monster.mn_col = init_col
@@ -589,8 +589,8 @@ and mv_monster g monster row col init_pos_opt =
             if monster.mn_target = None &&
                not (mon_sees g monster g.rogue.row g.rogue.col)
             then
-              let trow = get_rand 1 (24 - 2) in
-              let tcol = get_rand 0 (80 - 1) in
+              let trow = get_rand 1 (_DROWS - 2) in
+              let tcol = get_rand 0 (_DCOLS - 1) in
               monster.mn_target <- Some (trow, tcol)
             else begin monster.mn_target <- None; monster.mn_o <- 0 end
         end
@@ -608,7 +608,7 @@ and mon_hit g monster other flame =
   end;
   monster.mn_target <- None;
   let hit_chance =
-    if g.cur_level >= 26 * 2 then 100
+    if g.cur_level >= _AMULET_LEVEL * 2 then 100
     else
       monster.mn_hit_chance -
       (2 * rogue.exp + 2 * rogue.ring_exp - rogue.r_rings)
@@ -640,7 +640,7 @@ and mon_hit g monster other flame =
           g.hit_message <- ""
         end;
       let damage =
-        if monster.mn_flags land 0o100000000 = 0 then
+        if monster.mn_flags land _STATIONARY = 0 then
           let damage = get_damage g monster.mn_damage true in
           let damage =
             if other <> "" && flame then
@@ -648,7 +648,8 @@ and mon_hit g monster other flame =
             else damage
           in
           let minus =
-            if g.cur_level >= 26 * 2 then 26 * 2 - g.cur_level
+            if g.cur_level >= _AMULET_LEVEL * 2 then
+              _AMULET_LEVEL * 2 - g.cur_level
             else get_armor_class rogue.armor * 3 * damage / 100
           in
           damage - minus
@@ -658,21 +659,21 @@ and mon_hit g monster other flame =
       in
       let damage = if g.wizard then damage / 3 else damage in
       if damage > 0 then rogue_damage g damage monster;
-      if monster.mn_flags land 0o776000 <> 0 then special_hit g monster
+      if monster.mn_flags land _SPECIAL_HIT <> 0 then special_hit g monster
     end
 and special_hit g monster =
-  if monster.mn_flags land 0o1000 <> 0 && rand_percent 66 then ()
+  if monster.mn_flags land _CONFUSED <> 0 && rand_percent 66 then ()
   else
     begin
-      if monster.mn_flags land 0o2000 <> 0 then rust g (Some monster);
-      if monster.mn_flags land 0o4000 <> 0 && g.rogue.levitate = 0 then
+      if monster.mn_flags land _RUSTS <> 0 then rust g (Some monster);
+      if monster.mn_flags land _HOLDS <> 0 && g.rogue.levitate = 0 then
         g.rogue.being_held <- true;
-      if monster.mn_flags land 0o10000 <> 0 then freeze g monster;
-      if monster.mn_flags land 0o100000 <> 0 then sting g monster;
-      if monster.mn_flags land 0o200000 <> 0 then drain_life g;
-      if monster.mn_flags land 0o400000 <> 0 then drop_level g;
-      if monster.mn_flags land 0o20000 <> 0 then steal_gold g monster
-      else if monster.mn_flags land 0o40000 <> 0 then steal_item g monster
+      if monster.mn_flags land _FREEZES <> 0 then freeze g monster;
+      if monster.mn_flags land _STINGS <> 0 then sting g monster;
+      if monster.mn_flags land _DRAINS_LIFE <> 0 then drain_life g;
+      if monster.mn_flags land _DROPS_LEVEL <> 0 then drop_level g;
+      if monster.mn_flags land _STEALS_GOLD <> 0 then steal_gold g monster
+      else if monster.mn_flags land _STEALS_ITEM <> 0 then steal_item g monster
     end
 and freeze g monster =
   if rand_percent 12 then ()
@@ -684,7 +685,7 @@ and freeze g monster =
     let freeze_percent = freeze_percent - rogue.hp_max / 3 in
     if freeze_percent > 10 then
       begin
-        monster.mn_flags <- monster.mn_flags lor 0o2000000;
+        monster.mn_flags <- monster.mn_flags lor _FREEZING_ROGUE;
         message g (transl g.lang "You are frozen.") true;
         let n = get_rand 4 8 in
         for i = 0 to n - 1 do mv_mons g done;
@@ -696,7 +697,7 @@ and freeze g monster =
         else
           begin
             message g (transl g.lang "You can move again.") true;
-            monster.mn_flags <- monster.mn_flags land lnot 0o2000000
+            monster.mn_flags <- monster.mn_flags land lnot _FREEZING_ROGUE
           end
       end
 and seek_gold g monster =
@@ -708,26 +709,26 @@ and seek_gold g monster =
         if i < rm.bottom_row then
           let rec loop_j j =
             if j < rm.right_col then
-              if gold_at g i j && g.dungeon.(i).(j) land 0o2 = 0 then
+              if gold_at g i j && g.dungeon.(i).(j) land _MONSTER = 0 then
                 begin
-                  monster.mn_flags <- monster.mn_flags lor 0o400;
+                  monster.mn_flags <- monster.mn_flags lor _CAN_FLIT;
                   let s = mon_can_go g monster i j in
-                  monster.mn_flags <- monster.mn_flags land lnot 0o400;
+                  monster.mn_flags <- monster.mn_flags land lnot _CAN_FLIT;
                   if s then
                     begin
                       move_mon_to g monster i j;
-                      monster.mn_flags <- monster.mn_flags lor 0o10;
+                      monster.mn_flags <- monster.mn_flags lor _ASLEEP;
                       monster.mn_flags <-
-                        monster.mn_flags land lnot (0o20 lor 0o1000000)
+                        monster.mn_flags land lnot (_WAKENS lor _SEEKS_GOLD)
                     end
                   else
                     begin
                       monster.mn_flags <-
-                        monster.mn_flags land lnot 0o1000000;
-                      monster.mn_flags <- monster.mn_flags lor 0o400;
+                        monster.mn_flags land lnot _SEEKS_GOLD;
+                      monster.mn_flags <- monster.mn_flags lor _CAN_FLIT;
                       mv_monster g monster i j None;
-                      monster.mn_flags <- monster.mn_flags land lnot 0o400;
-                      monster.mn_flags <- monster.mn_flags lor 0o1000000
+                      monster.mn_flags <- monster.mn_flags land lnot _CAN_FLIT;
+                      monster.mn_flags <- monster.mn_flags lor _SEEKS_GOLD
                     end;
                   true
                 end
@@ -787,11 +788,11 @@ and flame_broil g monster =
 let mv_aquators g =
   List.iter
     (fun monster ->
-       if monster.mn_flags land 0o2000 <> 0 &&
+       if monster.mn_flags land _RUSTS <> 0 &&
           mon_can_go g monster g.rogue.row g.rogue.col
        then
          begin
            mv_monster g monster g.rogue.row g.rogue.col None;
-           monster.mn_flags <- monster.mn_flags lor 0o400000000
+           monster.mn_flags <- monster.mn_flags lor _ALREADY_MOVED
          end)
     g.level_monsters

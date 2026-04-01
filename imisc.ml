@@ -1,8 +1,6 @@
 (* $Id: imisc.ml,v 1.26 2010/04/29 03:48:29 deraugla Exp $ *)
 
-(* #use "rogue.def" *)(* $Id: imisc.ml,v 1.26 2010/04/29 03:48:29 deraugla Exp $ *)
-
-
+open Rogue_def
 
 open Rogue
 open Rfield
@@ -17,7 +15,7 @@ let coin_toss () = Random.int 2 = 0
 
 let get_room_number g row col =
   let rec loop_i i =
-    if i < 9 then
+    if i < _MAXROOMS then
       if row >= g.rooms.(i).top_row && row <= g.rooms.(i).bottom_row &&
          col >= g.rooms.(i).left_col && col <= g.rooms.(i).right_col
       then
@@ -31,14 +29,14 @@ let gr_row_col g mask m =
   let rec loop i =
     if m > 0 && i < 0 then raise Not_found
     else
-      let r = get_rand 1 (24 - 2) in
-      let c = get_rand 0 (80 - 1) in
+      let r = get_rand _MIN_ROW (_DROWS - 2) in
+      let c = get_rand 0 (_DCOLS - 1) in
       match get_room_number g r c with
         None -> loop (i - 1)
       | Some rn ->
           if g.dungeon.(r).(c) land mask = 0 ||
              g.dungeon.(r).(c) land lnot mask <> 0 ||
-             g.rooms.(rn).is_room land (0o2 lor 0o4) = 0 ||
+             g.rooms.(rn).is_room land (_R_ROOM lor _R_MAZE) = 0 ||
              r = g.rogue.row && c = g.rogue.col
           then
             loop (i - 1)
@@ -63,7 +61,7 @@ let rogue_can_see g row col =
   if g.rogue.blind = 0 then
     match get_room_number g row col with
       Some rn ->
-        g.cur_room = Some rn && g.rooms.(rn).is_room land 0o4 = 0 ||
+        g.cur_room = Some rn && g.rooms.(rn).is_room land _R_MAZE = 0 ||
         rogue_is_around g row col
     | None -> rogue_is_around g row col
   else false
@@ -230,11 +228,11 @@ let aim_monster g monster =
 let put_m_at g row col monster =
   monster.mn_row <- row;
   monster.mn_col <- col;
-  g.dungeon.(row).(col) <- g.dungeon.(row).(col) lor 0o2;
+  g.dungeon.(row).(col) <- g.dungeon.(row).(col) lor _MONSTER;
   g.level_monsters <- g.level_monsters @ [monster];
   aim_monster g monster
 
 let wake_up monster =
-  if monster.mn_flags land 0o200000000 = 0 then
+  if monster.mn_flags land _NAPPING = 0 then
     monster.mn_flags <-
-      monster.mn_flags land lnot (0o10 lor 0o20000000 lor 0o20)
+      monster.mn_flags land lnot (_ASLEEP lor _IMITATES lor _WAKENS)

@@ -2,11 +2,8 @@
 
 (* #load "pa_more.cmo" *)
 
-(* #use "rogue.def" *)
-
-
-(* #use "keyboard.def" *)
-
+open Rogue_def
+open Keyboard_def
 
 open Rogue
 open Rfield
@@ -19,14 +16,15 @@ let string_of_bytes = Bytes.to_string
 
 let level_points =
   [| 10; 20; 40; 80; 160; 320; 640; 1300; 2600; 5200; 10000; 20000; 40000;
-     80000; 160000; 320000; 1000000; 3333333; 6666666; 10000000; 99900000 |]
+     80000; 160000; 320000; 1000000; 3333333; 6666666; _MAX_EXP; 99900000 |]
 
 let is_passable g row col =
-  if row < 1 || row > 24 - 2 || col < 0 || col > 80 - 1 then false
-  else if g.dungeon.(row).(col) land 0o1000 <> 0 then
-    if g.dungeon.(row).(col) land 0o400 <> 0 then true else false
+  if row < _MIN_ROW || row > _DROWS - 2 || col < 0 || col > _DCOLS - 1 then false
+  else if g.dungeon.(row).(col) land _HIDDEN <> 0 then
+    if g.dungeon.(row).(col) land _TRAP <> 0 then true else false
   else if
-    g.dungeon.(row).(col) land (0o100 lor 0o200 lor 0o40 lor 0o4 lor 0o400) <>
+    g.dungeon.(row).(col) land
+    (_FLOOR lor _TUNNEL lor _DOOR lor _STAIRS lor _TRAP) <>
       0
   then
     true
@@ -44,7 +42,7 @@ let monster_at g row col =
 
 let trap_at g row col =
   let rec loop_i i =
-    if i < 10 then
+    if i < _MAX_TRAPS then
       match g.traps.(i) with
         None -> loop_i (i + 1)
       | Some t ->
@@ -63,9 +61,9 @@ let gold_at g row col =
   with Not_found -> false
 
 let imitating g row col =
-  if g.dungeon.(row).(col) land 0o2 <> 0 then
+  if g.dungeon.(row).(col) land _MONSTER <> 0 then
     let monster = monster_at g row col in
-    if monster.mn_flags land 0o20000000 <> 0 then true else false
+    if monster.mn_flags land _IMITATES <> 0 then true else false
   else false
 
 let take_from_pack g ch =
@@ -99,11 +97,11 @@ let gmc g monster =
   if not
        (g.rogue.detect_monster || g.rogue.see_invisible ||
         g.rogue.r_see_invisible) &&
-     monster.mn_flags land 0o4 <> 0 ||
+     monster.mn_flags land _INVISIBLE <> 0 ||
      g.rogue.blind > 0
   then
     monster.mn_trail_char
-  else if monster.mn_flags land 0o20000000 <> 0 then monster.mn_disguise
+  else if monster.mn_flags land _IMITATES <> 0 then monster.mn_disguise
   else tgmc g monster.mn_char
 
 let get_mask_char obj =
@@ -120,18 +118,18 @@ let get_mask_char obj =
 
 let get_dungeon_char g row col =
   let mask = g.dungeon.(row).(col) in
-  if mask land 0o2 <> 0 then gmc g (monster_at g row col)
-  else if mask land 0o1 <> 0 then get_mask_char (object_at g row col)
-  else if mask land 0o4 <> 0 then '%'
-  else if mask land 0o200 <> 0 && mask land 0o1000 = 0 then '#'
-  else if mask land 0o10 <> 0 then '-'
-  else if mask land 0o20 <> 0 then '|'
-  else if mask land 0o100 <> 0 then
-    if mask land 0o400 <> 0 && mask land 0o1000 = 0 then '^' else '.'
-  else if mask land 0o40 <> 0 then
-    if mask land 0o1000 <> 0 then
-      if col > 0 && g.dungeon.(row).(col-1) land 0o10 <> 0 ||
-         col < 80 - 1 && g.dungeon.(row).(col+1) land 0o10 <> 0
+  if mask land _MONSTER <> 0 then gmc g (monster_at g row col)
+  else if mask land _OBJECT <> 0 then get_mask_char (object_at g row col)
+  else if mask land _STAIRS <> 0 then '%'
+  else if mask land _TUNNEL <> 0 && mask land _HIDDEN = 0 then '#'
+  else if mask land _HORWALL <> 0 then '-'
+  else if mask land _VERTWALL <> 0 then '|'
+  else if mask land _FLOOR <> 0 then
+    if mask land _TRAP <> 0 && mask land _HIDDEN = 0 then '^' else '.'
+  else if mask land _DOOR <> 0 then
+    if mask land _HIDDEN <> 0 then
+      if col > 0 && g.dungeon.(row).(col-1) land _HORWALL <> 0 ||
+         col < _DCOLS - 1 && g.dungeon.(row).(col+1) land _HORWALL <> 0
       then
         '-'
       else '|'
@@ -140,7 +138,8 @@ let get_dungeon_char g row col =
 
 let get_exp_level e =
   let rec loop_i i =
-    if i < 21 - 1 then if level_points.(i) > e then i + 1 else loop_i (i + 1)
+    if i < _MAX_EXP_LEVEL - 1 then
+      if level_points.(i) > e then i + 1 else loop_i (i + 1)
     else i + 1
   in
   loop_i 0
@@ -187,7 +186,7 @@ let add_exp g e promotion =
   rogue.exp_points <- rogue.exp_points + e;
   if rogue.exp_points >= level_points.(rogue.exp - 1) then
     let new_exp = get_exp_level rogue.exp_points in
-    if rogue.exp_points > 10000000 then rogue.exp_points <- 10000000 + 1;
+    if rogue.exp_points > _MAX_EXP then rogue.exp_points <- _MAX_EXP + 1;
     for i = rogue.exp + 1 to new_exp do
       let mbuf =
         sprintf (ftransl g.lang "Welcome to experience level %d!") i
@@ -197,10 +196,10 @@ let add_exp g e promotion =
       rogue.hp_current <- rogue.hp_current + hp;
       rogue.hp_max <- rogue.hp_max + hp;
       rogue.exp <- i;
-      Dialogue.print_stats g (0o4 lor 0o40);
+      Dialogue.print_stats g (_STAT_HP lor _STAT_EXP);
       show_rogue g
     done
-  else Dialogue.print_stats g 0o40
+  else Dialogue.print_stats g _STAT_EXP
 
 type saved = game * char array array
 let save_magic = "RGSV0005"
@@ -295,7 +294,7 @@ let save_into_file g fname =
     f_random.Efield.set g.env "random" (Some (Random.get_state ()));
   let oc = open_out_bin fname in
   let buf =
-    Array.init 24 (fun i -> Array.init 80 (fun j -> Curses.mvinch i j))
+    Array.init _DROWS (fun i -> Array.init _DCOLS (fun j -> Curses.mvinch i j))
   in
   output_string oc save_magic; output_value oc (g, buf : saved); close_out oc
 
@@ -303,7 +302,8 @@ let display_dungeon g buf =
   for i = 0 to Array.length buf - 1 do
     let line = buf.(i) in
     for j = 0 to Array.length line - 1 do
-      if line.(j) >= 'A' && line.(j) <= 'Z' && g.dungeon.(i).(j) land 0o2 <> 0
+      if line.(j) >= 'A' && line.(j) <= 'Z' &&
+         g.dungeon.(i).(j) land _MONSTER <> 0
       then
         let monster = monster_at g i j in
         show_monster g i j monster (gmc g monster)
@@ -331,36 +331,57 @@ let restore fname =
     begin close_in ic; failwith (sprintf "not a mlrogue saved file %s" b) end
 
 let get_dir_rc dir row col allow_off_screen =
-  match dir with
-    'h' -> row, (if allow_off_screen || col > 0 then col - 1 else col)
-  | 'j' -> (if allow_off_screen || row < 24 - 2 then row + 1 else row), col
-  | 'k' -> (if allow_off_screen || row > 1 then row - 1 else row), col
-  | 'l' -> row, (if allow_off_screen || col < 80 - 1 then col + 1 else col)
-  | 'y' ->
-      if allow_off_screen || row > 1 && col > 0 then row - 1, col - 1
-      else row, col
-  | 'u' ->
-      if allow_off_screen || row > 1 && col < 80 - 1 then row - 1, col + 1
-      else row, col
-  | 'b' ->
-      if allow_off_screen || row < 24 - 2 && col > 0 then row + 1, col - 1
-      else row, col
-  | 'n' ->
-      if allow_off_screen || row < 24 - 2 && col < 80 - 1 then
-        row + 1, col + 1
-      else row, col
-  | _ -> invalid_arg "get_dir_rc"
+  if dir = _ROGUE_KEY_WEST then
+    row, (if allow_off_screen || col > 0 then col - 1 else col)
+  else if dir = _ROGUE_KEY_SOUTH then
+    (if allow_off_screen || row < _DROWS - 2 then row + 1 else row), col
+  else if dir = _ROGUE_KEY_NORTH then
+    (if allow_off_screen || row > _MIN_ROW then row - 1 else row), col
+  else if dir = _ROGUE_KEY_EAST then
+    row, (if allow_off_screen || col < _DCOLS - 1 then col + 1 else col)
+  else if dir = _ROGUE_KEY_NORTHWEST then
+    if allow_off_screen || row > _MIN_ROW && col > 0 then row - 1, col - 1
+    else row, col
+  else if dir = _ROGUE_KEY_NORTHEAST then
+    if allow_off_screen || row > _MIN_ROW && col < _DCOLS - 1 then
+      row - 1, col + 1
+    else row, col
+  else if dir = _ROGUE_KEY_SOUTHWEST then
+    if allow_off_screen || row < _DROWS - 2 && col > 0 then row + 1, col - 1
+    else row, col
+  else if dir = _ROGUE_KEY_SOUTHEAST then
+    if allow_off_screen || row < _DROWS - 2 && col < _DCOLS - 1 then
+      row + 1, col + 1
+    else row, col
+  else
+    invalid_arg "get_dir_rc"
 
-let is_direction =
-  function
-    'h' | 'j' | 'k' | 'l' | 'b' | 'y' | 'u' | 'n' | '\027' -> true
-  | _ -> false
+let direction_list =
+  [_ROGUE_KEY_WEST; _ROGUE_KEY_SOUTH; _ROGUE_KEY_NORTH; _ROGUE_KEY_EAST;
+   _ROGUE_KEY_SOUTHWEST; _ROGUE_KEY_NORTHWEST; _ROGUE_KEY_NORTHEAST;
+   _ROGUE_KEY_SOUTHEAST; _ROGUE_KEY_CANCEL]
+
+let direction_ctrl_list =
+  [_ROGUE_KEY_WEST_CTRL; _ROGUE_KEY_SOUTH_CTRL; _ROGUE_KEY_NORTH_CTRL;
+   _ROGUE_KEY_EAST_CTRL; _ROGUE_KEY_NORTHWEST_CTRL;
+   _ROGUE_KEY_NORTHEAST_CTRL; _ROGUE_KEY_SOUTHEAST_CTRL;
+   _ROGUE_KEY_SOUTHWEST_CTRL]
+
+let direction_shift_list =
+  [_ROGUE_KEY_WEST_SHIFT; _ROGUE_KEY_SOUTH_SHIFT; _ROGUE_KEY_NORTH_SHIFT;
+   _ROGUE_KEY_EAST_SHIFT; _ROGUE_KEY_NORTHWEST_SHIFT;
+   _ROGUE_KEY_NORTHEAST_SHIFT; _ROGUE_KEY_SOUTHEAST_SHIFT;
+   _ROGUE_KEY_SOUTHWEST_SHIFT]
+
+let is_direction dir = List.mem dir direction_list
+let is_direction_ctrl dir = List.mem dir direction_ctrl_list
+let is_direction_shift dir = List.mem dir direction_shift_list
 
 let can_move g row1 col1 row2 col2 =
   if not (is_passable g row2 col2) then false
   else if row1 <> row2 && col1 <> col2 then
-    if g.dungeon.(row1).(col1) land 0o40 <> 0 ||
-       g.dungeon.(row2).(col2) land 0o40 <> 0 ||
+    if g.dungeon.(row1).(col1) land _DOOR <> 0 ||
+       g.dungeon.(row2).(col2) land _DOOR <> 0 ||
        g.dungeon.(row1).(col2) = 0 || g.dungeon.(row2).(col1) = 0
     then
       false
@@ -370,14 +391,14 @@ let can_move g row1 col1 row2 col2 =
 let light_passage g row col =
   if g.rogue.blind > 0 then ()
   else
-    let i_end = if row < 24 - 2 then 1 else 0 in
-    let j_end = if col < 80 - 1 then 1 else 0 in
-    for i = if row > 1 then -1 else 0 to i_end do
+    let i_end = if row < _DROWS - 2 then 1 else 0 in
+    let j_end = if col < _DCOLS - 1 then 1 else 0 in
+    for i = if row > _MIN_ROW then -1 else 0 to i_end do
       for j = if col > 0 then -1 else 0 to j_end do
         if can_move g row col (row + i) (col + j) then
           let i = row + i in
           let j = col + j in
-          if g.dungeon.(i).(j) land 0o2 <> 0 then
+          if g.dungeon.(i).(j) land _MONSTER <> 0 then
             let monster = monster_at g i j in
             show_monster g i j monster (gmc g monster)
           else Curses.mvaddch i j (get_dungeon_char g i j)
@@ -389,11 +410,11 @@ let light_up_room g rn =
     let rm = g.rooms.(rn) in
     for i = rm.top_row to rm.bottom_row do
       for j = rm.left_col to rm.right_col do
-        if g.dungeon.(i).(j) land 0o2 <> 0 then
+        if g.dungeon.(i).(j) land _MONSTER <> 0 then
           let monster = monster_at g i j in
-          g.dungeon.(i).(j) <- g.dungeon.(i).(j) land lnot 0o2;
+          g.dungeon.(i).(j) <- g.dungeon.(i).(j) land lnot _MONSTER;
           monster.mn_trail_char <- get_dungeon_char g i j;
-          g.dungeon.(i).(j) <- g.dungeon.(i).(j) lor 0o2;
+          g.dungeon.(i).(j) <- g.dungeon.(i).(j) lor _MONSTER;
           show_monster g i j monster (gmc g monster)
         else
           let ch = get_dungeon_char g i j in
@@ -465,7 +486,7 @@ let un_put_on g ring =
   end;
   ring.rg_in_use <- None;
   ring_stats g;
-  Dialogue.print_stats g 0o10;
+  Dialogue.print_stats g _STAT_STRENGTH;
   relight g
 
 let vanish g ch obj =
@@ -489,10 +510,10 @@ let show_monsters g =
       (fun monster ->
          show_monster g monster.mn_row monster.mn_col monster
            (tgmc g monster.mn_char);
-         if monster.mn_flags land 0o20000000 <> 0 then
+         if monster.mn_flags land _IMITATES <> 0 then
            begin
-             monster.mn_flags <- monster.mn_flags land lnot 0o20000000;
-             monster.mn_flags <- monster.mn_flags lor 0o20
+             monster.mn_flags <- monster.mn_flags land lnot _IMITATES;
+             monster.mn_flags <- monster.mn_flags lor _WAKENS
            end)
       g.level_monsters
 

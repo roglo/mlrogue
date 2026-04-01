@@ -2,11 +2,13 @@ asttypes.cmi : \
     location.cmi
 attack.cmo : \
     translate.cmi \
+    rogue_def.cmo \
     rogue.cmi \
     object.cmi \
     monster.cmi \
     misc.cmi \
     level.cmi \
+    keyboard_def.cmo \
     imonster.cmi \
     imisc.cmi \
     dialogue.cmi \
@@ -14,11 +16,13 @@ attack.cmo : \
     attack.cmi
 attack.cmx : \
     translate.cmx \
+    rogue_def.cmx \
     rogue.cmi \
     object.cmx \
     monster.cmx \
     misc.cmx \
     level.cmx \
+    keyboard_def.cmx \
     imonster.cmx \
     imisc.cmx \
     dialogue.cmx \
@@ -34,11 +38,13 @@ curses.cmi :
 dialogue.cmo : \
     ustring.cmi \
     translate.cmi \
+    rogue_def.cmo \
     rogue.cmi \
     rogbotio.cmi \
     robot.cmi \
     rfield.cmi \
     object.cmi \
+    keyboard_def.cmo \
     imisc.cmi \
     efield.cmi \
     curses.cmi \
@@ -46,11 +52,13 @@ dialogue.cmo : \
 dialogue.cmx : \
     ustring.cmx \
     translate.cmx \
+    rogue_def.cmx \
     rogue.cmi \
     rogbotio.cmx \
     robot.cmx \
     rfield.cmx \
     object.cmx \
+    keyboard_def.cmx \
     imisc.cmx \
     efield.cmx \
     curses.cmx \
@@ -64,6 +72,7 @@ efield.cmx : \
 efield.cmi :
 finish.cmo : \
     translate.cmi \
+    rogue_def.cmo \
     rogue.cmi \
     rfield.cmi \
     object.cmi \
@@ -74,6 +83,7 @@ finish.cmo : \
     finish.cmi
 finish.cmx : \
     translate.cmx \
+    rogue_def.cmx \
     rogue.cmi \
     rfield.cmx \
     object.cmx \
@@ -135,11 +145,13 @@ gramext.cmi : \
     plexing.cmi \
     fstream.cmi
 imisc.cmo : \
+    rogue_def.cmo \
     rogue.cmi \
     rfield.cmi \
     efield.cmi \
     imisc.cmi
 imisc.cmx : \
+    rogue_def.cmx \
     rogue.cmi \
     rfield.cmx \
     efield.cmx \
@@ -147,10 +159,12 @@ imisc.cmx : \
 imisc.cmi : \
     rogue.cmi
 imonster.cmo : \
+    rogue_def.cmo \
     rogue.cmi \
     imisc.cmi \
     imonster.cmi
 imonster.cmx : \
+    rogue_def.cmx \
     rogue.cmi \
     imisc.cmx \
     imonster.cmi
@@ -158,6 +172,7 @@ imonster.cmi : \
     rogue.cmi
 init.cmo : \
     translate.cmi \
+    rogue_def.cmo \
     rogue.cmi \
     rogbotio.cmi \
     robot.cmi \
@@ -168,6 +183,7 @@ init.cmo : \
     init.cmi
 init.cmx : \
     translate.cmx \
+    rogue_def.cmx \
     rogue.cmi \
     rogbotio.cmx \
     robot.cmx \
@@ -179,7 +195,10 @@ init.cmx : \
 init.cmi : \
     rogue.cmi \
     rfield.cmi
+keyboard_def.cmo :
+keyboard_def.cmx :
 level.cmo : \
+    rogue_def.cmo \
     rogue.cmi \
     rfield.cmi \
     object.cmi \
@@ -188,6 +207,7 @@ level.cmo : \
     efield.cmi \
     level.cmi
 level.cmx : \
+    rogue_def.cmx \
     rogue.cmi \
     rfield.cmx \
     object.cmx \
@@ -204,6 +224,7 @@ main.cmo : \
     ustring.cmi \
     use.cmi \
     translate.cmi \
+    rogue_def.cmo \
     rogue.cmi \
     robot.cmi \
     rfield.cmi \
@@ -212,6 +233,7 @@ main.cmo : \
     monster.cmi \
     misc.cmi \
     level.cmi \
+    keyboard_def.cmo \
     init.cmi \
     imonster.cmi \
     imisc.cmi \
@@ -224,6 +246,7 @@ main.cmx : \
     ustring.cmx \
     use.cmx \
     translate.cmx \
+    rogue_def.cmx \
     rogue.cmi \
     robot.cmx \
     rfield.cmx \
@@ -232,6 +255,7 @@ main.cmx : \
     monster.cmx \
     misc.cmx \
     level.cmx \
+    keyboard_def.cmx \
     init.cmx \
     imonster.cmx \
     imisc.cmx \
@@ -242,8 +266,10 @@ main.cmx : \
     attack.cmx
 misc.cmo : \
     translate.cmi \
+    rogue_def.cmo \
     rogue.cmi \
     rfield.cmi \
+    keyboard_def.cmo \
     imonster.cmi \
     efield.cmi \
     dialogue.cmi \
@@ -251,8 +277,10 @@ misc.cmo : \
     misc.cmi
 misc.cmx : \
     translate.cmx \
+    rogue_def.cmx \
     rogue.cmi \
     rfield.cmx \
+    keyboard_def.cmx \
     imonster.cmx \
     efield.cmx \
     dialogue.cmx \
@@ -262,6 +290,7 @@ misc.cmi : \
     rogue.cmi
 monster.cmo : \
     translate.cmi \
+    rogue_def.cmo \
     rogue.cmi \
     misc.cmi \
     imonster.cmi \
@@ -272,6 +301,7 @@ monster.cmo : \
     monster.cmi
 monster.cmx : \
     translate.cmx \
+    rogue_def.cmx \
     rogue.cmi \
     misc.cmx \
     imonster.cmx \
@@ -284,12 +314,14 @@ monster.cmi : \
     rogue.cmi
 move.cmo : \
     translate.cmi \
+    rogue_def.cmo \
     rogue.cmi \
     rfield.cmi \
     object.cmi \
     monster.cmi \
     misc.cmi \
     level.cmi \
+    keyboard_def.cmo \
     imonster.cmi \
     imisc.cmi \
     finish.cmi \
@@ -300,12 +332,14 @@ move.cmo : \
     move.cmi
 move.cmx : \
     translate.cmx \
+    rogue_def.cmx \
     rogue.cmi \
     rfield.cmx \
     object.cmx \
     monster.cmx \
     misc.cmx \
     level.cmx \
+    keyboard_def.cmx \
     imonster.cmx \
     imisc.cmx \
     finish.cmx \
@@ -493,6 +527,8 @@ rogbotio.cmi :
 rogue.cmi : \
     rfield.cmi \
     efield.cmi
+rogue_def.cmo :
+rogue_def.cmx :
 translate.cmo : \
     translate.cmi
 translate.cmx : \
@@ -501,11 +537,13 @@ translate.cmi : \
     rogue.cmi
 use.cmo : \
     translate.cmi \
+    rogue_def.cmo \
     rogue.cmi \
     object.cmi \
     move.cmi \
     monster.cmi \
     misc.cmi \
+    keyboard_def.cmo \
     imonster.cmi \
     imisc.cmi \
     dialogue.cmi \
@@ -513,11 +551,13 @@ use.cmo : \
     use.cmi
 use.cmx : \
     translate.cmx \
+    rogue_def.cmx \
     rogue.cmi \
     object.cmx \
     move.cmx \
     monster.cmx \
     misc.cmx \
+    keyboard_def.cmx \
     imonster.cmx \
     imisc.cmx \
     dialogue.cmx \

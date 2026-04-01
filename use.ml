@@ -2,11 +2,8 @@
 
 (* #load "pa_more.cmo" *)
 
-(* #use "rogue.def" *)
-
-
-(* #use "keyboard.def" *)
-
+open Rogue_def
+open Keyboard_def
 
 open Rogue
 open Dialogue
@@ -22,13 +19,13 @@ let potion_heal g extra =
   let ratio = float rogue.hp_current /. float rogue.hp_max in
   if ratio >= 1.00 then
     begin
-      rogue.hp_max <- min 800 (rogue.hp_max + (if extra then 2 else 1));
+      rogue.hp_max <- min _MAX_HP (rogue.hp_max + (if extra then 2 else 1));
       rogue.extra_hp <- rogue.extra_hp + (if extra then 2 else 1);
       rogue.hp_current <- rogue.hp_max
     end
   else if ratio >= 0.90 then
     begin
-      rogue.hp_max <- min 800 (rogue.hp_max + (if extra then 1 else 0));
+      rogue.hp_max <- min _MAX_HP (rogue.hp_max + (if extra then 1 else 0));
       rogue.extra_hp <- rogue.extra_hp + (if extra then 1 else 0);
       rogue.hp_current <- rogue.hp_max
     end
@@ -77,7 +74,7 @@ let show_objects g =
            let row = obj.ob_row in
            let col = obj.ob_col in
            let rc = get_mask_char obj in
-           if g.dungeon.(row).(col) land 0o2 <> 0 then
+           if g.dungeon.(row).(col) land _MONSTER <> 0 then
              begin let monster = monster_at g row col in
                monster.mn_trail_char <- rc
              end;
@@ -89,7 +86,7 @@ let show_objects g =
         g.level_objects;
       List.iter
         (fun monster ->
-           if monster.mn_flags land 0o20000000 <> 0 then
+           if monster.mn_flags land _IMITATES <> 0 then
              Curses.mvaddch monster.mn_row monster.mn_col monster.mn_disguise)
         g.level_monsters
     end
@@ -102,10 +99,11 @@ let apply_potion g =
       g.rogue.str_current <- g.rogue.str_current + 1;
       if g.rogue.str_current > g.rogue.str_max then
         g.rogue.str_max <- g.rogue.str_current;
-      if g.rogue.str_max > 99 then
+      if g.rogue.str_max > _MAX_STRENGTH then
         begin
-          g.rogue.str_current <- g.rogue.str_current - (g.rogue.str_max - 99);
-          g.rogue.str_max <- 99
+          g.rogue.str_current <-
+            g.rogue.str_current - (g.rogue.str_max - _MAX_STRENGTH);
+          g.rogue.str_max <- _MAX_STRENGTH
         end
   | RestoreStrength ->
       g.rogue.str_current <- g.rogue.str_max;
@@ -124,7 +122,7 @@ let apply_potion g =
       if g.rogue.halluc > 0 then Move.unhallucinate g
   | Blindness -> go_blind g
   | RaiseLevel ->
-      if g.rogue.exp_points < 10000000 then
+      if g.rogue.exp_points < _MAX_EXP then
         g.rogue.exp_points <- level_points.(g.rogue.exp - 1);
       add_exp g 1 hp_raise
   | Hallucination ->
@@ -177,7 +175,7 @@ let quaff g =
          Potion _ -> true
        | _ -> false)
   in
-  if ch = '\027' then ()
+  if ch = _ROGUE_KEY_CANCEL then ()
   else
     match get_letter_object g ch false with
       None -> ()
@@ -185,7 +183,7 @@ let quaff g =
         match obj.ob_kind with
           Potion p ->
             apply_potion g p;
-            print_stats g (0o10 lor 0o4);
+            print_stats g (_STAT_STRENGTH lor _STAT_HP);
             g.id_potions.(int_of_potion p) <- Identified;
             vanish g ch obj;
             Move.reg_move g
@@ -202,7 +200,7 @@ let idntfy g =
       pack_letter g (transl g.lang "What would you like to identify?")
         (fun _ -> true)
     in
-    if ch = '\027' then ()
+    if ch = _ROGUE_KEY_CANCEL then ()
     else
       match get_letter_object g ch true with
         None -> message g "" false; check_message g; loop ()
@@ -235,41 +233,42 @@ let uncurse_all g =
     g.rogue.pack
 
 let draw_magic_map g wizard_key =
-  let mask = 0o10 lor 0o20 lor 0o40 lor 0o200 lor 0o400 lor 0o4 lor 0o2 in
-  for i = 0 to 24 - 1 do
-    for j = 0 to 80 - 1 do
+  let mask =
+    _HORWALL lor _VERTWALL lor _DOOR lor _TUNNEL lor _TRAP lor _STAIRS lor _MONSTER
+  in
+  for i = 0 to _DROWS - 1 do
+    for j = 0 to _DCOLS - 1 do
       let s = g.dungeon.(i).(j) in
       if s land mask <> 0 then
         let ch = Curses.mvinch i j in
-        if ch = ' ' || ch >= 'A' && ch <= 'Z' ||
-           s land (0o400 lor 0o1000) <> 0
+        if ch = ' ' || ch >= 'A' && ch <= 'Z' || s land (_TRAP lor _HIDDEN) <> 0
         then
           let och = ch in
-          if not wizard_key || s land 0o400 <> 0 then
-            g.dungeon.(i).(j) <- g.dungeon.(i).(j) land lnot 0o1000;
+          if not wizard_key || s land _TRAP <> 0 then
+            g.dungeon.(i).(j) <- g.dungeon.(i).(j) land lnot _HIDDEN;
           let ch =
-            if g.dungeon.(i).(j) land 0o1000 <> 0 then get_dungeon_char g i j
-            else if s land 0o10 <> 0 then '-'
-            else if s land 0o20 <> 0 then '|'
-            else if s land 0o40 <> 0 then '+'
-            else if s land 0o400 <> 0 then '^'
-            else if s land 0o4 <> 0 then '%'
-            else if s land 0o200 <> 0 then '#'
+            if g.dungeon.(i).(j) land _HIDDEN <> 0 then get_dungeon_char g i j
+            else if s land _HORWALL <> 0 then '-'
+            else if s land _VERTWALL <> 0 then '|'
+            else if s land _DOOR <> 0 then '+'
+            else if s land _TRAP <> 0 then '^'
+            else if s land _STAIRS <> 0 then '%'
+            else if s land _TUNNEL <> 0 then '#'
             else ' '
           in
           if ch = ' ' then ()
           else
             begin
-              if s land 0o2 = 0 || och = ' ' then Curses.addch ch;
-              if s land 0o2 <> 0 then
+              if s land _MONSTER = 0 || och = ' ' then Curses.addch ch;
+              if s land _MONSTER <> 0 then
                 let monster = monster_at g i j in monster.mn_trail_char <- ch
             end
     done
   done;
   if wizard_key then
-    for i = 0 to 9 - 1 do
+    for i = 0 to _MAXROOMS - 1 do
       let rm = g.rooms.(i) in
-      if rm.is_room land (0o2 lor 0o4) = 0 then
+      if rm.is_room land (_R_ROOM lor _R_MAZE) = 0 then
         begin
           for col = rm.left_col to rm.right_col do
             if Curses.mvinch rm.top_row col = ' ' then
@@ -294,14 +293,14 @@ let create_monster g =
       if i = 9 then None
       else
         let (row, col) = rand_around g i row col in
-        if row = g.rogue.row && col = g.rogue.col || row < 1 ||
-           row > 24 - 2 || col < 0 || col > 80 - 1
+        if row = g.rogue.row && col = g.rogue.col || row < _MIN_ROW ||
+           row > _DROWS - 2 || col < 0 || col > _DCOLS - 1
         then
           loop (i + 1)
         else
           let ch = g.dungeon.(row).(col) in
-          if ch land 0o2 = 0 && ch land 0o1000 = 0 &&
-             ch land (0o100 lor 0o200 lor 0o4 lor 0o40) <> 0
+          if ch land _MONSTER = 0 && ch land _HIDDEN = 0 &&
+             ch land (_FLOOR lor _TUNNEL lor _STAIRS lor _DOOR) <> 0
           then
             Some (row, col)
           else loop (i + 1)
@@ -314,7 +313,7 @@ let create_monster g =
       put_m_at g row col monster;
       monster.mn_trail_char <- Curses.mvinch row col;
       show_monster g row col monster (gmc g monster);
-      if monster.mn_flags land (0o40 lor 0o20) <> 0 then wake_up monster
+      if monster.mn_flags land (_WANDERS lor _WAKENS) <> 0 then wake_up monster
   | None ->
       message g
         (transl g.lang "You hear a faint cry of anguish in the distance.")
@@ -325,7 +324,7 @@ let aggravate_monster g =
   List.iter
     (fun monster ->
        wake_up monster;
-       monster.mn_flags <- monster.mn_flags land lnot 0o20000000;
+       monster.mn_flags <- monster.mn_flags land lnot _IMITATES;
        if rogue_can_see g monster.mn_row monster.mn_col then
          Curses.mvaddch monster.mn_row monster.mn_col
            (tgmc g monster.mn_char))
@@ -339,12 +338,13 @@ let hold_monster g =
           if j <= 2 then
             let row = g.rogue.row + i in
             let col = g.rogue.col + j in
-            if row < 1 || row > 24 - 1 || col < 0 || col > 80 - 1 then
+            if row < _MIN_ROW || row > _DROWS - 1 || col < 0 || col > _DCOLS - 1
+            then
               loop_j mcount (j + 1)
-            else if g.dungeon.(row).(col) land 0o2 <> 0 then
+            else if g.dungeon.(row).(col) land _MONSTER <> 0 then
               let monster = monster_at g row col in
-              monster.mn_flags <- monster.mn_flags lor 0o10;
-              monster.mn_flags <- monster.mn_flags land lnot 0o20;
+              monster.mn_flags <- monster.mn_flags lor _ASLEEP;
+              monster.mn_flags <- monster.mn_flags land lnot _WAKENS;
               loop_j (mcount + 1) (j + 1)
             else loop_j mcount (j + 1)
           else loop_i mcount (i + 1)
@@ -404,9 +404,9 @@ let apply_scroll g =
           in
           message g (etransl msg) false;
           a.ar_enchant <- a.ar_enchant + 1;
-          a.ar_enchant <- min a.ar_enchant (99 - a.ar_class);
+          a.ar_enchant <- min a.ar_enchant (_MAX_ARMOR - a.ar_class);
           a.ar_is_cursed <- false;
-          print_stats g 0o20
+          print_stats g _STAT_ARMOR
       | None -> message g (transl g.lang "Your skin crawls.") false
       end
   | Identify ->
@@ -443,7 +443,7 @@ let read_scroll g =
            Scroll _ -> true
          | _ -> false)
     in
-    if ch = '\027' then ()
+    if ch = _ROGUE_KEY_CANCEL then ()
     else
       match get_letter_object g ch false with
         None -> ()
@@ -463,7 +463,7 @@ let eat g =
          Food _ -> true
        | _ -> false)
   in
-  if ch = '\027' then ()
+  if ch = _ROGUE_KEY_CANCEL then ()
   else
     match get_letter_object g ch false with
       None -> ()
@@ -496,7 +496,7 @@ let eat g =
             g.rogue.moves_left <- g.rogue.moves_left / 3;
             g.rogue.moves_left <- g.rogue.moves_left + moves;
             g.hunger_str <- "";
-            print_stats g 0o100;
+            print_stats g _STAT_HUNGER;
             vanish g ch obj;
             Move.reg_move g
         | _ -> message g (transl g.lang "You can't eat that!") false
@@ -511,7 +511,7 @@ let wear g =
         | _ -> false
       in
       let ch = pack_letter g (transl g.lang "Wear what?") mask in
-      if ch = '\027' then ()
+      if ch = _ROGUE_KEY_CANCEL then ()
       else
         match get_letter_object g ch false with
           None -> ()
@@ -523,7 +523,7 @@ let wear g =
                 do_wear g ch a;
                 let msg = transl g.lang "Wearing" ^ " " ^ d in
                 message g (etransl msg ^ ".") false;
-                print_stats g 0o20;
+                print_stats g _STAT_ARMOR;
                 Move.reg_move g
             | _ -> message g (transl g.lang "You can't wear that" ^ ".") false
 
@@ -542,7 +542,7 @@ let wield g =
            Weapon _ -> true
          | _ -> false)
     in
-    if ch = '\027' then ()
+    if ch = _ROGUE_KEY_CANCEL then ()
     else
       match get_letter_object g ch false with
         None -> ()
@@ -578,7 +578,7 @@ let take_off g =
           unwear g;
           let msg = transl g.lang "Was wearing" ^ " " ^ armor_desc g a in
           message g (etransl msg ^ ".") false;
-          print_stats g 0o20;
+          print_stats g _STAT_ARMOR;
           Move.reg_move g
         end
   | None -> message g (transl g.lang "Not wearing any" ^ ".") false
@@ -602,7 +602,7 @@ let put_on_ring g =
            Ring _ -> true
          | _ -> false)
     in
-    if ch = '\027' then ()
+    if ch = _ROGUE_KEY_CANCEL then ()
     else
       match get_letter_object g ch false with
         None -> ()
@@ -622,7 +622,8 @@ let put_on_ring g =
                       message g (transl g.lang "Left or right hand?") false;
                       let rec loop () =
                         let ch = rgetchar g in
-                        if ch <> '\027' && ch <> translc g.lang 'r' &&
+                        if ch <> _ROGUE_KEY_CANCEL &&
+                           ch <> translc g.lang 'r' &&
                            ch <> translc g.lang 'l'
                         then
                           loop ()
@@ -631,13 +632,13 @@ let put_on_ring g =
                       loop ()
                     end
                 in
-                if ch = '\027' then check_message g
+                if ch = _ROGUE_KEY_CANCEL then check_message g
                 else
                   begin
                     do_put_on g ring (ch = translc g.lang 'l');
                     check_message g;
                     ring_stats g;
-                    print_stats g 0o10;
+                    print_stats g _STAT_STRENGTH;
                     relight g;
                     let desc = get_desc g obj true in
                     message g (etransl desc) false; Move.reg_move g
@@ -681,8 +682,8 @@ let remove_ring g =
         message g (transl g.lang "Left or right hand?") false;
         let rec loop () =
           let ch = rgetchar g in
-          if ch <> '\027' && ch <> translc g.lang 'r' && ch <> '\r' &&
-             ch <> translc g.lang 'l'
+          if ch <> _ROGUE_KEY_CANCEL && ch <> translc g.lang 'r' &&
+             ch <> '\r' && ch <> translc g.lang 'l'
           then
             loop ()
           else

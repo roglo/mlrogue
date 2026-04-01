@@ -2,11 +2,8 @@
 
 (* #load "pa_more.cmo" *)
 
-(* #use "rogue.def" *)
-
-
-(* #use "keyboard.def" *)
-
+open Rogue_def
+open Keyboard_def
 
 open Rogue
 open Rfield
@@ -165,9 +162,9 @@ let get_desc g obj cap =
 let save_screen () =
   match try Some (open_out "rogue.screen") with Sys_error _ -> None with
     Some oc ->
-      for i = 0 to 24 - 1 do
+      for i = 0 to _DROWS - 1 do
         let spaces = ref 0 in
-        for j = 0 to 80 - 1 do
+        for j = 0 to _DCOLS - 1 do
           match Curses.mvinch i j with
             ' ' -> incr spaces
           | ch ->
@@ -180,11 +177,12 @@ let save_screen () =
       close_out oc
   | None -> ()
 
-let rec rgetchar_stdin =
-  function
-    '\018' -> Curses.wrefresh_curscr (); rgetchar_stdin (Curses.getch ())
-  | 'X' -> save_screen (); rgetchar_stdin (Curses.getch ())
-  | ch -> ch
+let rec rgetchar_stdin ch =
+  if ch = _ROGUE_KEY_REFRESH then begin
+    Curses.wrefresh_curscr (); rgetchar_stdin (Curses.getch ())
+  end else if ch = _ROGUE_KEY_SAVE_SCREEN then begin
+    save_screen (); rgetchar_stdin (Curses.getch ())
+  end else ch
 let rgetchar_human () = rgetchar_stdin (Curses.getch ())
 
 let dungeon_string g =
@@ -217,7 +215,7 @@ let display_pause line =
     Curses.move row col;
     Curses.refresh ()
 
-let pause_char = '\003'
+let pause_char = _CTRL 'c'
 
 let rgetchar_local_robot g rob =
   let (row, col) = Curses.pos_get () in
@@ -282,13 +280,13 @@ let rgetchar g =
   if f_bool.Efield.get g.env "failed" false then rgetchar_human ()
   else
     match f_player_species.Efield.get g.env "player_species" PShuman with
-      PSsocket s -> Rogbotio.getchar 24 80 s
+      PSsocket s -> Rogbotio.getchar _DROWS _DCOLS s
     | PSrobot rob -> rgetchar_local_robot g rob
     | PShuman -> rgetchar_human ()
 
 (* message *)
 
-let sound_bell () = print_char '\007'; flush stdout
+let sound_bell () = print_char (_CTRL 'g'); flush stdout
 
 let wait_for_ack g = while rgetchar g <> ' ' do () done
 
@@ -296,7 +294,7 @@ let check_message g =
   if g.msg_cleared then ()
   else
     begin
-      Curses.move (1 - 1) 0;
+      Curses.move (_MIN_ROW - 1) 0;
       Curses.clrtoeol ();
       Curses.refresh ();
       g.msg_cleared <- true
@@ -307,7 +305,7 @@ let message g msg intrpt =
   g.can_int <- true;
   if not g.msg_cleared then
     begin
-      Curses.mvaddstr (1 - 1) g.msg_col (transl g.lang " -- More --");
+      Curses.mvaddstr (_MIN_ROW - 1) g.msg_col (transl g.lang " -- More --");
       Curses.refresh ();
       wait_for_ack g;
       check_message g;
@@ -316,7 +314,7 @@ let message g msg intrpt =
     end
   else g.same_msg <- 0;
   g.msg_line <- msg;
-  Curses.mvaddstr (1 - 1) 0 msg;
+  Curses.mvaddstr (_MIN_ROW - 1) 0 msg;
   if g.same_msg > 0 then
     let buf = sprintf " (%d)" (g.same_msg + 1) in
     Curses.addstr buf; g.msg_col <- String.length buf
@@ -357,7 +355,7 @@ let inv_sel g pack mask prompt term =
     in
     let len = List.length list in
     let maxlen = max maxlen (String.length prompt) in
-    let col = 80 - (maxlen + 2) in
+    let col = _DCOLS - (maxlen + 2) in
     let saved =
       Array.init (len + 1) (fun _ -> string_make (maxlen + 2) ' ')
     in
@@ -433,10 +431,10 @@ let print_stats g stat_mask =
     transl g.lang
       "Level: 99 Gold: 999999 Hp: 999(999) Str: 99(99) Arm: 99 Exp: 21/10000000"
   in
-  let row = 24 - 1 in
-  if stat_mask = 0o377 then
+  let row = _DROWS - 1 in
+  if stat_mask = _STAT_ALL then
     begin Curses.mvaddstr row 0 ""; Curses.clrtoeol () end;
-  let label = stat_mask land 0o200 <> 0 in
+  let label = stat_mask land _STAT_LABEL <> 0 in
   let pr mask1 start1 b1 pad1 =
     if stat_mask land mask1 <> 0 then
       match scanbrd brd 0 start1 with
@@ -446,16 +444,16 @@ let print_stats g stat_mask =
           pad b1 pad1
       | None -> ()
   in
-  pr 0x1 0 (string_of_int g.cur_level) 2;
-  pr 0o2 1 (string_of_int g.rogue.gold) 6;
-  pr 0o4 2 (sprintf "%d(%d)" g.rogue.hp_current g.rogue.hp_max) 8;
-  pr 0o10 3
+  pr _STAT_LEVEL 0 (string_of_int g.cur_level) 2;
+  pr _STAT_GOLD 1 (string_of_int g.rogue.gold) 6;
+  pr _STAT_HP 2 (sprintf "%d(%d)" g.rogue.hp_current g.rogue.hp_max) 8;
+  pr _STAT_STRENGTH 3
     (sprintf "%d(%d)" (g.rogue.str_current + g.rogue.add_strength)
        g.rogue.str_max)
     6;
-  pr 0o20 4 (string_of_int (Imisc.get_armor_class g.rogue.armor)) 2;
-  pr 0o40 5 (sprintf "%d/%d" g.rogue.exp g.rogue.exp_points) 11;
-  if stat_mask land 0o100 <> 0 then
+  pr _STAT_ARMOR 4 (string_of_int (Imisc.get_armor_class g.rogue.armor)) 2;
+  pr _STAT_EXP 5 (sprintf "%d/%d" g.rogue.exp g.rogue.exp_points) 11;
+  if stat_mask land _STAT_HUNGER <> 0 then
     begin
       Curses.mvaddstr row 73
         (if g.hunger_str <> "" then transl g.lang g.hunger_str else "");
@@ -475,63 +473,69 @@ let in_use =
   | _ -> false
 
 let is_pack_letter g ch mask =
+  if ch = _ROGUE_KEY_CANCEL then Some (ch, mask)
+  else if ch = _ROGUE_KEY_LIST then Some (ch, mask)
+  else
   match ch with
-    'a'..'z' | '\027' | '*' -> Some (ch, mask)
+    'a'..'z' -> Some (ch, mask)
   | '?' ->
       Some
-        ('*',
+        (_ROGUE_KEY_LIST,
          (function
             Scroll _ -> true
           | _ -> false))
   | '!' ->
       Some
-        ('*',
+        (_ROGUE_KEY_LIST,
          (function
             Potion _ -> true
           | _ -> false))
   | ':' ->
       Some
-        ('*',
+        (_ROGUE_KEY_LIST,
          (function
             Food _ -> true
           | _ -> false))
   | ')' ->
       Some
-        ('*',
+        (_ROGUE_KEY_LIST,
          (function
             Weapon _ -> true
           | _ -> false))
   | ']' ->
       Some
-        ('*',
+        (_ROGUE_KEY_LIST,
          (function
             Armor _ -> true
           | _ -> false))
   | '/' ->
       Some
-        ('*',
+        (_ROGUE_KEY_LIST,
          (function
             Wand _ -> true
           | _ -> false))
   | '=' ->
       Some
-        ('*',
+        (_ROGUE_KEY_LIST,
          (function
             Ring _ -> true
           | _ -> false))
   | ',' ->
       Some
-        ('*',
+        (_ROGUE_KEY_LIST,
          (function
             Amulet -> true
           | _ -> false))
-  | '.' -> Some ('*', in_use)
+  | '.' -> Some (_ROGUE_KEY_LIST, in_use)
   | _ -> None
 
 let pack_letter g prompt mask =
   let tmask = mask in
   if not (mask_pack g.rogue.pack mask) then
-    begin message g (transl g.lang "Nothing appropriate.") false; '\027' end
+    begin
+      message g (transl g.lang "Nothing appropriate.") false;
+      _ROGUE_KEY_CANCEL
+    end
   else
     let ch =
       let rec loop () =
@@ -545,7 +549,7 @@ let pack_letter g prompt mask =
           in
           loop1 ()
         in
-        if ch = '*' then
+        if ch = _ROGUE_KEY_LIST then
           let ch =
             let rec loop mask =
               check_message g;
@@ -556,8 +560,10 @@ let pack_letter g prompt mask =
               in
               match cho with
                 Some ch ->
+		  if ch = _ROGUE_KEY_CANCEL then ch
+		  else
                   begin match ch with
-                    '\027' | ' ' | 'a'..'z' -> ch
+                    ' ' | 'a'..'z' -> ch
                   | _ ->
                       match is_pack_letter g ch tmask with
                         Some (_, mask) -> loop mask
@@ -589,7 +595,7 @@ let wizard_sel create list =
   list
 
 let new_object_for_wizard g =
-  if Imisc.pack_count g None >= 24 then
+  if Imisc.pack_count g None >= _MAX_PACK_COUNT then
     message g (transl g.lang "Pack full.") false
   else
     let obj_sel = "!?:)]=/," in

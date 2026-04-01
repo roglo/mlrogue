@@ -10,6 +10,8 @@ val level_points : int array
 val add_exp : game -> int -> (game -> int) -> unit
 
 val is_direction : char -> bool
+val is_direction_shift : char -> bool
+val is_direction_ctrl : char -> bool
 val is_passable : game -> int -> int -> bool
 val can_move : game -> int -> int -> int -> int -> bool
 val fast : game -> bool

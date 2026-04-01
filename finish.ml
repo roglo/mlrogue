@@ -1,8 +1,7 @@
 (* $Id: finish.ml,v 1.43 2018/04/26 09:52:36 deraugla Exp $ *)
 
 (* #load "pa_more.cmo" *)
-(* #use "rogue.def" *)
-
+open Rogue_def
 
 open Rogue
 open Rfield
@@ -106,7 +105,7 @@ let sell_pack g =
          | _ ->
              let v = max 10 (get_value g obj) in
              g.rogue.gold <- g.rogue.gold + v;
-             if row < 24 then
+             if row < _DROWS then
                begin let d = get_desc g obj true in
                  let line = sprintf "%5d      %s" v (etransl d) in
                  Curses.mvaddstr row 0 line
@@ -116,7 +115,7 @@ let sell_pack g =
   in
   Curses.refresh (); message g "" false
 
-(* *)
+let _MAXRANK = 15
 
 let score_magic = "RGSC0001"
 let score_file = ".rogue.scores"
@@ -150,7 +149,8 @@ let write_scores scores =
   match try Some (open_out_bin score_file) with Sys_error _ -> None with
     Some oc ->
       let scores =
-        if List.length scores > 15 then List.rev (List.tl (List.rev scores))
+        if List.length scores > _MAXRANK then
+          List.rev (List.tl (List.rev scores))
         else scores
       in
       output_string oc score_magic;
@@ -160,7 +160,7 @@ let write_scores scores =
 
 let insert_score sc =
   let rec loop inserted rank scl =
-    if rank = 15 + 1 then
+    if rank = _MAXRANK + 1 then
       if not inserted then [sc], rank
       else
         match scl with
@@ -225,7 +225,7 @@ let put_scores lang score_only g_ending =
         if f_bool.Efield.get g.env "batch" false then
           (let s = ending_reason_line lang score in printf "%s" s);
         insert_score score scores
-    | _ -> scores, 15 + 1
+    | _ -> scores, _MAXRANK + 1
   in
   if score_only then () else write_scores scores;
   Curses.clear ();
@@ -234,12 +234,12 @@ let put_scores lang score_only g_ending =
   let _ =
     List.fold_left
       (fun rank score ->
-         if rank > 15 && rank <> n then rank + 1
+         if rank > _MAXRANK && rank <> n then rank + 1
          else
            let buf = ending_reason_line lang score in
            let txt =
              sprintf "%s    %6d   %s: %s"
-               (if rank > 15 || score_only && rank = n then ".."
+               (if rank > _MAXRANK || score_only && rank = n then ".."
                 else
                   let rank =
                     if score_only && rank > n then rank - 1 else rank
@@ -249,7 +249,7 @@ let put_scores lang score_only g_ending =
            in
            let txt =
              if rank = n then
-               let len = 80 - String.length txt - 2 in
+               let len = _DCOLS - String.length txt - 2 in
                txt ^ String.make (max 0 len) ' '
              else txt
            in
@@ -345,7 +345,7 @@ let killed_by g death =
   begin match death with
     Monster _ | Hypothermia | Starvation | PoisonDart when g.show_skull ->
       let center row buf =
-        let margin = (80 - String.length buf) / 2 in
+        let margin = (_DCOLS - String.length buf) / 2 in
         Curses.mvaddstr row margin buf
       in
       Curses.clear ();

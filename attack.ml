@@ -2,11 +2,8 @@
 
 (* #load "pa_more.cmo" *)
 
-(* #use "rogue.def" *)
-
-
-(* #use "keyboard.def" *)
-
+open Rogue_def
+open Keyboard_def
 
 open Rogue
 open Dialogue
@@ -16,7 +13,7 @@ open Printf
 open Translate
 
 let check_imitator g monster =
-  if monster.mn_flags land 0o20000000 <> 0 then
+  if monster.mn_flags land _IMITATES <> 0 then
     begin
       wake_up monster;
       if g.rogue.blind = 0 then
@@ -70,10 +67,10 @@ let get_weapon_damage g weapon =
   damage + (g.rogue.exp + g.rogue.ring_exp - g.rogue.r_rings + 1) / 2
 
 let coughable g row col =
-  if row < 1 || row > 24 - 2 || col < 0 || col > 80 - 1 then false
+  if row < _MIN_ROW || row > _DROWS - 2 || col < 0 || col > _DCOLS - 1 then false
   else if
-    g.dungeon.(row).(col) land (0o1 lor 0o4 lor 0o400 lor 0o1000) = 0 &&
-    g.dungeon.(row).(col) land (0o200 lor 0o100 lor 0o40) <> 0
+    g.dungeon.(row).(col) land (_OBJECT lor _STAIRS lor _TRAP lor _HIDDEN) = 0 &&
+    g.dungeon.(row).(col) land (_TUNNEL lor _FLOOR lor _DOOR) <> 0
   then
     true
   else false
@@ -82,7 +79,7 @@ let cough_up g monster =
   if g.cur_level < g.max_level then ()
   else
     let obj =
-      if monster.mn_flags land 0o20000 <> 0 then
+      if monster.mn_flags land _STEALS_GOLD <> 0 then
         let q = get_rand (g.cur_level * 15) (g.cur_level * 30) in
         Some (Object.get_gold (Some q))
       else if not (rand_percent monster.mn_drop_percent) then None
@@ -135,7 +132,7 @@ let cough_up g monster =
               let (row, col) = List.nth list r in
               Level.place_at g obj row col;
               if row <> g.rogue.row || col <> g.rogue.col then
-                if g.dungeon.(row).(col) land 0o2 = 0 then
+                if g.dungeon.(row).(col) land _MONSTER = 0 then
                   Curses.mvaddch row col (get_dungeon_char g row col)
                 else
                   let mon = monster_at g row col in
@@ -149,7 +146,7 @@ let mon_damage g monster damage =
   if monster.mn_hp_to_kill <= 0 then
     let row = monster.mn_row in
     let col = monster.mn_col in
-    g.dungeon.(row).(col) <- g.dungeon.(row).(col) land lnot 0o2;
+    g.dungeon.(row).(col) <- g.dungeon.(row).(col) land lnot _MONSTER;
     Curses.mvaddch row col (get_dungeon_char g row col);
     g.rogue.fight_monster <- None;
     cough_up g monster;
@@ -162,12 +159,12 @@ let mon_damage g monster damage =
     g.hit_message <- "";
     add_exp g monster.mn_kill_exp hp_raise;
     take_from_monsters g monster;
-    if monster.mn_flags land 0o4000 <> 0 then g.rogue.being_held <- false;
+    if monster.mn_flags land _HOLDS <> 0 then g.rogue.being_held <- false;
     false
   else true
 
 let check_gold_seeker g monster =
-  monster.mn_flags <- monster.mn_flags land lnot 0o1000000
+  monster.mn_flags <- monster.mn_flags land lnot _SEEKS_GOLD
 
 let rogue_hit g monster force_hit =
   if check_imitator g monster then ()
@@ -195,14 +192,16 @@ let rogue_hit g monster force_hit =
     wake_up monster
 
 let tele_away g monster =
-  if monster.mn_flags land 0o4000 <> 0 then g.rogue.being_held <- false;
-  let (row, col, _) = gr_row_col g (0o100 lor 0o200 lor 0o4 lor 0o1) 0 in
+  if monster.mn_flags land _HOLDS <> 0 then g.rogue.being_held <- false;
+  let (row, col, _) =
+    gr_row_col g (_FLOOR lor _TUNNEL lor _STAIRS lor _OBJECT) 0
+  in
   Curses.mvaddch monster.mn_row monster.mn_col monster.mn_trail_char;
   g.dungeon.(monster.mn_row).(monster.mn_col) <-
-    g.dungeon.(monster.mn_row).(monster.mn_col) land lnot 0o2;
+    g.dungeon.(monster.mn_row).(monster.mn_col) land lnot _MONSTER;
   monster.mn_row <- row;
   monster.mn_col <- col;
-  g.dungeon.(row).(col) <- g.dungeon.(row).(col) lor 0o2;
+  g.dungeon.(row).(col) <- g.dungeon.(row).(col) lor _MONSTER;
   monster.mn_trail_char <- Curses.mvinch row col;
   if g.rogue.detect_monster || rogue_can_see g row col then
     show_monster g row col monster (gmc g monster)
@@ -212,24 +211,24 @@ let zap_monster g monster wand =
   let col = monster.mn_col in
   match wand with
     SlowMonster ->
-      if monster.mn_flags land 0o1 <> 0 then
-        monster.mn_flags <- monster.mn_flags land lnot 0o1
+      if monster.mn_flags land _HASTED <> 0 then
+        monster.mn_flags <- monster.mn_flags land lnot _HASTED
       else
         begin
           monster.mn_slowed_toggle <- false;
-          monster.mn_flags <- monster.mn_flags lor 0o2
+          monster.mn_flags <- monster.mn_flags lor _SLOWED
         end
   | HasteMonster ->
-      if monster.mn_flags land 0o2 <> 0 then
-        monster.mn_flags <- monster.mn_flags land lnot 0o2
-      else monster.mn_flags <- monster.mn_flags lor 0o1
+      if monster.mn_flags land _SLOWED <> 0 then
+        monster.mn_flags <- monster.mn_flags land lnot _SLOWED
+      else monster.mn_flags <- monster.mn_flags lor _HASTED
   | TeleportAway -> tele_away g monster
   | ConfuseMonster ->
-      monster.mn_flags <- monster.mn_flags lor 0o1000;
+      monster.mn_flags <- monster.mn_flags lor _CONFUSED;
       monster.mn_moves_confused <- monster.mn_moves_confused + get_rand 12 22
-  | Invisibility -> monster.mn_flags <- monster.mn_flags lor 0o4
+  | Invisibility -> monster.mn_flags <- monster.mn_flags lor _INVISIBLE
   | Polymorph ->
-      if monster.mn_flags land 0o4000 <> 0 then g.rogue.being_held <- false;
+      if monster.mn_flags land _HOLDS <> 0 then g.rogue.being_held <- false;
       let tc = monster.mn_trail_char in
       take_from_monsters g monster;
       let monster = Imonster.gr_monster g None in
@@ -237,32 +236,33 @@ let zap_monster g monster wand =
       monster.mn_col <- col;
       g.level_monsters <- g.level_monsters @ [monster];
       monster.mn_trail_char <- tc;
-      if monster.mn_flags land 0o20000000 = 0 then wake_up monster;
+      if monster.mn_flags land _IMITATES = 0 then wake_up monster;
       if g.rogue.detect_monster || rogue_can_see g row col then
         show_monster g row col monster (gmc g monster)
   | PutToSleep ->
-      monster.mn_flags <- monster.mn_flags lor (0o10 lor 0o200000000);
+      monster.mn_flags <- monster.mn_flags lor (_ASLEEP lor _NAPPING);
       monster.mn_nap_length <- get_rand 3 6
   | MagicMissile -> rogue_hit g monster true
   | Cancellation ->
-      if monster.mn_flags land 0o4000 <> 0 then g.rogue.being_held <- false;
-      if monster.mn_flags land 0o40000 <> 0 then monster.mn_drop_percent <- 0;
+      if monster.mn_flags land _HOLDS <> 0 then g.rogue.being_held <- false;
+      if monster.mn_flags land _STEALS_ITEM <> 0 then
+        monster.mn_drop_percent <- 0;
       monster.mn_flags <-
         monster.mn_flags land
         lnot
-          (0o100 lor 0o200 lor 0o776000 lor 0o4 lor 0o40000000 lor
-           0o20000000 lor 0o10000000 lor 0o1000000 lor 0o4000)
+          (_FLIES lor _FLITS lor _SPECIAL_HIT lor _INVISIBLE lor _FLAMES lor
+           _IMITATES lor _CONFUSES lor _SEEKS_GOLD lor _HOLDS)
   | DoNothing -> message g (transl g.lang "Nothing happens" ^ ".") false
 
 let get_zapped_monster g dir =
   let rec loop_o orow ocol =
     let (row, col) = get_dir_rc dir orow ocol false in
     if row = orow && col = ocol ||
-       g.dungeon.(row).(col) land (0o10 lor 0o20) <> 0 ||
-       g.dungeon.(row).(col) = 0o0
+       g.dungeon.(row).(col) land (_HORWALL lor _VERTWALL) <> 0 ||
+       g.dungeon.(row).(col) = _NOTHING
     then
       None
-    else if g.dungeon.(row).(col) land 0o2 <> 0 then
+    else if g.dungeon.(row).(col) land _MONSTER <> 0 then
       if not (imitating g row col) then Some (monster_at g row col, row, col)
       else loop_o row col
     else loop_o row col
@@ -284,7 +284,7 @@ let zap g =
     loop true
   in
   check_message g;
-  if dir = '\027' then false
+  if dir = _ROGUE_KEY_CANCEL then false
   else
     let ch =
       pack_letter g (transl g.lang "Zap with what?")
@@ -292,7 +292,7 @@ let zap g =
            Wand _ -> true
          | _ -> false)
     in
-    if ch = '\027' then false
+    if ch = _ROGUE_KEY_CANCEL then false
     else
       begin
         check_message g;
@@ -366,9 +366,9 @@ let get_thrown_at_monster g obj dir orow ocol =
   let rec loop orow ocol i =
     if i < 24 then
       let (row, col) = get_dir_rc dir orow ocol false in
-      if g.dungeon.(row).(col) = 0o0 ||
-         g.dungeon.(row).(col) land (0o10 lor 0o20 lor 0o1000) <> 0 &&
-         g.dungeon.(row).(col) land 0o400 = 0
+      if g.dungeon.(row).(col) = _NOTHING ||
+         g.dungeon.(row).(col) land (_HORWALL lor _VERTWALL lor _HIDDEN) <> 0 &&
+         g.dungeon.(row).(col) land _TRAP = 0
       then
         None, orow, ocol
       else
@@ -381,7 +381,7 @@ let get_thrown_at_monster g obj dir orow ocol =
             end;
           if rogue_can_see g row col then
             begin
-              if g.dungeon.(row).(col) land 0o2 = 0 then
+              if g.dungeon.(row).(col) land _MONSTER = 0 then
                 begin
                   if i = 0 then tempo g;
                   Curses.mvaddch row col ch;
@@ -389,7 +389,8 @@ let get_thrown_at_monster g obj dir orow ocol =
                 end;
               Curses.refresh ()
             end;
-          if g.dungeon.(row).(col) land 0o2 <> 0 && not (imitating g row col)
+          if g.dungeon.(row).(col) land _MONSTER <> 0 &&
+             not (imitating g row col)
           then
             begin
               if rogue_can_see g row col then
@@ -403,7 +404,7 @@ let get_thrown_at_monster g obj dir orow ocol =
             end
           else
             let i =
-              if g.dungeon.(row).(col) land 0o200 <> 0 then i + 2 else i
+              if g.dungeon.(row).(col) land _TUNNEL <> 0 then i + 2 else i
             in
             loop row col (i + 1)
         end
@@ -422,16 +423,18 @@ let extract_copy_of_weapon obj =
 let flop_weapon g obj row col =
   let (found, i, row, col) =
     let rec loop row col i =
-      if i < 9 && row < 24 - 1 && row >= 1 && col < 80 && col >= 0 &&
-         g.dungeon.(row).(col) land lnot (0o100 lor 0o200 lor 0o40 lor 0o2) <>
+      if i < 9 && row < _DROWS - 1 && row >= _MIN_ROW && col < _DCOLS &&
+         col >= 0 &&
+         g.dungeon.(row).(col) land
+         lnot (_FLOOR lor _TUNNEL lor _DOOR lor _MONSTER) <>
            0
       then
         let (row, col) = rand_around g i row col in
         let i = i + 1 in
-        if row > 24 - 2 || row < 1 || col > 80 - 1 || col < 0 ||
+        if row > _DROWS - 2 || row < _MIN_ROW || col > _DCOLS - 1 || col < 0 ||
            g.dungeon.(row).(col) = 0 ||
            g.dungeon.(row).(col) land
-           lnot (0o100 lor 0o200 lor 0o40 lor 0o2) <>
+           lnot (_FLOOR lor _TUNNEL lor _DOOR lor _MONSTER) <>
              0
         then
           loop row col i
@@ -445,8 +448,8 @@ let flop_weapon g obj row col =
     Level.place_at g new_obj row col;
     (if rogue_can_see g row col && (row <> g.rogue.row || col <> g.rogue.col)
      then
-       let mon = g.dungeon.(row).(col) land 0o2 in
-       g.dungeon.(row).(col) <- g.dungeon.(row).(col) land lnot 0o2;
+       let mon = g.dungeon.(row).(col) land _MONSTER in
+       g.dungeon.(row).(col) <- g.dungeon.(row).(col) land lnot _MONSTER;
        let dch = get_dungeon_char g row col in
        if mon <> 0 then
          let mch = Curses.mvinch row col in
@@ -473,7 +476,7 @@ let one_throw g dir (ch, obj) =
       {ob_kind = Weapon {we_in_use = true}; ob_quantity = 1} ->
         unwield g; true
     | {ob_kind = Armor {ar_in_use = true}} ->
-        Monster.mv_aquators g; unwear g; print_stats g 0o20; true
+        Monster.mv_aquators g; unwear g; print_stats g _STAT_ARMOR; true
     | {ob_kind = Ring ({rg_in_use = Some _} as r)} -> un_put_on g r; true
     | _ -> false
   in

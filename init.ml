@@ -1,8 +1,6 @@
 (* $Id: init.ml,v 1.64 2013/01/29 14:00:23 deraugla Exp $ *)
 
-(* #use "rogue.def" *)(* $Id: init.ml,v 1.64 2013/01/29 14:00:23 deraugla Exp $ *)
-
-
+open Rogue_def
 
 open Rfield
 open Rogue
@@ -273,11 +271,11 @@ let create_g saved_uid true_uid login_name args opts lang =
      doors = Array.make 4 None; is_room = 0}
   in
   let rogue =
-    {armor = None; weapon = None; gold = 0; hp_current = 12; hp_max = 12;
-     extra_hp = 0; less_hp = 0; str_current = 16; str_max = 16; exp = 1;
-     exp_points = 0; pack = []; row = 0; col = 0; fight_monster = None;
-     moves_left = 1250; confused = 0; blind = 0; halluc = 0;
-     see_invisible = false; detect_monster = false; levitate = 0;
+    {armor = None; weapon = None; gold = 0; hp_current = _INIT_HP;
+     hp_max = _INIT_HP; extra_hp = 0; less_hp = 0; str_current = 16;
+     str_max = 16; exp = 1; exp_points = 0; pack = []; row = 0; col = 0;
+     fight_monster = None; moves_left = 1250; confused = 0; blind = 0;
+     halluc = 0; see_invisible = false; detect_monster = false; levitate = 0;
      haste_self = 0; bear_trap = 0; being_held = false; stealthy = 0;
      left_ring = None; right_ring = None; e_rings = 0; r_rings = 0;
      r_teleport = false; r_see_invisible = false; maintain_armor = false;
@@ -306,8 +304,8 @@ let create_g saved_uid true_uid login_name args opts lang =
    id_scrolls = Array.make (Array.length Object.scroll_tab) Identified;
    id_wands = Array.make (Array.length Object.wand_tab) Identified;
    is_wood = Array.make (Array.length Object.wand_tab) false;
-   rooms = Array.init 9 empty_room; traps = Array.make 10 None;
-   dungeon = Array.make_matrix 24 80 0; env = env}
+   rooms = Array.init _MAXROOMS empty_room; traps = Array.make _MAX_TRAPS None;
+   dungeon = Array.make_matrix _DROWS _DCOLS 0; env = env}
 
 type init =
     NewGame of game
@@ -371,7 +369,7 @@ let f argv =
         get_wand_and_ring_materials g;
         make_scroll_titles g;
         player_init g;
-        g.party_counter <- Imisc.get_rand 1 10;
+        g.party_counter <- Imisc.get_rand 1 _PARTY_TIME;
         NewGame g
       end
   in
