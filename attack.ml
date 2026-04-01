@@ -67,9 +67,11 @@ let get_weapon_damage g weapon =
   damage + (g.rogue.exp + g.rogue.ring_exp - g.rogue.r_rings + 1) / 2
 
 let coughable g row col =
-  if row < _MIN_ROW || row > _DROWS - 2 || col < 0 || col > _DCOLS - 1 then false
+  if row < _MIN_ROW || row > _DROWS - 2 || col < 0 || col > _DCOLS - 1 then
+    false
   else if
-    g.dungeon.(row).(col) land (_OBJECT lor _STAIRS lor _TRAP lor _HIDDEN) = 0 &&
+    g.dungeon.(row).(col) land (_OBJECT lor _STAIRS lor _TRAP lor _HIDDEN) =
+      0 &&
     g.dungeon.(row).(col) land (_TUNNEL lor _FLOOR lor _DOOR) <> 0
   then
     true
@@ -367,7 +369,8 @@ let get_thrown_at_monster g obj dir orow ocol =
     if i < 24 then
       let (row, col) = get_dir_rc dir orow ocol false in
       if g.dungeon.(row).(col) = _NOTHING ||
-         g.dungeon.(row).(col) land (_HORWALL lor _VERTWALL lor _HIDDEN) <> 0 &&
+         g.dungeon.(row).(col) land (_HORWALL lor _VERTWALL lor _HIDDEN) <>
+           0 &&
          g.dungeon.(row).(col) land _TRAP = 0
       then
         None, orow, ocol
@@ -431,8 +434,8 @@ let flop_weapon g obj row col =
       then
         let (row, col) = rand_around g i row col in
         let i = i + 1 in
-        if row > _DROWS - 2 || row < _MIN_ROW || col > _DCOLS - 1 || col < 0 ||
-           g.dungeon.(row).(col) = 0 ||
+        if row > _DROWS - 2 || row < _MIN_ROW || col > _DCOLS - 1 ||
+           col < 0 || g.dungeon.(row).(col) = 0 ||
            g.dungeon.(row).(col) land
            lnot (_FLOOR lor _TUNNEL lor _DOOR lor _MONSTER) <>
              0

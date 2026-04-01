@@ -101,7 +101,8 @@ let dr_course g monster entering =
           else
             begin
               tried.(rr) <- true;
-              if g.rooms.(rr).is_room land (_R_ROOM lor _R_MAZE) = 0 || rr = rn
+              if g.rooms.(rr).is_room land (_R_ROOM lor _R_MAZE) = 0 ||
+                 rr = rn
               then
                 loop_i (i + 1)
               else
@@ -499,7 +500,8 @@ and mv_monster g monster row col init_pos_opt =
        begin
          monster.mn_nap_length <- monster.mn_nap_length - 1;
          if monster.mn_nap_length <= 0 then
-           monster.mn_flags <- monster.mn_flags land lnot (_NAPPING lor _ASLEEP)
+           monster.mn_flags <-
+             monster.mn_flags land lnot (_NAPPING lor _ASLEEP)
        end
      else if
        monster.mn_flags land _WAKENS <> 0 &&
@@ -523,7 +525,8 @@ and mv_monster g monster row col init_pos_opt =
   else if mon_can_go g monster g.rogue.row g.rogue.col then
     mon_hit g monster "" false
   else if monster.mn_flags land _FLAMES <> 0 && flame_broil g monster then ()
-  else if monster.mn_flags land _SEEKS_GOLD <> 0 && seek_gold g monster then ()
+  else if monster.mn_flags land _SEEKS_GOLD <> 0 && seek_gold g monster then
+    ()
   else
     let (row, col) =
       match monster.mn_target with
@@ -673,7 +676,8 @@ and special_hit g monster =
       if monster.mn_flags land _DRAINS_LIFE <> 0 then drain_life g;
       if monster.mn_flags land _DROPS_LEVEL <> 0 then drop_level g;
       if monster.mn_flags land _STEALS_GOLD <> 0 then steal_gold g monster
-      else if monster.mn_flags land _STEALS_ITEM <> 0 then steal_item g monster
+      else if monster.mn_flags land _STEALS_ITEM <> 0 then
+        steal_item g monster
     end
 and freeze g monster =
   if rand_percent 12 then ()
@@ -727,7 +731,8 @@ and seek_gold g monster =
                         monster.mn_flags land lnot _SEEKS_GOLD;
                       monster.mn_flags <- monster.mn_flags lor _CAN_FLIT;
                       mv_monster g monster i j None;
-                      monster.mn_flags <- monster.mn_flags land lnot _CAN_FLIT;
+                      monster.mn_flags <-
+                        monster.mn_flags land lnot _CAN_FLIT;
                       monster.mn_flags <- monster.mn_flags lor _SEEKS_GOLD
                     end;
                   true

@@ -234,14 +234,16 @@ let uncurse_all g =
 
 let draw_magic_map g wizard_key =
   let mask =
-    _HORWALL lor _VERTWALL lor _DOOR lor _TUNNEL lor _TRAP lor _STAIRS lor _MONSTER
+    _HORWALL lor _VERTWALL lor _DOOR lor _TUNNEL lor _TRAP lor _STAIRS lor
+    _MONSTER
   in
   for i = 0 to _DROWS - 1 do
     for j = 0 to _DCOLS - 1 do
       let s = g.dungeon.(i).(j) in
       if s land mask <> 0 then
         let ch = Curses.mvinch i j in
-        if ch = ' ' || ch >= 'A' && ch <= 'Z' || s land (_TRAP lor _HIDDEN) <> 0
+        if ch = ' ' || ch >= 'A' && ch <= 'Z' ||
+           s land (_TRAP lor _HIDDEN) <> 0
         then
           let och = ch in
           if not wizard_key || s land _TRAP <> 0 then
@@ -313,7 +315,8 @@ let create_monster g =
       put_m_at g row col monster;
       monster.mn_trail_char <- Curses.mvinch row col;
       show_monster g row col monster (gmc g monster);
-      if monster.mn_flags land (_WANDERS lor _WAKENS) <> 0 then wake_up monster
+      if monster.mn_flags land (_WANDERS lor _WAKENS) <> 0 then
+        wake_up monster
   | None ->
       message g
         (transl g.lang "You hear a faint cry of anguish in the distance.")
@@ -338,7 +341,8 @@ let hold_monster g =
           if j <= 2 then
             let row = g.rogue.row + i in
             let col = g.rogue.col + j in
-            if row < _MIN_ROW || row > _DROWS - 1 || col < 0 || col > _DCOLS - 1
+            if row < _MIN_ROW || row > _DROWS - 1 || col < 0 ||
+               col > _DCOLS - 1
             then
               loop_j mcount (j + 1)
             else if g.dungeon.(row).(col) land _MONSTER <> 0 then

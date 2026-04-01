@@ -487,11 +487,12 @@ let whatisit g =
   | '%' -> msg_is g ch (transl g.lang "stairs")
   | '@' -> msg_is g ch (transl g.lang "you")
   | _ ->
-     if ch = _ROGUE_KEY_CANCEL then ()
-     else
-       message g
-         (sprintf (ftransl g.lang "I don't know what <%c> is either") ch ^
-	  ".") false
+      if ch = _ROGUE_KEY_CANCEL then ()
+      else
+        message g
+          (sprintf (ftransl g.lang "I don't know what <%c> is either") ch ^
+           ".")
+          false
 
 let instructions_file = "rogue.instr"
 
@@ -682,70 +683,74 @@ let rec play_level g =
       let cont =
         if ch = _ROGUE_KEY_DROP_CHECK then not (drop_check g)
         else if ch = _ROGUE_KEY_CHECK_UP then not (check_up g)
-	else begin
-          if ch = _ROGUE_KEY_INSTRUCTIONS then instructions g
-          else if ch = _ROGUE_KEY_REST then rest g (max 1 count)
-          else if ch = _ROGUE_KEY_SEARCH then
-	    Move.search g (max 1 count) false
-          else if ch = _ROGUE_KEY_INVENTORY then
-  	    inventory g g.rogue.pack (fun _ -> true)
-          else if ch = _ROGUE_KEY_FIGHT then Move.fight g false
-          else if ch = _ROGUE_KEY_FIGHT_TO_DEATH then Move.fight g true
-          else if is_direction ch then Move.one_move_rogue g ch true
-          else if is_direction_shift ch then Move.multiple_move_rogue g ch
-          else if is_direction_ctrl ch then Move.multiple_move_rogue g ch
-          else if ch = _ROGUE_KEY_EAT then Use.eat g
-          else if ch = _ROGUE_KEY_QUAFF then Use.quaff g
-          else if ch = _ROGUE_KEY_READ then Use.read_scroll g
-          else if ch = _ROGUE_KEY_MOVE then Move.move_onto g
-          else if ch = _ROGUE_KEY_DROP then drop g
-          else if ch = _ROGUE_KEY_PUT_ON_RING then Use.put_on_ring g
-          else if ch = _ROGUE_KEY_REMOVE_RING then Use.remove_ring g
-          else if ch = _ROGUE_KEY_REMESSAGE then remessage g
-          else if ch = _ROGUE_KEY_WIZARDIZE then wizardize g
-          else if ch = _ROGUE_KEY_INV_ARMOR then inv_armor g
-          else if ch = _ROGUE_KEY_INV_WEAPON then inv_weapon g
-          else if ch = _ROGUE_KEY_INV_RINGS then Use.inv_rings g
-          else if ch = _ROGUE_KEY_ID_TRAP then Move.id_trap g
-          else if ch = _ROGUE_KEY_SINGLE_INV then single_inv g None
-          else if ch = _ROGUE_KEY_DISCOVERED then discovered g
-          else if ch = _ROGUE_KEY_CHANGE_LANG then change_lang g
-          else if ch = _ROGUE_KEY_TAKE_OFF then Use.take_off g
-          else if ch = _ROGUE_KEY_WEAR then Use.wear g
-          else if ch = _ROGUE_KEY_WIELD then Use.wield g
-          else if ch = _ROGUE_KEY_CALL then call_it g
-          else if ch = _ROGUE_KEY_ZAPP then if Attack.zap g then Move.reg_move g
-          else if ch = _ROGUE_KEY_THROW then throw g (max 1 count)
-          else if ch = _ROGUE_KEY_VERSION then
-            message g
-              (sprintf "mlrogue %s (%s %s)" version g.nick_name g.login_name)
-              false
-          else if ch = _ROGUE_KEY_QUIT then quit g false
-          else if ch = _ROGUE_KEY_NOP then ()
-          else if ch = _ROGUE_KEY_CANCEL then ()
-          else if ch = _ROGUE_KEY_WIZ_INVENTORY then
-            if g.wizard then
-              inventory g (List.map (fun obj -> '.', obj) g.level_objects)
-                (fun _ -> true)
-            else unknown_command g ch
-          else if ch = _ROGUE_KEY_WIZ_MAGIC_MAP then
-            if g.wizard then Use.draw_magic_map g true
-            else unknown_command g ch
-          else if ch = _ROGUE_KEY_WIZ_SHOW_TRAPS then
-            if g.wizard then show_traps g else unknown_command g ch
-          else if ch = _ROGUE_KEY_WIZ_SHOW_OBJS then
-            if g.wizard then Use.show_objects g else unknown_command g ch
-          else if ch = _ROGUE_KEY_SHOW_AV_HP then show_average_hp g
-          else if ch = _ROGUE_KEY_WIZ_NEW_OBJ then
-            if g.wizard then new_object_for_wizard g else unknown_command g ch
-          else if ch = _ROGUE_KEY_WIZ_SHOW_MONST then
-            if g.wizard then show_monsters g else unknown_command g ch
-          else if ch = _ROGUE_KEY_SAVE_GAME then save_game g
-          else if ch = _ROGUE_KEY_PICK_UP then Move.kick_into_pack g
-          else if ch = _ROGUE_KEY_WHATISIT then whatisit g
-          else unknown_command g ch;
-          true
-	end
+        else
+          begin
+            if ch = _ROGUE_KEY_INSTRUCTIONS then instructions g
+            else if ch = _ROGUE_KEY_REST then rest g (max 1 count)
+            else if ch = _ROGUE_KEY_SEARCH then
+              Move.search g (max 1 count) false
+            else if ch = _ROGUE_KEY_INVENTORY then
+              inventory g g.rogue.pack (fun _ -> true)
+            else if ch = _ROGUE_KEY_FIGHT then Move.fight g false
+            else if ch = _ROGUE_KEY_FIGHT_TO_DEATH then Move.fight g true
+            else if is_direction ch then Move.one_move_rogue g ch true
+            else if is_direction_shift ch then Move.multiple_move_rogue g ch
+            else if is_direction_ctrl ch then Move.multiple_move_rogue g ch
+            else if ch = _ROGUE_KEY_EAT then Use.eat g
+            else if ch = _ROGUE_KEY_QUAFF then Use.quaff g
+            else if ch = _ROGUE_KEY_READ then Use.read_scroll g
+            else if ch = _ROGUE_KEY_MOVE then Move.move_onto g
+            else if ch = _ROGUE_KEY_DROP then drop g
+            else if ch = _ROGUE_KEY_PUT_ON_RING then Use.put_on_ring g
+            else if ch = _ROGUE_KEY_REMOVE_RING then Use.remove_ring g
+            else if ch = _ROGUE_KEY_REMESSAGE then remessage g
+            else if ch = _ROGUE_KEY_WIZARDIZE then wizardize g
+            else if ch = _ROGUE_KEY_INV_ARMOR then inv_armor g
+            else if ch = _ROGUE_KEY_INV_WEAPON then inv_weapon g
+            else if ch = _ROGUE_KEY_INV_RINGS then Use.inv_rings g
+            else if ch = _ROGUE_KEY_ID_TRAP then Move.id_trap g
+            else if ch = _ROGUE_KEY_SINGLE_INV then single_inv g None
+            else if ch = _ROGUE_KEY_DISCOVERED then discovered g
+            else if ch = _ROGUE_KEY_CHANGE_LANG then change_lang g
+            else if ch = _ROGUE_KEY_TAKE_OFF then Use.take_off g
+            else if ch = _ROGUE_KEY_WEAR then Use.wear g
+            else if ch = _ROGUE_KEY_WIELD then Use.wield g
+            else if ch = _ROGUE_KEY_CALL then call_it g
+            else if ch = _ROGUE_KEY_ZAPP then
+              if Attack.zap g then Move.reg_move g
+              else if ch = _ROGUE_KEY_THROW then throw g (max 1 count)
+              else if ch = _ROGUE_KEY_VERSION then
+                message g
+                  (sprintf "mlrogue %s (%s %s)" version g.nick_name
+                     g.login_name)
+                  false
+              else if ch = _ROGUE_KEY_QUIT then quit g false
+              else if ch = _ROGUE_KEY_NOP then ()
+              else if ch = _ROGUE_KEY_CANCEL then ()
+              else if ch = _ROGUE_KEY_WIZ_INVENTORY then
+                if g.wizard then
+                  inventory g (List.map (fun obj -> '.', obj) g.level_objects)
+                    (fun _ -> true)
+                else unknown_command g ch
+              else if ch = _ROGUE_KEY_WIZ_MAGIC_MAP then
+                if g.wizard then Use.draw_magic_map g true
+                else unknown_command g ch
+              else if ch = _ROGUE_KEY_WIZ_SHOW_TRAPS then
+                if g.wizard then show_traps g else unknown_command g ch
+              else if ch = _ROGUE_KEY_WIZ_SHOW_OBJS then
+                if g.wizard then Use.show_objects g else unknown_command g ch
+              else if ch = _ROGUE_KEY_SHOW_AV_HP then show_average_hp g
+              else if ch = _ROGUE_KEY_WIZ_NEW_OBJ then
+                if g.wizard then new_object_for_wizard g
+                else unknown_command g ch
+              else if ch = _ROGUE_KEY_WIZ_SHOW_MONST then
+                if g.wizard then show_monsters g else unknown_command g ch
+              else if ch = _ROGUE_KEY_SAVE_GAME then save_game g
+              else if ch = _ROGUE_KEY_PICK_UP then Move.kick_into_pack g
+              else if ch = _ROGUE_KEY_WHATISIT then whatisit g
+              else unknown_command g ch;
+            true
+          end
       in
       if cont then play_level g
     end

@@ -2,15 +2,15 @@
 (* plexing.ml,v *)
 (* Copyright (c) INRIA 2007-2017 *)
 
-open Versdep;;
+open Versdep
 
-type pattern = string * string;;
+type pattern = string * string
 
-exception Error of string;;
+exception Error of string
 
-type location = Ploc.t;;
-type location_function = int -> location;;
-type 'te lexer_func = char Stream.t -> 'te Stream.t * location_function;;
+type location = Ploc.t
+type location_function = int -> location
+type 'te lexer_func = char Stream.t -> 'te Stream.t * location_function
 
 type 'te lexer =
   { tok_func : 'te lexer_func;
@@ -19,19 +19,17 @@ type 'te lexer =
     mutable tok_match : pattern -> 'te -> string;
     tok_text : pattern -> string;
     mutable tok_comm : location list option }
-;;
 
-let make_loc = Ploc.make_unlined;;
-let dummy_loc = Ploc.dummy;;
+let make_loc = Ploc.make_unlined
+let dummy_loc = Ploc.dummy
 
 let lexer_text (con, prm) =
   if con = "" then "'" ^ prm ^ "'"
   else if prm = "" then con
   else con ^ " '" ^ prm ^ "'"
-;;
 
-let locerr () = failwith "Lexer: location function";;
-let loct_create () = ref (array_create 1024 None), ref false;;
+let locerr () = failwith "Lexer: location function"
+let loct_create () = ref (array_create 1024 None), ref false
 let loct_func (loct, ov) i =
   match
     if i < 0 || i >= Array.length !loct then
@@ -40,7 +38,6 @@ let loct_func (loct, ov) i =
   with
     Some loc -> loc
   | None -> locerr ()
-;;
 let loct_add (loct, ov) i loc =
   if i >= Array.length !loct then
     let new_tmax = Array.length !loct * 2 in
@@ -51,7 +48,6 @@ let loct_add (loct, ov) i loc =
       !loct.(i) <- Some loc
     else ov := true
   else !loct.(i) <- Some loc
-;;
 
 let make_stream_and_location next_token_loc =
   let loct = loct_create () in
@@ -61,13 +57,11 @@ let make_stream_and_location next_token_loc =
          let (tok, loc) = next_token_loc () in loct_add loct i loc; Some tok)
   in
   ts, loct_func loct
-;;
 
 let lexer_func_of_parser next_token_loc cs =
   let line_nb = ref 1 in
   let bolpos = ref 0 in
   make_stream_and_location (fun () -> next_token_loc (cs, line_nb, bolpos))
-;;
 
 let lexer_func_of_ocamllex lexfun cs =
   let lb =
@@ -81,22 +75,20 @@ let lexer_func_of_ocamllex lexfun cs =
     tok, loc
   in
   make_stream_and_location next_token_loc
-;;
 
 (* Char and string tokens to real chars and string *)
 
-let buff = ref (string_create 80);;
+let buff = ref (string_create 80)
 let store len x =
   if len >= string_length !buff then
     buff := string_cat !buff (string_create (string_length !buff));
   string_set !buff len x;
   succ len
-;;
-let get_buff len = string_sub !buff 0 len;;
+let get_buff len = string_sub !buff 0 len
 
-let valch x = Char.code x - Char.code '0';;
-let valch_a x = Char.code x - Char.code 'a' + 10;;
-let valch_A x = Char.code x - Char.code 'A' + 10;;
+let valch x = Char.code x - Char.code '0'
+let valch_a x = Char.code x - Char.code 'a' + 10
+let valch_A x = Char.code x - Char.code 'A' + 10
 
 let rec backslash s i =
   if i = String.length s then raise Not_found
@@ -140,7 +132,6 @@ and backslash2h cod s i =
     | 'a'..'f' as c -> Char.chr (16 * cod + valch_a c), i + 1
     | 'A'..'F' as c -> Char.chr (16 * cod + valch_A c), i + 1
     | _ -> '\\', i - 2
-;;
 
 let rec skip_indent s i =
   if i = String.length s then i
@@ -148,11 +139,9 @@ let rec skip_indent s i =
     match s.[i] with
       ' ' | '\t' -> skip_indent s (i + 1)
     | _ -> i
-;;
 
 let skip_opt_linefeed s i =
   if i = String.length s then i else if s.[i] = '\010' then i + 1 else i
-;;
 
 let eval_char s =
   if String.length s = 1 then s.[0]
@@ -165,7 +154,6 @@ let eval_char s =
         if i = String.length s then c else raise Not_found
       with Not_found -> failwith "invalid char token"
   else failwith "invalid char token"
-;;
 
 let eval_string loc s =
   let rec loop len i =
@@ -188,7 +176,6 @@ let eval_string loc s =
       loop len i
   in
   bytes_to_string (loop 0 0)
-;;
 
 let default_match =
   function
@@ -200,12 +187,11 @@ let default_match =
   | p_con, p_prm ->
       fun (con, prm) ->
         if con = p_con && prm = p_prm then prm else raise Stream.Failure
-;;
 
-let input_file = ref "";;
-let line_nb = ref (ref 0);;
-let bol_pos = ref (ref 0);;
-let restore_lexing_info = ref None;;
+let input_file = ref ""
+let line_nb = ref (ref 0)
+let bol_pos = ref (ref 0)
+let restore_lexing_info = ref None
 
 (* The lexing buffer used by pa_lexer.cmo *)
 
@@ -217,19 +203,17 @@ let rev_implode l =
     | [] -> s
   in
   bytes_to_string (loop (string_length s - 1) l)
-;;
 
 module Lexbuf :
   sig
-    type t;;
-    val empty : t;;
-    val add : char -> t -> t;;
-    val get : t -> string;;
+    type t
+    val empty : t
+    val add : char -> t -> t
+    val get : t -> string
   end =
   struct
-    type t = char list;;
-    let empty = [];;
-    let add c l = c :: l;;
-    let get = rev_implode;;
+    type t = char list
+    let empty = []
+    let add c l = c :: l
+    let get = rev_implode
   end
-;;

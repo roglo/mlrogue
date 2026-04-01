@@ -213,7 +213,8 @@ let put_door g rm dir =
           let col =
             get_rand (rm.left_col + wall_width) (rm.right_col - wall_width)
           in
-          if g.dungeon.(row).(col) land (_HORWALL lor _TUNNEL) = 0 then loop ()
+          if g.dungeon.(row).(col) land (_HORWALL lor _TUNNEL) = 0 then
+            loop ()
           else row, col
         in
         loop ()
@@ -223,7 +224,8 @@ let put_door g rm dir =
           let row =
             get_rand (rm.top_row + wall_width) (rm.bottom_row - wall_width)
           in
-          if g.dungeon.(row).(col) land (_VERTWALL lor _TUNNEL) = 0 then loop ()
+          if g.dungeon.(row).(col) land (_VERTWALL lor _TUNNEL) = 0 then
+            loop ()
           else row, col
         in
         loop ()
@@ -258,7 +260,8 @@ let draw_simple_passage g row1 col1 row2 col2 dir =
       for i = middle to row2 - 1 do g.dungeon.(i).(col2) <- _TUNNEL done;
       row1, col1, row2, col2
   in
-  if rand_percent _HIDE_PERCENT then hide_boxed_passage g row1 col1 row2 col2 1
+  if rand_percent _HIDE_PERCENT then
+    hide_boxed_passage g row1 col1 row2 col2 1
 
 let not_impl x = failwith ("not implemented: " ^ x)
 
@@ -361,7 +364,8 @@ let rec recursive_deadend g rn offsets srow scol =
   g.dungeon.(srow).(scol) <- _TUNNEL;
   for i = 0 to 3 do
     let de = rn + offsets.(i) in
-    if de < 0 || de >= _MAXROOMS || not (same_row rn de || same_col rn de) then
+    if de < 0 || de >= _MAXROOMS || not (same_row rn de || same_col rn de)
+    then
       ()
     else if g.rooms.(de).is_room land _R_NOTHING = 0 then ()
     else
@@ -551,7 +555,8 @@ let no_room_for_monster g rn =
     if i < g.rooms.(rn).bottom_row then
       let rec loop_j j =
         if j < g.rooms.(rn).right_col then
-          if g.dungeon.(i).(j) land _MONSTER = 0 then false else loop_j (j + 1)
+          if g.dungeon.(i).(j) land _MONSTER = 0 then false
+          else loop_j (j + 1)
         else loop_i (i + 1)
       in
       loop_j (g.rooms.(rn).left_col + 1)
@@ -677,8 +682,10 @@ let add_traps g =
               row, col
             else row, col
         | None ->
-            let (row, col, _) = gr_row_col g (_FLOOR lor _MONSTER) 0 in row, col
-      else let (row, col, _) = gr_row_col g (_FLOOR lor _MONSTER) 0 in row, col
+            let (row, col, _) = gr_row_col g (_FLOOR lor _MONSTER) 0 in
+            row, col
+      else
+        let (row, col, _) = gr_row_col g (_FLOOR lor _MONSTER) 0 in row, col
     in
     let trap = {trap_type = tt; trap_row = row; trap_col = col} in
     g.traps.(i) <- Some trap;

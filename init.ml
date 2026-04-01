@@ -304,7 +304,8 @@ let create_g saved_uid true_uid login_name args opts lang =
    id_scrolls = Array.make (Array.length Object.scroll_tab) Identified;
    id_wands = Array.make (Array.length Object.wand_tab) Identified;
    is_wood = Array.make (Array.length Object.wand_tab) false;
-   rooms = Array.init _MAXROOMS empty_room; traps = Array.make _MAX_TRAPS None;
+   rooms = Array.init _MAXROOMS empty_room;
+   traps = Array.make _MAX_TRAPS None;
    dungeon = Array.make_matrix _DROWS _DCOLS 0; env = env}
 
 type init =

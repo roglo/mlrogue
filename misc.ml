@@ -19,7 +19,8 @@ let level_points =
      80000; 160000; 320000; 1000000; 3333333; 6666666; _MAX_EXP; 99900000 |]
 
 let is_passable g row col =
-  if row < _MIN_ROW || row > _DROWS - 2 || col < 0 || col > _DCOLS - 1 then false
+  if row < _MIN_ROW || row > _DROWS - 2 || col < 0 || col > _DCOLS - 1 then
+    false
   else if g.dungeon.(row).(col) land _HIDDEN <> 0 then
     if g.dungeon.(row).(col) land _TRAP <> 0 then true else false
   else if
@@ -294,7 +295,8 @@ let save_into_file g fname =
     f_random.Efield.set g.env "random" (Some (Random.get_state ()));
   let oc = open_out_bin fname in
   let buf =
-    Array.init _DROWS (fun i -> Array.init _DCOLS (fun j -> Curses.mvinch i j))
+    Array.init _DROWS
+      (fun i -> Array.init _DCOLS (fun j -> Curses.mvinch i j))
   in
   output_string oc save_magic; output_value oc (g, buf : saved); close_out oc
 
@@ -353,8 +355,7 @@ let get_dir_rc dir row col allow_off_screen =
     if allow_off_screen || row < _DROWS - 2 && col < _DCOLS - 1 then
       row + 1, col + 1
     else row, col
-  else
-    invalid_arg "get_dir_rc"
+  else invalid_arg "get_dir_rc"
 
 let direction_list =
   [_ROGUE_KEY_WEST; _ROGUE_KEY_SOUTH; _ROGUE_KEY_NORTH; _ROGUE_KEY_EAST;
@@ -363,9 +364,8 @@ let direction_list =
 
 let direction_ctrl_list =
   [_ROGUE_KEY_WEST_CTRL; _ROGUE_KEY_SOUTH_CTRL; _ROGUE_KEY_NORTH_CTRL;
-   _ROGUE_KEY_EAST_CTRL; _ROGUE_KEY_NORTHWEST_CTRL;
-   _ROGUE_KEY_NORTHEAST_CTRL; _ROGUE_KEY_SOUTHEAST_CTRL;
-   _ROGUE_KEY_SOUTHWEST_CTRL]
+   _ROGUE_KEY_EAST_CTRL; _ROGUE_KEY_NORTHWEST_CTRL; _ROGUE_KEY_NORTHEAST_CTRL;
+   _ROGUE_KEY_SOUTHEAST_CTRL; _ROGUE_KEY_SOUTHWEST_CTRL]
 
 let direction_shift_list =
   [_ROGUE_KEY_WEST_SHIFT; _ROGUE_KEY_SOUTH_SHIFT; _ROGUE_KEY_NORTH_SHIFT;

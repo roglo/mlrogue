@@ -320,7 +320,8 @@ let wanderer g =
     let rec loop_i i =
       if i < 15 then
         let monster = Imonster.gr_monster g (Some 0) in
-        if monster.mn_flags land (_WAKENS lor _WANDERS) = 0 then loop_i (i + 1)
+        if monster.mn_flags land (_WAKENS lor _WANDERS) = 0 then
+          loop_i (i + 1)
         else Some monster
       else None
     in
@@ -333,7 +334,8 @@ let wanderer g =
         if i < 25 then
           match
             try
-              Some (gr_row_col g (_FLOOR lor _TUNNEL lor _STAIRS lor _OBJECT) 25)
+              Some
+                (gr_row_col g (_FLOOR lor _TUNNEL lor _STAIRS lor _OBJECT) 25)
             with Not_found -> None
           with
             Some (row, col, _) ->
@@ -402,7 +404,8 @@ and search g n is_auto =
             let row = g.rogue.row + i in
             let col = g.rogue.col + j in
             let found =
-              if row < _MIN_ROW || row >= _DROWS - 1 || col < 0 || col >= _DCOLS
+              if row < _MIN_ROW || row >= _DROWS - 1 || col < 0 ||
+                 col >= _DCOLS
               then
                 found
               else if g.dungeon.(row).(col) land _HIDDEN <> 0 then found + 1
@@ -424,7 +427,8 @@ and search g n is_auto =
             if j <= 1 then
               let row = g.rogue.row + i in
               let col = g.rogue.col + j in
-              if row < _MIN_ROW || row >= _DROWS - 1 || col < 0 || col >= _DCOLS
+              if row < _MIN_ROW || row >= _DROWS - 1 || col < 0 ||
+                 col >= _DCOLS
               then
                 loop_j shown (j + 1)
               else
@@ -614,9 +618,12 @@ let one_move g dirch pickup =
             end;
           StoppedOnSomething
         end
-      else if g.dungeon.(row).(col) land (_DOOR lor _STAIRS lor _TRAP) <> 0 then
+      else if
+        g.dungeon.(row).(col) land (_DOOR lor _STAIRS lor _TRAP) <> 0
+      then
         begin
-          if g.rogue.levitate = 0 && g.dungeon.(row).(col) land _TRAP <> 0 then
+          if g.rogue.levitate = 0 && g.dungeon.(row).(col) land _TRAP <> 0
+          then
             trap_player g row col;
           reg_move g;
           StoppedOnSomething
@@ -698,19 +705,16 @@ let multiple_move_rogue g dirch =
             if List.mem tmpdirch [_ROGUE_KEY_WEST; _ROGUE_KEY_EAST] then
               let dir1 = if is_passable g (row - 1) col then 1 else 0 in
               let dir2 = if is_passable g (row + 1) col then 1 else 0 in
-              if dir1 + dir2 = 1 then
-                loop
-                  (if dir1 = 1 then _ROGUE_KEY_NORTH else _ROGUE_KEY_SOUTH)
-              else ()
-	    else if List.mem tmpdirch [_ROGUE_KEY_NORTH; _ROGUE_KEY_SOUTH]
-	    then
+              (if dir1 + dir2 = 1 then
+                 loop
+                   (if dir1 = 1 then _ROGUE_KEY_NORTH else _ROGUE_KEY_SOUTH))
+            else if
+              List.mem tmpdirch [_ROGUE_KEY_NORTH; _ROGUE_KEY_SOUTH]
+            then
               let dir1 = if is_passable g row (col - 1) then 1 else 0 in
               let dir2 = if is_passable g row (col + 1) then 1 else 0 in
               if dir1 + dir2 = 1 then
                 loop (if dir1 = 1 then _ROGUE_KEY_WEST else _ROGUE_KEY_EAST)
-              else ()
-            else ()
-          else ()
       | StoppedOnSomething -> ()
       | Moved ->
           if not g.interrupted && not (next_to_something g row col) then
@@ -723,8 +727,7 @@ let multiple_move_rogue g dirch =
                          get_room_number g monster.mn_row monster.mn_col
                        with
                          Some rn2 ->
-                           rn = rn2 &&
-                           not (List.mem monster monsters_in_room)
+                           rn = rn2 && not (List.mem monster monsters_in_room)
                        | None -> false)
                     g.level_monsters
                 in
@@ -739,8 +742,7 @@ let multiple_move_rogue g dirch =
         if g.rogue.hp_current < hp then () else loop g.rogue.hp_current
     in
     loop g.rogue.hp_current
-  else
-    invalid_arg "multiple_move_rogue"
+  else invalid_arg "multiple_move_rogue"
 
 let one_move_rogue g dirch pickup =
   let _ = (one_move g dirch pickup : one_move) in ()

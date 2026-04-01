@@ -178,11 +178,11 @@ let save_screen () =
   | None -> ()
 
 let rec rgetchar_stdin ch =
-  if ch = _ROGUE_KEY_REFRESH then begin
-    Curses.wrefresh_curscr (); rgetchar_stdin (Curses.getch ())
-  end else if ch = _ROGUE_KEY_SAVE_SCREEN then begin
-    save_screen (); rgetchar_stdin (Curses.getch ())
-  end else ch
+  if ch = _ROGUE_KEY_REFRESH then
+    begin Curses.wrefresh_curscr (); rgetchar_stdin (Curses.getch ()) end
+  else if ch = _ROGUE_KEY_SAVE_SCREEN then
+    begin save_screen (); rgetchar_stdin (Curses.getch ()) end
+  else ch
 let rgetchar_human () = rgetchar_stdin (Curses.getch ())
 
 let dungeon_string g =
@@ -476,58 +476,58 @@ let is_pack_letter g ch mask =
   if ch = _ROGUE_KEY_CANCEL then Some (ch, mask)
   else if ch = _ROGUE_KEY_LIST then Some (ch, mask)
   else
-  match ch with
-    'a'..'z' -> Some (ch, mask)
-  | '?' ->
-      Some
-        (_ROGUE_KEY_LIST,
-         (function
-            Scroll _ -> true
-          | _ -> false))
-  | '!' ->
-      Some
-        (_ROGUE_KEY_LIST,
-         (function
-            Potion _ -> true
-          | _ -> false))
-  | ':' ->
-      Some
-        (_ROGUE_KEY_LIST,
-         (function
-            Food _ -> true
-          | _ -> false))
-  | ')' ->
-      Some
-        (_ROGUE_KEY_LIST,
-         (function
-            Weapon _ -> true
-          | _ -> false))
-  | ']' ->
-      Some
-        (_ROGUE_KEY_LIST,
-         (function
-            Armor _ -> true
-          | _ -> false))
-  | '/' ->
-      Some
-        (_ROGUE_KEY_LIST,
-         (function
-            Wand _ -> true
-          | _ -> false))
-  | '=' ->
-      Some
-        (_ROGUE_KEY_LIST,
-         (function
-            Ring _ -> true
-          | _ -> false))
-  | ',' ->
-      Some
-        (_ROGUE_KEY_LIST,
-         (function
-            Amulet -> true
-          | _ -> false))
-  | '.' -> Some (_ROGUE_KEY_LIST, in_use)
-  | _ -> None
+    match ch with
+      'a'..'z' -> Some (ch, mask)
+    | '?' ->
+        Some
+          (_ROGUE_KEY_LIST,
+           (function
+              Scroll _ -> true
+            | _ -> false))
+    | '!' ->
+        Some
+          (_ROGUE_KEY_LIST,
+           (function
+              Potion _ -> true
+            | _ -> false))
+    | ':' ->
+        Some
+          (_ROGUE_KEY_LIST,
+           (function
+              Food _ -> true
+            | _ -> false))
+    | ')' ->
+        Some
+          (_ROGUE_KEY_LIST,
+           (function
+              Weapon _ -> true
+            | _ -> false))
+    | ']' ->
+        Some
+          (_ROGUE_KEY_LIST,
+           (function
+              Armor _ -> true
+            | _ -> false))
+    | '/' ->
+        Some
+          (_ROGUE_KEY_LIST,
+           (function
+              Wand _ -> true
+            | _ -> false))
+    | '=' ->
+        Some
+          (_ROGUE_KEY_LIST,
+           (function
+              Ring _ -> true
+            | _ -> false))
+    | ',' ->
+        Some
+          (_ROGUE_KEY_LIST,
+           (function
+              Amulet -> true
+            | _ -> false))
+    | '.' -> Some (_ROGUE_KEY_LIST, in_use)
+    | _ -> None
 
 let pack_letter g prompt mask =
   let tmask = mask in
@@ -560,15 +560,15 @@ let pack_letter g prompt mask =
               in
               match cho with
                 Some ch ->
-		  if ch = _ROGUE_KEY_CANCEL then ch
-		  else
-                  begin match ch with
-                    ' ' | 'a'..'z' -> ch
-                  | _ ->
-                      match is_pack_letter g ch tmask with
-                        Some (_, mask) -> loop mask
-                      | None -> ch
-                  end
+                  if ch = _ROGUE_KEY_CANCEL then ch
+                  else
+                    begin match ch with
+                      ' ' | 'a'..'z' -> ch
+                    | _ ->
+                        match is_pack_letter g ch tmask with
+                          Some (_, mask) -> loop mask
+                        | None -> ch
+                    end
               | None -> loop tmask
             in
             loop mask

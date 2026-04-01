@@ -2,21 +2,19 @@
 (* gramext.ml,v *)
 (* Copyright (c) INRIA 2007-2017 *)
 
-open Printf;;
+open Printf
 
-type 'a parser_t = 'a Stream.t -> Obj.t;;
-type 'a fparser_t = 'a Fstream.t -> (Obj.t * 'a Fstream.t) option;;
-type 'a bparser_t = ('a, Obj.t) Fstream.bp;;
+type 'a parser_t = 'a Stream.t -> Obj.t
+type 'a fparser_t = 'a Fstream.t -> (Obj.t * 'a Fstream.t) option
+type 'a bparser_t = ('a, Obj.t) Fstream.bp
 
 type parse_algorithm =
   Predictive | Functional | Backtracking | DefaultAlgorithm
-;;
 
 type 'te grammar =
   { gtokens : (Plexing.pattern, int ref) Hashtbl.t;
     mutable glexer : 'te Plexing.lexer;
     mutable galgo : parse_algorithm }
-;;
 
 type 'te g_entry =
   { egram : 'te grammar;
@@ -62,7 +60,7 @@ and 'te g_tree =
   | DeadEnd
 and 'te g_node =
   { node : 'te g_symbol; son : 'te g_tree; brother : 'te g_tree }
-and err_fun = unit -> string;;
+and err_fun = unit -> string
 
 type position =
     First
@@ -71,9 +69,8 @@ type position =
   | After of string
   | Like of string
   | Level of string
-;;
 
-let warning_verbose = ref true;;
+let warning_verbose = ref true
 
 let rec derive_eps =
   function
@@ -92,7 +89,6 @@ and tree_derive_eps =
   | Node {node = s; brother = bro; son = son} ->
       derive_eps s && tree_derive_eps son || tree_derive_eps bro
   | DeadEnd -> false
-;;
 
 let rec eq_symbol s1 s2 =
   match s1, s2 with
@@ -124,7 +120,6 @@ let rec eq_symbol s1 s2 =
       in
       eq_tree t1 t2
   | _ -> s1 = s2
-;;
 
 let is_before s1 s2 =
   let s1 =
@@ -144,7 +139,6 @@ let is_before s1 s2 =
   | Stoken _, Stoken _ -> false
   | Stoken _, _ -> true
   | _ -> false
-;;
 
 let insert_tree entry_name gsymbols action tree =
   let rec insert symbols tree =
@@ -193,7 +187,6 @@ let insert_tree entry_name gsymbols action tree =
     | LocAct (_, _) | DeadEnd -> None
   in
   insert gsymbols tree
-;;
 
 let srules rl =
   let t =
@@ -202,15 +195,13 @@ let srules rl =
       DeadEnd rl
   in
   Stree t
-;;
 
-external action : 'a -> g_action = "%identity";;
+external action : 'a -> g_action = "%identity"
 
 let is_level_labelled n lev =
   match lev.lname with
     Some n1 -> n = n1
   | None -> false
-;;
 
 let rec token_exists_in_level f lev =
   token_exists_in_tree f lev.lprefix || token_exists_in_tree f lev.lsuffix
@@ -236,7 +227,6 @@ and token_exists_in_symbol f =
   | Stree t -> token_exists_in_tree f t
   | Svala (_, sy) -> token_exists_in_symbol f sy
   | Snterm _ | Snterml (_, _) | Snext | Sself | Scut -> false
-;;
 
 let insert_level entry_name e1 symbols action slev =
   match e1 with
@@ -247,7 +237,6 @@ let insert_level entry_name e1 symbols action slev =
   | false ->
       {assoc = slev.assoc; lname = slev.lname; lsuffix = slev.lsuffix;
        lprefix = insert_tree entry_name symbols action slev.lprefix}
-;;
 
 let empty_lev lname assoc =
   let assoc =
@@ -256,7 +245,6 @@ let empty_lev lname assoc =
     | None -> LeftA
   in
   {assoc = assoc; lname = lname; lsuffix = DeadEnd; lprefix = DeadEnd}
-;;
 
 let change_lev lev n lname assoc =
   let a =
@@ -277,7 +265,6 @@ let change_lev lev n lname assoc =
   | None -> ()
   end;
   {assoc = a; lname = lev.lname; lsuffix = lev.lsuffix; lprefix = lev.lprefix}
-;;
 
 let get_level entry position levs =
   match position with
@@ -343,7 +330,6 @@ let get_level entry position levs =
       match levs with
         lev :: levs -> [], change_lev lev "<top>", levs
       | [] -> [], empty_lev, []
-;;
 
 let rec check_gram entry =
   function
@@ -381,19 +367,16 @@ and tree_check_gram entry =
     Node {node = n; brother = bro; son = son} ->
       check_gram entry n; tree_check_gram entry bro; tree_check_gram entry son
   | LocAct (_, _) | DeadEnd -> ()
-;;
 
 let change_to_self entry =
   function
     Snterm e when e == entry -> Sself
   | x -> x
-;;
 
 let get_initial entry =
   function
     Sself :: symbols -> true, symbols
   | symbols -> false, symbols
-;;
 
 let insert_tokens gram symbols =
   let rec insert =
@@ -424,7 +407,6 @@ let insert_tokens gram symbols =
     | LocAct (_, _) | DeadEnd -> ()
   in
   List.iter insert symbols
-;;
 
 let levels_of_rules entry position rules =
   let elev =
@@ -456,7 +438,6 @@ let levels_of_rules entry position rules =
         ([], make_lev) rules
     in
     levs1 @ List.rev levs @ levs2
-;;
 
 let logically_eq_symbols entry =
   let rec eq_symbols s1 s2 =
@@ -483,7 +464,6 @@ let logically_eq_symbols entry =
     | _ -> false
   in
   eq_symbols
-;;
 
 (* [delete_rule_in_tree] returns
      [Some (dsl, t)] if success
@@ -526,7 +506,6 @@ let delete_rule_in_tree entry =
     | None -> None
   in
   delete_in_tree
-;;
 
 let rec decr_keyw_use gram =
   function
@@ -556,7 +535,6 @@ and decr_keyw_use_in_tree gram =
       decr_keyw_use gram n.node;
       decr_keyw_use_in_tree gram n.son;
       decr_keyw_use_in_tree gram n.brother
-;;
 
 let rec delete_rule_in_suffix entry symbols =
   function
@@ -580,7 +558,6 @@ let rec delete_rule_in_suffix entry symbols =
           let levs = delete_rule_in_suffix entry symbols levs in lev :: levs
       end
   | [] -> raise Not_found
-;;
 
 let rec delete_rule_in_prefix entry symbols =
   function
@@ -604,7 +581,6 @@ let rec delete_rule_in_prefix entry symbols =
           let levs = delete_rule_in_prefix entry symbols levs in lev :: levs
       end
   | [] -> raise Not_found
-;;
 
 let rec delete_rule_in_level_list entry symbols levs =
   match symbols with
@@ -612,4 +588,3 @@ let rec delete_rule_in_level_list entry symbols levs =
   | Snterm e :: symbols when e == entry ->
       delete_rule_in_suffix entry symbols levs
   | _ -> delete_rule_in_prefix entry symbols levs
-;;

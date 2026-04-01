@@ -4,16 +4,16 @@
 
 (* #load "pa_lexer.cmo" *)
 
-open Versdep;;
+open Versdep
 
-let no_quotations = ref false;;
-let error_on_unknown_keywords = ref false;;
+let no_quotations = ref false
+let error_on_unknown_keywords = ref false
 
-let dollar_for_antiquotation = ref true;;
-let specific_space_dot = ref false;;
-let dot_newline_is = ref ".";;
+let dollar_for_antiquotation = ref true
+let specific_space_dot = ref false
+let dot_newline_is = ref "."
 
-let force_antiquot_loc = ref false;;
+let force_antiquot_loc = ref false
 
 type context =
   { mutable after_space : bool;
@@ -24,18 +24,15 @@ type context =
     line_cnt : int -> char -> unit;
     set_line_nb : unit -> unit;
     make_lined_loc : int * int -> string -> Ploc.t }
-;;
 
 let err ctx loc msg =
   Ploc.raise (ctx.make_lined_loc loc "") (Plexing.Error msg)
-;;
 
 let keyword_or_error ctx loc s =
   try "", ctx.find_kwd s with
     Not_found ->
       if !error_on_unknown_keywords then err ctx loc ("illegal token: " ^ s)
       else "", s
-;;
 
 let rev_implode l =
   let s = string_create (List.length l) in
@@ -45,9 +42,8 @@ let rev_implode l =
     | [] -> s
   in
   bytes_to_string (loop (string_length s - 1) l)
-;;
 
-let implode l = rev_implode (List.rev l);;
+let implode l = rev_implode (List.rev l)
 
 let stream_peek_nth n strm =
   let rec loop n =
@@ -57,14 +53,12 @@ let stream_peek_nth n strm =
     | _ :: l -> loop (n - 1) l
   in
   loop n (Stream.npeek n strm)
-;;
 
-let utf8_lexing = ref false;;
+let utf8_lexing = ref false
 
 let greek_tab =
   ["α"; "β"; "γ"; "δ"; "ε"; "ζ"; "η"; "θ"; "ι"; "κ"; "λ"; "μ"; "ν"; "ξ"; "ο";
    "π"; "ρ"; "σ"; "τ"; "υ"; "φ"; "χ"; "ψ"; "ω"]
-;;
 
 let greek_letter buf strm =
   if !utf8_lexing then
@@ -78,7 +72,6 @@ let greek_letter buf strm =
         else raise Stream.Failure
     | None -> raise Stream.Failure
   else raise Stream.Failure
-;;
 
 let misc_letter buf strm =
   if !utf8_lexing then
@@ -98,7 +91,6 @@ let misc_letter buf strm =
     | Some ('\227'..'\255' as c) ->
         Stream.junk strm__; Plexing.Lexbuf.add c buf
     | _ -> raise Stream.Failure
-;;
 
 let misc_punct buf strm =
   if !utf8_lexing then
@@ -120,7 +112,6 @@ let misc_punct buf strm =
         end
     | _ -> raise Stream.Failure
   else let (_ : _ Stream.t) = strm in raise Stream.Failure
-;;
 
 let utf8_equiv ctx bp buf strm =
   if !utf8_lexing then
@@ -156,7 +147,6 @@ let utf8_equiv ctx bp buf strm =
         end
     | _ -> raise Stream.Failure
   else let (_ : _ Stream.t) = strm in raise Stream.Failure
-;;
 
 let rec ident buf (strm__ : _ Stream.t) =
   match
@@ -170,7 +160,6 @@ let rec ident buf (strm__ : _ Stream.t) =
   with
     Some buf -> ident buf strm__
   | _ -> buf
-;;
 
 let rec ident2 buf (strm__ : _ Stream.t) =
   match
@@ -186,7 +175,6 @@ let rec ident2 buf (strm__ : _ Stream.t) =
   with
     Some buf -> ident2 buf strm__
   | _ -> buf
-;;
 
 let rec ident3 buf (strm__ : _ Stream.t) =
   match Stream.peek strm__ with
@@ -196,29 +184,24 @@ let rec ident3 buf (strm__ : _ Stream.t) =
        '\'' | '$' | '\128'..'\255' as c) ->
       Stream.junk strm__; ident3 (Plexing.Lexbuf.add c buf) strm__
   | _ -> buf
-;;
 
 let binary buf (strm__ : _ Stream.t) =
   match Stream.peek strm__ with
     Some ('0' | '1' as c) -> Stream.junk strm__; Plexing.Lexbuf.add c buf
   | _ -> raise Stream.Failure
-;;
 let octal buf (strm__ : _ Stream.t) =
   match Stream.peek strm__ with
     Some ('0'..'7' as c) -> Stream.junk strm__; Plexing.Lexbuf.add c buf
   | _ -> raise Stream.Failure
-;;
 let decimal buf (strm__ : _ Stream.t) =
   match Stream.peek strm__ with
     Some ('0'..'9' as c) -> Stream.junk strm__; Plexing.Lexbuf.add c buf
   | _ -> raise Stream.Failure
-;;
 let hexa buf (strm__ : _ Stream.t) =
   match Stream.peek strm__ with
     Some ('0'..'9' | 'a'..'f' | 'A'..'F' as c) ->
       Stream.junk strm__; Plexing.Lexbuf.add c buf
   | _ -> raise Stream.Failure
-;;
 
 let end_integer buf (strm__ : _ Stream.t) =
   match Stream.peek strm__ with
@@ -226,7 +209,6 @@ let end_integer buf (strm__ : _ Stream.t) =
   | Some 'L' -> Stream.junk strm__; "INT_L", Plexing.Lexbuf.get buf
   | Some 'n' -> Stream.junk strm__; "INT_n", Plexing.Lexbuf.get buf
   | _ -> "INT", Plexing.Lexbuf.get buf
-;;
 
 let rec digits_under kind buf (strm__ : _ Stream.t) =
   match try Some (kind buf strm__) with Stream.Failure -> None with
@@ -237,7 +219,6 @@ let rec digits_under kind buf (strm__ : _ Stream.t) =
           Stream.junk strm__;
           digits_under kind (Plexing.Lexbuf.add '_' buf) strm__
       | _ -> end_integer buf strm__
-;;
 
 let digits kind buf (strm__ : _ Stream.t) =
   let buf =
@@ -245,7 +226,6 @@ let digits kind buf (strm__ : _ Stream.t) =
       Stream.Failure -> raise (Stream.Error "ill-formed integer constant")
   in
   digits_under kind buf strm__
-;;
 
 let rec decimal_digits_under buf (strm__ : _ Stream.t) =
   match Stream.peek strm__ with
@@ -253,7 +233,6 @@ let rec decimal_digits_under buf (strm__ : _ Stream.t) =
       Stream.junk strm__;
       decimal_digits_under (Plexing.Lexbuf.add c buf) strm__
   | _ -> buf
-;;
 
 let exponent_part buf (strm__ : _ Stream.t) =
   match Stream.peek strm__ with
@@ -273,7 +252,6 @@ let exponent_part buf (strm__ : _ Stream.t) =
       | _ -> raise (Stream.Error "ill-formed floating-point constant")
       end
   | _ -> raise Stream.Failure
-;;
 
 let number buf (strm__ : _ Stream.t) =
   let buf = decimal_digits_under buf strm__ in
@@ -293,7 +271,6 @@ let number buf (strm__ : _ Stream.t) =
       with
         Some buf -> "FLOAT", Plexing.Lexbuf.get buf
       | _ -> end_integer buf strm__
-;;
 
 let char_after_bslash buf (strm__ : _ Stream.t) =
   match Stream.peek strm__ with
@@ -315,7 +292,6 @@ let char_after_bslash buf (strm__ : _ Stream.t) =
       with Stream.Failure -> raise (Stream.Error "")
       end
   | _ -> raise Stream.Failure
-;;
 
 let char ctx bp buf (strm__ : _ Stream.t) =
   match Stream.peek strm__ with
@@ -341,14 +317,12 @@ let char ctx bp buf (strm__ : _ Stream.t) =
           | _ -> raise Stream.Failure
           end
       | _ -> raise Stream.Failure
-;;
 
 let any ctx buf (strm__ : _ Stream.t) =
   let bp = Stream.count strm__ in
   match Stream.peek strm__ with
     Some c -> Stream.junk strm__; ctx.line_cnt bp c; Plexing.Lexbuf.add c buf
   | _ -> raise Stream.Failure
-;;
 
 let rec string ctx bp buf (strm__ : _ Stream.t) =
   match Stream.peek strm__ with
@@ -364,7 +338,6 @@ let rec string ctx bp buf (strm__ : _ Stream.t) =
       match try Some (any ctx buf strm__) with Stream.Failure -> None with
         Some buf -> string ctx bp buf strm__
       | _ -> err ctx (bp, Stream.count strm__) "string not terminated"
-;;
 
 let comment ctx bp =
   let rec comment buf (strm__ : _ Stream.t) =
@@ -420,7 +393,6 @@ let comment ctx bp =
         | _ -> err ctx (bp, Stream.count strm__) "comment not terminated"
   in
   comment
-;;
 
 let rec quotation ctx bp buf (strm__ : _ Stream.t) =
   match Stream.peek strm__ with
@@ -470,9 +442,8 @@ let rec quotation ctx bp buf (strm__ : _ Stream.t) =
       match try Some (any ctx buf strm__) with Stream.Failure -> None with
         Some buf -> quotation ctx bp buf strm__
       | _ -> err ctx (bp, Stream.count strm__) "quotation not terminated"
-;;
 
-let less_expected = "character '<' expected";;
+let less_expected = "character '<' expected"
 
 let less ctx bp buf strm =
   if !no_quotations then
@@ -526,7 +497,6 @@ let less ctx bp buf strm =
         let buf = ident2 buf strm__ in
         keyword_or_error ctx (bp, Stream.count strm__)
           (Plexing.Lexbuf.get buf)
-;;
 
 let rec antiquot_rest ctx bp buf (strm__ : _ Stream.t) =
   match Stream.peek strm__ with
@@ -541,7 +511,6 @@ let rec antiquot_rest ctx bp buf (strm__ : _ Stream.t) =
       match try Some (any ctx buf strm__) with Stream.Failure -> None with
         Some buf -> antiquot_rest ctx bp buf strm__
       | _ -> err ctx (bp, Stream.count strm__) "antiquotation not terminated"
-;;
 
 let rec antiquot ctx bp buf (strm__ : _ Stream.t) =
   match Stream.peek strm__ with
@@ -565,9 +534,8 @@ let rec antiquot ctx bp buf (strm__ : _ Stream.t) =
           let buf = antiquot_rest ctx bp buf strm__ in
           ":" ^ Plexing.Lexbuf.get buf
       | _ -> err ctx (bp, Stream.count strm__) "antiquotation not terminated"
-;;
 
-let antiloc bp ep s = Printf.sprintf "%d,%d:%s" bp ep s;;
+let antiloc bp ep s = Printf.sprintf "%d,%d:%s" bp ep s
 
 let rec antiquot_loc ctx bp buf (strm__ : _ Stream.t) =
   match Stream.peek strm__ with
@@ -594,7 +562,6 @@ let rec antiquot_loc ctx bp buf (strm__ : _ Stream.t) =
           let buf = antiquot_rest ctx bp buf strm__ in
           antiloc bp (Stream.count strm__) (":" ^ Plexing.Lexbuf.get buf)
       | _ -> err ctx (bp, Stream.count strm__) "antiquotation not terminated"
-;;
 
 let dollar ctx bp buf strm =
   if not !no_quotations && ctx.dollar_for_antiquotation then
@@ -605,7 +572,6 @@ let dollar ctx bp buf strm =
     let (strm__ : _ Stream.t) = strm in
     let buf = Plexing.Lexbuf.add '$' buf in
     let buf = ident2 buf strm__ in "", Plexing.Lexbuf.get buf
-;;
 
 (* ANTIQUOT - specific case for QUESTIONIDENT and QUESTIONIDENTCOLON
     input         expr        patt
@@ -666,7 +632,6 @@ let question ctx bp buf strm =
     let (strm__ : _ Stream.t) = strm in
     let buf = ident2 buf strm__ in
     keyword_or_error ctx (bp, Stream.count strm__) (Plexing.Lexbuf.get buf)
-;;
 
 let tilde ctx bp buf strm =
   if ctx.dollar_for_antiquotation then
@@ -709,20 +674,17 @@ let tilde ctx bp buf strm =
     let (strm__ : _ Stream.t) = strm in
     let buf = ident2 buf strm__ in
     keyword_or_error ctx (bp, Stream.count strm__) (Plexing.Lexbuf.get buf)
-;;
 
 let tildeident buf (strm__ : _ Stream.t) =
   match Stream.peek strm__ with
     Some ':' -> Stream.junk strm__; "TILDEIDENTCOLON", Plexing.Lexbuf.get buf
   | _ -> "TILDEIDENT", Plexing.Lexbuf.get buf
-;;
 
 let questionident buf (strm__ : _ Stream.t) =
   match Stream.peek strm__ with
     Some ':' ->
       Stream.junk strm__; "QUESTIONIDENTCOLON", Plexing.Lexbuf.get buf
   | _ -> "QUESTIONIDENT", Plexing.Lexbuf.get buf
-;;
 
 let rec linedir n s =
   match stream_peek_nth n s with
@@ -738,14 +700,12 @@ and linedir_quote n s =
     Some (' ' | '\t') -> linedir_quote (n + 1) s
   | Some '"' -> true
   | _ -> false
-;;
 
 let rec any_to_nl buf (strm__ : _ Stream.t) =
   match Stream.peek strm__ with
     Some ('\r' | '\n' as c) -> Stream.junk strm__; Plexing.Lexbuf.add c buf
   | Some c -> Stream.junk strm__; any_to_nl (Plexing.Lexbuf.add c buf) strm__
   | _ -> buf
-;;
 
 let next_token_after_spaces ctx bp buf (strm__ : _ Stream.t) =
   match Stream.peek strm__ with
@@ -1027,9 +987,8 @@ let next_token_after_spaces ctx bp buf (strm__ : _ Stream.t) =
                               let buf = any ctx buf strm__ in
                               keyword_or_error ctx (bp, Stream.count strm__)
                                 (Plexing.Lexbuf.get buf)
-;;
 
-let get_comment buf strm = Plexing.Lexbuf.get buf;;
+let get_comment buf strm = Plexing.Lexbuf.get buf
 
 let rec next_token ctx buf (strm__ : _ Stream.t) =
   let bp = Stream.count strm__ in
@@ -1093,7 +1052,6 @@ let rec next_token ctx buf (strm__ : _ Stream.t) =
             let _ = Stream.empty strm__ in
             let loc = ctx.make_lined_loc (bp, bp + 1) comm in ("EOI", ""), loc
       with Stream.Failure -> raise (Stream.Error "")
-;;
 
 let next_token_fun ctx glexr (cstrm, s_line_nb, s_bol_pos) =
   try
@@ -1120,7 +1078,6 @@ let next_token_fun ctx glexr (cstrm, s_line_nb, s_bol_pos) =
     r, loc
   with Stream.Error str ->
     err ctx (Stream.count cstrm, Stream.count cstrm + 1) str
-;;
 
 let func kwd_table glexr =
   let ctx =
@@ -1145,7 +1102,6 @@ let func kwd_table glexr =
          Ploc.make_loc !(Plexing.input_file) !line_nb !bol_pos loc comm}
   in
   Plexing.lexer_func_of_parser (next_token_fun ctx glexr)
-;;
 
 let rec check_keyword_stream (strm__ : _ Stream.t) =
   let _ = check Plexing.Lexbuf.empty strm__ in
@@ -1294,11 +1250,9 @@ and check_ident2 buf (strm__ : _ Stream.t) =
   with
     Some buf -> check_ident2 buf strm__
   | _ -> buf
-;;
 
 let check_keyword s =
   try check_keyword_stream (Stream.of_string s) with _ -> false
-;;
 
 let error_no_respect_rules p_con p_prm =
   raise
@@ -1308,7 +1262,6 @@ let error_no_respect_rules p_con p_prm =
          else if p_prm = "" then p_con
          else p_con ^ " \"" ^ p_prm ^ "\"") ^
         " does not respect Plexer rules"))
-;;
 
 let using_token kwd_table (p_con, p_prm) =
   match p_con with
@@ -1339,13 +1292,11 @@ let using_token kwd_table (p_con, p_prm) =
       raise
         (Plexing.Error
            ("the constructor \"" ^ p_con ^ "\" is not recognized by Plexer"))
-;;
 
 let removing_token kwd_table (p_con, p_prm) =
   match p_con with
     "" -> Hashtbl.remove kwd_table p_prm
   | _ -> ()
-;;
 
 let text =
   function
@@ -1364,7 +1315,6 @@ let text =
   | "EOI", "" -> "end of input"
   | con, "" -> con
   | con, prm -> con ^ " \"" ^ prm ^ "\""
-;;
 
 let eq_before_colon p e =
   let rec loop i =
@@ -1375,21 +1325,18 @@ let eq_before_colon p e =
     else false
   in
   loop 0
-;;
 
 let after_colon e =
   try
     let i = String.index e ':' in
     String.sub e (i + 1) (String.length e - i - 1)
   with Not_found -> ""
-;;
 
 let after_colon_except_last e =
   try
     let i = String.index e ':' in
     String.sub e (i + 1) (String.length e - i - 2)
   with Not_found -> ""
-;;
 
 let tok_match =
   function
@@ -1431,7 +1378,6 @@ let tok_match =
          else if con = "" && prm = p_prm then prm
          else raise Stream.Failure)
   | tok -> Plexing.default_match tok
-;;
 
 let gmake () =
   let kwd_table = Hashtbl.create 301 in
@@ -1457,4 +1403,3 @@ let gmake () =
      Plexing.tok_comm = None}
   in
   glexr := glex; glex
-;;
