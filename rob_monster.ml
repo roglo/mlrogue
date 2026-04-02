@@ -14,6 +14,25 @@ let monster_power_list = ref None
 let gram = Grammar.gcreate (Plexer.gmake ())
 let mon_pow_line = Grammar.Entry.create gram "mon_pow_line"
 
+(*
+EXTEND
+  GLOBAL: mon_pow_line;
+  mon_pow_line:
+    [ [ ch = UIDENT; lev = INT; v = LIST1 armv_pow SEP "/"; EOI ->
+          let ch = Plexing.eval_char ch in
+          let lev = int_of_string lev in
+          ((ch, lev), v) ] ]
+  ;
+  armv_pow:
+    [ [ armv = signed_int; ","; pow = INT -> (armv, int_of_string pow) ] ]
+  ;
+  signed_int:
+    [ [ i = INT -> int_of_string i
+      | "-"; i = INT -> - int_of_string i ] ]
+  ;
+END;
+*)
+
 let _ =
   Grammar.extend
     (let _ = (mon_pow_line : 'mon_pow_line Grammar.Entry.e) in
