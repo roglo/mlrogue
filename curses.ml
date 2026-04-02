@@ -9,8 +9,8 @@ type data =
     ccol : mutable int;
     nrow : mutable int;
     ncol : mutable int;
-    bcur : mutable array bytes;
-    bnew : mutable array bytes;
+    bcur : mutable array (array Uchar.t);
+    bnew : mutable array (array Uchar.t);
     acur : mutable array (array attr);
     anew : mutable array (array attr);
     attr_set : mutable attr;
@@ -26,10 +26,10 @@ and attr =
 type attribute = [ A_standout | A_bold ];
 
 value string_make = Bytes.make;
-value string_get = Bytes.get;
-value string_set = Bytes.set;
+value string_get = Array.get;
+value string_set = Array.set;
 value string_sub = Bytes.sub;
-value string_length = Bytes.length;
+value string_length = Array.length;
 value string_fill = Bytes.fill;
 value string_contains = Bytes.contains;
 value string_of_bytes = Bytes.to_string;
@@ -122,13 +122,44 @@ value set_attr a =
   else ()
 ;
 
-value print_encode_char c =
-  if d.no_output then () else print_char c
+value uchar_length c =
+  let n = Uchar.to_int c in
+  if n <= 0xff then 1
+  else if n <= 0xffff then 2
+  else failwith "uchar_length"
+;
+
+value uchar_to_string c =
+  let s = Bytes.create (uchar_length c) in
+  loop 0 (Uchar.to_int c) where rec loop i n =
+    if i = Bytes.length s then Bytes.to_string s
+    else do {
+      Bytes.set s i (Char.chr (n land 0xff));
+      loop (i + 1) (n lsr 8)
+    }
+;
+
+value uchar_of_substring s i =
+  if i >= String.length s then
+    failwith (Printf.sprintf "uchar_of_substring \"%s\" %d" s i)
+  else if Char.code s.[i] land 0x80 = 0 then
+    (Uchar.of_char s.[i], i + 1)
+  else if Char.code s.[i] land 0x40 = 0 then
+    failwith (Printf.sprintf "uchar_of_substring \"%s\" %d, bad utf8" s i)
+  else if Char.code s.[i] land 0x20 = 0 then
+    if i + 1 >= String.length s then failwith "uchar_of_substring error"
+    else
+      (Uchar.of_int (Char.code s.[i+1] lsl 8 + Char.code s.[i]), i + 2)
+  else failwith "uchar_of_substring case not impl"
+;
+
+value print_encode_char (c : Uchar.t) =
+  if d.no_output then () else print_string (uchar_to_string c)
 ;
 
 value cprint_string s = if d.no_output then () else print_string s;
 
-value update c n ac an i jbeg j = do {
+value update (c : array Uchar.t) (n : array Uchar.t) ac an i jbeg j = do {
   if i = d.crow && jbeg = d.ccol then ()
   else if i = d.crow && jbeg = d.ccol - 1 then cprint_string "\b"
   else if i = d.crow && jbeg = d.ccol + 1 then do {
@@ -232,7 +263,7 @@ value cflush () = do {
 
 (* *)
 
-value addch c = do {
+value adduch c = do {
   if check d.nrow d.ncol then do {
     string_set d.bnew.(d.nrow) d.ncol c;
     d.anew.(d.nrow).(d.ncol) := d.attr_set;
@@ -241,10 +272,16 @@ value addch c = do {
   d.ncol := d.ncol + 1
 };
 
+value addch c = adduch (Uchar.of_char c);
+
 value addstr s =
-  for i = 0 to String.length s - 1 do {
-    addch s.[i];
-  }
+  loop 0 where rec loop i =
+    if i = String.length s then ()
+    else do {
+      let (c, i) = uchar_of_substring s i in
+      adduch c;
+      loop i
+    }
 ;
 
 value attroff al =
@@ -267,14 +304,16 @@ value vt_device_status_report = "\027[6n";
 value vt_erase_in_display = "\027[J";
 value vt_erase_line_from_cursor = "\027[K";
 
+value uchar_sp = Uchar.of_char ' ';
+
 value clear () = do {
   cprint_string "\027[H";
   cprint_string vt_erase_in_display;
   for i = 0 to Array.length d.bcur - 1 do {
-    string_fill d.bcur.(i) 0 (string_length d.bcur.(i)) ' ';
-    string_fill d.bnew.(i) 0 (string_length d.bnew.(i)) ' ';
-    Array.fill d.acur.(i) 0 (string_length d.bcur.(i)) no_attr;
-    Array.fill d.anew.(i) 0 (string_length d.bnew.(i)) no_attr;
+    Array.fill d.bcur.(i) 0 (Array.length d.bcur.(i)) uchar_sp;
+    Array.fill d.bnew.(i) 0 (Array.length d.bnew.(i)) uchar_sp;
+    Array.fill d.acur.(i) 0 (Array.length d.bcur.(i)) no_attr;
+    Array.fill d.anew.(i) 0 (Array.length d.bnew.(i)) no_attr;
   };
   d.crow := 0;
   d.ccol := 0;
@@ -287,9 +326,9 @@ value clrtoeol () = do {
   cprint_string vt_erase_line_from_cursor;
   if check d.crow d.ccol && check d.nrow d.ncol then do {
     let s = d.bcur.(d.crow) in
-    string_fill s d.ccol (string_length s - d.ccol) ' ';
+    Array.fill s d.ccol (Array.length s - d.ccol) (Uchar.of_char ' ');
     let s = d.bnew.(d.nrow) in
-    string_fill s d.ccol (string_length s - d.ncol) ' ';
+    Array.fill s d.ccol (Array.length s - d.ncol) (Uchar.of_char ' ');
     let s = d.acur.(d.nrow) in
     Array.fill s d.ccol (Array.length s - d.ncol) no_attr;
     let s = d.anew.(d.nrow) in
@@ -327,8 +366,8 @@ value initscr () = do {
   else do {
     let fd = tty_fd () in
     let s = string_to_bytes ("\027[99;99H" ^ vt_device_status_report) in
-    let len = Unix.write fd s 0 (string_length s) in
-    if len <> string_length s then failwith "Curses.initscr" else ();
+    let len = Unix.write fd s 0 (Bytes.length s) in
+    if len <> Bytes.length s then failwith "Curses.initscr" else ();
     set_edit ();
     let line =
       let buff = string_make 20 ' ' in
@@ -336,7 +375,7 @@ value initscr () = do {
         let (icl, _, _) = Unix.select [fd] [] [] 1.0 in
         if icl = [] then string_sub buff 0 i
         else
-          let len = Unix.read fd buff i (string_length buff - i) in
+          let len = Unix.read fd buff i (Bytes.length buff - i) in
           if len = 0 || string_contains buff 'R' then
             string_sub buff 0 (i + len)
           else loop_i (i + len)
@@ -350,8 +389,8 @@ value initscr () = do {
         d.max_col := 80;
       } ];
   };
-  d.bcur := Array.init d.max_row (fun _ -> string_make d.max_col ' ');
-  d.bnew := Array.init d.max_row (fun _ -> string_make d.max_col ' ');
+  d.bcur := Array.init d.max_row (fun _ -> Array.make d.max_col uchar_sp);
+  d.bnew := Array.init d.max_row (fun _ -> Array.make d.max_col uchar_sp);
   d.acur := Array.init d.max_row (fun _ -> Array.make d.max_col no_attr);
   d.anew := Array.init d.max_row (fun _ -> Array.make d.max_col no_attr);
   d.attr_set := no_attr;
@@ -375,7 +414,7 @@ value move row col = do {
 
 value mvaddch i j c = do {
   if check i j then do {
-    string_set d.bnew.(i) j c;
+    string_set d.bnew.(i) j (Uchar.of_char c);
     d.anew.(i).(j) := d.attr_set;
   }
   else ();
@@ -386,30 +425,41 @@ value mvaddch i j c = do {
 value mvaddnstr row col s i len = do {
   d.nrow := row;
   d.ncol := col;
-  for j = 0 to len - 1 do {
-    string_set d.bnew.(d.nrow) d.ncol s.[i + j];
-    d.anew.(d.nrow).(d.ncol) := d.attr_set;
-    d.ncol := d.ncol + 1;
-  };
+  loop 0 where rec loop j =
+    if j = len then ()
+    else do {
+      let (uc, k) = uchar_of_substring s (i + j) in
+      string_set d.bnew.(d.nrow) d.ncol uc;
+      d.anew.(d.nrow).(d.ncol) := d.attr_set;
+      d.ncol := d.ncol + 1;
+      loop (k - i)
+    };
 };
 
 value mvaddstr row col s = do {
   d.nrow := row;
   d.ncol := col;
-  for j = 0 to String.length s - 1 do {
-    if check d.nrow d.ncol then do {
-      string_set d.bnew.(d.nrow) d.ncol s.[j];
-      d.anew.(d.nrow).(d.ncol) := d.attr_set;
-      d.ncol := d.ncol + 1;
-    }
-    else ();
+  loop 0 where rec loop j =
+    if j = String.length s then ()
+    else do {
+      if check d.nrow d.ncol then do {
+        let (uc, k) = uchar_of_substring s j in
+        string_set d.bnew.(d.nrow) d.ncol uc;
+        d.anew.(d.nrow).(d.ncol) := d.attr_set;
+        d.ncol := d.ncol + 1;
+        loop k
+      }
+      else ();
   };
 };
 
 value mvinch row col = do {
   d.nrow := row;
   d.ncol := col;
-  if check row col then string_get d.bnew.(row) col else ' ';
+  if check row col then
+    try Uchar.to_char (string_get d.bnew.(row) col) with
+    [ Invalid_argument _ -> ' ' ]
+  else ' '
 };
 
 value refresh () = do {
@@ -424,7 +474,7 @@ value wrefresh_curscr () = do {
   cprint_string "\027[H";
   cprint_string vt_erase_in_display;
   for i = 0 to Array.length d.bcur - 1 do {
-    string_fill d.bcur.(i) 0 (string_length d.bcur.(i)) ' ';
+    Array.fill d.bcur.(i) 0 (string_length d.bcur.(i)) uchar_sp;
   };
   d.crow := 0;
   d.ccol := 0;

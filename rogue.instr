@@ -38,13 +38,13 @@ Touches de commande
 %e         Manger                    %q               Boire
 %r         Lire un parchemin         %d               Jeter
 %P         Mettre une bague          %R               Enlever une bague
-CTRL-P     Voir message précédent    %>             Descendre d'un niveau
+CTRL-P     Voir message précédent    %>               Descendre d'un niveau
 %<         Remonter d'un niveau      %)               Liste des armes
 %]         Liste des armures         %=               Liste des bagues
-%^         Identifier un piège       %I              Inventaire court
+%^         Identifier un piège       %I               Inventaire court
 %T         Retirer une armure        %W               Enfiler une armure
 %w         Brandir une arme          %c               Nommer quelque chose
 %z         Zapper                    %t<direction>    Lancer quelque chose
 %v         Version                   %Q               Partir
 %@         Changer de langue         %S               Sauver le jeu
-%D         Choses découvertes        %X              Sauver l'écran
+%D         Choses découvertes        %X               Sauver l'écran
