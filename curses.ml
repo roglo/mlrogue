@@ -2,7 +2,7 @@
 
 open Printf;
 
-type utf8 = {utf8_v : int};
+type utf8 = {utf8_v : string};
 
 type data =
   { max_row : mutable int;
@@ -27,11 +27,9 @@ and attr =
 
 type attribute = [ A_standout | A_bold ];
 
-value utf8_to_int c = c.utf8_v;
-value utf8_of_int i = {utf8_v = i};
-value utf8_of_char c = {utf8_v = Char.code c};
+value utf8_of_char c = {utf8_v = String.make 1 c};
 value utf8_to_char u =
-  if u.utf8_v < 0x100 then Char.chr u.utf8_v
+  if String.length u.utf8_v = 1 then u.utf8_v.[0]
   else invalid_arg "utf8_to_char"
 ;
 
@@ -91,23 +89,8 @@ value set_attr a =
   else ()
 ;
 
-value utf8_length c =
-  let n = utf8_to_int c in
-  if n <= 0xff then 1
-  else if n <= 0xffff then 2
-  else if n <= 0xffffff then 3
-  else failwith "utf8_length"
-;
-
-value utf8_to_string c =
-  let s = Bytes.create (utf8_length c) in
-  loop 0 (utf8_to_int c) where rec loop i n =
-    if i = Bytes.length s then Bytes.to_string s
-    else do {
-      Bytes.set s i (Char.chr (n land 0xff));
-      loop (i + 1) (n lsr 8)
-    }
-;
+value utf8_length u = String.length u.utf8_v;
+value utf8_to_string u = u.utf8_v;
 
 value utf8_of_substring s i =
   if i >= String.length s then
@@ -118,14 +101,10 @@ value utf8_of_substring s i =
     failwith (Printf.sprintf "utf8_of_substring \"%s\" %d, bad utf8" s i)
   else if Char.code s.[i] land 0x20 = 0 then
     if i + 1 >= String.length s then failwith "utf8_of_substring error"
-    else
-      (utf8_of_int (Char.code s.[i+1] lsl 8 + Char.code s.[i]), i + 2)
+    else ({utf8_v = String.sub s i 2}, i + 2)
   else if Char.code s.[i] land 0x10 = 0 then
     if i + 2 >= String.length s then failwith "utf8_of_substring error"
-    else
-      (utf8_of_int
-         (Char.code s.[i+2] lsl 16 + Char.code s.[i+1] lsl 8 +
-          Char.code s.[i]), i + 3)
+    else ({utf8_v = String.sub s i 3}, i + 3)
   else failwith "utf8_of_substring case not impl"
 ;
 
