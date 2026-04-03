@@ -111,6 +111,12 @@ value uchar_of_substring s i =
     if i + 1 >= String.length s then failwith "uchar_of_substring error"
     else
       (Uchar.of_int (Char.code s.[i+1] lsl 8 + Char.code s.[i]), i + 2)
+  else if Char.code s.[i] land 0x10 = 0 then
+    if i + 2 >= String.length s then failwith "uchar_of_substring error"
+    else
+      (Uchar.of_int
+        (Char.code s.[i+2] lsl 16 + Char.code s.[i+1] lsl 8 +
+	 Char.code s.[i]), i + 3)
   else failwith "uchar_of_substring case not impl"
 ;
 
