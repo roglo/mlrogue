@@ -51,8 +51,6 @@ value check row col =
   row >= 0 && row < d.max_row && col >= 0 && col < d.max_col
 ;
 
-value edit_tcio = ref None;
-
 value set_attr a =
   if a <> d.cur_attr then do {
     if d.no_output then ()
@@ -293,9 +291,9 @@ value clrtoeol () = do {
   cprint_string vt_erase_line_from_cursor;
   if check d.crow d.ccol && check d.nrow d.ncol then do {
     let s = d.bcur.(d.crow) in
-    Array.fill s d.ccol (Array.length s - d.ccol) (Uchar.of_char ' ');
+    Array.fill s d.ccol (Array.length s - d.ccol) uchar_sp;
     let s = d.bnew.(d.nrow) in
-    Array.fill s d.ccol (Array.length s - d.ncol) (Uchar.of_char ' ');
+    Array.fill s d.ccol (Array.length s - d.ncol) uchar_sp;
     let s = d.acur.(d.nrow) in
     Array.fill s d.ccol (Array.length s - d.ncol) no_attr;
     let s = d.anew.(d.nrow) in
@@ -418,6 +416,8 @@ value tty_fd () =
       fd
     } ]
 ;
+
+value edit_tcio = ref None;
 
 value set_edit () = do {
   let tcio =
