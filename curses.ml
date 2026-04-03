@@ -4,6 +4,14 @@ open Printf;
 
 type utf8 = {utf8_v : int};
 
+value utf8_to_int c = c.utf8_v;
+value utf8_of_int i = {utf8_v = i};
+value utf8_of_char c = {utf8_v = Char.code c};
+value utf8_to_char u =
+  if u.utf8_v < 0x100 then Char.chr u.utf8_v
+  else invalid_arg "utf8_to_char"
+;
+
 type data =
   { max_row : mutable int;
     max_col : mutable int;
@@ -81,14 +89,6 @@ value set_attr a =
     d.cur_attr := a;
   }
   else ()
-;
-
-value utf8_to_int c = c.utf8_v;
-value utf8_of_int (i : int) = {utf8_v = i};
-value utf8_of_char (c : char) = {utf8_v = Char.code c};
-value utf8_to_char (u : utf8) =
-  if u.utf8_v < 0x100 then Char.chr u.utf8_v
-  else invalid_arg "utf8_to_char"
 ;
 
 value utf8_length c =
