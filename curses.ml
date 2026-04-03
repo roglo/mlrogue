@@ -85,6 +85,7 @@ value uchar_length c =
   let n = Uchar.to_int c in
   if n <= 0xff then 1
   else if n <= 0xffff then 2
+  else if n <= 0xffffff then 3
   else failwith "uchar_length"
 ;
 
