@@ -4,14 +4,6 @@ open Printf;
 
 type utf8 = {utf8_v : int};
 
-value utf8_to_int c = c.utf8_v;
-value utf8_of_int i = {utf8_v = i};
-value utf8_of_char c = {utf8_v = Char.code c};
-value utf8_to_char u =
-  if u.utf8_v < 0x100 then Char.chr u.utf8_v
-  else invalid_arg "utf8_to_char"
-;
-
 type data =
   { max_row : mutable int;
     max_col : mutable int;
@@ -34,6 +26,14 @@ and attr =
 ;
 
 type attribute = [ A_standout | A_bold ];
+
+value utf8_to_int c = c.utf8_v;
+value utf8_of_int i = {utf8_v = i};
+value utf8_of_char c = {utf8_v = Char.code c};
+value utf8_to_char u =
+  if u.utf8_v < 0x100 then Char.chr u.utf8_v
+  else invalid_arg "utf8_to_char"
+;
 
 value string_make = Bytes.make;
 value string_get = Array.get;
