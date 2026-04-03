@@ -2,6 +2,8 @@
 
 open Printf
 
+type utf8 = { utf8_v : string }
+
 type data =
   { mutable max_row : int;
     mutable max_col : int;
@@ -9,8 +11,8 @@ type data =
     mutable ccol : int;
     mutable nrow : int;
     mutable ncol : int;
-    mutable bcur : bytes array;
-    mutable bnew : bytes array;
+    mutable bcur : utf8 array array;
+    mutable bnew : utf8 array array;
     mutable acur : attr array array;
     mutable anew : attr array array;
     mutable attr_set : attr;
@@ -21,11 +23,16 @@ and attr =
 
 type attribute = A_standout | A_bold
 
+let utf8_of_char c = {utf8_v = String.make 1 c}
+let utf8_to_char u =
+  if String.length u.utf8_v = 1 then u.utf8_v.[0]
+  else invalid_arg "utf8_to_char"
+
 let string_make = Bytes.make
-let string_get = Bytes.get
-let string_set = Bytes.set
+let string_get = Array.get
+let string_set = Array.set
 let string_sub = Bytes.sub
-let string_length = Bytes.length
+let string_length = Array.length
 let string_fill = Bytes.fill
 let string_contains = Bytes.contains
 let string_of_bytes = Bytes.to_string
@@ -42,40 +49,6 @@ let d =
 let no_output () = d.no_output <- true
 
 let check row col = row >= 0 && row < d.max_row && col >= 0 && col < d.max_col
-
-let tty_fd_and_ini_attr = ref None
-let tty_fd () =
-  match !tty_fd_and_ini_attr with
-    Some (fd, _) -> fd
-  | None ->
-      let fd = Unix.openfile "/dev/tty" [Unix.O_RDWR] 0o000 in
-      let ini_attr = Unix.tcgetattr fd in
-      tty_fd_and_ini_attr := Some (fd, ini_attr); fd
-
-let edit_tcio = ref None
-
-let set_edit () =
-  let tcio =
-    match !edit_tcio with
-      Some e -> e
-    | None ->
-        let fd = tty_fd () in
-        let tcio = Unix.tcgetattr fd in
-        tcio.Unix.c_echo <- false;
-        tcio.Unix.c_icanon <- false;
-        tcio.Unix.c_vmin <- 1;
-        tcio.Unix.c_isig <- false;
-        tcio.Unix.c_ixon <- false;
-        tcio.Unix.c_inlcr <- false;
-        tcio.Unix.c_icrnl <- false;
-        edit_tcio := Some tcio;
-        tcio
-  in
-  let fd = tty_fd () in Unix.tcsetattr fd Unix.TCSADRAIN tcio
-and unset_edit () =
-  match !tty_fd_and_ini_attr with
-    Some (fd, ini_attr) -> Unix.tcsetattr fd Unix.TCSADRAIN ini_attr
-  | None -> ()
 
 let set_attr a =
   if a <> d.cur_attr then
@@ -104,11 +77,29 @@ let set_attr a =
       d.cur_attr <- a
     end
 
-let print_encode_char c = if d.no_output then () else print_char c
+let utf8_length u = String.length u.utf8_v
+let utf8_to_string u = u.utf8_v
+
+let utf8_of_substring s i =
+  if i >= String.length s then
+    failwith (Printf.sprintf "utf8_of_substring \"%s\" %d" s i)
+  else if Char.code s.[i] land 0x80 = 0 then utf8_of_char s.[i], i + 1
+  else if Char.code s.[i] land 0x40 = 0 then
+    failwith (Printf.sprintf "utf8_of_substring \"%s\" %d, bad utf8" s i)
+  else if Char.code s.[i] land 0x20 = 0 then
+    if i + 1 >= String.length s then failwith "utf8_of_substring error"
+    else {utf8_v = String.sub s i 2}, i + 2
+  else if Char.code s.[i] land 0x10 = 0 then
+    if i + 2 >= String.length s then failwith "utf8_of_substring error"
+    else {utf8_v = String.sub s i 3}, i + 3
+  else failwith "utf8_of_substring case not impl"
+
+let print_encode_char c =
+  if d.no_output then () else print_string (utf8_to_string c)
 
 let cprint_string s = if d.no_output then () else print_string s
 
-let update c n ac an i jbeg j =
+let update (c : _ array) (n : _ array) ac an i jbeg j =
   if i = d.crow && jbeg = d.ccol then ()
   else if i = d.crow && jbeg = d.ccol - 1 then cprint_string "\b"
   else if i = d.crow && jbeg = d.ccol + 1 then
@@ -209,7 +200,7 @@ let cflush () =
 
 (* *)
 
-let addch c =
+let adduch c =
   if check d.nrow d.ncol then
     begin
       string_set d.bnew.(d.nrow) d.ncol c;
@@ -217,7 +208,14 @@ let addch c =
     end;
   d.ncol <- d.ncol + 1
 
-let addstr s = for i = 0 to String.length s - 1 do addch s.[i] done
+let addch c = adduch (utf8_of_char c)
+
+let addstr s =
+  let rec loop i =
+    if i = String.length s then ()
+    else let (c, i) = utf8_of_substring s i in adduch c; loop i
+  in
+  loop 0
 
 let attroff al =
   List.iter
@@ -237,14 +235,16 @@ let vt_device_status_report = "\027[6n"
 let vt_erase_in_display = "\027[J"
 let vt_erase_line_from_cursor = "\027[K"
 
+let utf8_sp = utf8_of_char ' '
+
 let clear () =
   cprint_string "\027[H";
   cprint_string vt_erase_in_display;
   for i = 0 to Array.length d.bcur - 1 do
-    string_fill d.bcur.(i) 0 (string_length d.bcur.(i)) ' ';
-    string_fill d.bnew.(i) 0 (string_length d.bnew.(i)) ' ';
-    Array.fill d.acur.(i) 0 (string_length d.bcur.(i)) no_attr;
-    Array.fill d.anew.(i) 0 (string_length d.bnew.(i)) no_attr
+    Array.fill d.bcur.(i) 0 (Array.length d.bcur.(i)) utf8_sp;
+    Array.fill d.bnew.(i) 0 (Array.length d.bnew.(i)) utf8_sp;
+    Array.fill d.acur.(i) 0 (Array.length d.bcur.(i)) no_attr;
+    Array.fill d.anew.(i) 0 (Array.length d.bnew.(i)) no_attr
   done;
   d.crow <- 0;
   d.ccol <- 0;
@@ -256,9 +256,9 @@ let clrtoeol () =
   cprint_string vt_erase_line_from_cursor;
   if check d.crow d.ccol && check d.nrow d.ncol then
     let s = d.bcur.(d.crow) in
-    string_fill s d.ccol (string_length s - d.ccol) ' ';
+    Array.fill s d.ccol (Array.length s - d.ccol) utf8_sp;
     let s = d.bnew.(d.nrow) in
-    string_fill s d.ccol (string_length s - d.ncol) ' ';
+    Array.fill s d.ccol (Array.length s - d.ncol) utf8_sp;
     let s = d.acur.(d.nrow) in
     Array.fill s d.ccol (Array.length s - d.ncol) no_attr;
     let s = d.anew.(d.nrow) in
@@ -279,13 +279,117 @@ let home () =
   d.nrow <- 0;
   d.ncol <- 0
 
+let lines () = d.max_row
+let cols () = d.max_col
+
+let pos_get () = d.nrow, d.ncol
+
+let move row col = d.nrow <- row; d.ncol <- col
+
+let mvaddch i j c =
+  if check i j then
+    begin
+      string_set d.bnew.(i) j (utf8_of_char c);
+      d.anew.(i).(j) <- d.attr_set
+    end;
+  d.nrow <- i;
+  d.ncol <- j + 1
+
+let mvaddnstr row col s i len =
+  d.nrow <- row;
+  d.ncol <- col;
+  let rec loop j =
+    if j = len then ()
+    else
+      let (uc, k) = utf8_of_substring s (i + j) in
+      string_set d.bnew.(d.nrow) d.ncol uc;
+      d.anew.(d.nrow).(d.ncol) <- d.attr_set;
+      d.ncol <- d.ncol + 1;
+      loop (k - i)
+  in
+  loop 0
+
+let mvaddstr row col s =
+  d.nrow <- row;
+  d.ncol <- col;
+  let rec loop j =
+    if j = String.length s then ()
+    else if check d.nrow d.ncol then
+      let (uc, k) = utf8_of_substring s j in
+      string_set d.bnew.(d.nrow) d.ncol uc;
+      d.anew.(d.nrow).(d.ncol) <- d.attr_set;
+      d.ncol <- d.ncol + 1;
+      loop k
+  in
+  loop 0
+
+let mvinch row col =
+  d.nrow <- row;
+  d.ncol <- col;
+  if check row col then
+    try utf8_to_char (string_get d.bnew.(row) col) with
+      Invalid_argument _ -> ' '
+  else ' '
+
+let refresh () = cflush (); flush stdout
+
+let standend () = d.attr_set <- no_attr
+let standout () = d.attr_set <- {d.attr_set with a_standout = true}
+
+let wrefresh_curscr () =
+  cprint_string "\027[H";
+  cprint_string vt_erase_in_display;
+  for i = 0 to Array.length d.bcur - 1 do
+    Array.fill d.bcur.(i) 0 (string_length d.bcur.(i)) utf8_sp
+  done;
+  d.crow <- 0;
+  d.ccol <- 0;
+  cflush ();
+  flush stdout
+
+let getch () = input_char stdin
+
+let tty_fd_and_ini_attr = ref None
+let tty_fd () =
+  match !tty_fd_and_ini_attr with
+    Some (fd, _) -> fd
+  | None ->
+      let fd = Unix.openfile "/dev/tty" [Unix.O_RDWR] 0o000 in
+      let ini_attr = Unix.tcgetattr fd in
+      tty_fd_and_ini_attr := Some (fd, ini_attr); fd
+
+let edit_tcio = ref None
+
+let set_edit () =
+  let tcio =
+    match !edit_tcio with
+      Some e -> e
+    | None ->
+        let fd = tty_fd () in
+        let tcio = Unix.tcgetattr fd in
+        tcio.Unix.c_echo <- false;
+        tcio.Unix.c_icanon <- false;
+        tcio.Unix.c_vmin <- 1;
+        tcio.Unix.c_isig <- false;
+        tcio.Unix.c_ixon <- false;
+        tcio.Unix.c_inlcr <- false;
+        tcio.Unix.c_icrnl <- false;
+        edit_tcio := Some tcio;
+        tcio
+  in
+  let fd = tty_fd () in Unix.tcsetattr fd Unix.TCSADRAIN tcio
+and unset_edit () =
+  match !tty_fd_and_ini_attr with
+    Some (fd, ini_attr) -> Unix.tcsetattr fd Unix.TCSADRAIN ini_attr
+  | None -> ()
+
 let initscr () =
   if d.no_output then begin d.max_row <- 24; d.max_col <- 80 end
   else
     begin let fd = tty_fd () in
       let s = string_to_bytes ("\027[99;99H" ^ vt_device_status_report) in
-      let len = Unix.write fd s 0 (string_length s) in
-      if len <> string_length s then failwith "Curses.initscr";
+      let len = Unix.write fd s 0 (Bytes.length s) in
+      if len <> Bytes.length s then failwith "Curses.initscr";
       set_edit ();
       let line =
         let buff = string_make 20 ' ' in
@@ -293,7 +397,7 @@ let initscr () =
           let (icl, _, _) = Unix.select [fd] [] [] 1.0 in
           if icl = [] then string_sub buff 0 i
           else
-            let len = Unix.read fd buff i (string_length buff - i) in
+            let len = Unix.read fd buff i (Bytes.length buff - i) in
             if len = 0 || string_contains buff 'R' then
               string_sub buff 0 (i + len)
             else loop_i (i + len)
@@ -306,8 +410,8 @@ let initscr () =
       with Scanf.Scan_failure _ | End_of_file ->
         d.max_row <- 24; d.max_col <- 80
     end;
-  d.bcur <- Array.init d.max_row (fun _ -> string_make d.max_col ' ');
-  d.bnew <- Array.init d.max_row (fun _ -> string_make d.max_col ' ');
+  d.bcur <- Array.init d.max_row (fun _ -> Array.make d.max_col utf8_sp);
+  d.bnew <- Array.init d.max_row (fun _ -> Array.make d.max_col utf8_sp);
   d.acur <- Array.init d.max_row (fun _ -> Array.make d.max_col no_attr);
   d.anew <- Array.init d.max_row (fun _ -> Array.make d.max_col no_attr);
   d.attr_set <- no_attr;
@@ -315,60 +419,3 @@ let initscr () =
   clear ()
 
 let endwin () = cflush (); unset_edit (); flush stdout
-
-let lines () = d.max_row
-let cols () = d.max_col
-
-let pos_get () = d.nrow, d.ncol
-
-let move row col = d.nrow <- row; d.ncol <- col
-
-let mvaddch i j c =
-  if check i j then
-    begin string_set d.bnew.(i) j c; d.anew.(i).(j) <- d.attr_set end;
-  d.nrow <- i;
-  d.ncol <- j + 1
-
-let mvaddnstr row col s i len =
-  d.nrow <- row;
-  d.ncol <- col;
-  for j = 0 to len - 1 do
-    string_set d.bnew.(d.nrow) d.ncol s.[i+j];
-    d.anew.(d.nrow).(d.ncol) <- d.attr_set;
-    d.ncol <- d.ncol + 1
-  done
-
-let mvaddstr row col s =
-  d.nrow <- row;
-  d.ncol <- col;
-  for j = 0 to String.length s - 1 do
-    if check d.nrow d.ncol then
-      begin
-        string_set d.bnew.(d.nrow) d.ncol s.[j];
-        d.anew.(d.nrow).(d.ncol) <- d.attr_set;
-        d.ncol <- d.ncol + 1
-      end
-  done
-
-let mvinch row col =
-  d.nrow <- row;
-  d.ncol <- col;
-  if check row col then string_get d.bnew.(row) col else ' '
-
-let refresh () = cflush (); flush stdout
-
-let standend () = d.attr_set <- no_attr
-let standout () = d.attr_set <- {d.attr_set with a_standout = true}
-
-let wrefresh_curscr () =
-  cprint_string "\027[H";
-  cprint_string vt_erase_in_display;
-  for i = 0 to Array.length d.bcur - 1 do
-    string_fill d.bcur.(i) 0 (string_length d.bcur.(i)) ' '
-  done;
-  d.crow <- 0;
-  d.ccol <- 0;
-  cflush ();
-  flush stdout
-
-let getch () = input_char stdin
