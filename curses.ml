@@ -2,6 +2,8 @@
 
 open Printf;
 
+type utf8 = {utf8_v : int};
+
 type data =
   { max_row : mutable int;
     max_col : mutable int;
@@ -9,8 +11,8 @@ type data =
     ccol : mutable int;
     nrow : mutable int;
     ncol : mutable int;
-    bcur : mutable array (array Uchar.t);
-    bnew : mutable array (array Uchar.t);
+    bcur : mutable array (array utf8);
+    bnew : mutable array (array utf8);
     acur : mutable array (array attr);
     anew : mutable array (array attr);
     attr_set : mutable attr;
@@ -81,17 +83,25 @@ value set_attr a =
   else ()
 ;
 
-value uchar_length c =
-  let n = Uchar.to_int c in
+value utf8_to_int c = c.utf8_v;
+value utf8_of_int (i : int) = {utf8_v = i};
+value utf8_of_char (c : char) = {utf8_v = Char.code c};
+value utf8_to_char (u : utf8) =
+  if u.utf8_v < 0x100 then Char.chr u.utf8_v
+  else invalid_arg "utf8_to_char"
+;
+
+value utf8_length c =
+  let n = utf8_to_int c in
   if n <= 0xff then 1
   else if n <= 0xffff then 2
   else if n <= 0xffffff then 3
-  else failwith "uchar_length"
+  else failwith "utf8_length"
 ;
 
-value uchar_to_string c =
-  let s = Bytes.create (uchar_length c) in
-  loop 0 (Uchar.to_int c) where rec loop i n =
+value utf8_to_string c =
+  let s = Bytes.create (utf8_length c) in
+  loop 0 (utf8_to_int c) where rec loop i n =
     if i = Bytes.length s then Bytes.to_string s
     else do {
       Bytes.set s i (Char.chr (n land 0xff));
@@ -99,28 +109,28 @@ value uchar_to_string c =
     }
 ;
 
-value uchar_of_substring s i =
+value utf8_of_substring s i =
   if i >= String.length s then
-    failwith (Printf.sprintf "uchar_of_substring \"%s\" %d" s i)
+    failwith (Printf.sprintf "utf8_of_substring \"%s\" %d" s i)
   else if Char.code s.[i] land 0x80 = 0 then
-    (Uchar.of_char s.[i], i + 1)
+    (utf8_of_char s.[i], i + 1)
   else if Char.code s.[i] land 0x40 = 0 then
-    failwith (Printf.sprintf "uchar_of_substring \"%s\" %d, bad utf8" s i)
+    failwith (Printf.sprintf "utf8_of_substring \"%s\" %d, bad utf8" s i)
   else if Char.code s.[i] land 0x20 = 0 then
-    if i + 1 >= String.length s then failwith "uchar_of_substring error"
+    if i + 1 >= String.length s then failwith "utf8_of_substring error"
     else
-      (Uchar.of_int (Char.code s.[i+1] lsl 8 + Char.code s.[i]), i + 2)
+      (utf8_of_int (Char.code s.[i+1] lsl 8 + Char.code s.[i]), i + 2)
   else if Char.code s.[i] land 0x10 = 0 then
-    if i + 2 >= String.length s then failwith "uchar_of_substring error"
+    if i + 2 >= String.length s then failwith "utf8_of_substring error"
     else
-      (Uchar.of_int
+      (utf8_of_int
          (Char.code s.[i+2] lsl 16 + Char.code s.[i+1] lsl 8 +
           Char.code s.[i]), i + 3)
-  else failwith "uchar_of_substring case not impl"
+  else failwith "utf8_of_substring case not impl"
 ;
 
 value print_encode_char c =
-  if d.no_output then () else print_string (uchar_to_string c)
+  if d.no_output then () else print_string (utf8_to_string c)
 ;
 
 value cprint_string s = if d.no_output then () else print_string s;
@@ -238,13 +248,13 @@ value adduch c = do {
   d.ncol := d.ncol + 1
 };
 
-value addch c = adduch (Uchar.of_char c);
+value addch c = adduch (utf8_of_char c);
 
 value addstr s =
   loop 0 where rec loop i =
     if i = String.length s then ()
     else do {
-      let (c, i) = uchar_of_substring s i in
+      let (c, i) = utf8_of_substring s i in
       adduch c;
       loop i
     }
@@ -270,14 +280,14 @@ value vt_device_status_report = "\027[6n";
 value vt_erase_in_display = "\027[J";
 value vt_erase_line_from_cursor = "\027[K";
 
-value uchar_sp = Uchar.of_char ' ';
+value utf8_sp = utf8_of_char ' ';
 
 value clear () = do {
   cprint_string "\027[H";
   cprint_string vt_erase_in_display;
   for i = 0 to Array.length d.bcur - 1 do {
-    Array.fill d.bcur.(i) 0 (Array.length d.bcur.(i)) uchar_sp;
-    Array.fill d.bnew.(i) 0 (Array.length d.bnew.(i)) uchar_sp;
+    Array.fill d.bcur.(i) 0 (Array.length d.bcur.(i)) utf8_sp;
+    Array.fill d.bnew.(i) 0 (Array.length d.bnew.(i)) utf8_sp;
     Array.fill d.acur.(i) 0 (Array.length d.bcur.(i)) no_attr;
     Array.fill d.anew.(i) 0 (Array.length d.bnew.(i)) no_attr;
   };
@@ -292,9 +302,9 @@ value clrtoeol () = do {
   cprint_string vt_erase_line_from_cursor;
   if check d.crow d.ccol && check d.nrow d.ncol then do {
     let s = d.bcur.(d.crow) in
-    Array.fill s d.ccol (Array.length s - d.ccol) uchar_sp;
+    Array.fill s d.ccol (Array.length s - d.ccol) utf8_sp;
     let s = d.bnew.(d.nrow) in
-    Array.fill s d.ccol (Array.length s - d.ncol) uchar_sp;
+    Array.fill s d.ccol (Array.length s - d.ncol) utf8_sp;
     let s = d.acur.(d.nrow) in
     Array.fill s d.ccol (Array.length s - d.ncol) no_attr;
     let s = d.anew.(d.nrow) in
@@ -336,7 +346,7 @@ value move row col = do {
 
 value mvaddch i j c = do {
   if check i j then do {
-    string_set d.bnew.(i) j (Uchar.of_char c);
+    string_set d.bnew.(i) j (utf8_of_char c);
     d.anew.(i).(j) := d.attr_set;
   }
   else ();
@@ -350,7 +360,7 @@ value mvaddnstr row col s i len = do {
   loop 0 where rec loop j =
     if j = len then ()
     else do {
-      let (uc, k) = uchar_of_substring s (i + j) in
+      let (uc, k) = utf8_of_substring s (i + j) in
       string_set d.bnew.(d.nrow) d.ncol uc;
       d.anew.(d.nrow).(d.ncol) := d.attr_set;
       d.ncol := d.ncol + 1;
@@ -365,7 +375,7 @@ value mvaddstr row col s = do {
     if j = String.length s then ()
     else do {
       if check d.nrow d.ncol then do {
-        let (uc, k) = uchar_of_substring s j in
+        let (uc, k) = utf8_of_substring s j in
         string_set d.bnew.(d.nrow) d.ncol uc;
         d.anew.(d.nrow).(d.ncol) := d.attr_set;
         d.ncol := d.ncol + 1;
@@ -379,7 +389,7 @@ value mvinch row col = do {
   d.nrow := row;
   d.ncol := col;
   if check row col then
-    try Uchar.to_char (string_get d.bnew.(row) col) with
+    try utf8_to_char (string_get d.bnew.(row) col) with
     [ Invalid_argument _ -> ' ' ]
   else ' '
 };
@@ -396,7 +406,7 @@ value wrefresh_curscr () = do {
   cprint_string "\027[H";
   cprint_string vt_erase_in_display;
   for i = 0 to Array.length d.bcur - 1 do {
-    Array.fill d.bcur.(i) 0 (string_length d.bcur.(i)) uchar_sp;
+    Array.fill d.bcur.(i) 0 (string_length d.bcur.(i)) utf8_sp;
   };
   d.crow := 0;
   d.ccol := 0;
@@ -478,8 +488,8 @@ value initscr () = do {
         d.max_col := 80;
       } ];
   };
-  d.bcur := Array.init d.max_row (fun _ -> Array.make d.max_col uchar_sp);
-  d.bnew := Array.init d.max_row (fun _ -> Array.make d.max_col uchar_sp);
+  d.bcur := Array.init d.max_row (fun _ -> Array.make d.max_col utf8_sp);
+  d.bnew := Array.init d.max_row (fun _ -> Array.make d.max_col utf8_sp);
   d.acur := Array.init d.max_row (fun _ -> Array.make d.max_col no_attr);
   d.anew := Array.init d.max_row (fun _ -> Array.make d.max_col no_attr);
   d.attr_set := no_attr;
