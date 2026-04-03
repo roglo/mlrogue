@@ -51,46 +51,7 @@ value check row col =
   row >= 0 && row < d.max_row && col >= 0 && col < d.max_col
 ;
 
-value tty_fd_and_ini_attr = ref None;
-value tty_fd () =
-  match tty_fd_and_ini_attr.val with
-  [ Some (fd, _) -> fd
-  | None -> do {
-      let fd = Unix.openfile "/dev/tty" [Unix.O_RDWR] 0o000 in
-      let ini_attr = Unix.tcgetattr fd in
-      tty_fd_and_ini_attr.val := Some (fd, ini_attr);
-      fd
-    } ]
-;
-
 value edit_tcio = ref None;
-
-value set_edit () = do {
-  let tcio =
-    match edit_tcio.val with
-    [ Some e -> e
-    | None -> do {
-        let fd = tty_fd () in
-        let tcio = Unix.tcgetattr fd in
-        tcio.Unix.c_echo := False;
-        tcio.Unix.c_icanon := False;
-        tcio.Unix.c_vmin := 1;
-        tcio.Unix.c_isig := False;
-        tcio.Unix.c_ixon := False;
-        tcio.Unix.c_inlcr := False;
-        tcio.Unix.c_icrnl := False;
-        edit_tcio.val := Some tcio;
-        tcio
-      } ]
-  in
-  let fd = tty_fd () in
-  Unix.tcsetattr fd Unix.TCSADRAIN tcio;
-}
-and unset_edit () = do {
-  match tty_fd_and_ini_attr.val with
-  [ Some (fd, ini_attr) -> Unix.tcsetattr fd Unix.TCSADRAIN ini_attr
-  | None -> () ]
-};
 
 value set_attr a =
   if a <> d.cur_attr then do {
@@ -358,50 +319,6 @@ value home () = do {
   d.ncol := 0;
 };
 
-value initscr () = do {
-  if d.no_output then do {
-    d.max_row := 24;
-    d.max_col := 80;
-  }
-  else do {
-    let fd = tty_fd () in
-    let s = string_to_bytes ("\027[99;99H" ^ vt_device_status_report) in
-    let len = Unix.write fd s 0 (Bytes.length s) in
-    if len <> Bytes.length s then failwith "Curses.initscr" else ();
-    set_edit ();
-    let line =
-      let buff = string_make 20 ' ' in
-      loop_i 0 where rec loop_i i =
-        let (icl, _, _) = Unix.select [fd] [] [] 1.0 in
-        if icl = [] then string_sub buff 0 i
-        else
-          let len = Unix.read fd buff i (Bytes.length buff - i) in
-          if len = 0 || string_contains buff 'R' then
-            string_sub buff 0 (i + len)
-          else loop_i (i + len)
-    in
-    try
-      Scanf.sscanf (string_of_bytes line) "\027[%d;%dR"
-        (fun x y -> do { d.max_row := x; d.max_col := y })
-    with
-    [ Scanf.Scan_failure _ | End_of_file -> do {
-        d.max_row := 24;
-        d.max_col := 80;
-      } ];
-  };
-  d.bcur := Array.init d.max_row (fun _ -> Array.make d.max_col uchar_sp);
-  d.bnew := Array.init d.max_row (fun _ -> Array.make d.max_col uchar_sp);
-  d.acur := Array.init d.max_row (fun _ -> Array.make d.max_col no_attr);
-  d.anew := Array.init d.max_row (fun _ -> Array.make d.max_col no_attr);
-  d.attr_set := no_attr;
-  d.cur_attr := no_attr;
-  clear ();
-};
-
-value endwin () =
-  do { cflush (); unset_edit (); flush stdout; }
-;
-
 value lines () = d.max_row;
 value cols () = d.max_col;
 
@@ -483,3 +400,86 @@ value wrefresh_curscr () = do {
 };
 
 value getch () = input_char stdin;
+
+value tty_fd_and_ini_attr = ref None;
+value tty_fd () =
+  match tty_fd_and_ini_attr.val with
+  [ Some (fd, _) -> fd
+  | None -> do {
+      let fd = Unix.openfile "/dev/tty" [Unix.O_RDWR] 0o000 in
+      let ini_attr = Unix.tcgetattr fd in
+      tty_fd_and_ini_attr.val := Some (fd, ini_attr);
+      fd
+    } ]
+;
+
+value set_edit () = do {
+  let tcio =
+    match edit_tcio.val with
+    [ Some e -> e
+    | None -> do {
+        let fd = tty_fd () in
+        let tcio = Unix.tcgetattr fd in
+        tcio.Unix.c_echo := False;
+        tcio.Unix.c_icanon := False;
+        tcio.Unix.c_vmin := 1;
+        tcio.Unix.c_isig := False;
+        tcio.Unix.c_ixon := False;
+        tcio.Unix.c_inlcr := False;
+        tcio.Unix.c_icrnl := False;
+        edit_tcio.val := Some tcio;
+        tcio
+      } ]
+  in
+  let fd = tty_fd () in
+  Unix.tcsetattr fd Unix.TCSADRAIN tcio;
+}
+and unset_edit () = do {
+  match tty_fd_and_ini_attr.val with
+  [ Some (fd, ini_attr) -> Unix.tcsetattr fd Unix.TCSADRAIN ini_attr
+  | None -> () ]
+};
+
+value initscr () = do {
+  if d.no_output then do {
+    d.max_row := 24;
+    d.max_col := 80;
+  }
+  else do {
+    let fd = tty_fd () in
+    let s = string_to_bytes ("\027[99;99H" ^ vt_device_status_report) in
+    let len = Unix.write fd s 0 (Bytes.length s) in
+    if len <> Bytes.length s then failwith "Curses.initscr" else ();
+    set_edit ();
+    let line =
+      let buff = string_make 20 ' ' in
+      loop_i 0 where rec loop_i i =
+        let (icl, _, _) = Unix.select [fd] [] [] 1.0 in
+        if icl = [] then string_sub buff 0 i
+        else
+          let len = Unix.read fd buff i (Bytes.length buff - i) in
+          if len = 0 || string_contains buff 'R' then
+            string_sub buff 0 (i + len)
+          else loop_i (i + len)
+    in
+    try
+      Scanf.sscanf (string_of_bytes line) "\027[%d;%dR"
+        (fun x y -> do { d.max_row := x; d.max_col := y })
+    with
+    [ Scanf.Scan_failure _ | End_of_file -> do {
+        d.max_row := 24;
+        d.max_col := 80;
+      } ];
+  };
+  d.bcur := Array.init d.max_row (fun _ -> Array.make d.max_col uchar_sp);
+  d.bnew := Array.init d.max_row (fun _ -> Array.make d.max_col uchar_sp);
+  d.acur := Array.init d.max_row (fun _ -> Array.make d.max_col no_attr);
+  d.anew := Array.init d.max_row (fun _ -> Array.make d.max_col no_attr);
+  d.attr_set := no_attr;
+  d.cur_attr := no_attr;
+  clear ();
+};
+
+value endwin () =
+  do { cflush (); unset_edit (); flush stdout; }
+;
