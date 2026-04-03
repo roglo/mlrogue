@@ -114,18 +114,18 @@ value uchar_of_substring s i =
     if i + 2 >= String.length s then failwith "uchar_of_substring error"
     else
       (Uchar.of_int
-        (Char.code s.[i+2] lsl 16 + Char.code s.[i+1] lsl 8 +
-	 Char.code s.[i]), i + 3)
+         (Char.code s.[i+2] lsl 16 + Char.code s.[i+1] lsl 8 +
+          Char.code s.[i]), i + 3)
   else failwith "uchar_of_substring case not impl"
 ;
 
-value print_encode_char (c : Uchar.t) =
+value print_encode_char c =
   if d.no_output then () else print_string (uchar_to_string c)
 ;
 
 value cprint_string s = if d.no_output then () else print_string s;
 
-value update (c : array Uchar.t) (n : array Uchar.t) ac an i jbeg j = do {
+value update (c : array _) (n : array _) ac an i jbeg j = do {
   if i = d.crow && jbeg = d.ccol then ()
   else if i = d.crow && jbeg = d.ccol - 1 then cprint_string "\b"
   else if i = d.crow && jbeg = d.ccol + 1 then do {
