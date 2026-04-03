@@ -34,29 +34,29 @@ depend:
 	mv .depend.new .depend
 
 rogue.out: $(EXT) $(OBJS)
-	$(OCAMLC) -g $(LIBS) $(OBJS) -o rogue.out
+	$(OCAMLC) -g -I +unix $(LIBS) $(OBJS) -o rogue.out
 
 rogue.opt: $(EXT) $(OBJS:.cmo=.cmx)
-	$(OCAMLOPT) $(LIBS:.cma=.cmxa) $(OBJS:.cmo=.cmx) -o $@
+	$(OCAMLOPT) -I +unix $(LIBS:.cma=.cmxa) $(OBJS:.cmo=.cmx) -o $@
 
 rogbot.out: $(ROGBOT_OBJS)
-	$(OCAMLC) -g $(LIBS) $(ROGBOT_OBJS) -o $@
+	$(OCAMLC) -g -I +unix $(LIBS) $(ROGBOT_OBJS) -o $@
 
 rogbot.opt: $(ROGBOT_OBJS:.cmo=.cmx)
-	$(OCAMLOPT) $(LIBS:.cma=.cmxa) $(ROGBOT_OBJS:.cmo=.cmx) -o $@
+	$(OCAMLOPT) -I +unix $(LIBS:.cma=.cmxa) $(ROGBOT_OBJS:.cmo=.cmx) -o $@
 
 $(OBJS) $(OBJS:.cmo=.cmx): $(EXT)
 
 .SUFFIXES: .ml .mli .cmo .cmx .cmi .def .defo
 
 .ml.cmo:
-	$(OCAMLC) -g $(OCOPOTS) -I gram -c $*.ml
+	$(OCAMLC) -g $(OCOPOTS) -I gram -I +unix -c $*.ml
 
 .ml.cmx:
-	$(OCAMLOPT) -g $(OCOPOTS) -I gram -c $*.ml
+	$(OCAMLOPT) -g $(OCOPOTS) -I gram -I +unix -c $*.ml
 
 .mli.cmi:
-	$(OCAMLC) -g $(OCOPOTS) -I gram -c $*.mli
+	$(OCAMLC) -g $(OCOPOTS) -I gram -I +unix -c $*.mli
 
 .def.defo:
 	@touch $@
