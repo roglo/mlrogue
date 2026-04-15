@@ -767,6 +767,9 @@ let handle_game g =
   Sys.Signal_handle
     (fun s ->
        save_into_file g ".rogue.saved";
+       let oc = open_out ".rogue.signal" in
+       Printf.fprintf oc "signal %d\n" s;
+       close_out oc;
        Finish.clean_up "")
 
 let game g =
