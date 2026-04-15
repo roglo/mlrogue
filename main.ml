@@ -763,6 +763,15 @@ let rec game_loop g =
   init_display g;
   game_loop g
 
+let game g =
+  Sys.set_signal Sys.sigterm
+    (Signal_handle
+       (fun s ->
+          save_into_file g ".rogue.saved";
+          Finish.clean_up ""));
+  game_loop g
+;
+
 type ('a, 'b) alternative =
     Left of 'a
   | Right of 'b
@@ -792,7 +801,7 @@ let main () =
       Level.create g;
       init_display g;
       if no_record_score then g.score_only <- true;
-      game_loop g
+      game g
   | Init.RestoreGame rest_file ->
       begin match
         (try Left (Misc.restore rest_file) with exc -> Right exc)
@@ -839,7 +848,7 @@ let main () =
           f_bool.Efield.set g.env "failed" false;
           g.msg_cleared <- false;
           ring_stats g;
-          game_loop g
+          game g
       | Right (Sys_error _ | Failure _) ->
           Finish.clean_up
             (sprintf "%s: %s" rest_file (transl lang "cannot open file"))
