@@ -763,14 +763,16 @@ let rec game_loop g =
   init_display g;
   game_loop g
 
+let handle_game s =
+  save_into_file g ".rogue.saved";
+  Finish.clean_up ""
+
 let game g =
-  Sys.set_signal Sys.sigterm
-    (Signal_handle
-       (fun s ->
-          save_into_file g ".rogue.saved";
-          Finish.clean_up ""));
+  Sys.set_signal Sys.sigterm (handle_game g);
+  Sys.set_signal Sys.sigint (handle_game g);
+  Sys.set_signal Sys.sighup (handle_game g);
+  Sys.set_signal Sys.sigquit (handle_game g);
   game_loop g
-;
 
 type ('a, 'b) alternative =
     Left of 'a
