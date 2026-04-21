@@ -304,7 +304,7 @@ fr: dards@(mp)
 de: Sie haben d@(m?en:f?ie:as) %s besiegt.
 en: Defeated the %s.
 fr: Vous avez vaincu @(n?:le?':m?e :a )%s.
-fr-tt: Tu as vaincu @(n?:le?':m?e :a )%s.
+fr-tt: Tu as vaincu👍@(n?:le?':m?e :a )%s.
 
     diamond
 en: diamond

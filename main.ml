@@ -804,6 +804,19 @@ value rec game_loop g = do {
   game_loop g
 };
 
+value handle_game g =
+  Sys.Signal_handle
+    (fun s → do { save_into_file g ".rogue.saved"; Finish.clean_up "" })
+;
+
+value game g = do {
+  Sys.set_signal Sys.sigterm (handle_game g);
+  Sys.set_signal Sys.sigint (handle_game g);
+  Sys.set_signal Sys.sighup (handle_game g);
+  Sys.set_signal Sys.sigquit (handle_game g);
+  game_loop g
+};
+
 type alternative 'a 'b =
   [ Left of 'a
   | Right of 'b ]
@@ -835,7 +848,7 @@ value main () = do {
       Level.create g;
       init_display g;
       if no_record_score then g.score_only := True else ();
-      game_loop g
+      game g
     }
   | Init.RestoreGame rest_file ->
       match try Left (Misc.restore rest_file) with exc -> Right exc with
@@ -881,7 +894,7 @@ value main () = do {
           f_bool.Efield.set g.env "failed" False;
           g.msg_cleared := False;
           ring_stats g;
-          game_loop g
+          game g
         }
       | Right (Sys_error _ | Failure _) ->
           Finish.clean_up
