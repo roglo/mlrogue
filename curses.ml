@@ -2,7 +2,7 @@
 
 open Printf;
 
-type utf8 = {utf8_v : string};
+type utf8 = { utf8_v : string };
 
 type data =
   { max_row : mutable int;
@@ -19,10 +19,7 @@ type data =
     cur_attr : mutable attr;
     no_output : mutable bool }
 and attr =
-  { a_standout : bool;
-    a_bold : bool;
-    a_back_col : int;
-    a_fore_col : int }
+  { a_standout : bool; a_bold : bool; a_back_col : int; a_fore_col : int }
 ;
 
 type attribute = [ A_standout | A_bold ];
@@ -49,8 +46,8 @@ value no_attr =
 
 value d =
   {max_row = 0; max_col = 0; crow = 0; ccol = 0; nrow = 0; ncol = 0;
-   bcur = [| |]; bnew = [| |]; acur = [| |]; anew = [| |];
-   attr_set = no_attr; cur_attr = no_attr; no_output = False}
+   bcur = [| |]; bnew = [| |]; acur = [| |]; anew = [| |]; attr_set = no_attr;
+   cur_attr = no_attr; no_output = False}
 ;
 
 value no_output () = d.no_output := True;
@@ -70,33 +67,29 @@ value set_attr a =
       then
         printf "\027[m"
       else ();
-      if not d.cur_attr.a_standout && a.a_standout then
-        printf "\027[7m"
-      else if d.cur_attr.a_standout && not a.a_standout then
-        printf "\027[27m"
+      if not d.cur_attr.a_standout && a.a_standout then printf "\027[7m"
+      else if d.cur_attr.a_standout && not a.a_standout then printf "\027[27m"
       else ();
       if d.cur_attr.a_fore_col <> a.a_fore_col ||
          d.cur_attr.a_back_col <> a.a_back_col
       then do {
         if a.a_fore_col <> -1 then printf "\027[3%dm" a.a_fore_col else ();
-        if a.a_back_col <> -1 then printf "\027[4%dm" a.a_back_col else ();
+        if a.a_back_col <> -1 then printf "\027[4%dm" a.a_back_col else ()
       }
       else ();
-      if not d.cur_attr.a_bold && a.a_bold then printf "\027[1m" else ();
+      if not d.cur_attr.a_bold && a.a_bold then printf "\027[1m" else ()
     };
-    d.cur_attr := a;
+    d.cur_attr := a
   }
   else ()
 ;
 
-value utf8_length u = String.length u.utf8_v;
 value utf8_to_string u = u.utf8_v;
 
 value utf8_of_substring s i =
   if i >= String.length s then
     failwith (Printf.sprintf "utf8_of_substring \"%s\" %d" s i)
-  else if Char.code s.[i] land 0x80 = 0 then
-    (utf8_of_char s.[i], i + 1)
+  else if Char.code s.[i] land 0x80 = 0 then (utf8_of_char s.[i], i + 1)
   else if Char.code s.[i] land 0x40 = 0 then
     failwith (Printf.sprintf "utf8_of_substring \"%s\" %d, bad utf8" s i)
   else if Char.code s.[i] land 0x20 = 0 then
@@ -105,7 +98,13 @@ value utf8_of_substring s i =
   else if Char.code s.[i] land 0x10 = 0 then
     if i + 2 >= String.length s then failwith "utf8_of_substring error"
     else ({utf8_v = String.sub s i 3}, i + 3)
-  else failwith "utf8_of_substring case not impl"
+  else if Char.code s.[i] land 0x08 = 0 then
+    if i + 3 >= String.length s then failwith "utf8_of_substring error"
+    else ({utf8_v = String.sub s i 4}, i + 4)
+  else
+    failwith
+      (Printf.sprintf "utf8_of_substring case not impl 0x%0x"
+         (Char.code s.[i]))
 ;
 
 value print_encode_char c =
@@ -119,10 +118,10 @@ value update (c : array _) (n : array _) ac an i jbeg j = do {
   else if i = d.crow && jbeg = d.ccol - 1 then cprint_string "\b"
   else if i = d.crow && jbeg = d.ccol + 1 then do {
     set_attr an.(d.ccol);
-    print_encode_char (string_get n d.ccol);
+    print_encode_char (string_get n d.ccol)
   }
   else if d.no_output then ()
-  else printf "\027[%d;%dH" (i+1) (jbeg+1);
+  else printf "\027[%d;%dH" (i + 1) (jbeg + 1);
   if jbeg = j - 1 then do {
     set_attr an.(jbeg);
     print_encode_char (string_get n jbeg);
@@ -138,17 +137,16 @@ value update (c : array _) (n : array _) ac an i jbeg j = do {
     in
     if same_attr then do {
       set_attr an.(jbeg);
-      for k = jbeg to j - 1 do { print_encode_char (string_get n k) };
+      for k = jbeg to j - 1 do { print_encode_char (string_get n k) }
     }
-    else do {
+    else
       for k = jbeg to j - 1 do {
         set_attr an.(k);
-        print_encode_char (string_get n k);
-      }
-    };
+        print_encode_char (string_get n k)
+      };
     for k = jbeg to j - 1 do {
       string_set c k (string_get n k);
-      ac.(k) := an.(k);
+      ac.(k) := an.(k)
     }
   };
   d.crow := i;
@@ -157,9 +155,8 @@ value update (c : array _) (n : array _) ac an i jbeg j = do {
 
 value rec gap_equal k c n j =
   if k = 0 || j >= string_length c then False
-  else
-    if string_get c j <> string_get n j then True
-    else gap_equal (k - 1) c n (j + 1)
+  else if string_get c j <> string_get n j then True
+  else gap_equal (k - 1) c n (j + 1)
 ;
 
 value cflush () = do {
@@ -171,18 +168,14 @@ value cflush () = do {
     if c <> n || ac <> an then
       let len = string_length c in
       loop_j 0 0 where rec loop_j jbeg j =
-        if j = len then
-          if jbeg < j then update c n ac an i jbeg j else ()
+        if j = len then if jbeg < j then update c n ac an i jbeg j else ()
         else if string_get c j <> string_get n j || ac.(j) <> an.(j) then
-	  loop_j jbeg (j + 1)
+          loop_j jbeg (j + 1)
         else if jbeg < j then
           if j + 1 < len && gap_equal 8 c n (j + 1) then loop_j jbeg (j + 1)
-          else do {
-            update c n ac an i jbeg j;
-            loop_j (j + 1) (j + 1)
-          }
+          else do { update c n ac an i jbeg j; loop_j (j + 1) (j + 1) }
         else loop_j (j + 1) (j + 1)
-    else ();
+    else ()
   };
   if not (check d.nrow d.ncol) then ()
   else if d.crow <> d.nrow || d.ccol <> d.ncol then do {
@@ -200,15 +193,15 @@ value cflush () = do {
       else if d.ccol = d.ncol - 2 then do {
         set_attr d.anew.(d.crow).(d.ccol);
         print_encode_char (string_get n d.ccol);
-        set_attr d.anew.(d.crow).(d.ccol+1);
-        print_encode_char (string_get n (d.ccol+1))
+        set_attr d.anew.(d.crow).(d.ccol + 1);
+        print_encode_char (string_get n (d.ccol + 1))
       }
       else if d.no_output then ()
-      else printf "\027[%d;%dH" (d.nrow+1) (d.ncol+1)
+      else printf "\027[%d;%dH" (d.nrow + 1) (d.ncol + 1)
     else do {
       set_attr d.anew.(d.nrow).(d.ncol);
       if d.no_output then ()
-      else printf "\027[%d;%dH" (d.nrow+1) (d.ncol+1)
+      else printf "\027[%d;%dH" (d.nrow + 1) (d.ncol + 1)
     };
     d.crow := d.nrow;
     d.ccol := d.ncol
@@ -221,7 +214,7 @@ value cflush () = do {
 value adduch c = do {
   if check d.nrow d.ncol then do {
     string_set d.bnew.(d.nrow) d.ncol c;
-    d.anew.(d.nrow).(d.ncol) := d.attr_set;
+    d.anew.(d.nrow).(d.ncol) := d.attr_set
   }
   else ();
   d.ncol := d.ncol + 1
@@ -242,16 +235,16 @@ value addstr s =
 value attroff al =
   List.iter
     (fun
-     [ A_standout -> d.attr_set := {(d.attr_set) with a_standout = False}
-     | A_bold -> d.attr_set := {(d.attr_set) with a_bold = False} ])
+     [ A_standout → d.attr_set := {(d.attr_set) with a_standout = False}
+     | A_bold → d.attr_set := {(d.attr_set) with a_bold = False} ])
     al
 ;
 
 value attron al =
   List.iter
     (fun
-     [ A_standout -> d.attr_set := {(d.attr_set) with a_standout = True}
-     | A_bold -> d.attr_set := {(d.attr_set) with a_bold = True} ])
+     [ A_standout → d.attr_set := {(d.attr_set) with a_standout = True}
+     | A_bold → d.attr_set := {(d.attr_set) with a_bold = True} ])
     al
 ;
 
@@ -268,12 +261,12 @@ value clear () = do {
     Array.fill d.bcur.(i) 0 (Array.length d.bcur.(i)) utf8_sp;
     Array.fill d.bnew.(i) 0 (Array.length d.bnew.(i)) utf8_sp;
     Array.fill d.acur.(i) 0 (Array.length d.bcur.(i)) no_attr;
-    Array.fill d.anew.(i) 0 (Array.length d.bnew.(i)) no_attr;
+    Array.fill d.anew.(i) 0 (Array.length d.bnew.(i)) no_attr
   };
   d.crow := 0;
   d.ccol := 0;
   d.nrow := 0;
-  d.ncol := 0;
+  d.ncol := 0
 };
 
 value clrtoeol () = do {
@@ -287,9 +280,9 @@ value clrtoeol () = do {
     let s = d.acur.(d.nrow) in
     Array.fill s d.ccol (Array.length s - d.ncol) no_attr;
     let s = d.anew.(d.nrow) in
-    Array.fill s d.ccol (Array.length s - d.ncol) no_attr;
+    Array.fill s d.ccol (Array.length s - d.ncol) no_attr
   }
-  else ();
+  else ()
 };
 
 value color_set fg bg =
@@ -300,8 +293,7 @@ value color_get i j =
   if check i j then
     let ac = d.acur.(i).(j) in
     (ac.a_fore_col, ac.a_back_col)
-  else
-    (-1, -1)
+  else (-1, -1)
 ;
 
 value home () = do {
@@ -310,7 +302,7 @@ value home () = do {
   d.crow := 0;
   d.ccol := 0;
   d.nrow := 0;
-  d.ncol := 0;
+  d.ncol := 0
 };
 
 value lines () = d.max_row;
@@ -318,19 +310,16 @@ value cols () = d.max_col;
 
 value pos_get () = (d.nrow, d.ncol);
 
-value move row col = do {
-  d.nrow := row;
-  d.ncol := col;
-};
+value move row col = do { d.nrow := row; d.ncol := col };
 
 value mvaddch i j c = do {
   if check i j then do {
     string_set d.bnew.(i) j (utf8_of_char c);
-    d.anew.(i).(j) := d.attr_set;
+    d.anew.(i).(j) := d.attr_set
   }
   else ();
   d.nrow := i;
-  d.ncol := j + 1;
+  d.ncol := j + 1
 };
 
 value mvaddnstr row col s i len = do {
@@ -344,7 +333,7 @@ value mvaddnstr row col s i len = do {
       d.anew.(d.nrow).(d.ncol) := d.attr_set;
       d.ncol := d.ncol + 1;
       loop (k - i)
-    };
+    }
 };
 
 value mvaddstr row col s = do {
@@ -352,16 +341,14 @@ value mvaddstr row col s = do {
   d.ncol := col;
   loop 0 where rec loop j =
     if j = String.length s then ()
-    else do {
-      if check d.nrow d.ncol then do {
-        let (uc, k) = utf8_of_substring s j in
-        string_set d.bnew.(d.nrow) d.ncol uc;
-        d.anew.(d.nrow).(d.ncol) := d.attr_set;
-        d.ncol := d.ncol + 1;
-        loop k
-      }
-      else ();
-  };
+    else if check d.nrow d.ncol then do {
+      let (uc, k) = utf8_of_substring s j in
+      string_set d.bnew.(d.nrow) d.ncol uc;
+      d.anew.(d.nrow).(d.ncol) := d.attr_set;
+      d.ncol := d.ncol + 1;
+      loop k
+    }
+    else ()
 };
 
 value mvinch row col = do {
@@ -369,14 +356,11 @@ value mvinch row col = do {
   d.ncol := col;
   if check row col then
     try utf8_to_char (string_get d.bnew.(row) col) with
-    [ Invalid_argument _ -> ' ' ]
+    [ Invalid_argument _ → ' ' ]
   else ' '
 };
 
-value refresh () = do {
-  cflush ();
-  flush stdout;
-};
+value refresh () = do { cflush (); flush stdout };
 
 value standend () = d.attr_set := no_attr;
 value standout () = d.attr_set := {(d.attr_set) with a_standout = True};
@@ -385,12 +369,12 @@ value wrefresh_curscr () = do {
   cprint_string "\027[H";
   cprint_string vt_erase_in_display;
   for i = 0 to Array.length d.bcur - 1 do {
-    Array.fill d.bcur.(i) 0 (string_length d.bcur.(i)) utf8_sp;
+    Array.fill d.bcur.(i) 0 (string_length d.bcur.(i)) utf8_sp
   };
   d.crow := 0;
   d.ccol := 0;
   cflush ();
-  flush stdout;
+  flush stdout
 };
 
 value getch () = input_char stdin;
@@ -398,8 +382,8 @@ value getch () = input_char stdin;
 value tty_fd_and_ini_attr = ref None;
 value tty_fd () =
   match tty_fd_and_ini_attr.val with
-  [ Some (fd, _) -> fd
-  | None -> do {
+  [ Some (fd, _) → fd
+  | None → do {
       let fd = Unix.openfile "/dev/tty" [Unix.O_RDWR] 0o000 in
       let ini_attr = Unix.tcgetattr fd in
       tty_fd_and_ini_attr.val := Some (fd, ini_attr);
@@ -409,11 +393,11 @@ value tty_fd () =
 
 value edit_tcio = ref None;
 
-value set_edit () = do {
+value set_edit () =
   let tcio =
     match edit_tcio.val with
-    [ Some e -> e
-    | None -> do {
+    [ Some e → e
+    | None → do {
         let fd = tty_fd () in
         let tcio = Unix.tcgetattr fd in
         tcio.Unix.c_echo := False;
@@ -428,19 +412,15 @@ value set_edit () = do {
       } ]
   in
   let fd = tty_fd () in
-  Unix.tcsetattr fd Unix.TCSADRAIN tcio;
-}
-and unset_edit () = do {
+  Unix.tcsetattr fd Unix.TCSADRAIN tcio
+and unset_edit () =
   match tty_fd_and_ini_attr.val with
-  [ Some (fd, ini_attr) -> Unix.tcsetattr fd Unix.TCSADRAIN ini_attr
-  | None -> () ]
-};
+  [ Some (fd, ini_attr) → Unix.tcsetattr fd Unix.TCSADRAIN ini_attr
+  | None → () ]
+;
 
 value initscr () = do {
-  if d.no_output then do {
-    d.max_row := 24;
-    d.max_col := 80;
-  }
+  if d.no_output then do { d.max_row := 24; d.max_col := 80 }
   else do {
     let fd = tty_fd () in
     let s = string_to_bytes ("\027[99;99H" ^ vt_device_status_report) in
@@ -460,22 +440,20 @@ value initscr () = do {
     in
     try
       Scanf.sscanf (string_of_bytes line) "\027[%d;%dR"
-        (fun x y -> do { d.max_row := x; d.max_col := y })
+        (fun x y → do { d.max_row := x; d.max_col := y })
     with
-    [ Scanf.Scan_failure _ | End_of_file -> do {
+    [ Scanf.Scan_failure _ | End_of_file → do {
         d.max_row := 24;
-        d.max_col := 80;
-      } ];
+        d.max_col := 80
+      } ]
   };
-  d.bcur := Array.init d.max_row (fun _ -> Array.make d.max_col utf8_sp);
-  d.bnew := Array.init d.max_row (fun _ -> Array.make d.max_col utf8_sp);
-  d.acur := Array.init d.max_row (fun _ -> Array.make d.max_col no_attr);
-  d.anew := Array.init d.max_row (fun _ -> Array.make d.max_col no_attr);
+  d.bcur := Array.init d.max_row (fun _ → Array.make d.max_col utf8_sp);
+  d.bnew := Array.init d.max_row (fun _ → Array.make d.max_col utf8_sp);
+  d.acur := Array.init d.max_row (fun _ → Array.make d.max_col no_attr);
+  d.anew := Array.init d.max_row (fun _ → Array.make d.max_col no_attr);
   d.attr_set := no_attr;
   d.cur_attr := no_attr;
-  clear ();
+  clear ()
 };
 
-value endwin () =
-  do { cflush (); unset_edit (); flush stdout; }
-;
+value endwin () = do { cflush (); unset_edit (); flush stdout };
