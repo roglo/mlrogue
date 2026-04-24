@@ -32,7 +32,7 @@ EXTEND
 END;
 
 value parse_mon_pow_line line =
-  Grammar.Entry.parse mon_pow_line (Stream.of_string line)
+  Grammar.Entry.parse mon_pow_line (Istream.of_string line)
 ;
 
 value read_monster_power_list t = do {
