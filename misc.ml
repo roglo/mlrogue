@@ -379,6 +379,7 @@ value restore fname = do {
   if b = save_magic then do {
     let (g, buf) = (input_value ic : saved) in
     display_dungeon g buf;
+    show_rogue g;
     close_in ic;
     Sys.remove fname;
     g
