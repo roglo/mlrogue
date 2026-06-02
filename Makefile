@@ -1,39 +1,31 @@
 # $Id: Makefile,v 1.80 2018/07/20 11:42:16 deraugla Exp $
 
-OCAMLC=ocamlc.opt
-OCAMLOPT=ocamlopt.opt
+CAMLC=camlc
 OCOPTS=
-ROBOBJS=rob_position.cmo rob_misc.cmo rob_object.cmo rob_monster.cmo rob_path.cmo rob_action.cmo robot.cmo
-OBJS=$(ROBOBJS) ustring.cmo efield.cmo rfield.cmo imisc.cmo imonster.cmo object.cmo level.cmo translate.cmo curses.cmo rogbotio.cmo init.cmo dialogue.cmo misc.cmo finish.cmo monster.cmo attack.cmo move.cmo use.cmo main.cmo 
-LIBS=unix.cma -I $$(camlp5 -where) gramlib.cma
-ROGBOT_OBJS=$(ROBOBJS) rogbot.cmo
-SRCS=$(OBJS:.cmo=.ml)
+ROBOBJS=rob_position.zo rob_misc.zo rob_object.zo rob_monster.zo rob_path.zo rob_action.zo robot.zo
+OBJS=$(ROBOBJS) ustring.zo efield.zo rfield.zo imisc.zo imonster.zo object.zo level.zo translate.zo curses.zo rogbotio.zo init.zo dialogue.zo misc.zo finish.zo monster.zo attack.zo move.zo use.zo main.zo 
+LIBS=unix.cma
+ROGBOT_OBJS=$(ROBOBJS) rogbot.zo
+SRCS=$(OBJS:.zo=.ml)
 ROGBOT_SRCS=rogbot.ml
-EXT=ext/pa_more.cmo ext/pa_if_match.cmo
-CAMLP5=camlp5r
-CAMLP5OPTS=-I ext
+EXT=ext/pa_more.zo ext/pa_if_match.zo
 
-all: opt
+all: out
 
 out: rogue.out rogbot.out
 	if [ -f rogue ]; then mv rogue rogue.bak; fi
 	cp rogue.out rogue
 	cp rogbot.out rogbot
 
-opt: rogue.opt rogbot.opt
-	if [ -f rogue ]; then mv rogue rogue.bak; fi
-	cp rogue.opt rogue
-	cp rogbot.opt rogbot
-
 clean:
-	rm -f *.cm[oix] *.ppo *.defo *.o ext/*.ppo ext/*.cm[oi]
-	rm -f rogue rogbot *.opt *.out
+	rm -f *.z[oi]
+	rm -f rogue rogbot *.out
 
 depend: $(EXT)
 	for i in *.mli $(SRCS) $(ROGBOT_SRCS); do \
-	  $(CAMLP5) $(CAMLP5OPTS) pr_depend.cmo $$i; \
+	  $(CAMLP5) $(CAMLP5OPTS) pr_depend.zo $$i; \
 	done > .depend.new
-	grep '#use' *.ml | sed -e 's/.ml:/.cmo:/' \
+	grep '#use' *.ml | sed -e 's/.ml:/.zo:/' \
 	  -e 's/#use "/ /' -e 's/def";/defo/' >> .depend.new
 	grep '#use' *.ml | sed -e 's/.ml:/.cmx:/' \
 	  -e 's/#use "/ /' -e 's/def";/defo/' >> .depend.new
@@ -42,7 +34,7 @@ depend: $(EXT)
 	mv .depend .depend.old
 	mv .depend.new .depend
 
-i18n: $(EXT) ext/pr_transl.cmo
+i18n: $(EXT) ext/pr_transl.zo
 	@(cat $(SRCS) | egrep 'm_name =' | \
 	sed -e 's/^.*m_name = "//' -e s'/".*$$//'; \
 	cat $(SRCS) | egrep 't_title =' | \
@@ -61,46 +53,32 @@ i18n: $(EXT) ext/pr_transl.cmo
 	tail +2 | sed -e 's/\[|//' -e 's/|]//' -e 's/"//g' | \
 	tr ';' '\n' | sed -e 's/ //g'; \
 	for i in $(SRCS); do \
-	  camlp5r $(CAMLP5OPTS) pr_transl.cmo $$i; \
+	  camlp5r $(CAMLP5OPTS) pr_transl.zo $$i; \
 	done) | \
 	sed -e 's/ $$/ ./' | grep -v '^$$' | \
 	LC_ALL=C sort -f | uniq
 
-rogue.out: $(EXT) $(OBJS)
-	$(OCAMLC) -g $(LIBS) $(OBJS) -o rogue.out
-
-rogue.opt: $(EXT) $(OBJS:.cmo=.cmx)
-	$(OCAMLOPT) $(LIBS:.cma=.cmxa) $(OBJS:.cmo=.cmx) -o $@
+rogue.out: $(OBJS)
+	$(CAMLC) -g $(LIBS) $(OBJS) -o rogue.out
 
 rogbot.out: $(ROGBOT_OBJS)
-	$(OCAMLC) -g $(LIBS) $(ROGBOT_OBJS) -o $@
+	$(CAMLC) -g $(LIBS) $(ROGBOT_OBJS) -o $@
 
-rogbot.opt: $(ROGBOT_OBJS:.cmo=.cmx)
-	$(OCAMLOPT) $(LIBS:.cma=.cmxa) $(ROGBOT_OBJS:.cmo=.cmx) -o $@
+rogbot.opt: $(ROGBOT_OBJS:.zo=.cmx)
+	$(CAMLCOPT) $(LIBS:.cma=.cmxa) $(ROGBOT_OBJS:.zo=.cmx) -o $@
 
-$(OBJS) $(OBJS:.cmo=.cmx): $(EXT)
-
-ext/%.cmo: ext/%.ml
+ext/%.zo: ext/%.ml
 	camlp5r $(CAMLP5OPTS) -loc loc $< -o ext/$*.ppo
-	$(OCAMLC) $(OCOPTS) -I $$(camlp5 -where) -c -impl ext/$*.ppo
+	$(CAMLC) $(OCOPTS) -I $$(camlp5 -where) -c -impl ext/$*.ppo
 	rm -f ext/$*.ppo
 
-.SUFFIXES: .ml .mli .cmo .cmx .cmi .def .defo
+.SUFFIXES: .ml .mli .zo .zi .def .defo
 
-.ml.cmo:
-	$(CAMLP5) $(CAMLP5OPTS) $< -o $*.ppo
-	$(OCAMLC) -g $(OCOPTS) -I $$(camlp5 -where) -c -impl $*.ppo
-	rm -f $*.ppo
+.ml.zo:
+	$(CAMLC) $(OCOPTS) -c $<
 
-.ml.cmx:
-	$(CAMLP5) $(CAMLP5OPTS) $< -o $*.ppo
-	$(OCAMLOPT) $(OCOPTS) -I $$(camlp5 -where) -c -impl $*.ppo
-	rm -f $*.ppo
-
-.mli.cmi:
-	$(CAMLP5) $(CAMLP5OPTS) $< -o $*.ppi
-	$(OCAMLC) -g $(OCOPTS) -c -intf $*.ppi
-	rm -f $*.ppi
+.mli.zi:
+	$(CAMLC) -c $<
 
 .def.defo:
 	@touch $@

@@ -1,126 +1,114 @@
-attack.cmi: rogue.cmi
-dialogue.cmi: rogue.cmi
-finish.cmi: rogue.cmi
-imisc.cmi: rogue.cmi
-imonster.cmi: rogue.cmi
-init.cmi: rfield.cmi rogue.cmi
-level.cmi: rogue.cmi
-misc.cmi: rogue.cmi
-monster.cmi: rogue.cmi
-move.cmi: rogue.cmi
-object.cmi: rogue.cmi
-rfield.cmi: efield.cmi robot.cmi
-rob_action.cmi: rob_def.cmi rob_misc.cmi rob_position.cmi
-rob_def.cmi: rob_position.cmi
-rob_misc.cmi: rob_def.cmi rob_position.cmi
-rob_monster.cmi: rob_def.cmi rob_misc.cmi rob_position.cmi
-rob_object.cmi: rob_def.cmi rob_position.cmi
-rob_path.cmi: rob_def.cmi rob_position.cmi
-rogue.cmi: efield.cmi rfield.cmi
-translate.cmi: rogue.cmi
-use.cmi: rogue.cmi
-rob_position.cmo: rob_position.cmi
-rob_position.cmx: rob_position.cmi
-rob_misc.cmo: rob_def.cmi rob_misc.cmi rob_position.cmi
-rob_misc.cmx: rob_def.cmi rob_misc.cmi rob_position.cmx
-rob_object.cmo: rob_def.cmi rob_misc.cmi rob_object.cmi rob_position.cmi
-rob_object.cmx: rob_def.cmi rob_misc.cmx rob_object.cmi rob_position.cmx
-rob_monster.cmo: rob_def.cmi rob_misc.cmi rob_monster.cmi rob_object.cmi
-rob_monster.cmx: rob_def.cmi rob_misc.cmx rob_monster.cmi rob_object.cmx
-rob_path.cmo: rob_def.cmi rob_misc.cmi rob_object.cmi rob_path.cmi \
-    rob_position.cmi
-rob_path.cmx: rob_def.cmi rob_misc.cmx rob_object.cmx rob_path.cmi \
-    rob_position.cmx
-rob_action.cmo: rob_action.cmi rob_def.cmi rob_misc.cmi rob_monster.cmi \
-    rob_object.cmi rob_path.cmi rob_position.cmi
-rob_action.cmx: rob_action.cmi rob_def.cmi rob_misc.cmx rob_monster.cmx \
-    rob_object.cmx rob_path.cmx rob_position.cmx
-robot.cmo: rob_action.cmi rob_def.cmi rob_misc.cmi rob_monster.cmi \
-    rob_object.cmi rob_path.cmi rob_position.cmi robot.cmi
-robot.cmx: rob_action.cmx rob_def.cmi rob_misc.cmx rob_monster.cmx \
-    rob_object.cmx rob_path.cmx rob_position.cmx robot.cmi
-ustring.cmo: ustring.cmi
-ustring.cmx: ustring.cmi
-efield.cmo: efield.cmi
-efield.cmx: efield.cmi
-rfield.cmo: efield.cmi rfield.cmi robot.cmi
-rfield.cmx: efield.cmx rfield.cmi robot.cmx
-imisc.cmo: efield.cmi imisc.cmi rfield.cmi rogue.cmi
-imisc.cmx: efield.cmx imisc.cmi rfield.cmx rogue.cmi
-imonster.cmo: imisc.cmi imonster.cmi rogue.cmi
-imonster.cmx: imisc.cmx imonster.cmi rogue.cmi
-object.cmo: imisc.cmi object.cmi rogue.cmi
-object.cmx: imisc.cmx object.cmi rogue.cmi
-level.cmo: efield.cmi imisc.cmi imonster.cmi level.cmi object.cmi rfield.cmi \
-    rogue.cmi
-level.cmx: efield.cmx imisc.cmx imonster.cmx level.cmi object.cmx rfield.cmx \
-    rogue.cmi
-translate.cmo: translate.cmi
-translate.cmx: translate.cmi
-curses.cmo: curses.cmi
-curses.cmx: curses.cmi
-rogbotio.cmo: curses.cmi rogbotio.cmi
-rogbotio.cmx: curses.cmx rogbotio.cmi
-init.cmo: efield.cmi imisc.cmi init.cmi object.cmi rfield.cmi robot.cmi \
-    rogbotio.cmi rogue.cmi translate.cmi
-init.cmx: efield.cmx imisc.cmx init.cmi object.cmx rfield.cmx robot.cmx \
-    rogbotio.cmx rogue.cmi translate.cmx
-dialogue.cmo: curses.cmi dialogue.cmi efield.cmi imisc.cmi object.cmi \
-    rfield.cmi robot.cmi rogbotio.cmi rogue.cmi translate.cmi ustring.cmi
-dialogue.cmx: curses.cmx dialogue.cmi efield.cmx imisc.cmx object.cmx \
-    rfield.cmx robot.cmx rogbotio.cmx rogue.cmi translate.cmx ustring.cmx
-misc.cmo: curses.cmi dialogue.cmi efield.cmi imonster.cmi misc.cmi rfield.cmi \
-    rogue.cmi translate.cmi
-misc.cmx: curses.cmx dialogue.cmx efield.cmx imonster.cmx misc.cmi rfield.cmx \
-    rogue.cmi translate.cmx
-finish.cmo: curses.cmi dialogue.cmi efield.cmi finish.cmi imisc.cmi \
-    object.cmi rfield.cmi rogue.cmi translate.cmi
-finish.cmx: curses.cmx dialogue.cmx efield.cmx finish.cmi imisc.cmx \
-    object.cmx rfield.cmx rogue.cmi translate.cmx
-monster.cmo: curses.cmi dialogue.cmi finish.cmi imisc.cmi imonster.cmi \
-    misc.cmi monster.cmi rogue.cmi translate.cmi
+attack.zi: rogue.zi
+dialogue.zi: rogue.zi
+finish.zi: rogue.zi
+imisc.zi: rogue.zi
+imonster.zi: rogue.zi
+init.zi: rfield.zi rogue.zi
+level.zi: rogue.zi
+misc.zi: rogue.zi
+monster.zi: rogue.zi
+move.zi: rogue.zi
+object.zi: rogue.zi
+rfield.zi: efield.zi robot.zi
+rob_action.zi: rob_def.zi rob_misc.zi rob_position.zi
+rob_def.zi: rob_position.zi
+rob_misc.zi: rob_def.zi rob_position.zi
+rob_monster.zi: rob_def.zi rob_misc.zi rob_position.zi
+rob_object.zi: rob_def.zi rob_position.zi
+rob_path.zi: rob_def.zi rob_position.zi
+rogue.zi: efield.zi rfield.zi
+translate.zi: rogue.zi
+use.zi: rogue.zi
+rob_position.zo: rob_position.zi
+rob_misc.zo: rob_def.zi rob_misc.zi rob_position.zi
+rob_object.zo: rob_def.zi rob_misc.zi rob_object.zi rob_position.zi
+rob_monster.zo: rob_def.zi rob_misc.zi rob_monster.zi rob_object.zi
+rob_path.zo: rob_def.zi rob_misc.zi rob_object.zi rob_path.zi \
+    rob_position.zi
+rob_action.zo: rob_action.zi rob_def.zi rob_misc.zi rob_monster.zi \
+    rob_object.zi rob_path.zi rob_position.zi
+robot.zo: rob_action.zi rob_def.zi rob_misc.zi rob_monster.zi \
+    rob_object.zi rob_path.zi rob_position.zi robot.zi
+ustring.zo: ustring.zi
+efield.zo: efield.zi
+rfield.zo: efield.zi rfield.zi robot.zi
+rfield.cmx: efield.cmx rfield.zi robot.cmx
+imisc.zo: efield.zi imisc.zi rfield.zi rogue.zi
+imisc.cmx: efield.cmx imisc.zi rfield.cmx rogue.zi
+imonster.zo: imisc.zi imonster.zi rogue.zi
+imonster.cmx: imisc.cmx imonster.zi rogue.zi
+object.zo: imisc.zi object.zi rogue.zi
+object.cmx: imisc.cmx object.zi rogue.zi
+level.zo: efield.zi imisc.zi imonster.zi level.zi object.zi rfield.zi \
+    rogue.zi
+level.cmx: efield.cmx imisc.cmx imonster.cmx level.zi object.cmx rfield.cmx \
+    rogue.zi
+translate.zo: translate.zi
+translate.cmx: translate.zi
+curses.zo: curses.zi
+curses.cmx: curses.zi
+rogbotio.zo: curses.zi rogbotio.zi
+rogbotio.cmx: curses.cmx rogbotio.zi
+init.zo: efield.zi imisc.zi init.zi object.zi rfield.zi robot.zi \
+    rogbotio.zi rogue.zi translate.zi
+init.cmx: efield.cmx imisc.cmx init.zi object.cmx rfield.cmx robot.cmx \
+    rogbotio.cmx rogue.zi translate.cmx
+dialogue.zo: curses.zi dialogue.zi efield.zi imisc.zi object.zi \
+    rfield.zi robot.zi rogbotio.zi rogue.zi translate.zi ustring.zi
+dialogue.cmx: curses.cmx dialogue.zi efield.cmx imisc.cmx object.cmx \
+    rfield.cmx robot.cmx rogbotio.cmx rogue.zi translate.cmx ustring.cmx
+misc.zo: curses.zi dialogue.zi efield.zi imonster.zi misc.zi rfield.zi \
+    rogue.zi translate.zi
+misc.cmx: curses.cmx dialogue.cmx efield.cmx imonster.cmx misc.zi rfield.cmx \
+    rogue.zi translate.cmx
+finish.zo: curses.zi dialogue.zi efield.zi finish.zi imisc.zi \
+    object.zi rfield.zi rogue.zi translate.zi
+finish.cmx: curses.cmx dialogue.cmx efield.cmx finish.zi imisc.cmx \
+    object.cmx rfield.cmx rogue.zi translate.cmx
+monster.zo: curses.zi dialogue.zi finish.zi imisc.zi imonster.zi \
+    misc.zi monster.zi rogue.zi translate.zi
 monster.cmx: curses.cmx dialogue.cmx finish.cmx imisc.cmx imonster.cmx \
-    misc.cmx monster.cmi rogue.cmi translate.cmx
-attack.cmo: attack.cmi curses.cmi dialogue.cmi imisc.cmi imonster.cmi \
-    level.cmi misc.cmi monster.cmi object.cmi rogue.cmi translate.cmi
-attack.cmx: attack.cmi curses.cmx dialogue.cmx imisc.cmx imonster.cmx \
-    level.cmx misc.cmx monster.cmx object.cmx rogue.cmi translate.cmx
-move.cmo: attack.cmi curses.cmi dialogue.cmi efield.cmi finish.cmi imisc.cmi \
-    imonster.cmi level.cmi misc.cmi monster.cmi move.cmi object.cmi \
-    rfield.cmi rogue.cmi translate.cmi
+    misc.cmx monster.zi rogue.zi translate.cmx
+attack.zo: attack.zi curses.zi dialogue.zi imisc.zi imonster.zi \
+    level.zi misc.zi monster.zi object.zi rogue.zi translate.zi
+attack.cmx: attack.zi curses.cmx dialogue.cmx imisc.cmx imonster.cmx \
+    level.cmx misc.cmx monster.cmx object.cmx rogue.zi translate.cmx
+move.zo: attack.zi curses.zi dialogue.zi efield.zi finish.zi imisc.zi \
+    imonster.zi level.zi misc.zi monster.zi move.zi object.zi \
+    rfield.zi rogue.zi translate.zi
 move.cmx: attack.cmx curses.cmx dialogue.cmx efield.cmx finish.cmx imisc.cmx \
-    imonster.cmx level.cmx misc.cmx monster.cmx move.cmi object.cmx \
-    rfield.cmx rogue.cmi translate.cmx
-use.cmo: curses.cmi dialogue.cmi imisc.cmi imonster.cmi misc.cmi monster.cmi \
-    move.cmi object.cmi rogue.cmi translate.cmi use.cmi
+    imonster.cmx level.cmx misc.cmx monster.cmx move.zi object.cmx \
+    rfield.cmx rogue.zi translate.cmx
+use.zo: curses.zi dialogue.zi imisc.zi imonster.zi misc.zi monster.zi \
+    move.zi object.zi rogue.zi translate.zi use.zi
 use.cmx: curses.cmx dialogue.cmx imisc.cmx imonster.cmx misc.cmx monster.cmx \
-    move.cmx object.cmx rogue.cmi translate.cmx use.cmi
-main.cmo: attack.cmi curses.cmi dialogue.cmi efield.cmi finish.cmi imisc.cmi \
-    imonster.cmi init.cmi level.cmi misc.cmi monster.cmi move.cmi object.cmi \
-    rfield.cmi robot.cmi rogue.cmi translate.cmi use.cmi ustring.cmi
+    move.cmx object.cmx rogue.zi translate.cmx use.zi
+main.zo: attack.zi curses.zi dialogue.zi efield.zi finish.zi imisc.zi \
+    imonster.zi init.zi level.zi misc.zi monster.zi move.zi object.zi \
+    rfield.zi robot.zi rogue.zi translate.zi use.zi ustring.zi
 main.cmx: attack.cmx curses.cmx dialogue.cmx efield.cmx finish.cmx imisc.cmx \
     imonster.cmx init.cmx level.cmx misc.cmx monster.cmx move.cmx object.cmx \
-    rfield.cmx robot.cmx rogue.cmi translate.cmx use.cmx ustring.cmx
-rogbot.cmo: robot.cmi
+    rfield.cmx robot.cmx rogue.zi translate.cmx use.cmx ustring.cmx
+rogbot.zo: robot.zi
 rogbot.cmx: robot.cmx
-attack.cmo: rogue.defo
-attack.cmo: keyboard.defo
-dialogue.cmo: rogue.defo
-dialogue.cmo: keyboard.defo
-finish.cmo: rogue.defo
-imisc.cmo: rogue.defo
-imonster.cmo: rogue.defo
-init.cmo: rogue.defo
-level.cmo: rogue.defo
-main.cmo: rogue.defo
-main.cmo: keyboard.defo
-misc.cmo: rogue.defo
-misc.cmo: keyboard.defo
-monster.cmo: rogue.defo
-move.cmo: rogue.defo
-move.cmo: keyboard.defo
-use.cmo: rogue.defo
-use.cmo: keyboard.defo
+attack.zo: rogue.defo
+attack.zo: keyboard.defo
+dialogue.zo: rogue.defo
+dialogue.zo: keyboard.defo
+finish.zo: rogue.defo
+imisc.zo: rogue.defo
+imonster.zo: rogue.defo
+init.zo: rogue.defo
+level.zo: rogue.defo
+main.zo: rogue.defo
+main.zo: keyboard.defo
+misc.zo: rogue.defo
+misc.zo: keyboard.defo
+monster.zo: rogue.defo
+move.zo: rogue.defo
+move.zo: keyboard.defo
+use.zo: rogue.defo
+use.zo: keyboard.defo
 attack.cmx: rogue.defo
 attack.cmx: keyboard.defo
 dialogue.cmx: rogue.defo
