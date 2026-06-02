@@ -1,5 +1,7 @@
 (* $Id: rob_def.mli,v 1.29 2010/07/03 14:47:59 deraugla Exp $ *)
 
+#open "rob_position";;
+
 type dung = { tab : string vect; nrow : int; ncol : int };;
 
 type status_line =
@@ -33,7 +35,7 @@ type game =
     mutable lang : string;
     mutable speed : float;
     mutable time_in_level : int;
-    mutable trail : int Rob_position.PosMap.t;
+    mutable trail : int; (* Rob_position__PosMap.t;*)
     mutable rogue_pos : position option;
     mutable sure_stairs_pos : position option;
     rogue_room_and_door : (room * door_dir option) option;
@@ -66,7 +68,7 @@ type game =
     mutable teleport_discovered : bool;
     mutable after_first_pack_full : bool;
     mutable nb_of_reinit_search : int;
-    traps : (position, trap_kind option option) Hashtbl.t;
+    traps : (position, trap_kind option option) hashtbl__t;
     mutable paradise : bool;
     mutable hist_dung : string vect list;
     mutable dead : bool }
