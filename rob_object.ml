@@ -530,11 +530,11 @@ let hold_monsters g t =
 let protect_armor g =
   match g.worn_armor with
     Some (ch, ar) ->
-      let ar = {ar with ar_protected = true} in
+      let ar = {ar_value = ar.ar_value; ar_protected = true} in
       g.worn_armor <- Some (ch, ar);
       g.armor_cursed <- false;
       redefine_in_pack g ch (Parmor ar)
-  | None -> assert false
+  | None -> failwith "rob_object__protect_armor"
 ;;
 
 let uncurse_all g = g.armor_cursed <- false; g.weapon_cursed <- false;;
@@ -923,8 +923,8 @@ let use_object g t message na uo =
                 let d3 = pos.col - cmin, {di = 0; dj = -1} in
                 let d4 = cmax - pos.col, {di = 0; dj = 1} in
                 let (_, mov) =
-                  List.hd
-                    (List.sort (fun x y -> compare y x) [d1; d2; d3; d4])
+                  list__hd
+                    (sort__sort (fun x y -> y <= x) [d1; d2; d3; d4])
                 in
                 begin let rec loop dist pos =
                   if inside_room room pos && dist < 25 then
@@ -1013,7 +1013,7 @@ let wear_armor_and_read g t ch =
             let na = NAwear_armor_and_test_scrolls (ch_arm, ch_scr, ws) in
             let uo = UOread_scroll (ch_scr, RSread_what) in
             let na = NAuse_object (uo, na) in Coth `r`, na, t.t_prev_mov
-      | None -> assert false
+      | None -> failwith "rob_object__wear_armor_and_read"
       end
   | None -> failwith "worn armor 4132"
 ;;
