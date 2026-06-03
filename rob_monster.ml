@@ -60,6 +60,7 @@ let parse_mon_pow_line line =
 ;;
 *)
 
+(*
 let read_monster_power_list t =
   let monpow_fname = t.t_monpow_fname in
   let mpt = vect__make_vect 26 [] in
@@ -90,13 +91,14 @@ let read_monster_power_list t =
   for i = 0 to 25 do mpt.(i) <- List.rev mpt.(i) done;
   mpt
 ;;
+*)
 
 let write_monster_power_list_fname mpt fname =
   let list =
     let rec loop rev_list i =
-      if i = 26 then List.rev rev_list
+      if i = 26 then list__rev rev_list
       else
-        let ch = Char.chr (Char.code 'A' + i) in
+        let ch = char__char_of_int (char__int_of_char `A` + i) in
         let rec loop1 rev_list =
           function
             (lev, v) :: rest -> loop1 ((ch, lev, v) :: rev_list) rest
@@ -107,7 +109,7 @@ let write_monster_power_list_fname mpt fname =
     loop [] 0
   in
   let rev_list =
-    List.fold_left
+    list__it_list
       (fun rev_list (ch, lev, v) ->
          let rec loop =
            function
@@ -122,12 +124,12 @@ let write_monster_power_list_fname mpt fname =
          loop v)
       [] list
   in
-  let list = List.rev rev_list in
+  let list = list__rev rev_list in
   let oc = open_out (fname ^ ".new") in
-  List.iter
+  list__do_list
     (fun (mch, lev, v) ->
        fprintf oc "%c %d %s\n" mch lev
-         (List.fold_left
+         (list__it_list
             (fun s (armv, pow) ->
                let armv = min 99 armv in
                let sep = if s = "" then "" else "/" in
@@ -153,7 +155,7 @@ let get_monster_power_list t =
 let set_monster_power g t mch new_power =
   let mch = monster g mch in
   let mpt = get_monster_power_list t in
-  let i = Char.code mch - Char.code 'A' in
+  let i = Char.code mch - Char.code `A` in
   let v = try List.assoc g.level mpt.(i) with Not_found -> [] in
   let armv = Rob_object.worn_armor_value g in
   let new_v =
@@ -263,7 +265,7 @@ let basic_monster_power g t mch default =
   let mch = monster g mch in
   let armv = Rob_object.worn_armor_value g in
   let mpt = get_monster_power_list t in
-  let i = Char.code mch - Char.code 'A' in
+  let i = Char.code mch - Char.code `A` in
   let v = try List.assoc g.level mpt.(i) with Not_found -> default mpt.(i) in
   let rec loop =
     function
@@ -290,14 +292,14 @@ let monster_power_at_level g t mch =
 
 (* *)
 
-let is_aquator g mch = monster g mch = 'A';;
-let is_flaming_monster g mch = monster g mch = 'D';;
-let is_fliting_monster g mch = List.mem (monster g mch) ['B'; 'P'];;
-let is_freezing_monster g mch = monster g mch = 'I';;
-let is_holding_monster g mch = monster g mch = 'F';;
-let is_mean_monster g ch = List.mem (monster g ch) ['C'; 'Q'; 'R'; 'T'];;
+let is_aquator g mch = monster g mch = `A`;;
+let is_flaming_monster g mch = monster g mch = `D`;;
+let is_fliting_monster g mch = List.mem (monster g mch) [`B`; `P`];;
+let is_freezing_monster g mch = monster g mch = `I`;;
+let is_holding_monster g mch = monster g mch = `F`;;
+let is_mean_monster g ch = List.mem (monster g ch) [`C`; `Q`; `R`; `T`];;
 
-let is_not_attackable_monster g ch = List.mem (monster g ch) ['I'; 'L'; 'N'];;
+let is_not_attackable_monster g ch = List.mem (monster g ch) [`I`; `L`; `N`];;
 
 let is_attackable_monster g ch =
   is_monster ch && not g.hallucinated && not (is_not_attackable_monster g ch)
