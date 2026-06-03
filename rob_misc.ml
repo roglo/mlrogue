@@ -941,7 +941,7 @@ let nothing_interesting_in_current_room g =
 
 let is_trap g pos =
   if in_dung g pos then
-    match try Some (Hashtbl.find g.traps pos) with Not_found -> None with
+    match try Some (hashtbl__find g.traps pos) with Not_found -> None with
       Some trap_opt -> trap_opt <> None
     | None ->
         let ch = dung_char g.dung pos in
@@ -952,9 +952,9 @@ let is_trap g pos =
             true
           end
         else if ch = `.` || ch = ` ` then
-          let v = try PosMap.find pos g.trail with Not_found -> 0 in
+          let v = failwith "try PosMap.find pos g.trail with Not_found -> 0" in
           if g.map_showed_since > 0 || v > 0 then begin
-            hashtbl_remove g.traps pos;
+            hashtbl__remove g.traps pos;
             hashtbl__add g.traps pos None;
           end;
           false
@@ -1068,8 +1068,8 @@ let stairs_pos g =
   let rec loop list row col =
     if row = g.dung.nrow then
       begin
-        if not g.was_hallucinated && List.length list = 1 then
-          g.sure_stairs_pos <- Some (List.hd list);
+        if not g.was_hallucinated && list__list_length list = 1 then
+          g.sure_stairs_pos <- Some (list__hd list);
         list
       end
     else if col = g.dung.ncol then loop list (row + 1) 0
@@ -1087,7 +1087,7 @@ let stairs_pos g =
 
 let monster g ch =
   if is_monster ch then
-    let i = Char.code ch - Char.code `A` in
+    let i = char__int_of_char ch - char__int_of_char `A` in
     let ch2 = (transl g).monsters.[i] in
     if ch2 >= `A` && ch2 <= `Z` then ch2
     else failwith (sprintf "monster `%c` not yet translated" ch)
