@@ -356,18 +356,18 @@ let perpendicular_move mov = {di = mov.dj; dj = mov.di};;
 
 (* *)
 
-let pos_up pos = {pos with row = pos.row - 1};;
-let pos_down pos = {pos with row = pos.row + 1};;
-let pos_left pos = {pos with col = pos.col - 1};;
-let pos_right pos = {pos with col = pos.col + 1};;
+let pos_up pos = {row = pos.row - 1; col = pos.col};;
+let pos_down pos = {row = pos.row + 1; col = pos.col};;
+let pos_left pos = {row = pos.row; col = pos.col - 1};;
+let pos_right pos = {row = pos.row; col = pos.col + 1};;
 
 let pos_is_at_door dung pos =
   if dung_char dung pos = `+` then true
-  else if List.mem (dung_char dung pos) minus_bar_space then false
+  else if list__mem (dung_char dung pos) minus_bar_space then false
   else if
     pos_in_dung dung (pos_up pos) && pos_in_dung dung (pos_down pos) &&
-    List.mem (dung_char dung (pos_up pos)) minus_bar &&
-    List.mem (dung_char dung (pos_down pos)) minus_bar &&
+    list__mem (dung_char dung (pos_up pos)) minus_bar &&
+    list__mem (dung_char dung (pos_down pos)) minus_bar &&
     not
       (dung_char dung (pos_up pos) = `-` &&
        dung_char dung (pos_down pos) = `-`)
@@ -394,7 +394,7 @@ let pos_is_at_door dung pos =
 ;;
 
 let pos_is_inside_room dung pos =
-  if pos_is_at_door dung pos || List.mem (dung_char dung pos) [`|`; `-`] then
+  if pos_is_at_door dung pos || list__mem (dung_char dung pos) [`|`; `-`] then
     false
   else
     let rec loop intersect pos =
@@ -560,7 +560,7 @@ let in_same_rooms g pos1 pos2 =
 
 (* *)
 
-let list_border = [` `; `|`; '-`];;
+let list_border = [` `; `|`; `-`];;
 let list_border_in_room = [`|`; `-`];;
 
 let old_can_move_to g in_room_or_at_door pos tpos =
@@ -569,9 +569,9 @@ let old_can_move_to g in_room_or_at_door pos tpos =
   in
   if not (in_dung g tpos) then false
   else if
-    List.mem (dung_char g.dung tpos) list_border ||
-    List.mem g.dung.tab.(tpos.row).[pos.col] list_border ||
-    List.mem g.dung.tab.(pos.row).[tpos.col] list_border ||
+    list__mem (dung_char g.dung tpos) list_border ||
+    list__mem g.dung.tab.(tpos.row).[pos.col] list_border ||
+    list__mem g.dung.tab.(pos.row).[tpos.col] list_border ||
     dung_char g.dung tpos = ` ` && current_room g tpos = None
   then
     false
@@ -589,13 +589,13 @@ let level_of_very_mean_monsters = 52;;
 let health_points g =
   match g.status_line with
     Some sl -> sl.sl_hp
-  | None -> assert false
+  | None -> failwith "rob_misc__health_points"
 ;;
 
 let max_health_points g =
   match g.status_line with
     Some sl -> sl.sl_max_hp
-  | None -> assert false
+  | None -> failwith "rob_misc__max_health_points"
 ;;
 
 let health_is_maximum g =
@@ -604,7 +604,7 @@ let health_is_maximum g =
   | None -> true
 ;;
 
-let random_int g n = if n = 1 then 0 else Random.State.int g.random_state n;;
+let random_int g n = if n = 1 then 0 else random__int n;;
 
 let mov_of_k k =
   if k < 3 then {di = -1; dj = k - 1}
@@ -626,7 +626,11 @@ let no_move = {di = 0; dj = 0};;
 
 let move_between pos1 pos2 =
   let mov = {di = pos2.row - pos1.row; dj = pos2.col - pos1.col} in
-  assert (abs mov.di <= 1 && abs mov.dj <= 1); assert (mov <> no_move); mov
+(*
+  assert (abs mov.di <= 1 && abs mov.dj <= 1);
+  assert (mov <> no_move);
+*)
+  mov
 ;;
 
 let basic_command_of_move move =
@@ -642,7 +646,7 @@ let basic_command_of_move move =
 let move_command2 g pos1 pos2 na =
   let mov = move_between pos1 pos2 in
   if mov = no_move then Coth `s`, na, Some mov
-  else if List.mem pos2 g.garbage || g.confused then
+  else if list__mem pos2 g.garbage || g.confused then
     Coth `m`, NAmove (mov, na), Some mov
   else Cmov mov, na, Some mov
 ;;
@@ -651,7 +655,7 @@ let list_mov_ch = [`.`; `+`; `#`; `%`];;
 let list_obj_ch = [`*`; `!`; `?`; `/`; `]`; `)`; `=`; `:`];;
 let list_obj_ch2 = [`*`; `!`; `?`; `/`; `]`; `)`];;
 
-let list_find f l = try Some (List.find f l) with Not_found -> None;;
+let list_find f l = try Some (list__find f l) with Not_found -> None;;
 
 let rec list_extract_nth n =
   function
@@ -663,7 +667,7 @@ let rec list_extract_nth n =
 
 let shuffle g list =
   let rec loop r list =
-    let len = List.length list in
+    let len = list__list_length list in
     if len = 0 then r
     else
       let n = random_int g len in
@@ -676,14 +680,14 @@ let shuffle g list =
 
 let armor_value s =
   try
-    let i = String.index s `[` in
-    let j = String.index_from s i `]` in
-    let v = int_of_string (String.sub s (i + 1) (j - i - 1)) in Some v
+    let i = string__index_char s `[` in
+    let j = string__index_char_from s i `]` in
+    let v = int_of_string (string__sub_string s (i + 1) (j - i - 1)) in Some v
   with Not_found | Failure _ -> None
 ;;
 
 let main_sword_value g =
-  let (_, obj) = List.assoc g.main_sword g.pack in
+  let (_, obj) = list__assoc g.main_sword g.pack in
   match obj with
     Pweapon {we_kind = WKtwo_handed_sword; we_value = Some n} -> n
   | _ -> 0
@@ -693,9 +697,9 @@ let wand_value = armor_value;;
 
 let weapon_value s =
   try
-    let i = String.index s `,` in
-    let j = String.rindex_from s i ` ` in
-    let k = String.index_from s i ` ` in
+    let i = string__index_char s `,` in
+    let j = string__rindex_char_from s i ` ` in
+    let k = string__index_char_from s i ` ` in
     let s1 =
       if s.[j+1] = `+` then 1
       else if s.[j+1] = `-` then -1
@@ -706,15 +710,15 @@ let weapon_value s =
       else if s.[i+1] = `-` then -1
       else raise Not_found
     in
-    let v1 = int_of_string (String.sub s (j + 2) (i - j - 2)) in
-    let v2 = int_of_string (String.sub s (i + 2) (k - i - 2)) in
+    let v1 = int_of_string (string__sub_string s (j + 2) (i - j - 2)) in
+    let v2 = int_of_string (string__sub_string s (i + 2) (k - i - 2)) in
     Some (s1 * v1 + s2 * v2)
   with Not_found | Failure _ -> None
 ;;
 
 let move_command g pos mov na =
   let tpos = add_mov pos mov in
-  if (List.mem tpos g.garbage || g.confused) && mov <> no_move then
+  if (list__mem tpos g.garbage || g.confused) && mov <> no_move then
     Coth `m`, NAmove (mov, na)
   else if mov = no_move then Coth `s`, na
   else Cmov mov, na
@@ -798,7 +802,7 @@ let dist_to_closest g room pos pred =
         if pred ch mov then Some mov
         else
           let found =
-            found || List.mem ch list_mov_ch || List.mem ch list_obj_ch
+            found || list__mem ch list_mov_ch || list__mem ch list_obj_ch
           in
           loop found di (dj + 1)
       else loop found di (dj + 1)
@@ -882,7 +886,7 @@ let one_step_to_enter_room =
 ;;
 
 let doors_not_explorated g room dl =
-  List.fold_left
+  list__it_list
     (fun dl (pos, dd) ->
        let neighbourg_already_explorated =
          let rr = room_row room in
@@ -902,7 +906,7 @@ let doors_not_explorated g room dl =
            let nspaces =
              (* if just a `#` beside the door (nspaces = 3 below), count it
                 also as not explorated *)
-             List.fold_left
+             list__it_list
                (fun n pos -> if dung_char g.dung pos = ` ` then n + 1 else n)
                0 [pos_up pos2; pos_down pos2; pos_left pos2; pos_right pos2]
            in
@@ -927,8 +931,8 @@ let nothing_interesting_in_current_room g =
       dist_to_closest g room pos
         (fun ch mov ->
            is_monster ch ||
-           List.mem ch list_obj_ch &&
-           not (List.mem (add_mov pos mov) g.garbage)) =
+           list__mem ch list_obj_ch &&
+           not (list__mem (add_mov pos mov) g.garbage)) =
         None
   | None -> true
 ;;
@@ -942,16 +946,25 @@ let is_trap g pos =
     | None ->
         let ch = dung_char g.dung pos in
         if ch = `^` then
-          begin Hashtbl.replace g.traps pos (Some None); true end
+          begin
+            hashtbl__remove g.traps pos;
+            hashtbl__add g.traps pos (Some None);
+            true
+          end
         else if ch = `.` || ch = ` ` then
           let v = try PosMap.find pos g.trail with Not_found -> 0 in
-          if g.map_showed_since > 0 || v > 0 then
-            Hashtbl.replace g.traps pos None;
+          if g.map_showed_since > 0 || v > 0 then begin
+            hashtbl_remove g.traps pos;
+            hashtbl__add g.traps pos None;
+          end;
           false
         else
           begin
             if is_monster ch || ch = `@` then ()
-            else Hashtbl.replace g.traps pos None;
+            else begin
+              hashtbl__remove g.traps pos;
+              hashtbl__add g.traps pos None;
+            end;
             false
           end
   else false
@@ -1063,7 +1076,7 @@ let stairs_pos g =
     else
       let pos = {row = row; col = col} in
       let list =
-        if List.mem pos g.garbage then list
+        if list__mem pos g.garbage then list
         else if dung_char g.dung pos = `%` then pos :: list
         else list
       in
