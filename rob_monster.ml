@@ -137,13 +137,14 @@ let write_monster_power_list_fname mpt fname =
             "" v))
     list;
   close_out oc;
-  try Sys.rename (fname ^ ".new") fname with Sys_error _ -> ()
+  try sys__rename (fname ^ ".new") fname with sys__Sys_error _ -> ()
 ;;
 
 let write_monster_power_list t mpt =
   write_monster_power_list_fname mpt t.t_monpow_fname
 ;;
 
+(*
 let get_monster_power_list t =
   match !monster_power_list with
     Some list -> list
@@ -151,11 +152,12 @@ let get_monster_power_list t =
       let list = read_monster_power_list t in
       monster_power_list := Some list; list
 ;;
+*)
 
 let set_monster_power g t mch new_power =
   let mch = monster g mch in
   let mpt = get_monster_power_list t in
-  let i = Char.code mch - Char.code `A` in
+  let i = char__int_of_char mch - char__int_of_char `A` in
   let v = try List.assoc g.level mpt.(i) with Not_found -> [] in
   let armv = Rob_object.worn_armor_value g in
   let new_v =
@@ -265,7 +267,7 @@ let basic_monster_power g t mch default =
   let mch = monster g mch in
   let armv = Rob_object.worn_armor_value g in
   let mpt = get_monster_power_list t in
-  let i = Char.code mch - Char.code `A` in
+  let i = char__int_of_char mch - char__int_of_char `A` in
   let v = try List.assoc g.level mpt.(i) with Not_found -> default mpt.(i) in
   let rec loop =
     function
