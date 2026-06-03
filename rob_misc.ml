@@ -327,7 +327,7 @@ let is_monster ch = ch >= `A` && ch <= `Z`;;
 
 (* *)
 
-let sleep x = let _ = unix__select [Unix.stdin] [] [] x in ();;
+let sleep x = let _ = unix__select [unix__stdin] [] [] x in ();;
 let tempo g x = sleep (x /. g.speed);;
 
 exception NoRogue;;
