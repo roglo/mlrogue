@@ -41,12 +41,14 @@ let contains_yn has has_not s =
 let lang_en =
   {scan_status_line =
     (fun line ->
+failwith "scan_status_line not implemented"
+(*
        sscanf line
          "Level: %d Gold: %d Hp: %d(%d) Str: %d(%d) Arm: %d  Exp: %d/%d %s"
          (fun lev gold hp max_hp stren max_stren arm exp max_exp hunger ->
             {sl_level = lev; sl_gold = gold; sl_hp = hp; sl_max_hp = max_hp;
              sl_stren = stren; sl_max_stren = max_stren; sl_exp = exp;
-             sl_max_exp = max_exp; sl_hunger = hunger}));
+             sl_max_exp = max_exp; sl_hunger = hunger})*));
    answer_left_hand = `l`; answer_yes = `y`; flaming_monster = `D`;
    is_armor =
      contains_yn [" armor"; " mail"] ["ring of"; "scroll of"; "scrolls of"];
@@ -165,13 +167,15 @@ let lang_fr =
   let move_onto_list = ["passez sur"; "passes sur"] in
   {scan_status_line =
     (fun line ->
+failwith "scan_status_line not implemented 2"
+(*
        sscanf line
          "Niveau: %d Or: %d Pv: %d(%d) Forc: %d(%d) Arm: %d Exp: %d/%d %s"
          (fun lev gold hp max_hp stren max_stren arm exp max_exp hunger ->
             {sl_level = lev; sl_gold = gold; sl_hp = hp; sl_max_hp = max_hp;
              sl_stren = stren; sl_max_stren = max_stren; sl_exp = exp;
-             sl_max_exp = max_exp; sl_hunger = hunger}));
-   answer_left_hand = 'g'; answer_yes = 'o'; flaming_monster = 'D';
+             sl_max_exp = max_exp; sl_hunger = hunger})*));
+   answer_left_hand = `g`; answer_yes = `o`; flaming_monster = `D`;
    is_armor = (fun s -> list__exists (contains s) list_armor);
    is_arrow = (fun s -> contains s " flèche");
    is_fallen_down = (fun s -> contains s "dans une trappe");
@@ -198,7 +202,7 @@ let lang_fr =
               "churikène"; "dard"; "épée"; "flèche"; "massue"; "parchemin";
               "poignard"; "potion"]) &&
         not
-          (list__exists ((=) s)
+          (list__exists ((fun x y -> x = y) s)
              ["Tu rates."; "Tu touches."; "Vous ratez."; "Vous touchez."]));
    is_message_armor_blue = (fun s -> contains s " armure devient");
    is_message_attacked_by_flame = (fun s -> contains s "flamme");
@@ -306,24 +310,24 @@ let max_time_in_level = 500;;
 
 let not_impl name x =
   let desc =
-    if Obj.tag (Obj.repr x) = Obj.tag (Obj.repr "") then
-      "\"" ^ Obj.magic x ^ "\""
-    else if Obj.is_block (Obj.repr x) then
-      "tag = " ^ string_of_int (Obj.tag (Obj.repr x))
-    else "int_val = " ^ string_of_int (Obj.magic x)
+    if obj__obj_tag (obj__repr x) = obj__obj_tag (obj__repr "") then
+      "\"" ^ obj__magic x ^ "\""
+    else if obj__is_block (obj__repr x) then
+      "tag = " ^ string_of_int (obj__obj_tag (obj__repr x))
+    else "int_val = " ^ string_of_int (obj__magic x)
   in
-  sprintf "\"not impl: %s; %s\"" name (String.escaped desc)
+  sprintf "\"not impl: %s; %s\"" name (string_for_read desc)
 ;;
 
 let trace t txt =
   if t.t_move_trace then begin eprintf "%s" txt; flush stderr end
 ;;
 
-let is_monster ch = ch >= 'A' && ch <= 'Z';;
+let is_monster ch = ch >= `A` && ch <= `Z`;;
 
 (* *)
 
-let sleep x = let _ = Unix.select [Unix.stdin] [] [] x in ();;
+let sleep x = let _ = unix__select [Unix.stdin] [] [] x in ();;
 let tempo g x = sleep (x /. g.speed);;
 
 exception NoRogue;;
@@ -339,8 +343,8 @@ let pos_in_dung dung pos =
 ;;
 let dung_char dung pos = dung.tab.(pos.row).[pos.col];;
 
-let minus_bar = ['-'; '|'];;
-let minus_bar_space = ['-'; '|'; ' '];;
+let minus_bar = [`-`; `|`];;
+let minus_bar_space = [`-`; `|`; ` `];;
 
 let dung_char_eq dung pos ch =
   pos_in_dung dung pos && dung_char dung pos = ch
@@ -358,54 +362,54 @@ let pos_left pos = {pos with col = pos.col - 1};;
 let pos_right pos = {pos with col = pos.col + 1};;
 
 let pos_is_at_door dung pos =
-  if dung_char dung pos = '+' then true
+  if dung_char dung pos = `+` then true
   else if List.mem (dung_char dung pos) minus_bar_space then false
   else if
     pos_in_dung dung (pos_up pos) && pos_in_dung dung (pos_down pos) &&
     List.mem (dung_char dung (pos_up pos)) minus_bar &&
     List.mem (dung_char dung (pos_down pos)) minus_bar &&
     not
-      (dung_char dung (pos_up pos) = '-' &&
-       dung_char dung (pos_down pos) = '-')
+      (dung_char dung (pos_up pos) = `-` &&
+       dung_char dung (pos_down pos) = `-`)
   then
     true
   else if
-    dung_char_eq dung (pos_left pos) '-' &&
-    dung_char_eq dung (pos_right pos) '-' &&
+    dung_char_eq dung (pos_left pos) `-` &&
+    dung_char_eq dung (pos_right pos) `-` &&
     not
-      (dung_char_eq dung (add_mov pos {di = -2; dj = 1}) '|' &&
-       dung_char_eq dung (add_mov pos {di = 2; dj = -1}) '|') &&
+      (dung_char_eq dung (add_mov pos {di = -2; dj = 1}) `|` &&
+       dung_char_eq dung (add_mov pos {di = 2; dj = -1}) `|`) &&
     not
-      (dung_char_eq dung (add_mov pos {di = -2; dj = 1}) '|' &&
-       dung_char_eq dung (add_mov pos {di = 1; dj = -1}) '|') &&
+      (dung_char_eq dung (add_mov pos {di = -2; dj = 1}) `|` &&
+       dung_char_eq dung (add_mov pos {di = 1; dj = -1}) `|`) &&
     not
-      (dung_char_eq dung (add_mov pos {di = -1; dj = 1}) '|' &&
-       dung_char_eq dung (add_mov pos {di = 2; dj = -1}) '|') &&
+      (dung_char_eq dung (add_mov pos {di = -1; dj = 1}) `|` &&
+       dung_char_eq dung (add_mov pos {di = 2; dj = -1}) `|`) &&
     not
-      (dung_char_eq dung (add_mov pos {di = -1; dj = 1}) '|' &&
-       dung_char_eq dung (add_mov pos {di = 1; dj = -1}) '|')
+      (dung_char_eq dung (add_mov pos {di = -1; dj = 1}) `|` &&
+       dung_char_eq dung (add_mov pos {di = 1; dj = -1}) `|`)
   then
     true
   else false
 ;;
 
 let pos_is_inside_room dung pos =
-  if pos_is_at_door dung pos || List.mem (dung_char dung pos) ['|'; '-'] then
+  if pos_is_at_door dung pos || List.mem (dung_char dung pos) [`|`; `-`] then
     false
   else
     let rec loop intersect pos =
       if pos_in_dung dung pos then
         let is_border =
-          dung_char dung pos = '|' ||
-          dung_char dung pos = '+' && dung_char dung (pos_left pos) <> '-' &&
-          dung_char dung (pos_right pos) <> '-' &&
-          (dung_char dung (pos_up pos) = '|' ||
-           dung_char dung (pos_down pos) = '|') ||
-          dung_char dung pos <> '-' &&
+          dung_char dung pos = `|` ||
+          dung_char dung pos = `+` && dung_char dung (pos_left pos) <> `-` &&
+          dung_char dung (pos_right pos) <> `-` &&
+          (dung_char dung (pos_up pos) = `|` ||
+           dung_char dung (pos_down pos) = `|`) ||
+          dung_char dung pos <> `-` &&
           (pos_in_dung dung (pos_up pos) &&
-           dung_char dung (pos_up pos) = '|' ||
+           dung_char dung (pos_up pos) = `|` ||
            pos_in_dung dung (pos_down pos) &&
-           dung_char dung (pos_down pos) = '|')
+           dung_char dung (pos_down pos) = `|`)
         in
         let intersect = if is_border then intersect + 1 else intersect in
         loop intersect (pos_right pos)
@@ -420,11 +424,11 @@ let pos_current_room dung pos =
       let rec loop pos =
         if not (pos_in_dung dung pos) then None
         else if
-          dung_char dung pos = '-' || dung_char dung pos = '+' ||
+          dung_char dung pos = `-` || dung_char dung pos = `+` ||
           pos_in_dung dung (pos_left pos) &&
-          dung_char dung (pos_left pos) = '-' ||
+          dung_char dung (pos_left pos) = `-` ||
           pos_in_dung dung (pos_right pos) &&
-          dung_char dung (pos_right pos) = '-'
+          dung_char dung (pos_right pos) = `-`
         then
           Some (pos.row + 1)
         else loop (pos_up pos)
@@ -435,11 +439,11 @@ let pos_current_room dung pos =
       let rec loop pos =
         if not (pos_in_dung dung pos) then None
         else if
-          dung_char dung pos = '|' || dung_char dung pos = '+' ||
+          dung_char dung pos = `|` || dung_char dung pos = `+` ||
           pos_in_dung dung (pos_up pos) &&
-          dung_char dung (pos_up pos) = '|' ||
+          dung_char dung (pos_up pos) = `|` ||
           pos_in_dung dung (pos_down pos) &&
-          dung_char dung (pos_down pos) = '|'
+          dung_char dung (pos_down pos) = `|`
         then
           Some (pos.col + 1)
         else loop (pos_left pos)
@@ -450,11 +454,11 @@ let pos_current_room dung pos =
       let rec loop pos =
         if not (pos_in_dung dung pos) then None
         else if
-          dung_char dung pos = '-' || dung_char dung pos = '+' ||
+          dung_char dung pos = `-` || dung_char dung pos = `+` ||
           pos_in_dung dung (pos_left pos) &&
-          dung_char dung (pos_left pos) = '-' ||
+          dung_char dung (pos_left pos) = `-` ||
           pos_in_dung dung (pos_right pos) &&
-          dung_char dung (pos_right pos) = '-'
+          dung_char dung (pos_right pos) = `-`
         then
           Some (pos.row - 1)
         else loop (pos_down pos)
@@ -465,11 +469,11 @@ let pos_current_room dung pos =
       let rec loop pos =
         if not (pos_in_dung dung pos) then None
         else if
-          dung_char dung pos = '|' || dung_char dung pos = '+' ||
+          dung_char dung pos = `|` || dung_char dung pos = `+` ||
           pos_in_dung dung (pos_up pos) &&
-          dung_char dung (pos_up pos) = '|' ||
+          dung_char dung (pos_up pos) = `|` ||
           pos_in_dung dung (pos_down pos) &&
-          dung_char dung (pos_down pos) = '|'
+          dung_char dung (pos_down pos) = `|`
         then
           Some (pos.col - 1)
         else loop (pos_right pos)
@@ -556,8 +560,8 @@ let in_same_rooms g pos1 pos2 =
 
 (* *)
 
-let list_border = [' '; '|'; '-'];;
-let list_border_in_room = ['|'; '-'];;
+let list_border = [` `; `|`; '-`];;
+let list_border_in_room = [`|`; `-`];;
 
 let old_can_move_to g in_room_or_at_door pos tpos =
   let list_border =
@@ -568,7 +572,7 @@ let old_can_move_to g in_room_or_at_door pos tpos =
     List.mem (dung_char g.dung tpos) list_border ||
     List.mem g.dung.tab.(tpos.row).[pos.col] list_border ||
     List.mem g.dung.tab.(pos.row).[tpos.col] list_border ||
-    dung_char g.dung tpos = ' ' && current_room g tpos = None
+    dung_char g.dung tpos = ` ` && current_room g tpos = None
   then
     false
   else true
@@ -613,7 +617,7 @@ let around_pos g pos =
   for k = 0 to 7 do
     let mov = mov_of_k k in
     let pos = add_mov pos mov in
-    string_set s k (if in_dung g pos then dung_char g.dung pos else ' ')
+    string_set s k (if in_dung g pos then dung_char g.dung pos else ` `)
   done;
   {ar = string_of_bytes s}
 ;;
@@ -627,25 +631,25 @@ let move_between pos1 pos2 =
 
 let basic_command_of_move move =
   if move.di = -1 then
-    if move.dj = -1 then 'y' else if move.dj = 0 then 'k' else 'u'
+    if move.dj = -1 then `y` else if move.dj = 0 then `k` else `u`
   else if move.di = 0 then
-    if move.dj = -1 then 'h' else if move.dj = 0 then 's' else 'l'
-  else if move.dj = -1 then 'b'
-  else if move.dj = 0 then 'j'
-  else 'n'
+    if move.dj = -1 then `h` else if move.dj = 0 then `s` else `l`
+  else if move.dj = -1 then `b`
+  else if move.dj = 0 then `j`
+  else `n`
 ;;
 
 let move_command2 g pos1 pos2 na =
   let mov = move_between pos1 pos2 in
-  if mov = no_move then Coth 's', na, Some mov
+  if mov = no_move then Coth `s`, na, Some mov
   else if List.mem pos2 g.garbage || g.confused then
-    Coth 'm', NAmove (mov, na), Some mov
+    Coth `m`, NAmove (mov, na), Some mov
   else Cmov mov, na, Some mov
 ;;
 
-let list_mov_ch = ['.'; '+'; '#'; '%'];;
-let list_obj_ch = ['*'; '!'; '?'; '/'; ']'; ')'; '='; ':'];;
-let list_obj_ch2 = ['*'; '!'; '?'; '/'; ']'; ')'];;
+let list_mov_ch = [`.`; `+`; `#`; `%`];;
+let list_obj_ch = [`*`; `!`; `?`; `/`; `]`; `)`; `=`; `:`];;
+let list_obj_ch2 = [`*`; `!`; `?`; `/`; `]`; `)`];;
 
 let list_find f l = try Some (List.find f l) with Not_found -> None;;
 
@@ -672,8 +676,8 @@ let shuffle g list =
 
 let armor_value s =
   try
-    let i = String.index s '[' in
-    let j = String.index_from s i ']' in
+    let i = String.index s `[` in
+    let j = String.index_from s i `]` in
     let v = int_of_string (String.sub s (i + 1) (j - i - 1)) in Some v
   with Not_found | Failure _ -> None
 ;;
@@ -689,17 +693,17 @@ let wand_value = armor_value;;
 
 let weapon_value s =
   try
-    let i = String.index s ',' in
-    let j = String.rindex_from s i ' ' in
-    let k = String.index_from s i ' ' in
+    let i = String.index s `,` in
+    let j = String.rindex_from s i ` ` in
+    let k = String.index_from s i ` ` in
     let s1 =
-      if s.[j+1] = '+' then 1
-      else if s.[j+1] = '-' then -1
+      if s.[j+1] = `+` then 1
+      else if s.[j+1] = `-` then -1
       else raise Not_found
     in
     let s2 =
-      if s.[i+1] = '+' then 1
-      else if s.[i+1] = '-' then -1
+      if s.[i+1] = `+` then 1
+      else if s.[i+1] = `-` then -1
       else raise Not_found
     in
     let v1 = int_of_string (String.sub s (j + 2) (i - j - 2)) in
@@ -711,8 +715,8 @@ let weapon_value s =
 let move_command g pos mov na =
   let tpos = add_mov pos mov in
   if (List.mem tpos g.garbage || g.confused) && mov <> no_move then
-    Coth 'm', NAmove (mov, na)
-  else if mov = no_move then Coth 's', na
+    Coth `m`, NAmove (mov, na)
+  else if mov = no_move then Coth `s`, na
   else Cmov mov, na
 ;;
 
@@ -723,7 +727,7 @@ let find_doors g (rmin, cmin, rmax, cmax) =
       if pos.col > cmax then list
       else
         let list =
-          if in_dung g pos && dung_char g.dung pos <> '-' then
+          if in_dung g pos && dung_char g.dung pos <> `-` then
             (pos, DoorUp) :: list
           else list
         in
@@ -736,7 +740,7 @@ let find_doors g (rmin, cmin, rmax, cmax) =
       if pos.row > rmax then list
       else
         let list =
-          if in_dung g pos && dung_char g.dung pos <> '|' then
+          if in_dung g pos && dung_char g.dung pos <> `|` then
             (pos, DoorRight) :: list
           else list
         in
@@ -749,7 +753,7 @@ let find_doors g (rmin, cmin, rmax, cmax) =
       if pos.col < cmin then list
       else
         let list =
-          if in_dung g pos && dung_char g.dung pos <> '-' then
+          if in_dung g pos && dung_char g.dung pos <> `-` then
             (pos, DoorDown) :: list
           else list
         in
@@ -762,7 +766,7 @@ let find_doors g (rmin, cmin, rmax, cmax) =
       if pos.row < rmin then list
       else
         let list =
-          if in_dung g pos && dung_char g.dung pos <> '|' then
+          if in_dung g pos && dung_char g.dung pos <> `|` then
             (pos, DoorLeft) :: list
           else list
         in
@@ -894,12 +898,12 @@ let doors_not_explorated g room dl =
          let mov = one_step_to_exit_room dd in
          let pos2 = add_mov pos mov in
          let ch = dung_char g.dung pos2 in
-         if ch <> ' ' then
+         if ch <> ` ` then
            let nspaces =
-             (* if just a '#' beside the door (nspaces = 3 below), count it
+             (* if just a `#` beside the door (nspaces = 3 below), count it
                 also as not explorated *)
              List.fold_left
-               (fun n pos -> if dung_char g.dung pos = ' ' then n + 1 else n)
+               (fun n pos -> if dung_char g.dung pos = ` ` then n + 1 else n)
                0 [pos_up pos2; pos_down pos2; pos_left pos2; pos_right pos2]
            in
            if nspaces = 3 then (pos, dd) :: dl else dl
@@ -937,16 +941,16 @@ let is_trap g pos =
       Some trap_opt -> trap_opt <> None
     | None ->
         let ch = dung_char g.dung pos in
-        if ch = '^' then
+        if ch = `^` then
           begin Hashtbl.replace g.traps pos (Some None); true end
-        else if ch = '.' || ch = ' ' then
+        else if ch = `.` || ch = ` ` then
           let v = try PosMap.find pos g.trail with Not_found -> 0 in
           if g.map_showed_since > 0 || v > 0 then
             Hashtbl.replace g.traps pos None;
           false
         else
           begin
-            if is_monster ch || ch = '@' then ()
+            if is_monster ch || ch = `@` then ()
             else Hashtbl.replace g.traps pos None;
             false
           end
@@ -1060,7 +1064,7 @@ let stairs_pos g =
       let pos = {row = row; col = col} in
       let list =
         if List.mem pos g.garbage then list
-        else if dung_char g.dung pos = '%' then pos :: list
+        else if dung_char g.dung pos = `%` then pos :: list
         else list
       in
       loop list row (col + 1)
@@ -1070,11 +1074,11 @@ let stairs_pos g =
 
 let monster g ch =
   if is_monster ch then
-    let i = Char.code ch - Char.code 'A' in
+    let i = Char.code ch - Char.code `A` in
     let ch2 = (transl g).monsters.[i] in
-    if ch2 >= 'A' && ch2 <= 'Z' then ch2
-    else failwith (sprintf "monster '%c' not yet translated" ch)
+    if ch2 >= `A` && ch2 <= `Z` then ch2
+    else failwith (sprintf "monster `%c` not yet translated" ch)
   else ch
 ;;
 
-let is_gold_seeker_monster g mch = monster g mch = 'O';;
+let is_gold_seeker_monster g mch = monster g mch = `O`;;
