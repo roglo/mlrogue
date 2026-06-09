@@ -12,6 +12,8 @@ module PosSet = Set.Make (ComparePos)
 
 type PosSet_t == position list;;
 
+let PosSet_empty = [];;
+
 let rec PosSet_add pos t =
   match t with
   | [] -> [pos]
@@ -32,10 +34,4 @@ let rec PosSet_mem pos t =
       else if pos.col < p.col then false
       else if pos.col > p.col then PosSet_mem pos t'
       else true
-;;
-
-let PosSet =
-  { empty = [];
-    add = PosSet_add;
-    mem = PosSet_mem }
 ;;

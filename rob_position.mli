@@ -3,16 +3,14 @@
 type position = { row : int; col : int };;
 
 type ('a, 't) PosMap =
-  { empty : 't;
-    add : position -> 'a -> 't -> 't;
-    mem : position -> 't -> bool;
-    find : position -> 't -> 'a }
+  { PosMap_empty : 't;
+    PosMap_add : position -> 'a -> 't -> 't;
+    PosMap_mem : position -> 't -> bool;
+    PosMap_find : position -> 't -> 'a }
 ;;
 
 type PosSet_t;;
 
-type PosSet =
-  { empty : PosSet_t;
-    add : position -> PosSet_t -> PosSet_t;
-    mem : position -> PosSet_t -> bool }
-;;
+value PosSet_empty : PosSet_t;;
+value PosSet_add : position -> PosSet_t -> PosSet_t;;
+value PosSet_mem : position -> PosSet_t -> bool;;

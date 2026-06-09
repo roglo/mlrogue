@@ -7,7 +7,7 @@
 
 let run_around_list2 = [0, 3; 1, 2; 2, 3; 3, 2; 4, 2; 5, 3; 6, 2; 7, 3];;
 
-let compare_dist (d1, _, _) (d2, _, _) = compare d1 d2;;
+let compare_dist (d1, _, _) (d2, _, _) = d1 <= d2;;
 
 let f_inc_dd g interesting_objects pos2 =
   if is_trap g pos2 then 1000
@@ -26,9 +26,9 @@ let gen_path g f_excl f_connected f_inc_dd pos pred =
     function
       (dist, pos1, path) :: rest ->
         if pred path pos1 then Some (pos1, path)
-        else if PosSet.mem pos1 scanned then loop scanned rest
+        else if PosSet_mem pos1 scanned then loop scanned rest
         else
-          let scanned = PosSet.add pos1 scanned in
+          let scanned = PosSet_add pos1 scanned in
           if f_excl pos1 then loop scanned rest
           else if list__mem pos1 path then loop scanned rest
           else
@@ -44,7 +44,7 @@ let gen_path g f_excl f_connected f_inc_dd pos pred =
                       else ddist + f_inc_dd pos2
                     in
                     let rest =
-                      if not (PosSet.mem pos2 scanned) &&
+                      if not (PosSet_mem pos2 scanned) &&
                          f_connected pos1 pos2 k
                       then
                         (dist + ddist, pos2, path) :: rest
@@ -58,7 +58,7 @@ let gen_path g f_excl f_connected f_inc_dd pos pred =
             loop scanned (sort__sort compare_dist rest)
     | [] -> None
   in
-  loop PosSet.empty [0, pos, []]
+  loop PosSet_empty [0, pos, []]
 ;;
 
 let monster_path g pos tpos =
@@ -68,7 +68,7 @@ let monster_path g pos tpos =
     old_can_move_to g in_room_or_at_door pos1 pos2
   in
   let f_inc_dd _ = 0 in
-  let pred pos = (=) tpos in
+  let pred pos pos2 = tpos = pos2 in
   match gen_path g f_excl f_connected f_inc_dd pos pred with
     Some (tpos, rev_path) -> Some (list__tl (list__rev (tpos :: rev_path)))
   | None -> None
@@ -80,7 +80,7 @@ let direct_path_excl g excl pos pred =
     let in_room_or_at_door = current_room_possibly_at_door g pos1 <> None in
     old_can_move_to g in_room_or_at_door pos1 pos2
   in
-  let interesting_objects = Rob_object.interesting_objects g in
+  let interesting_objects = rob_object__interesting_objects g in
   let f_inc_dd = f_inc_dd g interesting_objects in
   match gen_path g f_excl f_connected f_inc_dd pos pred with
     Some (tpos, rev_path) ->
@@ -93,8 +93,8 @@ let gen_path_in_room_to g room f_excl pos tpos =
     (inside_room room pos2 || is_at_door g pos2) &&
     old_can_move_to g true pos1 pos2
   in
-  let pred _ = (=) tpos in
-  let interesting_objects = Rob_object.interesting_objects g in
+  let pred _ pos2 = tpos = pos2 in
+  let interesting_objects = rob_object__interesting_objects g in
   let f_inc_dd = f_inc_dd g interesting_objects in
   gen_path g f_excl f_connected f_inc_dd pos pred
 ;;
@@ -138,7 +138,7 @@ let one_step_to g tpos =
             (sprintf "one_step_to (%d,%d)->(%d,%d)" pos.row pos.col tpos.row
                tpos.col)
       end
-  | None -> assert false
+  | None -> failwith "rob_path__one_step_to"
 ;;
 
 let one_step_to2 g tpos =
@@ -154,11 +154,11 @@ let one_step_to2 g tpos =
             (sprintf "one_step_to2 (%d,%d)->(%d,%d)" pos.row pos.col tpos.row
                tpos.col)
       end
-  | None -> assert false
+  | None -> failwith "rob_path__one_step_to2"
 ;;
 
 let path_excl_from_to g excl pos tpos =
-  let pred _ = (=) tpos in
+  let pred _ pos2 = tpos = pos2 in
   match direct_path_excl g excl pos pred with
     Some (path, _) -> Some {epos = pos; tpos = tpos; path = path}
   | None -> None
@@ -203,11 +203,11 @@ let path_in_room_excl_mon g room pos tpos =
     | None ->
         match path_in_room_to2 g room [] pos tpos with
           Some path -> path
-        | None -> assert false
+        | None -> failwith "rob_path__path_in_room_excl_mon"
   in
   match path with
     pos1 :: path -> {epos = pos1; tpos = tpos; path = path}
-  | [] -> assert false
+  | [] -> failwith "rob_path__path_in_room_excl_mon 2"
 ;;
 
 let paths_in_corridors_from g ipos pos =
@@ -251,7 +251,7 @@ let paths_in_corridors_from g ipos pos =
               [] -> (lpos, path) :: paths_ended, paths_running
             | _ ->
                 let paths_running =
-                  list__fold_right
+                  list__list_it
                     (fun npos paths_running ->
                        (npos, lpos :: path) :: paths_running)
                     list paths_running
@@ -262,7 +262,7 @@ let paths_in_corridors_from g ipos pos =
     | [] ->
         if paths_running = [] then
           let pl = paths_ended in
-          list__fold_left
+          list__it_list
             (fun pl (tpos, path) ->
                if tpos = ipos then pl
                else if list__exists (fun (_, tpos1) -> tpos = tpos1) pl then pl
@@ -281,12 +281,12 @@ let path_to_closest2 g pos pred =
   | None -> None
 ;;
 
-let list_cannot_move_to = ['-'; '|'];;
+let list_cannot_move_to = [`-`; `|`];;
 
 let has_door_above g (rmin, cmin, rmax, cmax) =
   let rec loop col =
     if col > cmax then false
-    else if g.dung.tab.(rmin-1).[col] = '-' then loop (col + 1)
+    else if g.dung.tab.(rmin-1).[col] = `-` then loop (col + 1)
     else true
   in
   loop cmin
@@ -295,7 +295,7 @@ let has_door_above g (rmin, cmin, rmax, cmax) =
 let has_door_below g (rmin, cmin, rmax, cmax) =
   let rec loop col =
     if col > cmax then false
-    else if g.dung.tab.(rmax+1).[col] = '-' then loop (col + 1)
+    else if g.dung.tab.(rmax+1).[col] = `-` then loop (col + 1)
     else true
   in
   loop cmin
@@ -304,7 +304,7 @@ let has_door_below g (rmin, cmin, rmax, cmax) =
 let has_door_at_left g (rmin, cmin, rmax, cmax) =
   let rec loop row =
     if row > rmax then false
-    else if g.dung.tab.(row).[cmin-1] = '|' then loop (row + 1)
+    else if g.dung.tab.(row).[cmin-1] = `|` then loop (row + 1)
     else true
   in
   loop rmin
@@ -313,7 +313,7 @@ let has_door_at_left g (rmin, cmin, rmax, cmax) =
 let has_door_at_right g (rmin, cmin, rmax, cmax) =
   let rec loop row =
     if row > rmax then false
-    else if g.dung.tab.(row).[cmax+1] = '|' then loop (row + 1)
+    else if g.dung.tab.(row).[cmax+1] = `|` then loop (row + 1)
     else true
   in
   loop rmin
@@ -321,25 +321,25 @@ let has_door_at_right g (rmin, cmin, rmax, cmax) =
 
 let make_graph g insist =
   let graph =
-    Array.init g.dung.nrow
+    vect__init_vect g.dung.nrow
       (fun row ->
-         Array.init g.dung.ncol
+         vect__init_vect g.dung.ncol
            (fun col ->
               let pos = {row = row; col = col} in
               if row = 0 || row = g.dung.nrow - 1 then
-                let conn = Array.make 8 false in
+                let conn = vect__make_vect 8 false in
                 {connection = conn; search = NotToSearch}
               else
                 let room = current_room g pos in
                 let in_room = room <> None in
                 let at_door = is_at_door g pos in
                 if list__mem g.dung.tab.(row).[col] list_cannot_move_to ||
-                   g.dung.tab.(row).[col] = ' ' && not in_room
+                   g.dung.tab.(row).[col] = ` ` && not in_room
                 then
-                  let conn = Array.make 8 false in
+                  let conn = vect__make_vect 8 false in
                   {connection = conn; search = NotToSearch}
                 else
-                  let conn = Array.make 8 true in
+                  let conn = vect__make_vect 8 true in
                   for k = 0 to 7 do
                     let mov = mov_of_k k in
                     let tpos = add_mov pos mov in
@@ -354,7 +354,7 @@ let make_graph g insist =
                       Some (rmin, cmin, rmax, cmax as room) ->
                         let rr = room_row room in
                         let rc = room_col room in
-                        g.level >= 3 && g.dung.tab.(row).[col] <> '^' &&
+                        g.level >= 3 && g.dung.tab.(row).[col] <> `^` &&
                         (row = rmin && rr <> 0 &&
                          (insist || not g.visited.(rr-1).(rc)) &&
                          not (has_door_above g room) ||
@@ -371,10 +371,10 @@ let make_graph g insist =
                         if insist then true
                         else
                           let n =
-                            list__fold_left
+                            list__it_list
                               (fun cnt connected ->
                                  if connected then cnt + 1 else cnt)
-                              0 (Array.to_list conn)
+                              0 (vect__list_of_vect conn)
                           in
                           n = 1 || n = 3
                   in
@@ -386,15 +386,15 @@ let make_graph g insist =
       let pos = {row = row; col = col} in
       if is_at_door g pos then
         if in_dung g (pos_left pos) &&
-           dung_char g.dung (pos_left pos) = ' ' &&
+           dung_char g.dung (pos_left pos) = ` ` &&
            not graph.(row).(col-1).connection.(4) ||
            in_dung g (pos_right pos) &&
-           dung_char g.dung (pos_right pos) = ' ' &&
+           dung_char g.dung (pos_right pos) = ` ` &&
            not graph.(row).(col+1).connection.(3) ||
-           in_dung g (pos_up pos) && dung_char g.dung (pos_up pos) = ' ' &&
+           in_dung g (pos_up pos) && dung_char g.dung (pos_up pos) = ` ` &&
            not graph.(row-1).(col).connection.(6) ||
            in_dung g (pos_down pos) &&
-           dung_char g.dung (pos_down pos) = ' ' &&
+           dung_char g.dung (pos_down pos) = ` ` &&
            not graph.(row+1).(col).connection.(1)
         then
           graph.(row).(col).search <- ToSearch
@@ -429,8 +429,8 @@ let nothing_to_search graph =
   list__for_all
     (fun line ->
        list__for_all (fun node -> node.search <> ToSearch)
-         (Array.to_list line))
-    (Array.to_list graph)
+         (vect__list_of_vect line))
+    (vect__list_of_vect graph)
 ;;
 
 let path_to_closest g graph pos =
@@ -443,7 +443,7 @@ let path_to_closest g graph pos =
     let f_connected pos1 pos2 k =
       graph.(pos1.row).(pos1.col).connection.(k)
     in
-    let interesting_objects = Rob_object.interesting_objects g in
+    let interesting_objects = rob_object__interesting_objects g in
     let f_inc_dd = f_inc_dd g interesting_objects in
     match gen_path g f_excl f_connected f_inc_dd pos pred with
       Some (tpos, rev_path) ->
@@ -455,7 +455,7 @@ let path_to_closest g graph pos =
 let path_to_closest_gold g t pos =
   let pred _ pos =
     let ch = dung_char g.dung pos in
-    ch = '*' || is_gold_seeker_monster g ch && not (is_moving g t pos)
+    ch = `*` || is_gold_seeker_monster g ch && not (is_moving g t pos)
   in
   path_to_closest2 g pos pred
 ;;
