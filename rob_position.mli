@@ -14,3 +14,5 @@ type 't PosSet =
     add : position -> 't -> 't;
     mem : position -> 't -> bool }
 ;;
+
+value PosSet : 'a PosSet;;
