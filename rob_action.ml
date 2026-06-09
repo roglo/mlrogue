@@ -1757,8 +1757,8 @@ let is_room_border ch = ch = `-` || ch = `|`;;
 
 let pick_object g t na =
   let pos = rogue_pos g in
-  g.garbage <- list_filter ((<>) pos) g.garbage;
-  g.scare_pos <- list_filter ((<>) pos) g.scare_pos;
+  g.garbage <- list_filter (fun x -> pos <> x) g.garbage;
+  g.scare_pos <- list_filter (fun x -> pos <> x) g.scare_pos;
   g.on_something_at <- None;
   Coth `,`, na, t.t_prev_mov
 ;;
@@ -1773,7 +1773,7 @@ let unidentified_trap_in_room g =
           let tpos = {row = trow; col = tcol} in
           if dung_char g.dung tpos = `^` then
             match
-              try Some (Hashtbl.find g.traps tpos) with Not_found -> None
+              try Some (hashtbl__find g.traps tpos) with Not_found -> None
             with
               Some trap_opt ->
                 begin match trap_opt with
@@ -1784,10 +1784,10 @@ let unidentified_trap_in_room g =
                     end
                 | None ->
                     (* should not happen, but bug in rogue (happened once) *)
-                    Hashtbl.add g.traps tpos (Some None);
+                    hashtbl__add g.traps tpos (Some None);
                     Some tpos
                 end
-            | None -> Hashtbl.add g.traps tpos (Some None); Some tpos
+            | None -> hashtbl__add g.traps tpos (Some None); Some tpos
           else loop trow (tcol + 1)
       in
       loop rmin cmin
@@ -1796,7 +1796,13 @@ let unidentified_trap_in_room g =
 
 let ds_return_to_base g ds gp =
   let ds =
-    {ds with ds_state = DSdropped 0; ds_last_corridor_kill_time = g.time}
+    {ds_base = ds.ds_base;
+     ds_state = DSdropped 0;
+     ds_last_corridor_kill_time = g.time;
+     ds_nb_killed_in_corr = ds.ds_nb_killed_in_corr;
+     ds_nb_attempt = ds.ds_nb_attempt;
+     ds_outside_tested = ds.ds_outside_tested;
+     ds_monster_perhaps_blocked = ds.ds_monster_perhaps_blocked}
   in
   NAreturn_to_base (gp, NAdrop_scare_and_kill ds)
 ;;
@@ -1996,7 +2002,7 @@ let drop_scare_and_kill g t message ds =
                     match g.rogue_room_and_door with
                       Some (_, Some dir) ->
                         if mov = one_step_to_exit_room dir then
-                          {ds with ds_monster_perhaps_blocked = None}
+                          {(*ds with*) ds_monster_perhaps_blocked = None}
                         else ds
                     | Some (_, None) | None -> ds
                   in
@@ -4633,7 +4639,7 @@ let apply g t message =
           let tk =
             if transl.is_trap_door message then TKtrap_door else TKother
           in
-          Hashtbl.replace g.traps gp.tpos (Some (Some tk));
+          hashtbl__replace g.traps gp.tpos (Some (Some tk));
           Coth ` `, na, t.t_prev_mov
       | step -> failwith (sprintf "NAgo_identify_trap `%s`" step)
       end
