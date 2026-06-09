@@ -10,6 +10,14 @@
 #open "rob_path";;
 #open "rob_position";;
 
+let sys_file_exists fname =
+  try
+    let ic = io__open_in fname in
+    io__close_in ic;
+    true
+  with sys__Sys_error _ -> false
+;;
+
 (*
 let test_jeopardized g t monl =
   let pos = rogue_pos g in
@@ -225,7 +233,7 @@ let run_away_if_possible g in_room movl mmov =
           let paths =
             sort__sort
               (fun (p1, _) (p2, _) ->
-                 compare (list__list_length p2) (list__list_length p1))
+                 compare (list__list_length p2) (list__list_length p1) <= 0)
               paths
           in
           let max_len = list__list_length (fst (list__hd paths)) in
@@ -236,7 +244,7 @@ let run_away_if_possible g in_room movl mmov =
           let (path, tpos) = list_nth paths (random_int g len) in
           match path with
             pos1 :: _ -> Some (move_between pos pos1, [])
-          | [] -> assert false
+          | [] -> failwith "assert false"
 ;;
 
 let set_regrets g =
@@ -257,17 +265,19 @@ let set_regrets g =
   | None -> ()
 ;;
 
+(*
 let stop_paradise t =
   let mpt = get_monster_power_list t in
   let fname =
     let rec loop n =
       let fname = sprintf "monpow.%d" n in
-      if Sys.file_exists fname then loop (n + 1) else fname
+      if sys_file_exists fname then loop (n + 1) else fname
     in
     loop 1
   in
   write_monster_power_list_fname mpt fname; failwith "paradise on earth"
 ;;
+*)
 
 let drop_scare_with base state =
   {ds_base = base; ds_state = state; ds_last_corridor_kill_time = 0;
@@ -277,6 +287,7 @@ let drop_scare_with base state =
 
 let start_drop_scare base ch = drop_scare_with base (DSdrop ch);;
 
+(*
 let glup g t s =
   let pos = rogue_pos g in
   let on_scare = list__mem pos g.scare_pos in
@@ -301,6 +312,7 @@ let glup g t s =
        (scroll_of_hold_monsters_in_pack g.pack <> None));
   failwith s
 ;;
+*)
 
 let random_move g pos na =
   let len = list__list_length run_around_list in
@@ -332,6 +344,7 @@ let drop_scare_or_drop_scare_and_kill g ch na =
       let ds = start_drop_scare (rogue_pos g) ch in NAdrop_scare_and_kill ds
 ;;
 
+(*
 let treat_critical_situation g t na =
   (*
   if True then None else
@@ -456,6 +469,7 @@ let treat_critical_situation g t na =
             failwith "blibop"
           end
 ;;
+*)
 
 let on_something g =
   let pos = rogue_pos g in
@@ -477,6 +491,7 @@ let attacked_by_flamer g pos monl =
     monl
 ;;
 
+(*
 let attack_monsters g t movl monl prev_a =
   let pos = rogue_pos g in
   let in_room = g.rogue_room_and_door <> None in
@@ -615,6 +630,7 @@ let attack_monsters g t movl monl prev_a =
                               comm, na, Some mmov
                             end
 ;;
+*)
 
 (* *)
 
@@ -684,7 +700,7 @@ and go_to_stairs_rec from_search g t graph pos tpos strict =
       let na = NAseek_gold_or_monster (gp, true) in
       slow_down g t; Coth ` `, na, None
   | None ->
-      let pred _ = (=) tpos in
+      let pred _ pos2 = tpos = pos2 in
       match path_to_closest2 g pos pred with
         Some gp -> let na = NAgo_to_stairs (gp, strict) in Coth ` `, na, None
       | None ->
@@ -697,6 +713,7 @@ let go_to_stairs = go_to_stairs_rec false;;
 
 (* *)
 
+(*
 let continue_test_scrolls g t ch_arm prev_a =
   let (monl, movl) = monsters_and_moves_around g in
   match monl with
@@ -732,6 +749,7 @@ let continue_test_scrolls g t ch_arm prev_a =
         let na = NAwear (` `, 1, prev_a) in Coth `T`, na, None
       else attack_monsters g t movl monl prev_a
 ;;
+*)
 
 let close_to_stairs g =
   match g.rogue_room_and_door with
@@ -750,7 +768,7 @@ let close_to_stairs g =
                   let sr = room_row sroom in
                   let sc = room_col sroom in
                   if sr = rr || sc = rc then
-                    let pred _ = (=) spos in
+                    let pred _ pos2 = spos = pos2 in
                     match direct_path_excl g [] pos pred with
                       Some (path, _) ->
                         list__for_all
@@ -829,13 +847,13 @@ let conditions_for_dropping_scare g =
 let ok_for_dropping_scare g t =
   let pos = rogue_pos g in
   match trap_at_entrance g with
-    TE_yes -> assert false
+    TE_yes -> failwith "assert false"
   | TE_no ->
       if t.t_stop_at_paradise then stop_paradise t;
       let ch =
         match scroll_of_scare_monsters_in_pack g.pack with
           Some (ch, _) -> ch
-        | None -> assert false
+        | None -> failwith "assert false"
       in
       let ds = start_drop_scare pos ch in
       let na = NAdrop_scare_and_kill ds in Coth `d`, na, None
@@ -1134,7 +1152,7 @@ let move_in_corridor_starting_with_move g pos mov =
         let gp = {epos = pos1; tpos = tpos1; path = path1} in
         let na = NAmove_in_corridor (ipos, gp, []) in
         move_command3 g pos pos1 na
-    | [] -> assert false
+    | [] -> failwith "assert false"
 ;;
 
 let drop_scare ds dss = {ds with ds_state = dss};;
@@ -1186,7 +1204,7 @@ let go_in_corridor_and_hit g pos =
       begin match path with
         pos1 :: path ->
           let gp = {epos = pos1; tpos = tpos; path = path} in Some gp
-      | [] -> assert false
+      | [] -> failwith "assert false"
       end
   | None -> None
 ;;
@@ -1225,7 +1243,7 @@ let rec connected_to_rooms_without_exit g pos =
               assert (tpos = d1 || tpos = d2);
               let d = if tpos = d1 then d2 else d1 in
               connected_to_rooms_without_exit g d
-          | [] -> assert false
+          | [] -> failwith "assert false"
           | _ -> false
           end
       | None ->         (*False*)true
@@ -1402,7 +1420,7 @@ let step_go_in_corridor_and_hit g t message base gp step =
                   pos1 :: path ->
                     let gp = {epos = pos1; tpos = gp.tpos; path = path} in
                     SGCmove_way_there (gp, "start")
-                | [] -> assert false
+                | [] -> failwith "assert false"
               end
             else if g.confused then
               begin tempo g 0.1; SGCchar (`3`, "confused 3") end
@@ -1430,7 +1448,7 @@ let step_go_in_corridor_and_hit g t message base gp step =
             let sl =
               match g.status_line with
                 Some sl -> sl
-              | None -> assert false
+              | None -> failwith "assert false"
             in
             if pos = base then SGChome
             else if sl.sl_hp <= sl.sl_max_hp / 2 then SGCpick_and_return
@@ -1526,7 +1544,7 @@ let unblocking_monster g ipos perhaps_blocked =
                 let (path, tpos, mpos) =
                   match rev_path with
                     mpos :: tpos :: rev_path -> list__rev rev_path, tpos, mpos
-                  | [_] | [] -> assert false
+                  | [_] | [] -> failwith "assert false"
                 in
                 let gp = {epos = pos; tpos = tpos; path = path} in
                 Left (gp, mpos)
@@ -1588,7 +1606,7 @@ let throw_in_the_garbage g t pos ch =
           let gp = {epos = pos1; tpos = tpos; path = path} in
           let na = NAthrow_in_the_garbage (ch, gp, NAnone, "move") in
           move_command3 g pos pos1 na
-      | [] -> assert false
+      | [] -> failwith "assert false"
       end
   | None ->
       let na = NAthrow_away (ch, "direction") in Coth `t`, na, t.t_prev_mov
@@ -1651,7 +1669,7 @@ let manage_full_pack g t =
                             Some gp ->
                               let na = NAgo_to_shelter_and_test_scrolls gp in
                               Coth ` `, na, t.t_prev_mov
-                          | None -> assert false
+                          | None -> failwith "assert false"
                     end
               | Some (room, Some dir) ->
                   let mov = one_step_to_enter_room dir in
@@ -1774,7 +1792,7 @@ let return_to_base g gp =
   function
     NAdrop_scare_and_kill ds -> ds_return_to_base g ds gp
   | NAalone_in_room ar -> ar_return_to_base g ar gp
-  | _ -> assert false
+  | _ -> failwith "assert false"
 ;;
 
 let map_showed_and_some_time_spent g =
@@ -2057,7 +2075,7 @@ let drop_scare_and_kill g t message ds =
                     let ds = drop_scare ds (DSdropped ntest) in
                     let na = NAdrop_scare_and_kill ds in
                     let na = NAwear (ch, 1, na) in Coth `T`, na, None
-                | None -> assert false
+                | None -> failwith "assert false"
               else if g.level < 5 || conditions_for_exit_level g then
                 if healthy_enough g && g.level >= 5 then
                   match
@@ -2146,7 +2164,7 @@ let drop_scare_and_kill g t message ds =
                             let ar = start_alone_room room dl dpos in
                             let na = NAalone_in_room ar in
                             move_command3 g pos pos1 na
-                        | Some [] | None -> assert false
+                        | Some [] | None -> failwith "assert false"
                         end
                     | None ->
                         let ar = start_alone_room room dl pos in
@@ -2220,7 +2238,7 @@ let drop_scare_and_kill g t message ds =
                                with
                                  Some (path, _) ->
                                    list__list_length path, path, dpos
-                               | None -> assert false)
+                               | None -> failwith "assert false")
                             dl
                         in
                         let paths = sort__sort compare paths in
@@ -2579,7 +2597,7 @@ let drop_scare_and_kill g t message ds =
                             let (pos1, path) =
                               match path_in_room_to2 g room [] pos tpos with
                                 Some (pos1 :: path) -> pos1, path
-                              | Some [] | None -> assert false
+                              | Some [] | None -> failwith "assert false"
                             in
                             let gp =
                               {epos = pos1; tpos = tpos; path = path}
@@ -2659,7 +2677,7 @@ let drop_scare_and_kill g t message ds =
                     let ds = drop_scare ds (DSdropped 0) in
                     let na = NAdrop_scare_and_kill ds in Coth `.`, na, None
                 end
-            | None -> assert false
+            | None -> failwith "assert false"
             end
       | step -> failwith (sprintf "DSgive_them_chance step %d" step)
       end
@@ -2739,7 +2757,7 @@ let drop_scare_and_kill g t message ds =
                                   in
                                   let na = NAdrop_scare_and_kill ds in
                                   Coth `m`, na, None
-                              | [] -> assert false
+                              | [] -> failwith "assert false"
                             else
                               match path_excl_from_to g [] pos base with
                                 Some gp ->
@@ -2832,7 +2850,7 @@ let drop_scare_and_kill g t message ds =
                             let ds = drop_scare ds (DSseek_object gp) in
                             let na = NAdrop_scare_and_kill ds in
                             move_command2 g pos pos1 na
-                        | [] -> assert false
+                        | [] -> failwith "assert false"
                       end
                     else if
                       distance pos gp.epos = 1 && can_move_to g gp.epos
@@ -3031,7 +3049,7 @@ let drop_scare_and_kill g t message ds =
                                             in
                                             let na = NArestore_health na in
                                             move_command3 g pos pos1 na
-                                        | None -> assert false
+                                        | None -> failwith "assert false"
                                       else
                                         let dss =
                                           DStest_move (ntest, prev_rc)
@@ -3064,7 +3082,7 @@ let drop_scare_and_kill g t message ds =
                                                 (gp, "move", na)
                                             in
                                             Coth ` `, na, None
-                                        | None -> assert false
+                                        | None -> failwith "assert false"
                                         end
                                     | None ->
                                         let perhaps_blocked =
@@ -3123,7 +3141,7 @@ let drop_scare_and_kill g t message ds =
                           let na = NAdrop_scare_and_kill ds in
                           Coth `.`, na, t.t_prev_mov
                     end
-              | None -> assert false
+              | None -> failwith "assert false"
         end
   | DStest_out_in (move, rc, step) ->
       if message <> "" then
@@ -3164,7 +3182,7 @@ let get_ar_door_trip_cnt pos ar =
   let rec loop =
     function
       ard :: rest -> if pos = ard.ard_pos then ard.ard_trip_cnt else loop rest
-    | [] -> assert false
+    | [] -> failwith "assert false"
   in
   loop ar.ar_doors
 ;;
@@ -3185,7 +3203,7 @@ let test_possible_obstruction_in_next_room g pos =
             else None
         | None -> None
         end
-    | [] -> assert false
+    | [] -> failwith "assert false"
     | _ :: _ -> None
 ;;
 
@@ -3232,9 +3250,9 @@ let alone_in_room g t message ar =
                   begin match path_excl_from_to g [] pos base with
                     Some gp ->
                       let na = ds_return_to_base g ds gp in Coth ` `, na, None
-                  | None -> assert false
+                  | None -> failwith "assert false"
                   end
-              | None -> assert false
+              | None -> failwith "assert false"
         end
       else
         begin match treat_critical_situation g t t.t_next_action with
@@ -3304,7 +3322,7 @@ let alone_in_room g t message ar =
             in
             let ar = alone_room ar ars in
             let na = NAalone_in_room ar in Coth ch, na, None
-        | None -> assert false
+        | None -> failwith "assert false"
         end
   | ARcommand "dropped_last_scare" ->
       if message <> "" then
@@ -3404,14 +3422,14 @@ let alone_in_room g t message ar =
           let dist_to_dragon =
             match flaming_monster_dir g pos with
               Some (mdir, dist, pos1) -> dist
-            | None -> assert false
+            | None -> failwith "assert false"
           in
           let dist_to_base =
             list__map
               (fun ard ->
                  match path_excl_from_to g [] pos ard.ard_pos with
                    Some gp -> list__list_length gp.path, gp
-                 | None -> assert false)
+                 | None -> failwith "assert false")
               ar.ar_doors
           in
           let s =
@@ -3455,7 +3473,7 @@ let alone_in_room g t message ar =
                     let gp = {epos = pos1; tpos = gp.tpos; path = path} in
                     let ar = alone_room ar (ARseek_object gp) in
                     let na = NAalone_in_room ar in move_command2 g pos pos1 na
-                | [] -> assert false
+                | [] -> failwith "assert false"
               end
             else
               match holding_monster_around g pos with
@@ -3505,7 +3523,7 @@ let alone_in_room g t message ar =
                       let ar = alone_room ar (ARgo_and_kill gp) in
                       let na = NAalone_in_room ar in
                       move_command3 g pos pos1 na
-                  | [] -> assert false
+                  | [] -> failwith "assert false"
                 else
                   let ard = list__hd ar.ar_doors in
                   let gp =
@@ -3558,7 +3576,7 @@ let alone_in_room g t message ar =
                 let spos =
                   match g.sure_stairs_pos with
                     Some spos -> spos
-                  | None -> assert false
+                  | None -> failwith "assert false"
                 in
                 if pos = spos then
                   begin tempo g 1.0; Coth `>`, NAnone, None end
@@ -3755,7 +3773,7 @@ let alone_in_room g t message ar =
                         in
                         let na = NAalone_in_room ar in
                         move_command3 g pos pos1 na
-                    | [] -> assert false
+                    | [] -> failwith "assert false"
               end
             else
               let gp =
@@ -3790,7 +3808,7 @@ let alone_in_room g t message ar =
                     Some (mdir, dist, _) ->
                       let na = NAzap (mdir, ch, NAalone_in_room ar, 1) in
                       Coth `z`, na, None
-                  | None -> assert false
+                  | None -> failwith "assert false"
                   end
               | None ->
                   let ar = alone_room ar (ARcommand "kill_monsters") in
@@ -4270,7 +4288,7 @@ let find_something_to_do g t =
                                                  Some (_, dir) ->
                                                    dir <> DoorRight &&
                                                    dir <> DoorLeft
-                                               | None -> assert false)
+                                               | None -> failwith "assert false")
                                             dl
                                         in
                                         if dl2 <> [] then dl2 else dl
@@ -4282,7 +4300,7 @@ let find_something_to_do g t =
                                                  Some (_, dir) ->
                                                    dir <> DoorUp &&
                                                    dir <> DoorDown
-                                               | None -> assert false)
+                                               | None -> failwith "assert false")
                                             dl
                                         in
                                         if dl2 <> [] then dl2 else dl
@@ -4400,7 +4418,7 @@ let find_something_to_do g t =
 
 let rec choose_dir g pos =
   function
-    [] -> assert false
+    [] -> failwith "assert false"
   | [mov] -> mov
   | mov :: movl ->
       if can_move_to g (add_mov pos mov) then mov else choose_dir g pos movl
@@ -4456,7 +4474,7 @@ let apply g t message =
                   let fa = {fa with fa_gp = gp} in
                   let na = NAfind_another_room_and_return fa in
                   move_command3 g pos epos na
-              | [] -> assert false
+              | [] -> failwith "assert false"
             end
           else failwith "NAfind_another_room_and_return 3"
       | "at door" ->
@@ -4472,7 +4490,7 @@ let apply g t message =
               let mov =
                 match t.t_prev_mov with
                   Some mov -> mov
-                | None -> assert false
+                | None -> failwith "assert false"
               in
               let fa = {fa with fa_state = "in corridor"} in
               let na = NAfind_another_room_and_return fa in
@@ -4483,7 +4501,7 @@ let apply g t message =
           let prev_mov =
             match t.t_prev_mov with
               Some mov -> mov
-            | None -> assert false
+            | None -> failwith "assert false"
           in
           let mov = turn_right g pos prev_mov in
           let pos1 = add_mov pos mov in
@@ -4525,7 +4543,7 @@ let apply g t message =
                 let fa = {fa with fa_gp = gp} in
                 let na = NAfind_another_room_and_return fa in
                 move_command3 g pos epos na
-            | [] -> assert false
+            | [] -> failwith "assert false"
           else
             let na = NAfind_another_room_and_return fa in
             move_command3 g pos fa.fa_gp.epos na
@@ -4550,7 +4568,7 @@ let apply g t message =
           epos :: path ->
             let gp = {epos = epos; tpos = gp.tpos; path = path} in
             let na = NAgo_and_kill (gp, ch) in move_command3 g pos epos na
-        | [] -> assert false
+        | [] -> failwith "assert false"
       else Coth ` `, NAnone, t.t_prev_mov
   | NAgo_identify_trap (gp, step, na) ->
       let pos = rogue_pos g in
@@ -4568,7 +4586,7 @@ let apply g t message =
             | None ->
                 if pos = gp.epos && gp.path <> [] then
                   match gp.path with
-                    [] -> assert false
+                    [] -> failwith "assert false"
                   | [_] ->
                       let mov = move_between pos gp.tpos in
                       let ch = basic_command_of_move mov in
@@ -4709,7 +4727,7 @@ let apply g t message =
                         let gp = {epos = pos1; tpos = gp.tpos; path = path} in
                         let na = NAgo_to_door gp in
                         move_command3 g pos pos1 na
-                    | [] -> assert false
+                    | [] -> failwith "assert false"
                   end
                 else Coth ` `, NAnone, t.t_prev_mov
         end
@@ -4739,7 +4757,7 @@ let apply g t message =
             let gp = {epos = epos; tpos = gp.tpos; path = path} in
             let na = NAgo_to_shelter_and_test_scrolls gp in
             move_command2 g pos epos na
-        | [] -> assert false
+        | [] -> failwith "assert false"
       else
         begin match path_excl_from_to g [] pos gp.tpos with
           Some gp ->
@@ -4791,7 +4809,7 @@ let apply g t message =
               let ws = WSarmor_worn ch in
               let na = NAread_scroll_for_best_armor (ch_scr, prev_a, ws) in
               Coth ch, na, t.t_prev_mov
-          | None -> assert false
+          | None -> failwith "assert false"
           end
       | WSarmor_worn ch_arm ->
           if message <> "" then
@@ -4817,7 +4835,7 @@ let apply g t message =
                   Some _ -> Coth `T`, NAwear (ch, 1, prev_a), t.t_prev_mov
                 | None -> Coth `W`, NAwear (ch, 2, prev_a), t.t_prev_mov
                 end
-            | None -> assert false
+            | None -> failwith "assert false"
       end
   | NArestore_health na ->
       g.hist_dung <- [];
@@ -4903,7 +4921,7 @@ let apply g t message =
                                       in
                                       let na = NAreturn_to_base (gp, akont) in
                                       move_command3 g pos gp.epos na
-                                  | [] -> assert false
+                                  | [] -> failwith "assert false"
                                 else
                                   let na = NAreturn_to_base (gp, akont) in
                                   move_command3 g pos (add_mov pos mov) na
@@ -4916,7 +4934,7 @@ let apply g t message =
                                 in
                                 let na = NAreturn_to_base (gp, akont) in
                                 move_command3 g pos pos1 na
-                            | [] -> assert false
+                            | [] -> failwith "assert false"
                   end
                 else if g.attacked > 0 || g.held then
                   let na = NAreturn_to_base (gp, akont) in
@@ -5090,7 +5108,7 @@ let apply g t message =
                             NAthrow_in_the_garbage (ch, gp, prev_a, "move")
                           in
                           move_command3 g pos pos1 na
-                      | [] -> assert false
+                      | [] -> failwith "assert false"
                     else
                       let (monl, movl) = monsters_and_moves_around g in
                       if monl <> [] then
@@ -5171,7 +5189,7 @@ let apply g t message =
             let ar =
               match snd (list__assoc ch g.pack) with
                 Parmor ar -> ar
-              | _ -> assert false
+              | _ -> failwith "assert false"
             in
             let ar = {ar with ar_value = armor_value message} in
             g.worn_armor <- Some (ch, ar);
@@ -5277,7 +5295,7 @@ let apply g t message =
                       if g.held then Coth `s`, NAnone, None
                       else if pos = gp.tpos then
                         match movl with
-                          [] -> assert false
+                          [] -> failwith "assert false"
                         | [mov] ->
                             if nothing_to_search_in_dung g then
                               start_move_in_corridor g t pos
@@ -5385,7 +5403,7 @@ let apply g t message =
                     epos :: path ->
                       let gp = {epos = epos; tpos = gp.tpos; path = path} in
                       let na = NAgo_to gp in move_command3 g pos epos na
-                  | [] -> assert false
+                  | [] -> failwith "assert false"
                 else
                   begin
                     tempo g 0.5;
@@ -5462,7 +5480,7 @@ let apply g t message =
                           in
                           let na = NAgo_to_stairs (gp, strict) in
                           move_command3 g pos pos1 na
-                      | [] -> assert false
+                      | [] -> failwith "assert false"
                 else
                   let graph = make_graph g false in
                   go_to_stairs g t graph pos gp.tpos strict
@@ -5475,7 +5493,7 @@ let apply g t message =
                 Some room ->
                   let gp = path_in_room_excl_mon g room pos tpos in
                   let na = NAgo_to_door gp in move_command3 g pos gp.epos na
-              | None -> assert false
+              | None -> failwith "assert false"
         end
   | NAgo_unblock_monster um ->
       let pos = rogue_pos g in
@@ -5514,7 +5532,7 @@ let apply g t message =
                     ar.ar_doors
                 in
                 let ar = {ar with ar_doors = dl} in NAalone_in_room ar
-            | _ -> assert false
+            | _ -> failwith "assert false"
           in
           let um = {um with um_kont = na} in
           let na = NAgo_unblock_monster um in move_command2 g pos mpos na
@@ -5556,7 +5574,7 @@ let apply g t message =
                   in
                   let ar = {ar with ar_doors = dl} in
                   let na = NAalone_in_room ar in block, na
-              | _ -> assert false
+              | _ -> failwith "assert false"
             in
             let um = {um with um_kont = na} in
             match block with
@@ -5574,7 +5592,7 @@ let apply g t message =
             let na = NAgo_unblock_monster um in
             let mov = move_between pos epos in
             let na = NAmove (mov, na) in Coth `m`, na, t.t_prev_mov
-        | [] -> assert false
+        | [] -> failwith "assert false"
       else
         let gp = old_path_excl_from_to g [] pos gp.tpos 25 in
         let um = {um with um_gp = gp} in
@@ -5705,8 +5723,8 @@ let apply g t message =
                   if n > 0 then
                     let obj = Pwand (Iwand (wk, Some (n - 1))) in
                     redefine_in_pack g ch obj
-                  else assert false
-              | _ -> assert false
+                  else failwith "assert false"
+              | _ -> failwith "assert false"
               end;
               Coth ` `, na, t.t_prev_mov
             end
@@ -5779,7 +5797,7 @@ let apply g t message =
                 let base = ds.ds_base in
                 let gp = old_path_excl_from_to g [] pos base 1 in
                 let na = ds_return_to_base g ds gp in Coth ` `, na, None
-            | _ -> assert false
+            | _ -> failwith "assert false"
           else let na = NAdrop_scare (None, na) in Coth `.`, na, t.t_prev_mov
       end
   | NAdrop_scare_and_kill ds -> drop_scare_and_kill g t message ds
@@ -5845,7 +5863,7 @@ let apply g t message =
               let room =
                 match current_room_possibly_at_door g pos with
                   Some room -> room
-                | None -> assert false
+                | None -> failwith "assert false"
               in
               attack_at_distance g t room (dist_between pos mpos)
       | step -> failwith (sprintf "not impl NAwield_bow_test_moving %d" step)
@@ -5952,7 +5970,7 @@ let apply g t message =
           begin match arrows_in_pack g.pack with
             Some (ch_weap, (nb, obj)) ->
               remove_from_pack g ch_weap nb obj; Coth ch_weap, na, None
-          | None -> assert false
+          | None -> failwith "assert false"
           end
       | "thrown" ->
           if message <> "" then
@@ -6146,7 +6164,7 @@ let apply g t message =
                             in
                             let na = NAglobal_search1 (gp, around) in
                             move_command3 g pos pos1 na
-                        | [] -> assert false
+                        | [] -> failwith "assert false"
                         end
                     | None ->
                         match
@@ -6210,7 +6228,7 @@ let apply g t message =
                     let gp = {epos = pos1; tpos = tpos; path = path} in
                     let na = NAmove_in_corridor (pos, gp, []) in
                     move_command3 g pos pos1 na
-                | Some ([], _) -> assert false
+                | Some ([], _) -> failwith "assert false"
                 | None -> start_move_in_corridor g t pos
                 end
           | None ->
@@ -6319,7 +6337,7 @@ let apply g t message =
                                       scroll_of_protect_armor_in_pack g.pack
                                     with
                                       Some (ch, _) -> ch
-                                    | None -> assert false
+                                    | None -> failwith "assert false"
                                   in
                                   let na =
                                     NAwear_armor_and_test_scrolls
