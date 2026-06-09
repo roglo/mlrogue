@@ -943,7 +943,7 @@ let moving_monsters_at_one_move g t pos =
   match direct_path_excl g [] pos pred with
     Some (path, mpos) ->
       let len = list__list_length path in
-      assert (len > 0);
+      if (len > 0) then () else failwith "len > 0";
       if len <= d then Some (list__hd path, len mod d mod 3, len, mpos)
       else None
   | None -> None
@@ -969,7 +969,10 @@ let move_back g pos1 pos2 na =
     match direct_path_excl g [pos2] pos1 pred with
       Some (path, tpos) ->
         if list__list_length path = 1 then
-          begin assert (pos1 <> tpos); move_command2 g pos1 tpos na end
+          begin
+            if pos1 <> tpos then () else failwith "pos1 <> tpos";
+            move_command2 g pos1 tpos na
+          end
         else Coth `.`, na, None
     | None -> Coth `s`, na, None
 ;;
@@ -1054,8 +1057,8 @@ let select_ahead_moves_in_corridor g pos mov all_paths =
              if mov.di = 0 then mov.dj = mov1.dj
              else if mov.dj = 0 then mov.di = mov1.di
              else
-               mov1 = mov || mov1 = {mov with di = 0} ||
-               mov1 = {mov with dj = 0}
+               mov1 = mov || mov1 = {di = 0; dj = mov.dj} ||
+               mov1 = {di = mov.di; dj = 0}
          | [] -> false)
       all_paths
   in
@@ -1071,8 +1074,8 @@ let select_ahead_moves_in_corridor g pos mov all_paths =
              else if mov.dj = 0 then opp.di <> mov1.di
              else
                not
-                 (mov1 = opp || mov1 = {opp with di = 0} ||
-                  mov1 = {opp with dj = 0})
+                 (mov1 = opp || mov1 = {di = 0; dj = opp.dj} ||
+                  mov1 = {di = opp.di; dj = 0})
          | [] -> false)
       all_paths
 ;;
@@ -1107,6 +1110,7 @@ let continue_move_in_corridor g t ipos pos trail =
       | [] -> failwith "not impl NAmove_in_corridor 11"
 ;;
 
+(*
 let attacked_or_held g t na =
   let pos = rogue_pos g in
   let (monl, movl) = monsters_and_moves_around g in
@@ -1129,6 +1133,7 @@ let attacked_or_held g t na =
             let na = NAuse_object (uo, na) in Coth `r`, na, None
         | None -> random_move g pos na
 ;;
+*)
 
 let move_in_corridor_starting_with_move g pos mov =
   let ipos = pos in
@@ -1157,8 +1162,21 @@ let move_in_corridor_starting_with_move g pos mov =
     | [] -> failwith "assert false"
 ;;
 
-let drop_scare ds dss = {ds with ds_state = dss};;
-let alone_room ar ars = {ar with ar_state = ars};;
+let drop_scare ds dss =
+  {ds_base = ds.ds_base;
+   ds_state = dss;
+   ds_last_corridor_kill_time = ds.ds_last_corridor_kill_time;
+   ds_nb_killed_in_corr = ds.ds_nb_killed_in_corr;
+   ds_nb_attempt = ds.ds_nb_attempt;
+   ds_outside_tested = ds.ds_outside_tested;
+   ds_monster_perhaps_blocked = ds.ds_monster_perhaps_blocked}
+;;
+let alone_room ar ars =
+  {ar_state = ars;
+   ar_room = ar.ar_room;
+   ar_doors = ar.ar_doors;
+   ar_trip_cnt = ar.ar_trip_cnt}
+;;
 
 let first_monster_in_path g path =
   let rec loop rev_path =
@@ -1192,7 +1210,7 @@ let go_in_corridor_and_hit g pos =
   let paths = paths_with_monsters g paths_corr in
   match
     if paths <> [] then
-      let paths = sort__sort compare paths in
+      let paths = sort__sort (fun x y -> x <= y) paths in
       let (min_len, _) = list__hd paths in
       let tpos_list = list_filter (fun (len, _) -> len = min_len) paths in
       let len = list__list_length tpos_list in
