@@ -88,7 +88,7 @@ let read_monster_power_list t =
       close_in ic
   | None -> ()
   end;
-  for i = 0 to 25 do mpt.(i) <- List.rev mpt.(i) done;
+  for i = 0 to 25 do mpt.(i) <- list__rev mpt.(i) done;
   mpt
 ;;
 *)
@@ -152,14 +152,13 @@ let get_monster_power_list t =
       let list = read_monster_power_list t in
       monster_power_list := Some list; list
 ;;
-*)
 
 let set_monster_power g t mch new_power =
   let mch = monster g mch in
   let mpt = get_monster_power_list t in
   let i = char__int_of_char mch - char__int_of_char `A` in
-  let v = try List.assoc g.level mpt.(i) with Not_found -> [] in
-  let armv = Rob_object.worn_armor_value g in
+  let v = try list__assoc g.level mpt.(i) with Not_found -> [] in
+  let armv = rob_object__worn_armor_value g in
   let new_v =
     let rec loop =
       function
@@ -188,23 +187,23 @@ let set_monster_power g t mch new_power =
     in
     loop new_v
   in
-  let mpti = List.remove_assoc g.level mpt.(i) in
-  let mpti = List.sort compare ((g.level, new_v) :: mpti) in
+  let mpti = list_remove_assoc g.level mpt.(i) in
+  let mpti = sort__sort compare ((g.level, new_v) :: mpti) in
   (*
   trace (sprintf "*** set monster power (lev %d arm %d pow %d)\n" g.level armv new_power);
   trace "*** before:\n";
-  List.iter
+  list__iter
     (fun (lev, v) -> do {
        trace (sprintf "%c %d" mch lev);
-       List.iter (fun (arm, pow) -> trace (sprintf " %d,%d" arm pow)) v;
+       list__iter (fun (arm, pow) -> trace (sprintf " %d,%d" arm pow)) v;
        trace "\n";
      })
     mpt.(i);
   trace "*** interm:\n";
-  List.iter
+  list__iter
     (fun (lev, v) -> do {
        trace (sprintf "%c %d" mch lev);
-       List.iter (fun (arm, pow) -> trace (sprintf " %d,%d" arm pow)) v;
+       list__iter (fun (arm, pow) -> trace (sprintf " %d,%d" arm pow)) v;
        trace "\n";
      })
     mpti;
@@ -223,8 +222,8 @@ let set_monster_power g t mch new_power =
                   else if arm1 > arm2 then
                     loop ((arm2, pow2) :: rev_v2) v1 rest2
                   else loop ((arm2, max pow1 pow2) :: rev_v2) rest1 rest2
-              | (arm1, pow1) :: rest1, [] -> List.rev_append v1 rev_v2
-              | [], (arm2, pow2) :: rest1 -> List.rev_append v2 rev_v2
+              | (arm1, pow1) :: rest1, [] -> list__rev (v1 @ rev_v2)
+              | [], (arm2, pow2) :: rest1 -> list__rev (v2 @ rev_v2)
               | [], [] -> rev_v2
             in
             loop [] v1 v2
@@ -243,17 +242,17 @@ let set_monster_power g t mch new_power =
             loop [] rev_v2
           in
           loop ((lev1, v1) :: rev_list) ((lev2, v2) :: rest)
-      | [x] -> List.rev (x :: rev_list)
-      | [] -> List.rev rev_list
+      | [x] -> list__rev (x :: rev_list)
+      | [] -> list__rev rev_list
     in
     loop [] mpti
   in
   (*
   trace "*** after:\n";
-  List.iter
+  list__iter
     (fun (lev, v) -> do {
        trace (sprintf "%c %d" mch lev);
-       List.iter (fun (arm, pow) -> trace (sprintf " %d,%d" arm pow)) v;
+       list__iter (fun (arm, pow) -> trace (sprintf " %d,%d" arm pow)) v;
        trace "\n";
      })
     mpti;
@@ -265,10 +264,10 @@ let set_monster_power g t mch new_power =
 
 let basic_monster_power g t mch default =
   let mch = monster g mch in
-  let armv = Rob_object.worn_armor_value g in
+  let armv = rob_object__worn_armor_value g in
   let mpt = get_monster_power_list t in
   let i = char__int_of_char mch - char__int_of_char `A` in
-  let v = try List.assoc g.level mpt.(i) with Not_found -> default mpt.(i) in
+  let v = try list__assoc g.level mpt.(i) with Not_found -> default mpt.(i) in
   let rec loop =
     function
       [_, pow] -> pow
@@ -280,7 +279,7 @@ let basic_monster_power g t mch default =
 
 let monster_power g t mch =
   let default list =
-    match List.rev list with
+    match list__rev list with
       (_, v) :: _ -> v
     | [] -> []
   in
@@ -291,17 +290,18 @@ let monster_power_at_level g t mch =
   let mp = monster_power g t mch in
   if g.level >= level_of_faster_monsters then mp * 2 else mp
 ;;
+*)
 
 (* *)
 
 let is_aquator g mch = monster g mch = `A`;;
 let is_flaming_monster g mch = monster g mch = `D`;;
-let is_fliting_monster g mch = List.mem (monster g mch) [`B`; `P`];;
+let is_fliting_monster g mch = list__mem (monster g mch) [`B`; `P`];;
 let is_freezing_monster g mch = monster g mch = `I`;;
 let is_holding_monster g mch = monster g mch = `F`;;
-let is_mean_monster g ch = List.mem (monster g ch) [`C`; `Q`; `R`; `T`];;
+let is_mean_monster g ch = list__mem (monster g ch) [`C`; `Q`; `R`; `T`];;
 
-let is_not_attackable_monster g ch = List.mem (monster g ch) [`I`; `L`; `N`];;
+let is_not_attackable_monster g ch = list__mem (monster g ch) [`I`; `L`; `N`];;
 
 let is_attackable_monster g ch =
   is_monster ch && not g.hallucinated && not (is_not_attackable_monster g ch)
@@ -366,7 +366,7 @@ let aquator_around g =
   else
     let pos = rogue_pos g in
     let monl = monsters_around g pos in
-    List.exists (fun mov -> is_aquator g (dung_char g.dung (add_mov pos mov)))
+    list__exists (fun mov -> is_aquator g (dung_char g.dung (add_mov pos mov)))
       monl
 ;;
 
@@ -378,7 +378,7 @@ let flaming_monster_dir g pos =
         let dmov = {di = dir.di * dist; dj = dir.dj * dist} in
         let pos1 = add_mov pos dmov in
         if in_dung g pos1 && is_flaming_monster g (dung_char g.dung pos1) &&
-           not (List.mem_assoc pos1 g.frozen_monsters)
+           not (list__mem_assoc pos1 g.frozen_monsters)
         then
           Some (dir, dist, pos1)
         else loop dist kl
