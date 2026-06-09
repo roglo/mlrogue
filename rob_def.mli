@@ -35,7 +35,7 @@ type game =
     mutable lang : string;
     mutable speed : float;
     mutable time_in_level : int;
-    mutable trail : int; (* Rob_position__PosMap.t;*)
+    mutable trail : int rob_position__PosMap_t;
     mutable rogue_pos : position option;
     mutable sure_stairs_pos : position option;
     rogue_room_and_door : (room * door_dir option) option;

@@ -2,12 +2,12 @@
 
 type position = { row : int; col : int };;
 
-type ('a, 't) PosMap =
-  { PosMap_empty : 't;
-    PosMap_add : position -> 'a -> 't -> 't;
-    PosMap_mem : position -> 't -> bool;
-    PosMap_find : position -> 't -> 'a }
-;;
+type 'a PosMap_t;;
+
+value PosMap_empty : 'a PosMap_t;;
+value PosMap_add : position -> 'a -> 'a PosMap_t -> 'a PosMap_t;;
+value PosMap_mem : position -> 'a PosMap_t -> bool;;
+value PosMap_find : position -> 'a PosMap_t -> 'a;;
 
 type PosSet_t;;
 

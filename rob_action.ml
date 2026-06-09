@@ -802,7 +802,7 @@ let trap_at_entrance g =
       let mov = one_step_to_enter_room dir in
       let pos1 = add_mov pos mov in
       if dung_char g.dung pos1 = `^` then TE_yes
-      else if PosMap.mem pos1 g.trail || g.map_showed_since > 0 then TE_no
+      else if PosMap_mem pos1 g.trail || g.map_showed_since > 0 then TE_no
       else TE_perhaps pos1
   | Some (_, None) | None -> TE_error
 ;;
@@ -813,7 +813,7 @@ let exit_visited g =
       let pos = rogue_pos g in
       let mov = one_step_to_exit_room dir in
       let pos1 = add_mov pos mov in
-      PosMap.mem pos1 g.trail || g.map_showed_since > 0
+      PosMap_mem pos1 g.trail || g.map_showed_since > 0
   | Some (_, None) | None -> false
 ;;
 
@@ -844,6 +844,7 @@ let conditions_for_dropping_scare g =
   (g.map_showed_since > 0 || connected_with_another_room g)
 ;;
 
+(*
 let ok_for_dropping_scare g t =
   let pos = rogue_pos g in
   match trap_at_entrance g with
@@ -861,6 +862,7 @@ let ok_for_dropping_scare g t =
       let na = NAcheck_no_trap (pos, pos1) in move_command3 g pos pos1 na
   | TE_error -> failwith "trap_at_entrance"
 ;;
+*)
 
 let conditions_for_exit_level g =
   g.ring_of_slow_digestion_on_hand <> None && g.map_showed_since > 0 &&
@@ -879,11 +881,11 @@ let select_less_explorated_paths_in_corridor g paths =
   let paths =
     list__map
       (fun (path, tpos) ->
-         let v = try PosMap.find tpos g.trail with Not_found -> 0 in
+         let v = try PosMap_find tpos g.trail with Not_found -> 0 in
          (v, list__list_length path), (path, tpos))
       paths
   in
-  let paths = sort__sort compare paths in
+  let paths = sort__sort (fun a b -> a <= b) paths in
   let less_expl = fst (list__hd paths) in
   (*
   let most_expl = fst (list__hd (list__rev paths)) in
