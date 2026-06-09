@@ -59,6 +59,19 @@ let flame_risk g t =
 ;;
 *)
 
+let rec list_filter f =
+  function
+    [] -> []
+  | x :: l -> if f x then x :: list_filter f l else list_filter f l
+;;
+
+let rec list_nth l n =
+  match l with
+    [] -> failwith "list_nth"
+  | x :: l -> if n = 0 then x else list_nth l (n - 1)
+;;
+
+(*
 let test_monsters_risk g t monl =
   let pos = rogue_pos g in
   let jeopardized = test_jeopardized g t monl in
@@ -68,7 +81,7 @@ let test_monsters_risk g t monl =
   | monl ->
       let monl =
         let monl2 =
-          list__filter
+          list_filter
             (fun mov ->
                let mch = dung_char g.dung (add_mov pos mov) in
                not (is_not_attackable_monster g mch))
@@ -76,9 +89,10 @@ let test_monsters_risk g t monl =
         in
         if monl2 <> [] then monl2 else monl
       in
-      let mov = list__nth monl (random_int g (list__length monl)) in
+      let mov = list_nth monl (random_int g (list__list_length monl)) in
       let mch = dung_char g.dung (add_mov pos mov) in mov, mch, jeopardized
 ;;
+*)
 
 let close_to_a_free_door g =
   match g.rogue_room_and_door with
@@ -129,10 +143,10 @@ let run_away_if_possible g in_room movl mmov =
           match g.rogue_room_and_door with
             Some (room, Some _) ->
               let dl = find_doors g room in
-              if list__length dl > 1 then false
+              if list__list_length dl > 1 then false
               else
                 begin match
-                  dist_to_closest g room pos (fun ch _ -> ch = '%')
+                  dist_to_closest g room pos (fun ch _ -> ch = `%`)
                 with
                   Some _ -> false
                 | None -> true
@@ -142,14 +156,14 @@ let run_away_if_possible g in_room movl mmov =
         if at_door_of_room_without_exit then None else Some (mov, [])
   | movl ->
       let movl =
-        list__filter (fun mov -> dung_char g.dung (add_mov pos mov) <> '^')
+        list_filter (fun mov -> dung_char g.dung (add_mov pos mov) <> `^`)
           movl
       in
       match g.rogue_room_and_door with
         Some (room, None) ->
           let dl = list__map (fun (p, d) -> false, p) (find_doors g room) in
           let dl =
-            match dist_to_closest g room pos (fun ch _ -> ch = '%') with
+            match dist_to_closest g room pos (fun ch _ -> ch = `%`) with
               Some mov -> (true, add_mov pos mov) :: dl
             | None -> dl
           in
@@ -167,7 +181,7 @@ let run_away_if_possible g in_room movl mmov =
           if movl2 = [] then
             begin
               tempo g 0.1;
-              let mov = list__nth movl (random_int g (list__length movl)) in
+              let mov = list_nth movl (random_int g (list__list_length movl)) in
               Some (mov, [])
             end
           else
@@ -177,13 +191,13 @@ let run_away_if_possible g in_room movl mmov =
                 Some (_, (mov, _)) -> Some (mov, [])
               | None ->
                   let movl3 =
-                    list__filter
+                    list_filter
                       (fun (_, (mov, (path, _))) ->
                          let rec loop pos =
                            function
                              mov :: path ->
                                let pos = add_mov pos mov in
-                               if dung_char g.dung pos = '^' then false
+                               if dung_char g.dung pos = `^` then false
                                else loop pos path
                            | [] -> true
                          in
@@ -191,9 +205,9 @@ let run_away_if_possible g in_room movl mmov =
                       movl2
                   in
                   let movl2 = if movl3 = [] then movl2 else movl3 in
-                  let len = list__length movl2 in
+                  let len = list__list_length movl2 in
                   let (_, (mov, (path, _))) =
-                    list__nth movl2 (random_int g len)
+                    list_nth movl2 (random_int g len)
                   in
                   Some (mov, path)
             end
@@ -201,7 +215,7 @@ let run_away_if_possible g in_room movl mmov =
           tempo g 0.1;
           let paths = paths_in_corridors_from g pos pos in
           let paths =
-            list__filter
+            list_filter
               (fun (path, _) ->
                  match path with
                    [] -> false
@@ -209,17 +223,17 @@ let run_away_if_possible g in_room movl mmov =
               paths
           in
           let paths =
-            list__sort
+            sort__sort
               (fun (p1, _) (p2, _) ->
-                 compare (list__length p2) (list__length p1))
+                 compare (list__list_length p2) (list__list_length p1))
               paths
           in
-          let max_len = list__length (fst (list__hd paths)) in
+          let max_len = list__list_length (fst (list__hd paths)) in
           let paths =
-            list__filter (fun (p, _) -> list__length p = max_len) paths
+            list_filter (fun (p, _) -> list__list_length p = max_len) paths
           in
-          let len = list__length paths in
-          let (path, tpos) = list__nth paths (random_int g len) in
+          let len = list__list_length paths in
+          let (path, tpos) = list_nth paths (random_int g len) in
           match path with
             pos1 :: _ -> Some (move_between pos pos1, [])
           | [] -> assert false
@@ -289,9 +303,9 @@ let glup g t s =
 ;;
 
 let random_move g pos na =
-  let len = list__length run_around_list in
+  let len = list__list_length run_around_list in
   let rec loop () =
-    let k = list__nth run_around_list (random_int g len) in
+    let k = list_nth run_around_list (random_int g len) in
     let mov = mov_of_k k in
     let pos1 = add_mov pos mov in
     if in_dung g pos1 then
@@ -334,10 +348,10 @@ let treat_critical_situation g t na =
     if g.confused then
       let na = t.t_next_action in
       let na = NAstring ("3.", false, na) in
-      let r = Coth '3', na, None in Some r
+      let r = Coth `3`, na, None in Some r
     else None
   else if g.confused && on_scare && g.level < level_of_very_mean_monsters then
-    let na = t.t_next_action in Some (Coth '.', na, None)
+    let na = t.t_next_action in Some (Coth `.`, na, None)
   else
     match
       if (g.confused || monl = [] && not on_scare) &&
@@ -356,16 +370,16 @@ let treat_critical_situation g t na =
     with
       Some (mdir, dist, (ch, _)) ->
         let na = t.t_next_action in
-        let na = NAzap (mdir, ch, na, 1) in Some (Coth 'z', na, None)
+        let na = NAzap (mdir, ch, na, 1) in Some (Coth `z`, na, None)
     | None ->
         if g.confused && on_scare && g.attacked_by_flame > 0 &&
            g.level >= level_of_very_mean_monsters
         then
           if monl = [] then
-            let na = t.t_next_action in Some (Coth '.', na, None)
+            let na = t.t_next_action in Some (Coth `.`, na, None)
           else let na = t.t_next_action in Some (random_move g pos na)
         else if g.confused && not on_scare && g.attacked = 0 then
-          let na = t.t_next_action in Some (Coth '.', na, None)
+          let na = t.t_next_action in Some (Coth `.`, na, None)
         else if
           not g.confused && not g.blind && not on_scare &&
           g.level < level_of_very_mean_monsters && g.attacked_by_flame = 0 &&
@@ -384,7 +398,7 @@ let treat_critical_situation g t na =
             Some (ch, _) ->
               let na = t.t_next_action in
               let uo = UOread_scroll (ch, RSread_what) in
-              let na = NAuse_object (uo, na) in Some (Coth 'r', na, None)
+              let na = NAuse_object (uo, na) in Some (Coth `r`, na, None)
           | None ->
               if g.level < level_of_very_mean_monsters then
                 let na = t.t_next_action in Some (random_move g pos na)
@@ -396,14 +410,14 @@ let treat_critical_situation g t na =
                         let mdir = mov in
                         let na = t.t_next_action in
                         let na = NAzap (mdir, ch, na, 1) in
-                        Some (Coth 'z', na, None)
+                        Some (Coth `z`, na, None)
                     | None ->
                         match scroll_of_scare_monsters_in_pack g.pack with
                           Some (ch, _) ->
                             let na =
                               drop_scare_or_drop_scare_and_kill g ch na
                             in
-                            Some (Coth 'd', na, None)
+                            Some (Coth `d`, na, None)
                         | None -> Some (random_move g pos na)
                     end
                 | _ :: _ ->
@@ -411,7 +425,7 @@ let treat_critical_situation g t na =
                       Some (ch, _) ->
                         let ds = start_drop_scare pos ch in
                         let na = NAdrop_scare_and_kill ds in
-                        Some (Coth 'd', na, None)
+                        Some (Coth `d`, na, None)
                     | None -> None
                     end
                 | [] -> None
@@ -482,7 +496,7 @@ let attack_monsters g t movl monl prev_a =
   in
   let (mmov, mch, jeopardized) = test_monsters_risk g t monl in
   match
-    if in_room && list__length monl >= 2 && g.attacked > 0 then
+    if in_room && list__list_length monl >= 2 && g.attacked > 0 then
       close_to_a_free_door g
     else None
   with
@@ -496,7 +510,7 @@ let attack_monsters g t movl monl prev_a =
             let (comm, na) = move_command g pos mov na in comm, na, Some mov
         | None ->
             if g.sure_stairs_pos = Some pos then
-              begin tempo g 1.0; Coth '>', NAnone, None end
+              begin tempo g 1.0; Coth `>`, NAnone, None end
             else if list__mem pos g.scare_pos then
               let na = NAfight (mch, false, NAnone) in
               move_command2 g pos (add_mov pos mmov) na
@@ -512,19 +526,19 @@ let attack_monsters g t movl monl prev_a =
                   then
                     stop_paradise t;
                   let ds = start_drop_scare pos ch in
-                  let na = NAdrop_scare_and_kill ds in Coth 'd', na, None
+                  let na = NAdrop_scare_and_kill ds in Coth `d`, na, None
               | None ->
                   match scroll_of_hold_monsters_in_pack g.pack with
                     Some (ch, _) ->
                       let na = NAstring ("50.", false, NAnone) in
                       let uo = UOread_scroll (ch, RSread_what) in
-                      let na = NAuse_object (uo, na) in Coth 'r', na, None
+                      let na = NAuse_object (uo, na) in Coth `r`, na, None
                   | None ->
                       match scroll_of_teleport_in_pack g.pack with
                         Some (ch, _) ->
                           let uo = UOread_scroll (ch, RSread_what) in
                           let na = NAuse_object (uo, prev_a) in
-                          Coth 'r', na, None
+                          Coth `r`, na, None
                       | None ->
                           let na = NAfight (mch, false, NAnone) in
                           let (comm, na) = move_command g pos mmov na in
@@ -532,7 +546,7 @@ let attack_monsters g t movl monl prev_a =
       else
         match
           if jeopardized && not (on_something g) &&
-             (list__length monl >= 2 || not (attacked_by_flamer g pos monl))
+             (list__list_length monl >= 2 || not (attacked_by_flamer g pos monl))
           then
             scroll_of_scare_monsters_in_pack g.pack
           else None
@@ -548,7 +562,7 @@ let attack_monsters g t movl monl prev_a =
             *)
             let na = drop_scare_or_drop_scare_and_kill g ch prev_a in
             (**)
-            Coth 'd', na, None
+            Coth `d`, na, None
         | None ->
             match
               if jeopardized then scroll_of_hold_monsters_in_pack g.pack
@@ -556,10 +570,10 @@ let attack_monsters g t movl monl prev_a =
             with
               Some (ch, _) ->
                 let uo = UOread_scroll (ch, RSread_what) in
-                let na = NAuse_object (uo, prev_a) in Coth 'r', na, None
+                let na = NAuse_object (uo, prev_a) in Coth `r`, na, None
             | None ->
                 if g.held then
-                  if random_int g 2 = 0 then Coth 's', NAnone, None
+                  if random_int g 2 = 0 then Coth `s`, NAnone, None
                   else
                     let na = NAfight (mch, false, NAnone) in
                     match holding_monster_around g pos with
@@ -578,7 +592,7 @@ let attack_monsters g t movl monl prev_a =
                       with
                         Some (ch, (_, obj)) ->
                           let na = NAzap (mmov, ch, NAnone, 1) in
-                          Coth 'z', na, None
+                          Coth `z`, na, None
                       | None ->
                           if g.confused &&
                              g.level >= level_of_very_mean_monsters
@@ -618,7 +632,7 @@ let find_all g pred =
   loop [] 1 0
 ;;
 
-let number_of_monsters g = list__length (find_all g is_monster);;
+let number_of_monsters g = list__list_length (find_all g is_monster);;
 
 let slow_down g t =
   if t.t_breakpoint >= 0 || t.t_slow_at_level <> None ||
@@ -633,7 +647,7 @@ let rec start_search g t graph =
   if nothing_to_search graph then
     let sp = stairs_pos g in
     if sp <> [] then
-      let tpos = list__nth sp (random_int g (list__length sp)) in
+      let tpos = list_nth sp (random_int g (list__list_length sp)) in
       go_to_stairs_rec true g t graph pos tpos false
     else let graph = make_graph g true in start_search g t graph
   else
@@ -645,13 +659,13 @@ let rec start_search g t graph =
             let na = NAglobal_search1 (gp, around) in
             move_command3 g pos pos1 na
         | [] ->
-            let ch = 's' in
+            let ch = `s` in
             let na = NAglobal_search2 (graph, around, 1) in Coth ch, na, None
         end
     | None ->
         let sp = stairs_pos g in
         if sp <> [] then
-          let tpos = list__nth sp (random_int g (list__length sp)) in
+          let tpos = list_nth sp (random_int g (list__list_length sp)) in
           go_to_stairs_rec true g t graph pos tpos false
         else random_move g pos NAnone
 and go_to_stairs_rec from_search g t graph pos tpos strict =
@@ -668,11 +682,11 @@ and go_to_stairs_rec from_search g t graph pos tpos strict =
   with
     Some gp ->
       let na = NAseek_gold_or_monster (gp, true) in
-      slow_down g t; Coth ' ', na, None
+      slow_down g t; Coth ` `, na, None
   | None ->
       let pred _ = (=) tpos in
       match path_to_closest2 g pos pred with
-        Some gp -> let na = NAgo_to_stairs (gp, strict) in Coth ' ', na, None
+        Some gp -> let na = NAgo_to_stairs (gp, strict) in Coth ` `, na, None
       | None ->
           reinit_graph_search g graph;
           g.nb_of_reinit_search <- g.nb_of_reinit_search + 1;
@@ -692,7 +706,7 @@ let continue_test_scrolls g t ch_arm prev_a =
           let ws = WSscroll_read in
           let na = NAwear_armor_and_test_scrolls (ch_arm, ch_scr, ws) in
           let uo = UOread_scroll (ch_scr, RSread_what) in
-          let na = NAuse_object (uo, na) in Coth 'r', na, None
+          let na = NAuse_object (uo, na) in Coth `r`, na, None
       | None ->
           g.after_first_pack_full <- true;
           match g.worn_armor with
@@ -700,22 +714,22 @@ let continue_test_scrolls g t ch_arm prev_a =
               if ar.ar_protected && is_best_armor g ch || g.armor_cursed ||
                  is_good_armor g ch ar
               then
-                Coth '.', NAnone, None
+                Coth `.`, NAnone, None
               else
                 begin match good_armor g with
-                  Some (ch, _) -> Coth 'T', NAwear (ch, 1, NAnone), None
-                | None -> Coth 's', prev_a, None
+                  Some (ch, _) -> Coth `T`, NAwear (ch, 1, NAnone), None
+                | None -> Coth `s`, prev_a, None
                 end
           | None ->
               match good_armor g with
-                Some (ch, _) -> Coth 'W', NAwear (ch, 2, NAnone), None
-              | None -> Coth 's', prev_a, None
+                Some (ch, _) -> Coth `W`, NAwear (ch, 2, NAnone), None
+              | None -> Coth `s`, prev_a, None
       end
   | monl ->
       if not g.armor_cursed && g.worn_armor <> None &&
          not (worn_armor_protected g) && aquator_around g
       then
-        let na = NAwear (' ', 1, prev_a) in Coth 'T', na, None
+        let na = NAwear (` `, 1, prev_a) in Coth `T`, na, None
       else attack_monsters g t movl monl prev_a
 ;;
 
@@ -724,7 +738,7 @@ let close_to_stairs g =
     Some (room, _) ->
       let (row, col, _, _) = room in
       let pos = {row = row; col = col} in
-      begin match dist_to_closest g room pos (fun ch _ -> ch = '%') with
+      begin match dist_to_closest g room pos (fun ch _ -> ch = `%`) with
         Some _ -> true
       | None ->
           match stairs_pos g with
@@ -769,7 +783,7 @@ let trap_at_entrance g =
       let pos = rogue_pos g in
       let mov = one_step_to_enter_room dir in
       let pos1 = add_mov pos mov in
-      if dung_char g.dung pos1 = '^' then TE_yes
+      if dung_char g.dung pos1 = `^` then TE_yes
       else if PosMap.mem pos1 g.trail || g.map_showed_since > 0 then TE_no
       else TE_perhaps pos1
   | Some (_, None) | None -> TE_error
@@ -824,7 +838,7 @@ let ok_for_dropping_scare g t =
         | None -> assert false
       in
       let ds = start_drop_scare pos ch in
-      let na = NAdrop_scare_and_kill ds in Coth 'd', na, None
+      let na = NAdrop_scare_and_kill ds in Coth `d`, na, None
   | TE_perhaps pos1 ->
       let na = NAcheck_no_trap (pos, pos1) in move_command3 g pos pos1 na
   | TE_error -> failwith "trap_at_entrance"
@@ -848,16 +862,16 @@ let select_less_explorated_paths_in_corridor g paths =
     list__map
       (fun (path, tpos) ->
          let v = try PosMap.find tpos g.trail with Not_found -> 0 in
-         (v, list__length path), (path, tpos))
+         (v, list__list_length path), (path, tpos))
       paths
   in
-  let paths = list__sort compare paths in
+  let paths = sort__sort compare paths in
   let less_expl = fst (list__hd paths) in
   (*
   let most_expl = fst (list__hd (list__rev paths)) in
   let _ = if fst most_expl - fst less_expl > 5 then do { display_trail g; sleep 1.0 } else () in
   *)
-  let paths = list__filter (fun (v, _) -> v = less_expl) paths in
+  let paths = list_filter (fun (v, _) -> v = less_expl) paths in
   list__map snd paths
 ;;
 
@@ -869,7 +883,7 @@ let start_move_in_corridor g t pos =
           let from = opposite_move mov in
           let around = around_pos g pos in
           let na = NAsearch_and_back (from, around, 1) in
-          Coth 's', na, t.t_prev_mov
+          Coth `s`, na, t.t_prev_mov
       | None ->
           if g.blind then random_move g pos NAnone
           else
@@ -878,16 +892,16 @@ let start_move_in_corridor g t pos =
                 let mov = one_step_to_exit_room dir in
                 let around = around_pos g pos in
                 let na = NAsearch_and_back (mov, around, 1) in
-                Coth 's', na, Some mov
-            | None -> Coth 's', NAnone, None
+                Coth `s`, na, Some mov
+            | None -> Coth `s`, NAnone, None
       end
   | paths ->
       let paths = select_less_explorated_paths_in_corridor g paths in
-      let len = list__length paths in
+      let len = list__list_length paths in
       (*
       let _ = trace (sprintf "*** start move in corridor\n") in
       *)
-      let (path1, tpos1) = list__nth paths (random_int g len) in
+      let (path1, tpos1) = list_nth paths (random_int g len) in
       match path1 with
         pos1 :: path1 ->
           let gp = {epos = pos1; tpos = tpos1; path = path1} in
@@ -899,7 +913,7 @@ let start_move_in_corridor g t pos =
 let moving_monsters_at_one_move g t pos =
   let d = if g.level >= level_of_faster_monsters then 5 else 2 in
   let pred path pos1 =
-    let len = list__length path in
+    let len = list__list_length path in
     len > d ||
     is_monster (dung_char g.dung pos1) &&
     (is_moving g t pos1 || len = 1 && g.attacked > 0) &&
@@ -908,7 +922,7 @@ let moving_monsters_at_one_move g t pos =
   in
   match direct_path_excl g [] pos pred with
     Some (path, mpos) ->
-      let len = list__length path in
+      let len = list__list_length path in
       assert (len > 0);
       if len <= d then Some (list__hd path, len mod d mod 3, len, mpos)
       else None
@@ -922,22 +936,22 @@ let move_back g pos1 pos2 na =
   if old_can_move_to g in_room pos1 pos3 then move_command2 g pos1 pos3 na
   else
     let pred path tpos =
-      match list__length path with
+      match list__list_length path with
         0 -> false
       | 1 ->
           let pred1 _ tpos = tpos = pos2 in
           begin match direct_path_excl g [] tpos pred1 with
-            Some (path, _) -> list__length path = 2
+            Some (path, _) -> list__list_length path = 2
           | None -> false
           end
       | _ -> true
     in
     match direct_path_excl g [pos2] pos1 pred with
       Some (path, tpos) ->
-        if list__length path = 1 then
+        if list__list_length path = 1 then
           begin assert (pos1 <> tpos); move_command2 g pos1 tpos na end
-        else Coth '.', na, None
-    | None -> Coth 's', na, None
+        else Coth `.`, na, None
+    | None -> Coth `s`, na, None
 ;;
 
 let select_random_move_to g nmov pos ch =
@@ -952,8 +966,8 @@ let select_random_move_to g nmov pos ch =
           [] -> None
         | [mov] -> Some mov
         | list ->
-            let len = list__length list in
-            Some (list__nth list (random_int g len))
+            let len = list__list_length list in
+            Some (list_nth list (random_int g len))
   in
   loop [] nmov
 ;;
@@ -964,7 +978,7 @@ let move_against_monster g t pos (pos1, len, dist, mpos) tml na =
   match len with
     0 ->
       let na = NAtest_monster ((TMstay, mpos, mch) :: tml, na) in
-      Coth '.', na, None
+      Coth `.`, na, None
   | 1 ->
       (*
             let na = NAtest_monster [(TMforward, mpos, mch) :: tml] na in
@@ -1012,7 +1026,7 @@ let nothing_to_search_in_dung g = g.level < 3 || g.map_showed_since > 0;;
 let select_ahead_moves_in_corridor g pos mov all_paths =
   let paths =
     (* strictly ahead (not perpendicular *)
-    list__filter
+    list_filter
       (fun (path, tpos) ->
          match path with
            pos1 :: _ ->
@@ -1027,7 +1041,7 @@ let select_ahead_moves_in_corridor g pos mov all_paths =
   in
   if paths <> [] then paths
   else
-    list__filter
+    list_filter
       (fun (path, tpos) ->
          match path with
            pos1 :: _ ->
@@ -1052,8 +1066,8 @@ let continue_move_in_corridor g t ipos pos trail =
           Some mov ->
             let from = opposite_move mov in
             let around = around_pos g pos in
-            let na = NAsearch_and_back (from, around, 1) in Coth 's', na, None
-        | None -> Coth ' ', NAnone, None
+            let na = NAsearch_and_back (from, around, 1) in Coth `s`, na, None
+        | None -> Coth ` `, NAnone, None
         end
   | all_paths ->
       let paths = select_less_explorated_paths_in_corridor g all_paths in
@@ -1063,8 +1077,8 @@ let continue_move_in_corridor g t ipos pos trail =
         | None -> paths
       in
       let paths = if paths = [] then all_paths else paths in
-      let len = list__length paths in
-      let (path, tpos) = list__nth paths (random_int g len) in
+      let len = list__list_length paths in
+      let (path, tpos) = list_nth paths (random_int g len) in
       match path with
         pos1 :: path ->
           let gp = {epos = pos1; tpos = tpos; path = path} in
@@ -1084,7 +1098,7 @@ let attacked_or_held g t na =
       Some (dir, dist, _) ->
         begin match usable_anti_flamer_wand_in_pack g.pack with
           Some (ch, _) ->
-            let na = NAzap (dir, ch, na, 1) in Coth 'z', na, None
+            let na = NAzap (dir, ch, na, 1) in Coth `z`, na, None
         | None -> random_move g pos na
         end
     | None ->
@@ -1092,7 +1106,7 @@ let attacked_or_held g t na =
         match scroll_of_hold_monsters_in_pack g.pack with
           Some (ch, _) ->
             let uo = UOread_scroll (ch, RSread_what) in
-            let na = NAuse_object (uo, na) in Coth 'r', na, None
+            let na = NAuse_object (uo, na) in Coth `r`, na, None
         | None -> random_move g pos na
 ;;
 
@@ -1100,7 +1114,7 @@ let move_in_corridor_starting_with_move g pos mov =
   let ipos = pos in
   let pl = paths_in_corridors_from g ipos pos in
   let pl =
-    list__filter
+    list_filter
       (fun (path, _) ->
          match path with
            [] -> false
@@ -1110,11 +1124,11 @@ let move_in_corridor_starting_with_move g pos mov =
   if pl = [] then
     let from = opposite_move mov in
     let around = around_pos g pos in
-    let na = NAsearch_and_back (from, around, 1) in Coth 's', na, None
+    let na = NAsearch_and_back (from, around, 1) in Coth `s`, na, None
   else
     let pl = select_less_explorated_paths_in_corridor g pl in
-    let len = list__length pl in
-    let (path1, tpos1) = list__nth pl (random_int g len) in
+    let len = list__list_length pl in
+    let (path1, tpos1) = list_nth pl (random_int g len) in
     match path1 with
       pos1 :: path1 ->
         let gp = {epos = pos1; tpos = tpos1; path = path1} in
@@ -1158,14 +1172,14 @@ let go_in_corridor_and_hit g pos =
   let paths = paths_with_monsters g paths_corr in
   match
     if paths <> [] then
-      let paths = list__sort compare paths in
+      let paths = sort__sort compare paths in
       let (min_len, _) = list__hd paths in
-      let tpos_list = list__filter (fun (len, _) -> len = min_len) paths in
-      let len = list__length tpos_list in
-      let (_, path) = list__nth tpos_list (random_int g len) in Some path
+      let tpos_list = list_filter (fun (len, _) -> len = min_len) paths in
+      let len = list__list_length tpos_list in
+      let (_, path) = list_nth tpos_list (random_int g len) in Some path
     else if paths_corr <> [] then
-      let len = list__length paths_corr in
-      let path = list__nth paths_corr (random_int g len) in Some path
+      let len = list__list_length paths_corr in
+      let path = list_nth paths_corr (random_int g len) in Some path
     else None
   with
     Some (path, tpos) ->
@@ -1185,17 +1199,17 @@ let ds_go_in_corridor_and_hit g pos ds =
         let na = NAdrop_scare_and_kill ds in
         {ce_base = pos; ce_state = "start"; ce_gp = gp; ce_kont = na}
       in
-      let na = NAgo_in_corridor_and_hit ce in Coth 'm', na, None
+      let na = NAgo_in_corridor_and_hit ce in Coth `m`, na, None
   | None ->
       let ds = drop_scare ds (DSdropped 0) in
-      let na = NAdrop_scare_and_kill ds in Coth '.', na, None
+      let na = NAdrop_scare_and_kill ds in Coth `.`, na, None
 ;;
 
 (* *)
 
 let is_deadend_room g pos =
   match current_room_possibly_at_door g pos with
-    Some room -> let dl = find_doors g room in list__length dl = 1
+    Some room -> let dl = find_doors g room in list__list_length dl = 1
   | None -> false
 ;;
 
@@ -1262,26 +1276,26 @@ let get_rid_of_objects g =
       begin match obj with
         Ppotion (Ipotion pk) ->
           if pk = PKdetect_mon then g.mon_detected <- true;
-          Some ('q', UOquaff_potion (ch, QSquaff_what))
-      | Ppotion (Upotion _) -> Some ('q', UOquaff_potion (ch, QSquaff_what))
+          Some (`q`, UOquaff_potion (ch, QSquaff_what))
+      | Ppotion (Upotion _) -> Some (`q`, UOquaff_potion (ch, QSquaff_what))
       | Pscroll (Iscroll sk) ->
           if sk = SKmagic_map then g.map_showed_since <- g.time;
-          Some ('r', UOread_scroll (ch, RSread_what))
-      | Pscroll (Uscroll _) -> Some ('r', UOread_scroll (ch, RSread_what))
+          Some (`r`, UOread_scroll (ch, RSread_what))
+      | Pscroll (Uscroll _) -> Some (`r`, UOread_scroll (ch, RSread_what))
       | Pweapon {we_kind = WKtwo_handed_sword} ->
-          Some ('w', UOwield_sword (ch, "wield what"))
-      | Pfood -> Some ('e', UOeat_food (ch, "eat what"))
+          Some (`w`, UOwield_sword (ch, "wield what"))
+      | Pfood -> Some (`e`, UOeat_food (ch, "eat what"))
       | obj -> failwith (sprintf "use %s" (not_impl "pack_obj" obj))
       end
   | None ->
       match unuseful_object_in_pack_when_scaring g with
-        Some (ch, _) -> Some ('t', UOthrow_unuseful_objects (ch, 1))
+        Some (ch, _) -> Some (`t`, UOthrow_unuseful_objects (ch, 1))
       | None ->
           match
             if g.pack_full then unidentified_object_not_used_in_pack g
             else None
           with
-            Some (ch, _) -> Some ('t', UOthrow_unuseful_objects (ch, 1))
+            Some (ch, _) -> Some (`t`, UOthrow_unuseful_objects (ch, 1))
           | None -> None
 ;;
 
@@ -1311,7 +1325,7 @@ let monster_behind_a_hidden_door g room =
   let possible_hidden_doors_dirs =
     let rec loop list =
       function
-        (_, dir) :: rest -> loop (list__filter ((<>) dir) list) rest
+        (_, dir) :: rest -> loop (list_filter ((<>) dir) list) rest
       | [] -> list
     in
     loop [DoorUp; DoorDown; DoorLeft; DoorRight] dl
@@ -1380,7 +1394,7 @@ let step_go_in_corridor_and_hit g t message base gp step =
         begin match monl with
           mov :: _ -> tempo g 0.5; SGCattack (mov, "on the way")
         | [] ->
-            if pos = gp.tpos then SGCchar ('s', "return to base")
+            if pos = gp.tpos then SGCchar (`s`, "return to base")
             else if pos = gp.epos then
               begin
                 tempo g 0.1;
@@ -1391,13 +1405,13 @@ let step_go_in_corridor_and_hit g t message base gp step =
                 | [] -> assert false
               end
             else if g.confused then
-              begin tempo g 0.1; SGCchar ('3', "confused 3") end
+              begin tempo g 0.1; SGCchar (`3`, "confused 3") end
             else if distance pos gp.epos = 1 then
               SGCmove_way_there (gp, "start")
             else failwith "DSgo_in_corridor_and_hit 24"
         end
-  | "confused 3" -> SGCchar ('3', "confused 33")
-  | "confused 33" -> SGCchar ('.', "confused 33.")
+  | "confused 3" -> SGCchar (`3`, "confused 33")
+  | "confused 33" -> SGCchar (`.`, "confused 33.")
   | "confused 33." ->
       if message <> "" then begin tempo g 0.5; SGCack_mess end
       else if pos = base then SGChome
@@ -1424,9 +1438,9 @@ let step_go_in_corridor_and_hit g t message base gp step =
               let paths = paths_in_corridors_from g pos pos in
               let paths = paths_with_monsters g paths in
               if paths <> [] then
-                let paths = list__sort compare paths in
+                let paths = sort__sort compare paths in
                 let (min_len, _) = list__hd paths in
-                if min_len < 9 then SGCchar ('9', "4") else SGCpick_and_return
+                if min_len < 9 then SGCchar (`9`, "4") else SGCpick_and_return
               else
                 match
                   if not g.hallucinated then
@@ -1438,7 +1452,7 @@ let step_go_in_corridor_and_hit g t message base gp step =
                   Some dir ->
                     let mov = one_step_to_enter_room dir in
                     let pos1 = add_mov pos mov in
-                    if dung_char g.dung pos1 = '*' then
+                    if dung_char g.dung pos1 = `*` then
                       SGCway_there (mov, "return to base")
                     else SGCpick_and_return
                 | None -> SGCpick_and_return
@@ -1446,19 +1460,19 @@ let step_go_in_corridor_and_hit g t message base gp step =
   | "return to base" ->
       if message <> "" then begin tempo g 1.0; SGCack_mess end
       else SGCpick_and_return
-  | "4" -> SGCchar ('.', "9.")
+  | "4" -> SGCchar (`.`, "9.")
   | "9." ->
       if message <> "" then begin tempo g 0.5; SGCack_mess end
-      else if g.confused then SGCchar ('3', "6")
+      else if g.confused then SGCchar (`3`, "6")
       else
         let monl = monsters_around g pos in
         begin match monl with
           mov :: _ -> SGCattack (mov, "on the way")
         | [] -> SGCpick_and_return
         end
-  | "6" -> SGCchar ('3', "7")
-  | "7" -> SGCchar ('.', "on the way")
-  | step -> failwith (sprintf "step_go_in_corridor_and_hit step '%s'" step)
+  | "6" -> SGCchar (`3`, "7")
+  | "7" -> SGCchar (`.`, "on the way")
+  | step -> failwith (sprintf "step_go_in_corridor_and_hit step `%s`" step)
 ;;
 
 let monster_perhaps_blocked_in_corridor_by_scroll g ipos pos =
@@ -1478,8 +1492,8 @@ let monster_perhaps_blocked_in_corridor_by_scroll g ipos pos =
           paths
       in
       let paths =
-        list__sort
-          (fun (p1, _) (p2, _) -> compare (list__length p1) (list__length p2))
+        sort__sort
+          (fun (p1, _) (p2, _) -> compare (list__list_length p1) (list__list_length p2))
           paths
       in
       begin match paths with
@@ -1488,7 +1502,7 @@ let monster_perhaps_blocked_in_corridor_by_scroll g ipos pos =
             Some (rev_bef, pos1, aft) ->
               begin match rev_bef with
                 pos2 :: _ ->
-                  if dung_char g.dung pos2 = '?' then
+                  if dung_char g.dung pos2 = `?` then
                     let rev_path = pos1 :: pos2 :: rev_bef in Some rev_path
                   else None
               | [] -> None
@@ -1532,7 +1546,7 @@ let can_return_without_attack g mpos gp =
   let paths = paths_in_corridors_from g pos pos in
   (*
     let paths =
-      list__filter
+      list_filter
         (fun (path, tpos) -> do {
            match path with
            [ [] -> False
@@ -1545,8 +1559,8 @@ let can_return_without_attack g mpos gp =
     (fun (path, tpos) ->
        match first_monster_in_path g path with
          Some (path_bef, _, _) ->
-           let len_rog = list__length gp.path in
-           let len_mon = len_rog + list__length path_bef + 1 in
+           let len_rog = list__list_length gp.path in
+           let len_mon = len_rog + list__list_length path_bef + 1 in
            len_mon >= 2 * len_rog
        | None -> true)
     paths
@@ -1560,7 +1574,7 @@ let is_outside_mov dir mov =
   | DoorRight -> mov.dj > 0
 ;;
 
-let free_space = ['.'; '#'];;
+let free_space = [`.`; `#`];;
 let find_closest_free_space g pos =
   let pred _ tpos = list__mem (dung_char g.dung tpos) free_space in
   direct_path_excl g [] pos pred
@@ -1577,7 +1591,7 @@ let throw_in_the_garbage g t pos ch =
       | [] -> assert false
       end
   | None ->
-      let na = NAthrow_away (ch, "direction") in Coth 't', na, t.t_prev_mov
+      let na = NAthrow_away (ch, "direction") in Coth `t`, na, t.t_prev_mov
 ;;
 
 let manage_full_pack g t =
@@ -1593,7 +1607,7 @@ let manage_full_pack g t =
                 Some (room, None) ->
                   let dl = find_doors g room in
                   if dl = [] then
-                    match find_random_around g '.' with
+                    match find_random_around g `.` with
                       Some spos ->
                         let pos = rogue_pos g in
                         let gp = {epos = spos; tpos = spos; path = []} in
@@ -1612,10 +1626,10 @@ let manage_full_pack g t =
                     with
                       Some gp ->
                         let na = NAgo_to_shelter_and_test_scrolls gp in
-                        Coth ' ', na, t.t_prev_mov
+                        Coth ` `, na, t.t_prev_mov
                     | None ->
                         let dl2 =
-                          list__filter
+                          list_filter
                             (fun (dpos, _) ->
                                not
                                  (list__mem (dung_char g.dung dpos)
@@ -1625,42 +1639,42 @@ let manage_full_pack g t =
                         if dl2 = [] then
                           let gp = {epos = pos; tpos = pos; path = []} in
                           let na = NAgo_to_shelter_and_test_scrolls gp in
-                          Coth ' ', na, None
+                          Coth ` `, na, None
                         else
                           let dl2 =
                             list__map
                               (fun (dpos, _) -> distance pos dpos, dpos) dl2
                           in
-                          let dl2 = list__sort compare dl2 in
+                          let dl2 = sort__sort compare dl2 in
                           let (_, dpos) = list__hd dl2 in
                           match path_excl_from_to g [] pos dpos with
                             Some gp ->
                               let na = NAgo_to_shelter_and_test_scrolls gp in
-                              Coth ' ', na, t.t_prev_mov
+                              Coth ` `, na, t.t_prev_mov
                           | None -> assert false
                     end
               | Some (room, Some dir) ->
                   let mov = one_step_to_enter_room dir in
                   let na = NAnone in move_command3 g pos (add_mov pos mov) na
               | None ->
-                  match find_random_around g '#' with
+                  match find_random_around g `#` with
                     Some spos ->
                       begin match path_excl_from_to g [] pos spos with
                         Some gp ->
                           let na = NAgo_to_shelter_and_test_scrolls gp in
-                          Coth ' ', na, t.t_prev_mov
-                      | None -> Coth ' ', NAnone, t.t_prev_mov
+                          Coth ` `, na, t.t_prev_mov
+                      | None -> Coth ` `, NAnone, t.t_prev_mov
                       end
                   | None ->
                       let gp = {epos = pos; tpos = pos; path = []} in
                       let na = NAgo_to_shelter_and_test_scrolls gp in
-                      Coth ' ', na, None
+                      Coth ` `, na, None
           end
       | Ppotion _ ->
-          let na = NAtest_potions (ch, 1) in Coth 'q', na, t.t_prev_mov
+          let na = NAtest_potions (ch, 1) in Coth `q`, na, t.t_prev_mov
       | Pfood ->
           let uo = UOeat_food (ch, "eat what") in
-          let na = NAuse_object (uo, NAnone) in Coth 'e', na, t.t_prev_mov
+          let na = NAuse_object (uo, NAnone) in Coth `e`, na, t.t_prev_mov
       | _ -> failwith (sprintf "pack full; propose %c to use" ch)
       end
   | None ->
@@ -1669,9 +1683,9 @@ let manage_full_pack g t =
           let pos = rogue_pos g in throw_in_the_garbage g t pos ch
       | None ->
           let list =
-            list__filter
+            list_filter
               (fun (ch, (_, obj)) ->
-                 if ch <= 'e' then false
+                 if ch <= `e` then false
                  else if ch = g.main_sword then false
                  else if g.ring_of_slow_digestion_on_hand = Some ch then false
                  else
@@ -1685,7 +1699,7 @@ let manage_full_pack g t =
               g.pack
           in
           let pos = rogue_pos g in
-          let (ch, _) = list__nth list (random_int g (list__length list)) in
+          let (ch, _) = list_nth list (random_int g (list__list_length list)) in
           throw_in_the_garbage g t pos ch
 ;;
 
@@ -1698,14 +1712,14 @@ let monster_at_entrance g =
   | Some (_, None) | None -> false
 ;;
 
-let is_room_border ch = ch = '-' || ch = '|';;
+let is_room_border ch = ch = `-` || ch = `|`;;
 
 let pick_object g t na =
   let pos = rogue_pos g in
-  g.garbage <- list__filter ((<>) pos) g.garbage;
-  g.scare_pos <- list__filter ((<>) pos) g.scare_pos;
+  g.garbage <- list_filter ((<>) pos) g.garbage;
+  g.scare_pos <- list_filter ((<>) pos) g.scare_pos;
   g.on_something_at <- None;
-  Coth ',', na, t.t_prev_mov
+  Coth `,`, na, t.t_prev_mov
 ;;
 
 let unidentified_trap_in_room g =
@@ -1716,7 +1730,7 @@ let unidentified_trap_in_room g =
         else if tcol = cmax + 1 then loop (trow + 1) cmin
         else
           let tpos = {row = trow; col = tcol} in
-          if dung_char g.dung tpos = '^' then
+          if dung_char g.dung tpos = `^` then
             match
               try Some (Hashtbl.find g.traps tpos) with Not_found -> None
             with
@@ -1780,7 +1794,7 @@ let is_safe_to_go_to_stairs_room g t base =
           let pos = rogue_pos g in
           let (len, rogue_first_pos) =
             match path_excl_from_to g [] pos spos with
-              Some gp -> list__length gp.path, list__hd gp.path
+              Some gp -> list__list_length gp.path, list__hd gp.path
             | None -> max_int, pos
           in
           let mposl = find_all g is_monster in
@@ -1794,14 +1808,14 @@ let is_safe_to_go_to_stairs_room g t base =
                     trace t
                       (sprintf
                          "**** more than 20 monsters/%d can reach rogue\n"
-                         (list__length gmposl))
+                         (list__list_length gmposl))
                   in
                   false
                 else
                   let n =
                     match monster_path g mpos rogue_first_pos with
                       Some path ->
-                        if list__length path / 2 <= len then n + 1 else n
+                        if list__list_length path / 2 <= len then n + 1 else n
                     | None -> n
                   in
                   loop n mposl
@@ -1847,7 +1861,7 @@ let drop_scare_and_kill g t message ds =
         begin
           tempo g 1.0;
           let ds = drop_scare ds (DSdropped 0) in
-          let na = NAdrop_scare_and_kill ds in Coth ' ', na, None
+          let na = NAdrop_scare_and_kill ds in Coth ` `, na, None
         end
       else if
         g.confused && g.attacked_by_flame > 0 && not (health_is_maximum g) &&
@@ -1869,11 +1883,11 @@ let drop_scare_and_kill g t message ds =
                   let uo = UOread_scroll (ch, RSread_what) in
                   let ds = drop_scare ds (DSdropped 0) in
                   let na = NAdrop_scare_and_kill ds in
-                  let na = NAuse_object (uo, na) in Coth 'r', na, None
+                  let na = NAuse_object (uo, na) in Coth `r`, na, None
               | None ->
                   let ds = drop_scare ds (DSdropped 0) in
                   let na = NAdrop_scare_and_kill ds in
-                  let na = NAstring ("3.", false, na) in Coth '3', na, None
+                  let na = NAstring ("3.", false, na) in Coth `3`, na, None
             else if not g.confused && pos <> base then
               let (monl, movl) = monsters_and_moves_around g in
               if g.held then
@@ -1885,7 +1899,7 @@ let drop_scare_and_kill g t message ds =
                   attack_monsters g t movl monl na
                 else
                   let gp = old_path_excl_from_to g [] pos base 1 in
-                  let na = ds_return_to_base g ds gp in Coth ' ', na, None
+                  let na = ds_return_to_base g ds gp in Coth ` `, na, None
               else
                 let gp = old_path_excl_from_to g [] pos base 2 in
                 let na = ds_return_to_base g ds gp in pick_object g t na
@@ -1918,7 +1932,7 @@ let drop_scare_and_kill g t message ds =
                             Some (ch, _) ->
                               let na = NAdrop_scare_and_kill ds in
                               let na = NAzap (mdir, ch, na, 1) in
-                              Coth 'z', na, t.t_prev_mov
+                              Coth `z`, na, t.t_prev_mov
                           | None ->
                               match path_to g pos pos1 with
                                 Some gp ->
@@ -1926,15 +1940,15 @@ let drop_scare_and_kill g t message ds =
                                     drop_scare ds (DSgo_and_hit (gp, 1))
                                   in
                                   let na = NAdrop_scare_and_kill ds in
-                                  Coth 'm', na, None
+                                  Coth `m`, na, None
                               | None -> failwith "flames 4"
                           end
                       | None -> failwith "flames 5"
               else if monl <> [] && not g.confused then
                 begin
                   tempo g 0.1;
-                  let len = list__length monl in
-                  let mov = list__nth monl (random_int g len) in
+                  let len = list__list_length monl in
+                  let mov = list_nth monl (random_int g len) in
                   let ch = basic_command_of_move mov in
                   let ds = drop_scare ds (DSforce_kill ch) in
                   let ds =
@@ -1967,9 +1981,9 @@ let drop_scare_and_kill g t message ds =
                   match ds_opt with
                     Some ds ->
                       let ds = {ds with ds_outside_tested = false} in
-                      let na = NAdrop_scare_and_kill ds in Coth 'F', na, None
+                      let na = NAdrop_scare_and_kill ds in Coth `F`, na, None
                   | None ->
-                      (* perhaps a 'scare monsters' scroll in the corridor *)
+                      (* perhaps a `scare monsters` scroll in the corridor *)
                       ds_go_in_corridor_and_hit g pos ds
                 end
               else if
@@ -2005,7 +2019,7 @@ let drop_scare_and_kill g t message ds =
                               let ds = drop_scare ds (DSdropped ntest) in
                               let na = NAdrop_scare_and_kill ds in
                               let na = NAzap (dir, ch, na, 1) in
-                              Coth 'z', na, None
+                              Coth `z`, na, None
                           | None ->
                               match g.rogue_room_and_door with
                                 Some (room, Some _) ->
@@ -2015,21 +2029,21 @@ let drop_scare_and_kill g t message ds =
                                       (DStest_move (ntest + 1, rc))
                                   in
                                   let na = NAdrop_scare_and_kill ds in
-                                  Coth '.', na, None
+                                  Coth `.`, na, None
                               | Some (_, None) | None ->
                                   let ds = drop_scare ds (DSdropped ntest) in
                                   let na = NAdrop_scare_and_kill ds in
-                                  Coth '.', na, None
+                                  Coth `.`, na, None
                       end
                 | None ->
                     if g.confused then
                       let ds = drop_scare ds (DSdropped 0) in
                       let na = NAdrop_scare_and_kill ds in
                       let na = NAstring ("3.", false, na) in
-                      Coth '3', na, None
+                      Coth `3`, na, None
                     else
                       let ds = drop_scare ds (DSdropped ntest) in
-                      let na = NAdrop_scare_and_kill ds in Coth '.', na, None
+                      let na = NAdrop_scare_and_kill ds in Coth `.`, na, None
               else if
                 not (is_at_door g pos) &&
                 scroll_of_scare_monsters_in_pack g.pack <> None &&
@@ -2042,7 +2056,7 @@ let drop_scare_and_kill g t message ds =
                   Some (ch, _) ->
                     let ds = drop_scare ds (DSdropped ntest) in
                     let na = NAdrop_scare_and_kill ds in
-                    let na = NAwear (ch, 1, na) in Coth 'T', na, None
+                    let na = NAwear (ch, 1, na) in Coth `T`, na, None
                 | None -> assert false
               else if g.level < 5 || conditions_for_exit_level g then
                 if healthy_enough g && g.level >= 5 then
@@ -2057,7 +2071,7 @@ let drop_scare_and_kill g t message ds =
                               let sdist =
                                 let pred _ = (=) spos in
                                 match direct_path_excl g [] pos pred with
-                                  Some (path, _) -> list__length path
+                                  Some (path, _) -> list__list_length path
                                 | None -> max_int
                               in
                               let (dist, closest_spos) =
@@ -2077,10 +2091,10 @@ let drop_scare_and_kill g t message ds =
                           let graph = make_graph g false in
                           go_to_stairs g t graph pos spos true
                       end
-                  | None -> Coth ' ', NAnone, t.t_prev_mov
+                  | None -> Coth ` `, NAnone, t.t_prev_mov
                 else
                   let ds = drop_scare ds (DSdropped ntest) in
-                  let na = NAdrop_scare_and_kill ds in Coth '.', na, None
+                  let na = NAdrop_scare_and_kill ds in Coth `.`, na, None
               else
                 match
                   match
@@ -2098,7 +2112,7 @@ let drop_scare_and_kill g t message ds =
                           if snd (room_contents g room) then None
                           else
                             let dl = find_doors g room in
-                            let nb_doors = list__length dl in
+                            let nb_doors = list__list_length dl in
                             if nb_doors > 1 &&
                                number_of_scrolls_of_scare_monsters_in_pack
                                  g.pack >=
@@ -2110,7 +2124,7 @@ let drop_scare_and_kill g t message ds =
                                       dung_char g.dung (add_mov dpos mov)
                                     in
                                     list__mem ch
-                                      ('.' :: ',' :: '%' :: list_obj_ch))
+                                      (`.` :: `,` :: `%` :: list_obj_ch))
                                  dl
                             then
                               Some (room, dl)
@@ -2120,7 +2134,7 @@ let drop_scare_and_kill g t message ds =
                   | None -> None
                 with
                   Some (room, dl) ->
-                    (* change to the action 'alone in room' by completing scare
+                    (* change to the action `alone in room` by completing scare
                        monsters in other doors. *)
                     begin match
                       list_find
@@ -2140,7 +2154,7 @@ let drop_scare_and_kill g t message ds =
                           alone_room ar (ARcommand "dropped_last_scare")
                         in
                         let na = NAalone_in_room ar in
-                        Coth ' ', na, t.t_prev_mov
+                        Coth ` `, na, t.t_prev_mov
                     end
                 | None ->
                     match
@@ -2170,7 +2184,7 @@ let drop_scare_and_kill g t message ds =
                           begin match r with
                             Some room ->
                               let dl = find_doors g room in
-                              let nb_doors = list__length dl in
+                              let nb_doors = list__list_length dl in
                               if number_of_scrolls_of_scare_monsters_in_pack
                                    g.pack >=
                                    nb_doors &&
@@ -2183,7 +2197,7 @@ let drop_scare_and_kill g t message ds =
                                       (**)
                                       is_monster ch ||
                                       list__mem ch
-                                        (' ' :: '.' :: ',' :: '%' ::
+                                        (` ` :: `.` :: `,` :: `%` ::
                                          list_obj_ch))
                                    dl
                               then
@@ -2196,7 +2210,7 @@ let drop_scare_and_kill g t message ds =
                       Some (room, dl) ->
                         (* remove the scare monsters and quit the current position to go
                            to the room with the stairs, (hopefully without problem) to later
-                           use the action 'alone in room' *)
+                           use the action `alone in room` *)
                         let paths =
                           list__map
                             (fun (dpos, _) ->
@@ -2205,11 +2219,11 @@ let drop_scare_and_kill g t message ds =
                                    (fun _ pos -> pos = dpos)
                                with
                                  Some (path, _) ->
-                                   list__length path, path, dpos
+                                   list__list_length path, path, dpos
                                | None -> assert false)
                             dl
                         in
-                        let paths = list__sort compare paths in
+                        let paths = sort__sort compare paths in
                         let (_, path, tpos) = list__hd paths in
                         let gp = {epos = pos; tpos = tpos; path = path} in
                         let na = NAgo_to gp in
@@ -2230,7 +2244,7 @@ let drop_scare_and_kill g t message ds =
                               Some (tpos, mov, wallmov) ->
                                 let tpos =
                                   let rec loop tpos =
-                                    if dung_char g.dung tpos = '^' then
+                                    if dung_char g.dung tpos = `^` then
                                       loop (add_mov tpos mov)
                                     else tpos
                                   in
@@ -2244,14 +2258,14 @@ let drop_scare_and_kill g t message ds =
                                     (DSfree_monster (gp, mov, wallmov, 0))
                                 in
                                 let na = NAdrop_scare_and_kill ds in
-                                Coth ' ', na, None
+                                Coth ` `, na, None
                             | None ->
                                 if has_mon && g.attacked_by_flame = 0 &&
                                    g.ring_of_slow_digestion_on_hand <> None &&
                                    not (health_is_maximum g)
                                 then
                                   let na = NAdrop_scare_and_kill ds in
-                                  Coth '.', na, t.t_prev_mov
+                                  Coth `.`, na, t.t_prev_mov
                                 else if
                                   has_mon ||
                                   g.ring_of_slow_digestion_on_hand <> None
@@ -2261,8 +2275,8 @@ let drop_scare_and_kill g t message ds =
                                     drop_scare ds (DStest_move (ntest, rc))
                                   in
                                   let na = NAdrop_scare_and_kill ds in
-                                  Coth '.', na, None
-                                else Coth ' ', NAnone, t.t_prev_mov
+                                  Coth `.`, na, None
+                                else Coth ` `, NAnone, t.t_prev_mov
                             end
                         | None ->
                             match
@@ -2308,7 +2322,7 @@ let drop_scare_and_kill g t message ds =
                                                   let na =
                                                     NAgo_to_stairs (gp, true)
                                                   in
-                                                  Coth ' ', na, t.t_prev_mov
+                                                  Coth ` `, na, t.t_prev_mov
                                               | None -> failwith "ddd"
                                               end
                                           | [] | _ :: _ -> failwith "ccc"
@@ -2317,12 +2331,12 @@ let drop_scare_and_kill g t message ds =
                                             g.pack <>
                                             None
                                         then
-                                          Coth ' ', NAnone, t.t_prev_mov
+                                          Coth ` `, NAnone, t.t_prev_mov
                                         else if
                                           connected_with_another_room g
                                         then
                                           let na = NAdrop_scare_and_kill ds in
-                                          Coth '.', na, t.t_prev_mov
+                                          Coth `.`, na, t.t_prev_mov
                                         else
                                           let dposl =
                                             list__map fst (find_doors g room)
@@ -2343,7 +2357,7 @@ let drop_scare_and_kill g t message ds =
                                                 NAfind_another_room_and_return
                                                   fa
                                               in
-                                              Coth ' ', na, t.t_prev_mov
+                                              Coth ` `, na, t.t_prev_mov
                                 end
                             | None ->
                                 if g.ring_of_slow_digestion_on_hand <> None
@@ -2360,7 +2374,7 @@ let drop_scare_and_kill g t message ds =
                                     in
                                     let na = NAdrop_scare_and_kill ds in
                                     let na = NAstring ("99.", false, na) in
-                                    Coth '9', na, None
+                                    Coth `9`, na, None
                                   else
                                     let ds =
                                       {ds with ds_nb_killed_in_corr = 0;
@@ -2379,7 +2393,7 @@ let drop_scare_and_kill g t message ds =
       if message <> "" then
         begin
           tempo g 0.5;
-          let na = NAdrop_scare_and_kill ds in Coth ' ', na, None
+          let na = NAdrop_scare_and_kill ds in Coth ` `, na, None
         end
       else
         begin match moving_monsters_at_one_move g t pos with
@@ -2395,7 +2409,7 @@ let drop_scare_and_kill g t message ds =
                   let tpos = add_mov pos mov in
                   let tpos =
                     let rec loop tpos =
-                      if dung_char g.dung tpos = '^' then
+                      if dung_char g.dung tpos = `^` then
                         loop (add_mov tpos mov)
                       else tpos
                     in
@@ -2412,19 +2426,19 @@ let drop_scare_and_kill g t message ds =
                     let ds =
                       drop_scare ds (DSfree_monster (gp, mov, wallmov, 0))
                     in
-                    let na = NAdrop_scare_and_kill ds in Coth ' ', na, None
+                    let na = NAdrop_scare_and_kill ds in Coth ` `, na, None
                   else
                     let gp = old_path_excl_from_to g [] pos base 21 in
-                    let na = ds_return_to_base g ds gp in Coth ' ', na, None
+                    let na = ds_return_to_base g ds gp in Coth ` `, na, None
                 else
                   let ntimes = ntimes + 1 in
                   let ds =
                     drop_scare ds (DSfree_monster (gp, mov, wallmov, ntimes))
                   in
-                  let na = NAdrop_scare_and_kill ds in Coth 's', na, None
+                  let na = NAdrop_scare_and_kill ds in Coth `s`, na, None
               else
                 let gp = old_path_excl_from_to g [] pos base 4 in
-                let na = ds_return_to_base g ds gp in Coth ' ', na, None
+                let na = ds_return_to_base g ds gp in Coth ` `, na, None
             else if pos = gp.epos then
               begin
                 tempo g 0.1;
@@ -2446,8 +2460,8 @@ let drop_scare_and_kill g t message ds =
                     drop_scare ds (DSfree_monster (gp, mov, wallmov, ntimes))
                   in
                   let na = NAdrop_scare_and_kill ds in
-                  Coth ' ', na, t.t_prev_mov
-              | None -> Coth ' ', NAnone, t.t_prev_mov
+                  Coth ` `, na, t.t_prev_mov
+              | None -> Coth ` `, NAnone, t.t_prev_mov
         end
   | DSforce_kill ch ->
       let ds = drop_scare ds (DSdropped 0) in
@@ -2457,7 +2471,7 @@ let drop_scare_and_kill g t message ds =
       if message <> "" then
         begin
           tempo g 0.5;
-          let na = NAdrop_scare_and_kill ds in Coth ' ', na, None
+          let na = NAdrop_scare_and_kill ds in Coth ` `, na, None
         end
       else
         begin match treat_critical_situation g t t.t_next_action with
@@ -2468,7 +2482,7 @@ let drop_scare_and_kill g t message ds =
                 tempo g 0.1;
                 if g.confused then
                   if g.attacked = 0 then
-                    let na = NAdrop_scare_and_kill ds in Coth '.', na, None
+                    let na = NAdrop_scare_and_kill ds in Coth `.`, na, None
                   else
                     let monl = monsters_around g pos in
                     match monl with
@@ -2482,13 +2496,13 @@ let drop_scare_and_kill g t message ds =
                     | _ -> failwith "DScheck_monsters not at base 3"
                 else
                   let gp = old_path_excl_from_to g [] pos base 5 in
-                  let na = ds_return_to_base g ds gp in Coth ' ', na, None
+                  let na = ds_return_to_base g ds gp in Coth ` `, na, None
               end
             else if g.confused && g.attacked_by_flame = 0 then
               let _ = failwith "41" in
               let ds = drop_scare ds DScheck_monsters in
               let na = NAdrop_scare_and_kill ds in
-              let na = NAstring ("3.", false, na) in Coth '3', na, None
+              let na = NAstring ("3.", false, na) in Coth `3`, na, None
             else if g.confused && g.attacked_by_flame > 0 then
               let _ = failwith "42" in
               match g.rogue_room_and_door with
@@ -2509,7 +2523,7 @@ let drop_scare_and_kill g t message ds =
                     let ds = drop_scare ds DScheck_monsters in
                     let na = NAdrop_scare_and_kill ds in
                     move_command3 g pos pos1 na
-                  else let na = NAdrop_scare_and_kill ds in Coth '.', na, None
+                  else let na = NAdrop_scare_and_kill ds in Coth `.`, na, None
               | Some (_, None) | None ->
                   failwith "DScheck_monsters confused flamed 4"
             else
@@ -2550,7 +2564,7 @@ let drop_scare_and_kill g t message ds =
                   if not (health_is_maximum g) then
                     let ds = drop_scare ds (DSdropped 0) in
                     let na = NAdrop_scare_and_kill ds in
-                    Coth ' ', na, t.t_prev_mov
+                    Coth ` `, na, t.t_prev_mov
                   else
                     match g.rogue_room_and_door with
                       Some (room, _) ->
@@ -2572,11 +2586,11 @@ let drop_scare_and_kill g t message ds =
                             in
                             let ds = drop_scare ds (DSgo_and_hit (gp, 1)) in
                             let na = NAdrop_scare_and_kill ds in
-                            Coth 'm', na, None
+                            Coth `m`, na, None
                         | None ->
                             if is_at_door g base then
                               ds_go_in_corridor_and_hit g pos ds
-                            else Coth ' ', NAnone, t.t_prev_mov
+                            else Coth ` `, NAnone, t.t_prev_mov
                         end
                     | None ->
                         match get_rid_of_objects_when_scaring g ds with
@@ -2599,11 +2613,11 @@ let drop_scare_and_kill g t message ds =
                               in
                               let ds = {ds with ds_outside_tested = false} in
                               let na = NAdrop_scare_and_kill ds in
-                              Coth 'F', na, None
+                              Coth `F`, na, None
                             else
                               let ds = drop_scare ds (DSdropped 0) in
                               let na = NAdrop_scare_and_kill ds in
-                              Coth '.', na, None
+                              Coth `.`, na, None
         end
   | DSgive_them_chance (stime, step) ->
       begin match step with
@@ -2618,16 +2632,16 @@ let drop_scare_and_kill g t message ds =
             begin
               tempo g 1.0;
               let ds = drop_scare ds (DSgive_them_chance ("", 1)) in
-              let na = NAdrop_scare_and_kill ds in Coth ' ', na, None
+              let na = NAdrop_scare_and_kill ds in Coth ` `, na, None
             end
           else
             let ds = drop_scare ds (DSgive_them_chance ("", 2)) in
-            let na = NAdrop_scare_and_kill ds in Coth '.', na, None
+            let na = NAdrop_scare_and_kill ds in Coth `.`, na, None
       | 2 ->
           let monl = monsters_around g pos in
           if monl <> [] then
             let ds = drop_scare ds (DSdropped 0) in
-            let na = NAdrop_scare_and_kill ds in Coth '.', na, None
+            let na = NAdrop_scare_and_kill ds in Coth `.`, na, None
           else
             begin match g.rogue_room_and_door with
               Some (room, _) ->
@@ -2640,10 +2654,10 @@ let drop_scare_and_kill g t message ds =
                     let tpos = add_mov pos dist in
                     let gp = old_path_to g pos tpos in
                     let ds = drop_scare ds (DSgo_and_hit (gp, 1)) in
-                    let na = NAdrop_scare_and_kill ds in Coth 'm', na, None
+                    let na = NAdrop_scare_and_kill ds in Coth `m`, na, None
                 | None ->
                     let ds = drop_scare ds (DSdropped 0) in
-                    let na = NAdrop_scare_and_kill ds in Coth '.', na, None
+                    let na = NAdrop_scare_and_kill ds in Coth `.`, na, None
                 end
             | None -> assert false
             end
@@ -2660,7 +2674,7 @@ let drop_scare_and_kill g t message ds =
             begin
               tempo g 0.5;
               let ds = drop_scare ds (DSgo_and_hit (gp, 2)) in
-              let na = NAdrop_scare_and_kill ds in Coth ' ', na, None
+              let na = NAdrop_scare_and_kill ds in Coth ` `, na, None
             end
           else
             begin match treat_critical_situation g t t.t_next_action with
@@ -2673,16 +2687,16 @@ let drop_scare_and_kill g t message ds =
                         let uo = UOread_scroll (ch, RSread_what) in
                         let ds = drop_scare ds (DSdropped 0) in
                         let na = NAdrop_scare_and_kill ds in
-                        let na = NAuse_object (uo, na) in Coth 'r', na, None
+                        let na = NAuse_object (uo, na) in Coth `r`, na, None
                     | None -> failwith "confused and attacked"
                   else if pos = base then
                     let ds = drop_scare ds (DSdropped 0) in
                     let na = NAdrop_scare_and_kill ds in
-                    let na = NAstring ("3.", false, na) in Coth '3', na, None
+                    let na = NAstring ("3.", false, na) in Coth `3`, na, None
                   else
                     let gp = old_path_excl_from_to g [] pos base 6 in
                     let na = ds_return_to_base g ds gp in
-                    let na = NAstring ("3.", false, na) in Coth '3', na, None
+                    let na = NAstring ("3.", false, na) in Coth `3`, na, None
                 else
                   match treat_moving_monsters_at_one_move2 g t with
                     Some x -> x
@@ -2690,7 +2704,7 @@ let drop_scare_and_kill g t message ds =
                       if pos = base then
                         let ds = drop_scare ds (DSdropped 0) in
                         let na = NAdrop_scare_and_kill ds in
-                        Coth ' ', na, t.t_prev_mov
+                        Coth ` `, na, t.t_prev_mov
                       else
                         let monl = monsters_around g pos in
                         match monl with
@@ -2724,7 +2738,7 @@ let drop_scare_and_kill g t message ds =
                                     drop_scare ds (DSgo_and_hit (gp, 1))
                                   in
                                   let na = NAdrop_scare_and_kill ds in
-                                  Coth 'm', na, None
+                                  Coth `m`, na, None
                               | [] -> assert false
                             else
                               match path_excl_from_to g [] pos base with
@@ -2733,14 +2747,14 @@ let drop_scare_and_kill g t message ds =
                                   pick_object g t na
                               | None ->
                                   (* lost... probably due to teleport trap *)
-                                  Coth ' ', NAnone, None
+                                  Coth ` `, NAnone, None
             end
       | 3 ->
           if message <> "" then
             begin
               tempo g 0.5;
               let ds = drop_scare ds (DSgo_and_hit (gp, 3)) in
-              let na = NAdrop_scare_and_kill ds in Coth ' ', na, None
+              let na = NAdrop_scare_and_kill ds in Coth ` `, na, None
             end
           else
             let monl = monsters_around g pos in
@@ -2770,7 +2784,7 @@ let drop_scare_and_kill g t message ds =
             | [] ->
                 if pos = base then
                   let ds = drop_scare ds (DSdropped 0) in
-                  let na = NAdrop_scare_and_kill ds in Coth '.', na, None
+                  let na = NAdrop_scare_and_kill ds in Coth `.`, na, None
                 else
                   let gp = old_path_excl_from_to g [] pos base 10 in
                   let na = ds_return_to_base g ds gp in pick_object g t na
@@ -2783,7 +2797,7 @@ let drop_scare_and_kill g t message ds =
         begin
           tempo g 0.5;
           let ds = drop_scare ds (DSseek_object gp) in
-          let na = NAdrop_scare_and_kill ds in Coth ' ', na, None
+          let na = NAdrop_scare_and_kill ds in Coth ` `, na, None
         end
       else
         begin match holding_monster_around g pos with
@@ -2799,14 +2813,14 @@ let drop_scare_and_kill g t message ds =
               else None
             with
               Some gp ->
-                let na = ds_return_to_base g ds gp in Coth ' ', na, None
+                let na = ds_return_to_base g ds gp in Coth ` `, na, None
             | None ->
                 match treat_moving_monsters_at_one_move2 g t with
                   Some x -> x
                 | None ->
                     if g.pack_full || pos = gp.tpos then
                       let gp = old_path_excl_from_to g [] pos base 17 in
-                      let na = ds_return_to_base g ds gp in Coth ' ', na, None
+                      let na = ds_return_to_base g ds gp in Coth ` `, na, None
                     else if pos = gp.epos then
                       begin
                         tempo g 0.1;
@@ -2831,20 +2845,20 @@ let drop_scare_and_kill g t message ds =
                       end
                     else if pos = base then
                       let ds = drop_scare ds (DSdropped 0) in
-                      let na = NAdrop_scare_and_kill ds in Coth ' ', na, None
+                      let na = NAdrop_scare_and_kill ds in Coth ` `, na, None
                     else
                       match path_excl_from_to g [] pos base with
                         Some gp ->
                           let na = ds_return_to_base g ds gp in
                           pick_object g t na
-                      | None -> Coth ' ', NAnone, None
+                      | None -> Coth ` `, NAnone, None
         end
   | DStest_move (ntest, prev_rc) ->
       if message <> "" then
         begin
           tempo g 1.0;
           let ds = drop_scare ds (DStest_move (ntest, prev_rc)) in
-          let na = NAdrop_scare_and_kill ds in Coth ' ', na, None
+          let na = NAdrop_scare_and_kill ds in Coth ` `, na, None
         end
       else
         begin match treat_critical_situation g t t.t_next_action with
@@ -2864,12 +2878,12 @@ let drop_scare_and_kill g t message ds =
                     let ds = drop_scare ds dss in
                     let na = NAdrop_scare_and_kill ds in
                     let uo = UOread_scroll (ch, RSread_what) in
-                    let na = NAuse_object (uo, na) in Coth 'r', na, None
-                | None -> failwith "c'est la merde"
+                    let na = NAuse_object (uo, na) in Coth `r`, na, None
+                | None -> failwith "c`est la merde"
               else
                 let ds = drop_scare ds (DStest_move (ntest, prev_rc)) in
                 let na = NAdrop_scare_and_kill ds in
-                let na = NAstring ("3.", false, na) in Coth '3', na, None
+                let na = NAstring ("3.", false, na) in Coth `3`, na, None
             else
               match room_of_door g base with
                 Some (room, dir) ->
@@ -2881,7 +2895,7 @@ let drop_scare_and_kill g t message ds =
                   let monl = monsters_around g base in
                   if ntest < max_test && (prev_rc <> rc || monl <> []) then
                     let ds = drop_scare ds (DSdropped ntest) in
-                    let na = NAdrop_scare_and_kill ds in Coth ' ', na, None
+                    let na = NAdrop_scare_and_kill ds in Coth ` `, na, None
                   else
                     begin match
                       if is_at_door g pos && not g.pack_full &&
@@ -2891,7 +2905,7 @@ let drop_scare_and_kill g t message ds =
                           Some (room, dir) ->
                             let mov = one_step_to_enter_room dir in
                             let pos1 = add_mov pos mov in
-                            if dung_char g.dung pos1 = '?' then Some mov
+                            if dung_char g.dung pos1 = `?` then Some mov
                             else None
                         | None -> None
                       else None
@@ -2908,7 +2922,7 @@ let drop_scare_and_kill g t message ds =
                         let gp = {epos = pos1; tpos = pos1; path = []} in
                         let ds = drop_scare ds (DSgo_and_hit (gp, 1)) in
                         let na = NAdrop_scare_and_kill ds in
-                        Coth 'm', na, t.t_prev_mov
+                        Coth `m`, na, t.t_prev_mov
                     | None ->
                         if g.ring_of_slow_digestion_on_hand <> None &&
                            ds.ds_outside_tested
@@ -2933,7 +2947,7 @@ let drop_scare_and_kill g t message ds =
                                   Some (ch, _) ->
                                     let na = NAdrop_scare_and_kill ds in
                                     let na = NAzap (mdir, ch, na, 1) in
-                                    Coth 'z', na, None
+                                    Coth `z`, na, None
                                 | None ->
                                     if pos = base && is_outside_mov dir mdir
                                     then
@@ -2954,7 +2968,7 @@ let drop_scare_and_kill g t message ds =
                                             UOread_scroll (ch, RSread_what)
                                           in
                                           let na = NAuse_object (uo, na) in
-                                          Coth 'r', na, None
+                                          Coth `r`, na, None
                                       | None ->
                                           if not (is_at_door g pos) then
                                             failwith "mouais"
@@ -2993,14 +3007,14 @@ let drop_scare_and_kill g t message ds =
                                           drop_scare ds (DSgo_and_hit (gp, 1))
                                         in
                                         let na = NAdrop_scare_and_kill ds in
-                                        Coth 'm', na, t.t_prev_mov
+                                        Coth `m`, na, t.t_prev_mov
                                       else
                                         let ds =
                                           drop_scare ds
                                             (DSgive_them_chance ("3", 1))
                                         in
                                         let na = NAdrop_scare_and_kill ds in
-                                        Coth '3', na, None
+                                        Coth `3`, na, None
                                     else if not (health_is_maximum g) then
                                       if g.attacked_by_flame > 0 then
                                         match flaming_monster_dir g pos with
@@ -3024,7 +3038,7 @@ let drop_scare_and_kill g t message ds =
                                         in
                                         let ds = drop_scare ds dss in
                                         let na = NAdrop_scare_and_kill ds in
-                                        Coth '.', na, None
+                                        Coth `.`, na, None
                                     else
                                       let ds =
                                         drop_scare ds (DSseek_object gp)
@@ -3049,7 +3063,7 @@ let drop_scare_and_kill g t message ds =
                                               NAgo_identify_trap
                                                 (gp, "move", na)
                                             in
-                                            Coth ' ', na, None
+                                            Coth ` `, na, None
                                         | None -> assert false
                                         end
                                     | None ->
@@ -3079,7 +3093,7 @@ let drop_scare_and_kill g t message ds =
                                             let na =
                                               NAgo_unblock_monster um
                                             in
-                                            Coth ' ', na, None
+                                            Coth ` `, na, None
                                         | None ->
                                             let ds =
                                               drop_scare ds DScheck_monsters
@@ -3090,7 +3104,7 @@ let drop_scare_and_kill g t message ds =
                                             let na =
                                               NAstring ("99.", false, na)
                                             in
-                                            Coth '9', na, None
+                                            Coth `9`, na, None
                         else if
                           is_at_door g base && not ds.ds_outside_tested &&
                           snd (room_contents g room)
@@ -3107,7 +3121,7 @@ let drop_scare_and_kill g t message ds =
                           let ds = drop_scare ds dss in
                           let ds = {ds with ds_outside_tested = true} in
                           let na = NAdrop_scare_and_kill ds in
-                          Coth '.', na, t.t_prev_mov
+                          Coth `.`, na, t.t_prev_mov
                     end
               | None -> assert false
         end
@@ -3116,14 +3130,14 @@ let drop_scare_and_kill g t message ds =
         begin
           tempo g 1.0;
           let ds = drop_scare ds (DStest_out_in (move, rc, step)) in
-          let na = NAdrop_scare_and_kill ds in Coth ' ', na, None
+          let na = NAdrop_scare_and_kill ds in Coth ` `, na, None
         end
       else
         match step with
           1 ->
             tempo g 1.0;
             let ds = drop_scare ds (DStest_out_in (move, rc, 2)) in
-            let na = NAdrop_scare_and_kill ds in Coth 'm', na, None
+            let na = NAdrop_scare_and_kill ds in Coth `m`, na, None
         | 2 ->
             let ds = {ds with ds_outside_tested = true} in
             let ds = drop_scare ds (DStest_move (0, rc)) in
@@ -3155,7 +3169,7 @@ let get_ar_door_trip_cnt pos ar =
   loop ar.ar_doors
 ;;
 
-(* perhaps a merge to do with 'monsters_blocked_in_corridor_by_scroll' *)
+(* perhaps a merge to do with `monsters_blocked_in_corridor_by_scroll` *)
 let test_possible_obstruction_in_next_room g pos =
   let paths_corr = paths_in_corridors_from g pos pos in
   let paths = paths_with_monsters g paths_corr in
@@ -3167,7 +3181,7 @@ let test_possible_obstruction_in_next_room g pos =
           Some (room, dir) ->
             let mov = one_step_to_enter_room dir in
             let pos1 = add_mov tpos mov in
-            if dung_char g.dung pos1 = '?' then Some (path, tpos, pos1)
+            if dung_char g.dung pos1 = `?` then Some (path, tpos, pos1)
             else None
         | None -> None
         end
@@ -3198,7 +3212,7 @@ let alone_in_room g t message ar =
       if message <> "" then
         begin
           tempo g 1.0;
-          let na = NAalone_in_room ar in Coth ' ', na, None
+          let na = NAalone_in_room ar in Coth ` `, na, None
         end
       else if pos = dpos then
         begin
@@ -3206,7 +3220,7 @@ let alone_in_room g t message ar =
           match scroll_of_scare_monsters_in_pack g.pack with
             Some _ ->
               let ar = alone_room ar (ARcommand "drop_a_scare") in
-              let na = NAalone_in_room ar in Coth 'd', na, None
+              let na = NAalone_in_room ar in Coth `d`, na, None
           | None ->
               match
                 list_find (fun ard -> list__mem ard.ard_pos g.scare_pos)
@@ -3214,10 +3228,10 @@ let alone_in_room g t message ar =
               with
                 Some ard ->
                   let base = ard.ard_pos in
-                  let ds = start_drop_scare base ' ' in
+                  let ds = start_drop_scare base ` ` in
                   begin match path_excl_from_to g [] pos base with
                     Some gp ->
-                      let na = ds_return_to_base g ds gp in Coth ' ', na, None
+                      let na = ds_return_to_base g ds gp in Coth ` `, na, None
                   | None -> assert false
                   end
               | None -> assert false
@@ -3248,10 +3262,10 @@ let alone_in_room g t message ar =
                   let _ = glup g t "8" in
                   let na = NAalone_in_room ar in
                   let uo = UOread_scroll (ch, RSread_what) in
-                  let na = NAuse_object (uo, na) in Coth 'r', na, None
+                  let na = NAuse_object (uo, na) in Coth `r`, na, None
               | None ->
                   let na = NAalone_in_room ar in
-                  let na = NAstring ("3.", false, na) in Coth '3', na, None
+                  let na = NAstring ("3.", false, na) in Coth `3`, na, None
             else
               begin
                 tempo g 0.1;
@@ -3296,7 +3310,7 @@ let alone_in_room g t message ar =
       if message <> "" then
         begin
           tempo g 1.0;
-          let na = NAalone_in_room ar in Coth ' ', na, None
+          let na = NAalone_in_room ar in Coth ` `, na, None
         end
       else
         begin match treat_critical_situation g t t.t_next_action with
@@ -3312,12 +3326,12 @@ let alone_in_room g t message ar =
                 let uo = UOread_scroll (ch, RSread_what) in
                 let ar = alone_room ar (ARcommand "dropped_last_scare") in
                 let na = NAalone_in_room ar in
-                let na = NAuse_object (uo, na) in Coth 'r', na, None
+                let na = NAuse_object (uo, na) in Coth `r`, na, None
             | None ->
                 if g.confused then
                   let ar = alone_room ar (ARcommand "dropped_last_scare") in
                   let na = NAalone_in_room ar in
-                  let na = NAstring ("3.", false, na) in Coth '3', na, None
+                  let na = NAstring ("3.", false, na) in Coth `3`, na, None
                 else
                   match
                     if g.attacked_by_flame = 0 then get_rid_of_objects g
@@ -3361,7 +3375,7 @@ let alone_in_room g t message ar =
                             let ar =
                               alone_room ar (ARgo_to_door (true, gp))
                             in
-                            let na = NAalone_in_room ar in Coth ' ', na, None
+                            let na = NAalone_in_room ar in Coth ` `, na, None
                           else
                             let ar =
                               {ar with ar_trip_cnt = ar.ar_trip_cnt + 1}
@@ -3380,7 +3394,7 @@ let alone_in_room g t message ar =
       if message <> "" then
         begin
           tempo g 1.0;
-          let na = NAalone_in_room ar in Coth ' ', na, None
+          let na = NAalone_in_room ar in Coth ` `, na, None
         end
       else if g.attacked > 0 && not (list__mem pos g.scare_pos) then
         let (monl, movl) = monsters_and_moves_around g in
@@ -3396,7 +3410,7 @@ let alone_in_room g t message ar =
             list__map
               (fun ard ->
                  match path_excl_from_to g [] pos ard.ard_pos with
-                   Some gp -> list__length gp.path, gp
+                   Some gp -> list__list_length gp.path, gp
                  | None -> assert false)
               ar.ar_doors
           in
@@ -3462,7 +3476,7 @@ let alone_in_room g t message ar =
       if message <> "" then
         begin
           tempo g 1.0;
-          let na = NAalone_in_room ar in Coth ' ', na, None
+          let na = NAalone_in_room ar in Coth ` `, na, None
         end
       else
         begin match treat_moving_monsters_at_one_move2 g t with
@@ -3477,7 +3491,7 @@ let alone_in_room g t message ar =
                     Some (ch, _) ->
                       let na = NAalone_in_room ar in
                       let uo = UOread_scroll (ch, RSread_what) in
-                      let na = NAuse_object (uo, na) in Coth 'r', na, None
+                      let na = NAuse_object (uo, na) in Coth `r`, na, None
                   | None -> failwith "ARgo_and_kill confused attacked"
                 else if pos = gp.epos && pos <> gp.tpos then
                   match gp.path with
@@ -3505,7 +3519,7 @@ let alone_in_room g t message ar =
       if message <> "" then
         begin
           tempo g 1.0;
-          let na = NAalone_in_room ar in Coth ' ', na, None
+          let na = NAalone_in_room ar in Coth ` `, na, None
         end
       else
         begin match treat_critical_situation g t t.t_next_action with
@@ -3522,7 +3536,7 @@ let alone_in_room g t message ar =
                   begin match flaming_monster_dir g pos with
                     Some (mdir, dist, _) ->
                       let na = NAzap (mdir, ch, NAalone_in_room ar, 1) in
-                      Coth 'z', na, None
+                      Coth `z`, na, None
                   | None ->
                       let ar =
                         alone_room ar (ARgo_to_door (first_door, gp))
@@ -3533,7 +3547,7 @@ let alone_in_room g t message ar =
                   let ar = alone_room ar (ARgo_to_door (first_door, gp)) in
                   let na = NAalone_in_room ar in
                   if g.attacked = 0 then
-                    let na = NAstring ("3.", false, na) in Coth '3', na, None
+                    let na = NAstring ("3.", false, na) in Coth `3`, na, None
                   else begin tempo g 0.1; random_move g pos na end
             else if g.held then
               let (monl, movl) = monsters_and_moves_around g in
@@ -3547,7 +3561,7 @@ let alone_in_room g t message ar =
                   | None -> assert false
                 in
                 if pos = spos then
-                  begin tempo g 1.0; Coth '>', NAnone, None end
+                  begin tempo g 1.0; Coth `>`, NAnone, None end
                 else
                   let graph = make_graph g false in
                   go_to_stairs g t graph pos spos true
@@ -3564,7 +3578,7 @@ let alone_in_room g t message ar =
                     let ar = set_ar_door_trip_cnt pos ar in
                     let ars = ARcommand "kill_monsters" in
                     let ar = alone_room ar (ARforce_kill (mov, ars)) in
-                    let na = NAalone_in_room ar in Coth 'F', na, None
+                    let na = NAalone_in_room ar in Coth `F`, na, None
                 | [] ->
                     let last_trip_cnt = get_ar_door_trip_cnt pos ar in
                     match
@@ -3578,7 +3592,7 @@ let alone_in_room g t message ar =
                         if not (health_is_maximum g) &&
                            g.attacked_by_flame = 0
                         then
-                          let na = NAalone_in_room ar in Coth '.', na, None
+                          let na = NAalone_in_room ar in Coth `.`, na, None
                         else
                           let ard = ard_of_pos ar pos in
                           let perhaps_blocked =
@@ -3604,7 +3618,7 @@ let alone_in_room g t message ar =
                                  um_kont = na}
                               in
                               let na = NAgo_unblock_monster um in
-                              Coth ' ', na, None
+                              Coth ` `, na, None
                           | None ->
                               match
                                 if scroll_of_hold_monsters_in_pack g.pack <>
@@ -3624,7 +3638,7 @@ let alone_in_room g t message ar =
                                      ce_state = "moved"; ce_kont = na}
                                   in
                                   let na = NAgo_in_corridor_and_hit ce in
-                                  Coth ' ', na, None
+                                  Coth ` `, na, None
                               | None ->
                                   if scroll_of_hold_monsters_in_pack g.pack <>
                                        None &&
@@ -3642,7 +3656,7 @@ let alone_in_room g t message ar =
                                         let na =
                                           NAgo_in_corridor_and_hit ce
                                         in
-                                        Coth 'm', na, None
+                                        Coth `m`, na, None
                                     | None ->
                                         failwith "cannot go in corridor 1"
                                   else if first_door then
@@ -3652,7 +3666,7 @@ let alone_in_room g t message ar =
                                     in
                                     let na = NAalone_in_room ar in
                                     let na = NAstring ("99.", false, na) in
-                                    Coth '9', na, None
+                                    Coth `9`, na, None
                                   else
                                     let next_door =
                                       let rec loop =
@@ -3710,7 +3724,7 @@ let alone_in_room g t message ar =
                                           in
                                           let ar = alone_room ar ars in
                                           let na = NAalone_in_room ar in
-                                          Coth ' ', na, None
+                                          Coth ` `, na, None
                                     in
                                     loop next_door
               end
@@ -3718,7 +3732,7 @@ let alone_in_room g t message ar =
               not (health_is_maximum g) && inside_room ar.ar_room pos
             then
               let na = NAalone_in_room ar in
-              let na = NArestore_health na in Coth '.', na, t.t_prev_mov
+              let na = NArestore_health na in Coth `.`, na, t.t_prev_mov
             else if pos = gp.epos then
               begin
                 tempo g 0.1;
@@ -3757,7 +3771,7 @@ let alone_in_room g t message ar =
       if message <> "" then
         begin
           tempo g 1.0;
-          let na = NAalone_in_room ar in Coth ' ', na, None
+          let na = NAalone_in_room ar in Coth ` `, na, None
         end
       else
         begin match treat_critical_situation g t t.t_next_action with
@@ -3775,13 +3789,13 @@ let alone_in_room g t message ar =
                   begin match flaming_monster_dir g pos with
                     Some (mdir, dist, _) ->
                       let na = NAzap (mdir, ch, NAalone_in_room ar, 1) in
-                      Coth 'z', na, None
+                      Coth `z`, na, None
                   | None -> assert false
                   end
               | None ->
                   let ar = alone_room ar (ARcommand "kill_monsters") in
                   let na = NAalone_in_room ar in
-                  let na = NAstring ("3.", false, na) in Coth '3', na, None
+                  let na = NAstring ("3.", false, na) in Coth `3`, na, None
             else
               let monl = monsters_around g pos in
               match monl with
@@ -3792,7 +3806,7 @@ let alone_in_room g t message ar =
                   let ar = set_ar_door_trip_cnt pos ar in
                   let ars = ARcommand "kill_monsters" in
                   let ar = alone_room ar (ARforce_kill (mov, ars)) in
-                  let na = NAalone_in_room ar in Coth 'F', na, None
+                  let na = NAalone_in_room ar in Coth `F`, na, None
               | [] ->
                   let last_trip_cnt =
                     if not (is_at_door g pos) then 0
@@ -3808,7 +3822,7 @@ let alone_in_room g t message ar =
                            ce_kont = na}
                         in
                         let na = NAgo_in_corridor_and_hit ce in
-                        Coth 'm', na, None
+                        Coth `m`, na, None
                     | None -> failwith "cannot go in corridor"
                   else
                     let next_door =
@@ -3833,12 +3847,12 @@ let alone_in_room g t message ar =
                         let ar =
                           alone_room ar (ARcommand "dropped_last_scare")
                         in
-                        let na = NAalone_in_room ar in Coth ' ', na, None
+                        let na = NAalone_in_room ar in Coth ` `, na, None
         end
   | ARforce_kill (mov, ars) ->
       let ar = alone_room ar ars in
       let na = NAalone_in_room ar in Cmov mov, na, None
-  | ARcommand s -> failwith (sprintf "not impl ARcommand '%s'" s)
+  | ARcommand s -> failwith (sprintf "not impl ARcommand `%s`" s)
 ;;
 
 let no_monster_in_line_of_sight g mpos cand_dir pos_dir =
@@ -3859,53 +3873,53 @@ let furthest_pos_in_room_to g (rmin, cmin, rmax, cmax) mpos =
   in
   let rmin =
     let rec loop rmin =
-      if g.dung.tab.(rmin).[mpos.col] = '^' then loop (rmin + 1) else rmin
+      if g.dung.tab.(rmin).[mpos.col] = `^` then loop (rmin + 1) else rmin
     in
     loop rmin
   in
   let cmin =
     let rec loop cmin =
-      if g.dung.tab.(mpos.row).[cmin] = '^' then loop (cmin + 1) else cmin
+      if g.dung.tab.(mpos.row).[cmin] = `^` then loop (cmin + 1) else cmin
     in
     loop cmin
   in
   let rmax =
     let rec loop rmax =
-      if g.dung.tab.(rmax).[mpos.col] = '^' then loop (rmax - 1) else rmax
+      if g.dung.tab.(rmax).[mpos.col] = `^` then loop (rmax - 1) else rmax
     in
     loop rmax
   in
   let cmax =
     let rec loop cmax =
-      if g.dung.tab.(mpos.row).[cmax] = '^' then loop (cmax - 1) else cmax
+      if g.dung.tab.(mpos.row).[cmax] = `^` then loop (cmax - 1) else cmax
     in
     loop cmax
   in
   let cand_left =
     let pos_door = {mpos with col = cmin - 1} in
-    if dung_char g.dung pos_door = '+' then pos_door
+    if dung_char g.dung pos_door = `+` then pos_door
     else {mpos with col = cmin}
   in
   let cand_right =
     let pos_door = {mpos with col = cmax + 1} in
-    if dung_char g.dung pos_door = '+' then pos_door
+    if dung_char g.dung pos_door = `+` then pos_door
     else {mpos with col = cmax}
   in
   let cand_up =
     let pos_door = {mpos with row = rmin - 1} in
-    if dung_char g.dung pos_door = '+' then pos_door
+    if dung_char g.dung pos_door = `+` then pos_door
     else {mpos with row = rmin}
   in
   let cand_down =
     let pos_door = {mpos with row = rmax + 1} in
-    if dung_char g.dung pos_door = '+' then pos_door
+    if dung_char g.dung pos_door = `+` then pos_door
     else {mpos with row = rmax}
   in
   let cand_left = no_monster_in_line_of_sight g mpos cand_left pos_left in
   let cand_right = no_monster_in_line_of_sight g mpos cand_right pos_right in
   let cand_up = no_monster_in_line_of_sight g mpos cand_up pos_up in
   let cand_down = no_monster_in_line_of_sight g mpos cand_down pos_down in
-  list__sort
+  sort__sort
     (fun pos1 pos2 -> compare (distance pos2 mpos) (distance pos1 mpos))
     [cand_left; cand_right; cand_up; cand_down]
 ;;
@@ -3958,23 +3972,23 @@ let attack_at_distance g t room mov =
         | Some [] ->
             if g.weapon_cursed || short_bow_in_pack g.pack = None then
               let na = NAmove_throw2 (mpos, mch, "direction") in
-              Coth 't', na, None
+              Coth `t`, na, None
             else
               let na = NAmove_throw2 (mpos, mch, "what bow") in
-              Coth 'w', na, None
+              Coth `w`, na, None
         | None -> loop tpos_list
         end
     | [] ->
         if max (abs mov.di) (abs mov.dj) = 2 then
           let (mov, _) = one_step_to g mpos in
-          let na = NAlet_come (mch, mov) in Coth '.', na, None
+          let na = NAlet_come (mch, mov) in Coth `.`, na, None
         else if is_at_door g pos then start_move_in_corridor g t pos
         else if mpos.row = pos.row || mpos.col = pos.col then
           let (mov, _) = one_step_to g mpos in
           move_command3 g pos (add_mov pos mov) NAnone
         else
           let (mov, _) = one_step_to g mpos in
-          let na = NAlet_come (mch, mov) in Coth '.', na, None
+          let na = NAlet_come (mch, mov) in Coth `.`, na, None
   in
   loop tpos_list
 ;;
@@ -4000,7 +4014,7 @@ let monster_in_dir g pos mch mpos =
   loop pos
 ;;
 
-let at_dot = ['@'; '.'];;
+let at_dot = [`@`; `.`];;
 
 let around_diff a1 a2 =
   let rec loop k =
@@ -4020,7 +4034,7 @@ let close_to_room g pos =
     function
       pos_dir :: rest ->
         let pos1 = pos_dir pos in
-        if in_dung g pos1 && list__mem (dung_char g.dung pos1) ['|'; '-'] then
+        if in_dung g pos1 && list__mem (dung_char g.dung pos1) [`|`; `-`] then
           true
         else loop rest
     | [] -> false
@@ -4084,7 +4098,7 @@ let find_something_to_do g t =
       Some r -> r
     | None ->
         if nobj <> [] then
-          let mov = list__nth nobj (random_int g (list__length nobj)) in
+          let mov = list_nth nobj (random_int g (list__list_length nobj)) in
           let (comm, na) = move_command g pos mov NAnone in comm, na, Some mov
         else
           match g.rogue_room_and_door with
@@ -4097,7 +4111,7 @@ let find_something_to_do g t =
                   Some old_g -> old_g.level <> g.level
                 | None -> true
               in
-              if g.confused && is_at_door g pos then Coth '.', NAnone, None
+              if g.confused && is_at_door g pos then Coth `.`, NAnone, None
               else if
                 g.confused && g.level >= level_of_very_mean_monsters
               then
@@ -4138,12 +4152,12 @@ let find_something_to_do g t =
                               let na =
                                 NAmove_throw2 (mpos, mch, "direction")
                               in
-                              Coth 't', na, None
+                              Coth `t`, na, None
                             else
                               let na =
                                 NAmove_throw2 (mpos, mch, "what bow")
                               in
-                              Coth 'w', na, None
+                              Coth `w`, na, None
                           else if is_at_door g pos then
                             match room_of_door g pos with
                               Some (_, dir) ->
@@ -4158,12 +4172,12 @@ let find_something_to_do g t =
                                     let na =
                                       NAwield_bow_test_moving (mpos, mch, 1)
                                     in
-                                    Coth 'w', na, None
+                                    Coth `w`, na, None
                                   else
                                     let na =
                                       NAwield_bow_test_moving (mpos, mch, 2)
                                     in
-                                    Coth '.', na, None
+                                    Coth `.`, na, None
                                 else
                                   let mov = one_step_to_enter_room dir in
                                   move_command3 g pos (add_mov pos mov) NAnone
@@ -4222,7 +4236,7 @@ let find_something_to_do g t =
                             with
                               Some gp ->
                                 let na = NAseek_object gp in
-                                Coth ' ', na, t.t_prev_mov
+                                Coth ` `, na, t.t_prev_mov
                             | None ->
                                 match
                                   if is_big_room g ||
@@ -4232,15 +4246,15 @@ let find_something_to_do g t =
                                   then
                                     path_to_closest2 g pos
                                       (fun _ pos ->
-                                         dung_char g.dung pos = '%')
+                                         dung_char g.dung pos = `%`)
                                   else None
                                 with
                                   Some gp ->
                                     let na = NAgo_to_stairs (gp, true) in
-                                    Coth ' ', na, t.t_prev_mov
+                                    Coth ` `, na, t.t_prev_mov
                                 | None ->
                                     let doors = find_doors g room in
-                                    let inilen = list__length doors in
+                                    let inilen = list__list_length doors in
                                     let rr = room_row room in
                                     let rc = room_col room in
                                     let selected_doors =
@@ -4250,7 +4264,7 @@ let find_something_to_do g t =
                                       (* rather doors not towards center *)
                                       if rr = 1 then
                                         let dl2 =
-                                          list__filter
+                                          list_filter
                                             (fun (tpos, _) ->
                                                match room_of_door g tpos with
                                                  Some (_, dir) ->
@@ -4262,7 +4276,7 @@ let find_something_to_do g t =
                                         if dl2 <> [] then dl2 else dl
                                       else if rc = 1 then
                                         let dl2 =
-                                          list__filter
+                                          list_filter
                                             (fun (tpos, _) ->
                                                match room_of_door g tpos with
                                                  Some (_, dir) ->
@@ -4278,7 +4292,7 @@ let find_something_to_do g t =
                                       if selected_doors = [] then []
                                       else
                                         let dl =
-                                          list__filter
+                                          list_filter
                                             (fun (tpos, _) ->
                                                match room_of_door g tpos with
                                                  Some (_, dir) ->
@@ -4306,7 +4320,7 @@ let find_something_to_do g t =
                                         Some mov ->
                                           let from = opposite_move mov in
                                           let dl =
-                                            list__filter
+                                            list_filter
                                               (fun (tpos, _) ->
                                                  pos <> tpos &&
                                                  (let (mov1, _) =
@@ -4318,7 +4332,7 @@ let find_something_to_do g t =
                                           if dl = [] then doors else dl
                                       | None -> doors
                                     in
-                                    let len = list__length doors in
+                                    let len = list__list_length doors in
                                     if len = 0 ||
                                        inilen = 1 &&
                                        connected_to_rooms_without_exit g pos
@@ -4334,7 +4348,7 @@ let find_something_to_do g t =
                                       end
                                     else
                                       let (tpos, _) =
-                                        list__nth doors (random_int g len)
+                                        list_nth doors (random_int g len)
                                       in
                                       if tpos = pos then
                                         start_move_in_corridor g t pos
@@ -4349,8 +4363,8 @@ let find_something_to_do g t =
           | None ->
               match
                 match
-                  if list__length nmov <= 1 then None
-                  else select_random_move_to g nmov pos '+'
+                  if list__list_length nmov <= 1 then None
+                  else select_random_move_to g nmov pos `+`
                 with
                   Some mov -> Some mov
                 | None ->
@@ -4366,13 +4380,13 @@ let find_something_to_do g t =
                           | _ ->
                               let nmov_without_from =
                                 let from = opposite_move mov in
-                                list__filter ((<>) from) nmov
+                                list_filter ((<>) from) nmov
                               in
                               let nmov =
                                 if nmov_without_from = [] then nmov
                                 else nmov_without_from
                               in
-                              select_random_move_to g nmov pos '#'
+                              select_random_move_to g nmov pos `#`
                           end
                     | None -> None
               with
@@ -4424,14 +4438,14 @@ let apply g t message =
             begin
               tempo g 1.0;
               let na = NAfind_another_room_and_return fa in
-              Coth ' ', na, t.t_prev_mov
+              Coth ` `, na, t.t_prev_mov
             end
           else if pos = fa.fa_gp.tpos then
             begin
               tempo g 0.1;
               let fa = {fa with fa_state = "at door"} in
               let na = NAfind_another_room_and_return fa in
-              Coth ' ', na, t.t_prev_mov
+              Coth ` `, na, t.t_prev_mov
             end
           else if pos = fa.fa_gp.epos then
             begin
@@ -4450,7 +4464,7 @@ let apply g t message =
             begin
               tempo g 1.0;
               let na = NAfind_another_room_and_return fa in
-              Coth ' ', na, t.t_prev_mov
+              Coth ` `, na, t.t_prev_mov
             end
           else
             begin
@@ -4484,12 +4498,12 @@ let apply g t message =
                      fa_base = fa.fa_base}
                   in
                   let na = NAfind_another_room_and_return fa in
-                  Coth ' ', na, t.t_prev_mov
+                  Coth ` `, na, t.t_prev_mov
             else
               let gp = old_path_excl_from_to g [] pos fa.fa_base 48 in
               let fa = {fa with fa_state = "returning"; fa_gp = gp} in
               let na = NAfind_another_room_and_return fa in
-              Coth ' ', na, t.t_prev_mov
+              Coth ` `, na, t.t_prev_mov
           else
             let na = NAfind_another_room_and_return fa in
             move_command3 g pos pos1 na
@@ -4499,11 +4513,11 @@ let apply g t message =
             begin
               tempo g 1.0;
               let na = NAfind_another_room_and_return fa in
-              Coth ' ', na, t.t_prev_mov
+              Coth ` `, na, t.t_prev_mov
             end
           else if pos = fa.fa_gp.tpos then
             let ds = drop_scare_with fa.fa_gp.tpos (DSdropped 0) in
-            let na = NAdrop_scare_and_kill ds in Coth ' ', na, t.t_prev_mov
+            let na = NAdrop_scare_and_kill ds in Coth ` `, na, t.t_prev_mov
           else if pos = fa.fa_gp.epos then
             match fa.fa_gp.path with
               epos :: path ->
@@ -4517,27 +4531,27 @@ let apply g t message =
             move_command3 g pos fa.fa_gp.epos na
       | state ->
           failwith
-            (sprintf "not impl NAfind_another_room_and_return '%s'" state)
+            (sprintf "not impl NAfind_another_room_and_return `%s`" state)
       end
   | NAgo_and_kill (gp, ch) ->
       let pos = rogue_pos g in
       if message <> "" then
         begin
           tempo g 1.0;
-          let na = NAgo_and_kill (gp, ch) in Coth ' ', na, t.t_prev_mov
+          let na = NAgo_and_kill (gp, ch) in Coth ` `, na, t.t_prev_mov
         end
-      else if g.attacked > 0 then Coth ' ', NAnone, t.t_prev_mov
+      else if g.attacked > 0 then Coth ` `, NAnone, t.t_prev_mov
       else if dung_char g.dung gp.tpos <> ch then
-        Coth ' ', NAnone, t.t_prev_mov
+        Coth ` `, NAnone, t.t_prev_mov
       else if pos = gp.tpos then
-        failwith (sprintf "NAgo_and_kill '%c' error" ch)
+        failwith (sprintf "NAgo_and_kill `%c` error" ch)
       else if pos = gp.epos then
         match gp.path with
           epos :: path ->
             let gp = {epos = epos; tpos = gp.tpos; path = path} in
             let na = NAgo_and_kill (gp, ch) in move_command3 g pos epos na
         | [] -> assert false
-      else Coth ' ', NAnone, t.t_prev_mov
+      else Coth ` `, NAnone, t.t_prev_mov
   | NAgo_identify_trap (gp, step, na) ->
       let pos = rogue_pos g in
       begin match step with
@@ -4546,7 +4560,7 @@ let apply g t message =
             begin
               tempo g 1.0;
               let na = NAgo_identify_trap (gp, step, na) in
-              Coth ' ', na, t.t_prev_mov
+              Coth ` `, na, t.t_prev_mov
             end
           else
             begin match treat_moving_monsters_at_one_move2 g t with
@@ -4561,7 +4575,7 @@ let apply g t message =
                       let str = String.make 1 ch in
                       let na = NAgo_identify_trap (gp, "ask", na) in
                       let na = NAstring (str, false, na) in
-                      Coth '^', na, t.t_prev_mov
+                      Coth `^`, na, t.t_prev_mov
                   | epos :: path ->
                       tempo g 0.1;
                       let gp = {epos = epos; tpos = gp.tpos; path = path} in
@@ -4571,7 +4585,7 @@ let apply g t message =
                   match path_excl_from_to g [] pos gp.tpos with
                     Some gp ->
                       let na = NAgo_identify_trap (gp, step, na) in
-                      Coth ' ', na, t.t_prev_mov
+                      Coth ` `, na, t.t_prev_mov
                   | None -> failwith "not impl: NAgo_identify_trap 3"
             end
       | "ask" ->
@@ -4579,8 +4593,8 @@ let apply g t message =
             if transl.is_trap_door message then TKtrap_door else TKother
           in
           Hashtbl.replace g.traps gp.tpos (Some (Some tk));
-          Coth ' ', na, t.t_prev_mov
-      | step -> failwith (sprintf "NAgo_identify_trap '%s'" step)
+          Coth ` `, na, t.t_prev_mov
+      | step -> failwith (sprintf "NAgo_identify_trap `%s`" step)
       end
   | NAgo_in_corridor_and_hit ce ->
       let pos = rogue_pos g in
@@ -4592,10 +4606,10 @@ let apply g t message =
           let ce = {ce with ce_state = step} in
           let na = NAgo_in_corridor_and_hit ce in Cmov mov, na, Some mov
       | SGCack_mess ->
-          let na = NAgo_in_corridor_and_hit ce in Coth ' ', na, None
+          let na = NAgo_in_corridor_and_hit ce in Coth ` `, na, None
       | SGCmove_way_there (gp, step) ->
           let ce = {ce with ce_gp = gp; ce_state = step} in
-          let na = NAgo_in_corridor_and_hit ce in Coth 'm', na, None
+          let na = NAgo_in_corridor_and_hit ce in Coth `m`, na, None
       | SGCattack (mov, step) ->
           let gp =
             let pred _ = (=) base in
@@ -4631,7 +4645,7 @@ let apply g t message =
                   | None -> failwith "SGCpick_and_return 1"
                 in
                 let na = return_to_base g gp ce.ce_kont in
-                Coth ' ', na, t.t_prev_mov
+                Coth ` `, na, t.t_prev_mov
               else
                 let gp =
                   let excl =
@@ -4653,17 +4667,17 @@ let apply g t message =
                     let gp = old_path_excl_from_to g [] pos base 13 in
                     let ds = drop_scare ds (DSreturn_to_base gp) in
                     let na = NAdrop_scare_and_kill ds in
-                    (Coth ' ', na, None)
+                    (Coth ` `, na, None)
           *)
           failwith "NAgo_in_corridor_and_hit 7"
-      | SGChome -> Coth ' ', ce.ce_kont, t.t_prev_mov
+      | SGChome -> Coth ` `, ce.ce_kont, t.t_prev_mov
       end
   | NAgo_to_door gp ->
       let pos = rogue_pos g in
       if message <> "" then
         begin
           tempo g 1.0;
-          let na = NAgo_to_door gp in Coth ' ', na, t.t_prev_mov
+          let na = NAgo_to_door gp in Coth ` `, na, t.t_prev_mov
         end
       else if pos = gp.tpos then
         if conditions_for_dropping_scare g then ok_for_dropping_scare g t
@@ -4697,7 +4711,7 @@ let apply g t message =
                         move_command3 g pos pos1 na
                     | [] -> assert false
                   end
-                else Coth ' ', NAnone, t.t_prev_mov
+                else Coth ` `, NAnone, t.t_prev_mov
         end
   | NAgo_to_shelter_and_test_scrolls gp ->
       let pos = rogue_pos g in
@@ -4705,7 +4719,7 @@ let apply g t message =
         begin
           tempo g 1.0;
           let na = NAgo_to_shelter_and_test_scrolls gp in
-          Coth ' ', na, t.t_prev_mov
+          Coth ` `, na, t.t_prev_mov
         end
       else if g.held then
         let (monl, movl) = monsters_and_moves_around g in
@@ -4730,10 +4744,10 @@ let apply g t message =
         begin match path_excl_from_to g [] pos gp.tpos with
           Some gp ->
             let na = NAgo_to_shelter_and_test_scrolls gp in
-            Coth ' ', na, t.t_prev_mov
+            Coth ` `, na, t.t_prev_mov
         | None ->
             (* probably teleported and no access *)
-            Coth ' ', NAnone, t.t_prev_mov
+            Coth ` `, NAnone, t.t_prev_mov
         end
   | NAmove (mov, na) -> Cmov mov, na, t.t_prev_mov
   | NAput_ring (ch, na, step) ->
@@ -4746,9 +4760,9 @@ let apply g t message =
               tempo g 1.0;
               let na = NAput_ring (ch, na, 3) in
               g.ring_of_slow_digestion_on_hand <- Some ch;
-              Coth ' ', na, t.t_prev_mov
+              Coth ` `, na, t.t_prev_mov
             end
-          else Coth ' ', na, t.t_prev_mov
+          else Coth ` `, na, t.t_prev_mov
       | step -> failwith (sprintf "NAput_ring %d" step)
       end
   | NAread_scroll_for_best_armor (ch_scr, prev_a, state) ->
@@ -4760,17 +4774,17 @@ let apply g t message =
               if transl.is_message_cursed message then g.armor_cursed <- true;
               let ws = WStoken_off in
               let na = NAread_scroll_for_best_armor (ch_scr, prev_a, ws) in
-              Coth ' ', na, t.t_prev_mov
+              Coth ` `, na, t.t_prev_mov
             end
           else if g.armor_cursed then
             let ws = WSscroll_read in
             let na = NAread_scroll_for_best_armor (ch_scr, prev_a, ws) in
             let uo = UOread_scroll (ch_scr, RSread_what) in
-            let na = NAuse_object (uo, na) in Coth 'r', na, t.t_prev_mov
+            let na = NAuse_object (uo, na) in Coth `r`, na, t.t_prev_mov
           else
             let ws = WSwear_what in
             let na = NAread_scroll_for_best_armor (ch_scr, prev_a, ws) in
-            Coth 'W', na, t.t_prev_mov
+            Coth `W`, na, t.t_prev_mov
       | WSwear_what ->
           begin match best_armor g with
             Some (ch, _) ->
@@ -4786,22 +4800,22 @@ let apply g t message =
               g.worn_armor <- armor_of_ch g ch_arm;
               let ws = WSarmor_worn ch_arm in
               let na = NAread_scroll_for_best_armor (ch_scr, prev_a, ws) in
-              Coth ' ', na, t.t_prev_mov
+              Coth ` `, na, t.t_prev_mov
             end
           else
             let ws = WSscroll_read in
             let na = NAread_scroll_for_best_armor (ch_scr, prev_a, ws) in
             let uo = UOread_scroll (ch_scr, RSread_what) in
-            let na = NAuse_object (uo, na) in Coth 'r', na, t.t_prev_mov
+            let na = NAuse_object (uo, na) in Coth `r`, na, t.t_prev_mov
       | WSscroll_read ->
           if wearing_good_armor g || g.armor_cursed then
-            Coth ' ', prev_a, t.t_prev_mov
+            Coth ` `, prev_a, t.t_prev_mov
           else
             match good_armor g with
               Some (ch, _) ->
                 begin match g.worn_armor with
-                  Some _ -> Coth 'T', NAwear (ch, 1, prev_a), t.t_prev_mov
-                | None -> Coth 'W', NAwear (ch, 2, prev_a), t.t_prev_mov
+                  Some _ -> Coth `T`, NAwear (ch, 1, prev_a), t.t_prev_mov
+                | None -> Coth `W`, NAwear (ch, 2, prev_a), t.t_prev_mov
                 end
             | None -> assert false
       end
@@ -4810,26 +4824,26 @@ let apply g t message =
       if message <> "" then
         begin
           tempo g 1.0;
-          let na = NArestore_health na in Coth ' ', na, t.t_prev_mov
+          let na = NArestore_health na in Coth ` `, na, t.t_prev_mov
         end
-      else if health_is_maximum g then Coth ' ', na, t.t_prev_mov
+      else if health_is_maximum g then Coth ` `, na, t.t_prev_mov
       else if g.attacked > 0 then
         let (monl, movl) = monsters_and_moves_around g in
         if monl <> [] then attack_monsters g t movl monl na
-        else let na = NArestore_health na in Coth '.', na, t.t_prev_mov
+        else let na = NArestore_health na in Coth `.`, na, t.t_prev_mov
       else
         begin
           tempo g 0.1;
-          let na = NArestore_health na in Coth '.', na, t.t_prev_mov
+          let na = NArestore_health na in Coth `.`, na, t.t_prev_mov
         end
   | NAreturn_to_base (gp, akont) ->
       let pos = rogue_pos g in
       if message <> "" then
         begin
           tempo g 1.0;
-          let na = NAreturn_to_base (gp, akont) in Coth ' ', na, None
+          let na = NAreturn_to_base (gp, akont) in Coth ` `, na, None
         end
-      else if pos = gp.tpos then Coth ' ', akont, t.t_prev_mov
+      else if pos = gp.tpos then Coth ` `, akont, t.t_prev_mov
       else
         begin match treat_critical_situation g t t.t_next_action with
           Some r -> r
@@ -4873,7 +4887,7 @@ let apply g t message =
                                                     let na = NAdrop_scare_and_kill ds in
                                                     let uo = UOread_scroll ch RSread_what in
                                                     let na = NAuse_object uo na in
-                                                    (Coth 'r', na, None)
+                                                    (Coth `r`, na, None)
                                 *)
                                 failwith "NAreturn_to base 4.1"
                             | None ->
@@ -4914,7 +4928,7 @@ let apply g t message =
                       let gp = {epos = pos; tpos = gp.tpos; path = path} in
                       let na = NAreturn_to_base (gp, akont) in
                       pick_object g t na
-                  | None -> let na = NAnone in Coth ' ', na, None
+                  | None -> let na = NAnone in Coth ` `, na, None
         end
   | NAseek_object gp ->
       let pos = rogue_pos g in
@@ -4922,16 +4936,16 @@ let apply g t message =
         begin
           tempo g 1.0;
           let na = if pos = gp.tpos then NAnone else NAseek_object gp in
-          Coth ' ', na, None
+          Coth ` `, na, None
         end
-      else if pos = gp.tpos then let na = NAnone in Coth ' ', na, None
+      else if pos = gp.tpos then let na = NAnone in Coth ` `, na, None
       else if g.held then
         let (monl, movl) = monsters_and_moves_around g in
         let na = NAseek_object gp in attack_monsters g t movl monl na
       else
         let (monl, movl) = monsters_and_moves_around g in
         let monl =
-          list__filter
+          list_filter
             (fun mov ->
                is_attackable_monster g (dung_char g.dung (add_mov pos mov)))
             monl
@@ -4951,7 +4965,7 @@ let apply g t message =
           with
             Some (mdir, ch) ->
               let na = NAseek_object gp in
-              let na = NAzap (mdir, ch, na, 1) in Coth 'z', na, None
+              let na = NAzap (mdir, ch, na, 1) in Coth `z`, na, None
           | None ->
               if pos = gp.epos then
                 begin
@@ -4960,7 +4974,7 @@ let apply g t message =
                     pos1 :: path ->
                       let gp = {epos = pos1; tpos = gp.tpos; path = path} in
                       let na = NAseek_object gp in move_command2 g pos pos1 na
-                  | [] -> Coth ' ', NAnone, None
+                  | [] -> Coth ` `, NAnone, None
                 end
               else
                 match common_room_with g gp.tpos with
@@ -4968,13 +4982,13 @@ let apply g t message =
                     let gp = path_in_room_excl_mon g room pos gp.tpos in
                     let na = NAseek_object gp in
                     move_command2 g pos gp.epos na
-                | None -> Coth ' ', NAnone, None
+                | None -> Coth ` `, NAnone, None
           end
   | NAstring (str, skip_mess, na) ->
       if skip_mess && message <> "" then
         begin
           tempo g 1.0;
-          let na = NAstring (str, skip_mess, na) in Coth ' ', na, t.t_prev_mov
+          let na = NAstring (str, skip_mess, na) in Coth ` `, na, t.t_prev_mov
         end
       else
         let ch = str.[0] in
@@ -4989,13 +5003,13 @@ let apply g t message =
       if message <> "" then
         begin
           tempo g 1.0;
-          let na = NAtest_monster (tml, na) in Coth ' ', na, t.t_prev_mov
+          let na = NAtest_monster (tml, na) in Coth ` `, na, t.t_prev_mov
         end
       else
         let pos = rogue_pos g in
         begin match moving_monsters_at_one_move g t pos with
           Some x -> move_against_monster g t pos x tml na
-        | None -> Coth ' ', na, t.t_prev_mov
+        | None -> Coth ` `, na, t.t_prev_mov
         end
   | NAtest_potions (ch, step) ->
       begin match step with
@@ -5006,7 +5020,7 @@ let apply g t message =
               tempo g 1.0;
               let (nb, obj) = list__assoc ch g.pack in
               remove_from_pack g ch nb obj;
-              let na = NAtest_potions (ch, 3) in Coth ' ', na, t.t_prev_mov
+              let na = NAtest_potions (ch, 3) in Coth ` `, na, t.t_prev_mov
             end
           else let na = NAtest_potions (ch, 2) in Coth ch, na, t.t_prev_mov
       | 2 ->
@@ -5014,22 +5028,22 @@ let apply g t message =
           if transl.is_message_there_is_no message then
             let (nb, obj) = list__assoc ch g.pack in
             remove_from_pack g ch nb obj;
-            let na = NAtest_potions (ch, 3) in Coth ' ', na, t.t_prev_mov
+            let na = NAtest_potions (ch, 3) in Coth ` `, na, t.t_prev_mov
           else
             let (nb, _) = list__assoc ch g.pack in
             let obj = Ppotion (quaffed_potion_of_message g message) in
             remove_from_pack g ch nb obj;
-            let na = NAtest_potions (ch, 3) in Coth ' ', na, t.t_prev_mov
+            let na = NAtest_potions (ch, 3) in Coth ` `, na, t.t_prev_mov
       | 3 ->
           if message <> "" then
             begin
               tempo g 1.0;
-              let na = NAtest_potions (ch, 3) in Coth ' ', na, t.t_prev_mov
+              let na = NAtest_potions (ch, 3) in Coth ` `, na, t.t_prev_mov
             end
           else
             begin match unidentified_potion_in_pack g.pack with
               Some (ch, _) ->
-                let na = NAtest_potions (ch, 1) in Coth 'q', na, t.t_prev_mov
+                let na = NAtest_potions (ch, 1) in Coth `q`, na, t.t_prev_mov
             | None -> let na = NAnone in pick_object g t na
             end
       | _ -> failwith "not impl test_potions"
@@ -5037,12 +5051,12 @@ let apply g t message =
   | NAthrow_away (ch, step) ->
       begin match step with
         "direction" ->
-          let na = NAthrow_away (ch, "object") in Coth 'h', na, t.t_prev_mov
+          let na = NAthrow_away (ch, "object") in Coth `h`, na, t.t_prev_mov
       | "object" ->
           let (nb, obj) = list__assoc ch g.pack in
           remove_from_pack g ch nb obj;
           let na = NAnone in Coth ch, na, t.t_prev_mov
-      | step -> failwith (sprintf "NAthrow_away '%s'" step)
+      | step -> failwith (sprintf "NAthrow_away `%s`" step)
       end
   | NAthrow_in_the_garbage (ch, gp, prev_a, step) ->
       let pos = rogue_pos g in
@@ -5052,7 +5066,7 @@ let apply g t message =
             begin
               tempo g 1.0;
               let na = NAthrow_in_the_garbage (ch, gp, prev_a, "move") in
-              Coth ' ', na, t.t_prev_mov
+              Coth ` `, na, t.t_prev_mov
             end
           else
             begin match treat_critical_situation g t t.t_next_action with
@@ -5065,7 +5079,7 @@ let apply g t message =
                       let na =
                         NAthrow_in_the_garbage (ch, gp, prev_a, "drop")
                       in
-                      Coth 'd', na, None
+                      Coth `d`, na, None
                     else if pos = gp.epos then
                       match gp.path with
                         pos1 :: path2 ->
@@ -5103,7 +5117,7 @@ let apply g t message =
             begin
               tempo g 1.0;
               let na = NAthrow_in_the_garbage (ch, gp, prev_a, "dropped") in
-              Coth ' ', na, t.t_prev_mov
+              Coth ` `, na, t.t_prev_mov
             end
           else
             let (monl, movl) = monsters_and_moves_around g in
@@ -5113,16 +5127,16 @@ let apply g t message =
             else
               begin match find_unuseful_object_when_full_pack g with
                 Some (ch, (nb, obj)) -> throw_in_the_garbage g t pos ch
-              | None -> Coth ' ', prev_a, t.t_prev_mov
+              | None -> Coth ` `, prev_a, t.t_prev_mov
               end
-      | step -> failwith (sprintf "NAthrow_in_the_garbage '%s'" step)
+      | step -> failwith (sprintf "NAthrow_in_the_garbage `%s`" step)
       end
   | NAuse_object (uo, na) ->
       let uoo = use_object g t message na uo in
       let (ch, na) =
         match uoo with
           Some (ch, na) -> ch, na
-        | None -> ' ', na
+        | None -> ` `, na
       in
       Coth ch, na, t.t_prev_mov
   | NAwear (ch, step, na) ->
@@ -5132,15 +5146,15 @@ let apply g t message =
             begin
               tempo g 1.0;
               g.armor_cursed <- true;
-              Coth ' ', na, t.t_prev_mov
+              Coth ` `, na, t.t_prev_mov
             end
           else if message <> "" then
-            begin tempo g 1.0; Coth ' ', NAwear (ch, 1, na), t.t_prev_mov end
+            begin tempo g 1.0; Coth ` `, NAwear (ch, 1, na), t.t_prev_mov end
           else
             begin
               g.worn_armor <- None;
-              if ch = ' ' then Coth ' ', na, t.t_prev_mov
-              else Coth 'W', NAwear (ch, 2, na), t.t_prev_mov
+              if ch = ` ` then Coth ` `, na, t.t_prev_mov
+              else Coth `W`, NAwear (ch, 2, na), t.t_prev_mov
             end
       | 2 -> Coth ch, NAwear (ch, 3, na), t.t_prev_mov
       | 3 ->
@@ -5150,8 +5164,8 @@ let apply g t message =
               (* probably stolen by a nymph *)
               g.pack <- list__remove_assoc ch g.pack;
               match good_armor g with
-                Some (ch, _) -> Coth 'W', NAwear (ch, 2, na), t.t_prev_mov
-              | None -> Coth 's', na, t.t_prev_mov
+                Some (ch, _) -> Coth `W`, NAwear (ch, 2, na), t.t_prev_mov
+              | None -> Coth `s`, na, t.t_prev_mov
             end
           else
             let ar =
@@ -5162,7 +5176,7 @@ let apply g t message =
             let ar = {ar with ar_value = armor_value message} in
             g.worn_armor <- Some (ch, ar);
             redefine_in_pack g ch (Parmor ar);
-            Coth ' ', na, t.t_prev_mov
+            Coth ` `, na, t.t_prev_mov
       | step -> failwith (sprintf "NAwear step %d" step)
       end
   | NAwear_armor_and_test_scrolls (ch_arm, ch_scr, state) ->
@@ -5174,17 +5188,17 @@ let apply g t message =
               if transl.is_message_cursed message then g.armor_cursed <- true;
               let ws = WStoken_off in
               let na = NAwear_armor_and_test_scrolls (ch_arm, ch_scr, ws) in
-              Coth ' ', na, t.t_prev_mov
+              Coth ` `, na, t.t_prev_mov
             end
           else if g.armor_cursed then
             let ws = WSscroll_read in
             let na = NAwear_armor_and_test_scrolls (ch_arm, ch_scr, ws) in
             let uo = UOread_scroll (ch_scr, RSread_what) in
-            let na = NAuse_object (uo, na) in Coth 'r', na, t.t_prev_mov
+            let na = NAuse_object (uo, na) in Coth `r`, na, t.t_prev_mov
           else
             let ws = WSwear_what in
             let na = NAwear_armor_and_test_scrolls (ch_arm, ch_scr, ws) in
-            g.worn_armor <- None; Coth 'W', na, t.t_prev_mov
+            g.worn_armor <- None; Coth `W`, na, t.t_prev_mov
       | WSwear_what ->
           let ws = WSarmor_worn ch_arm in
           let na = NAwear_armor_and_test_scrolls (ch_arm, ch_scr, ws) in
@@ -5196,20 +5210,20 @@ let apply g t message =
               g.worn_armor <- armor_of_ch g ch_arm;
               let ws = WSarmor_worn ch_arm in
               let na = NAwear_armor_and_test_scrolls (ch_arm, ch_scr, ws) in
-              Coth ' ', na, t.t_prev_mov
+              Coth ` `, na, t.t_prev_mov
             end
           else
             let ws = WSscroll_read in
             let na = NAwear_armor_and_test_scrolls (ch_arm, ch_scr, ws) in
             let uo = UOread_scroll (ch_scr, RSread_what) in
-            let na = NAuse_object (uo, na) in Coth 'r', na, t.t_prev_mov
+            let na = NAuse_object (uo, na) in Coth `r`, na, t.t_prev_mov
       | WSscroll_read ->
           if message <> "" then
             begin
               tempo g 1.0;
               let ws = WSscroll_read in
               let na = NAwear_armor_and_test_scrolls (ch_arm, ch_scr, ws) in
-              Coth ' ', na, t.t_prev_mov
+              Coth ` `, na, t.t_prev_mov
             end
           else continue_test_scrolls g t ch_arm t.t_next_action
       end
@@ -5219,7 +5233,7 @@ let apply g t message =
         begin
           tempo g 1.0;
           let na = NAmove_in_corridor (ipos, gp, trail) in
-          Coth ' ', na, t.t_prev_mov
+          Coth ` `, na, t.t_prev_mov
         end
       else if is_at_door g pos then
         begin
@@ -5232,7 +5246,7 @@ let apply g t message =
                    Some rr, Some rc -> g.visited.(rr).(rc) <- true
                  | _ -> ())
               trail;
-          Coth ' ', NAnone, t.t_prev_mov
+          Coth ` `, NAnone, t.t_prev_mov
         end
       else
         begin match treat_critical_situation g t t.t_next_action with
@@ -5242,7 +5256,7 @@ let apply g t message =
               let na = NAmove_in_corridor (ipos, gp, trail) in
               let (monl, movl) = monsters_and_moves_around g in
               if monl <> [] then attack_monsters g t movl monl na
-              else Coth 's', na, t.t_prev_mov
+              else Coth `s`, na, t.t_prev_mov
             else
               begin
                 tempo g 0.1;
@@ -5260,7 +5274,7 @@ let apply g t message =
                       let na = NAmove_in_corridor (ipos, gp, trail) in
                       move_command3 g pos (add_mov pos mov) na
                   | None ->
-                      if g.held then Coth 's', NAnone, None
+                      if g.held then Coth `s`, NAnone, None
                       else if pos = gp.tpos then
                         match movl with
                           [] -> assert false
@@ -5271,7 +5285,7 @@ let apply g t message =
                               let from = mov in
                               let around = around_pos g pos in
                               let na = NAsearch_and_back (from, around, 1) in
-                              Coth 's', na, None
+                              Coth `s`, na, None
                         | [mov1; mov2] ->
                             let mov =
                               match t.t_prev_mov with
@@ -5293,7 +5307,7 @@ let apply g t message =
                           pos1 :: path ->
                             if monster_moving_to g t pos1 then
                               let na = NAmove_in_corridor (ipos, gp, trail) in
-                              Coth '.', na, None
+                              Coth `.`, na, None
                             else
                               let gp =
                                 {epos = pos1; tpos = gp.tpos; path = path}
@@ -5303,20 +5317,20 @@ let apply g t message =
                         | [] -> failwith "not impl NAmove_in_corridor 15"
                       else if g.confused then
                         let na = NAstring ("3.", false, NAnone) in
-                        Coth '3', na, None
+                        Coth `3`, na, None
                       else start_move_in_corridor g t pos
               end
         end
   | NAseek_gold_or_monster (gp, gold) ->
       let pos = rogue_pos g in
       let na = NAseek_gold_or_monster (gp, gold) in
-      if message <> "" then begin tempo g 1.0; Coth ' ', na, None end
+      if message <> "" then begin tempo g 1.0; Coth ` `, na, None end
       else if
         g.attacked > 0 && on_scare_monster g && t.t_prev_mov <> None
       then
-        let ds = start_drop_scare pos ' ' in
+        let ds = start_drop_scare pos ` ` in
         let ds = drop_scare ds (DSdropped 0) in
-        let na = NAdrop_scare_and_kill ds in Coth ' ', na, None
+        let na = NAdrop_scare_and_kill ds in Coth ` `, na, None
       else if g.attacked > 0 || g.held then attacked_or_held g t na
       else
         begin match treat_moving_monsters_at_one_move g t pos na with
@@ -5340,20 +5354,20 @@ let apply g t message =
               with
                 Some gp ->
                   let na = NAseek_gold_or_monster (gp, gold) in
-                  Coth ' ', na, None
+                  Coth ` `, na, None
               | None ->
                   let graph = make_graph g false in
                   let sp = stairs_pos g in
                   if sp <> [] then
-                    let spos = list__nth sp (random_int g (list__length sp)) in
+                    let spos = list_nth sp (random_int g (list__list_length sp)) in
                     go_to_stairs g t graph pos spos false
                   else start_search g t graph
         end
   | NAgo_to gp ->
       let pos = rogue_pos g in
       if message <> "" then
-        begin tempo g 1.0; let na = NAgo_to gp in Coth ' ', na, None end
-      else if pos = gp.tpos then begin tempo g 1.0; Coth ' ', NAnone, None end
+        begin tempo g 1.0; let na = NAgo_to gp in Coth ` `, na, None end
+      else if pos = gp.tpos then begin tempo g 1.0; Coth ` `, NAnone, None end
       else
         begin
           tempo g 0.1;
@@ -5380,7 +5394,7 @@ let apply g t message =
                     with
                       Some (path, _) ->
                         let gp = {epos = pos; tpos = gp.tpos; path = path} in
-                        let na = NAgo_to gp in Coth ' ', na, None
+                        let na = NAgo_to gp in Coth ` `, na, None
                     | None -> failwith "eh merde"
                   end
         end
@@ -5389,14 +5403,14 @@ let apply g t message =
       if message <> "" then
         begin
           tempo g 1.0;
-          let na = NAgo_to_stairs (gp, strict) in Coth ' ', na, None
+          let na = NAgo_to_stairs (gp, strict) in Coth ` `, na, None
         end
       else if
         on_scare_monster g && g.attacked_by_flame = 0 &&
         not (health_is_maximum g)
       then
-        let na = NAgo_to_stairs (gp, strict) in Coth '.', na, None
-      else if pos = gp.tpos then begin tempo g 1.0; Coth '>', NAnone, None end
+        let na = NAgo_to_stairs (gp, strict) in Coth `.`, na, None
+      else if pos = gp.tpos then begin tempo g 1.0; Coth `>`, NAnone, None end
       else
         begin
           tempo g 0.1;
@@ -5416,7 +5430,7 @@ let apply g t message =
                   let list_obj_ch = interesting_objects g in
                   dist_to_closest g room pos
                     (fun ch dist ->
-                       if ch = '*' || is_gold_seeker_monster g ch then true
+                       if ch = `*` || is_gold_seeker_monster g ch then true
                        else
                          not g.pack_full &&
                          not (list__mem (add_mov pos dist) g.garbage) &&
@@ -5453,8 +5467,8 @@ let apply g t message =
                   let graph = make_graph g false in
                   go_to_stairs g t graph pos gp.tpos strict
           else
-            let len = list__length dl in
-            let (tpos, _) = list__nth dl (random_int g len) in
+            let len = list__list_length dl in
+            let (tpos, _) = list_nth dl (random_int g len) in
             if pos = tpos then start_move_in_corridor g t pos
             else
               match common_room_with g tpos with
@@ -5472,14 +5486,14 @@ let apply g t message =
       if message <> "" then
         begin
           tempo g 0.5;
-          let na = NAgo_unblock_monster um in Coth ' ', na, None
+          let na = NAgo_unblock_monster um in Coth ` `, na, None
         end
       else if g.confused && g.attacked = 0 then
         let na = NAgo_unblock_monster um in
-        let na = NAstring ("33.", false, na) in Coth ' ', na, t.t_prev_mov
+        let na = NAstring ("33.", false, na) in Coth ` `, na, t.t_prev_mov
       else if g.attacked = 0 && not (health_is_maximum g) then
         let gp = old_path_excl_from_to g [] pos base 20 in
-        let na = return_to_base g gp akont in Coth ' ', na, t.t_prev_mov
+        let na = return_to_base g gp akont in Coth ` `, na, t.t_prev_mov
       else if pos = gp.tpos then
         if not (on_scare_monster g) then
           let gp = old_path_excl_from_to g [] pos base 14 in
@@ -5548,9 +5562,9 @@ let apply g t message =
             match block with
               Some (gp, mpos) ->
                 let um = {um with um_gp = gp; um_mpos = mpos} in
-                let na = NAgo_unblock_monster um in Coth ' ', na, t.t_prev_mov
+                let na = NAgo_unblock_monster um in Coth ` `, na, t.t_prev_mov
             | None ->
-                let na = NAgo_unblock_monster um in Coth '.', na, t.t_prev_mov
+                let na = NAgo_unblock_monster um in Coth `.`, na, t.t_prev_mov
       else if pos = gp.epos then
         match gp.path with
           epos :: path ->
@@ -5559,18 +5573,18 @@ let apply g t message =
             let um = {um with um_gp = gp} in
             let na = NAgo_unblock_monster um in
             let mov = move_between pos epos in
-            let na = NAmove (mov, na) in Coth 'm', na, t.t_prev_mov
+            let na = NAmove (mov, na) in Coth `m`, na, t.t_prev_mov
         | [] -> assert false
       else
         let gp = old_path_excl_from_to g [] pos gp.tpos 25 in
         let um = {um with um_gp = gp} in
-        let na = NAgo_unblock_monster um in Coth ' ', na, None
+        let na = NAgo_unblock_monster um in Coth ` `, na, None
   | NAlet_come (mch, move) ->
       tempo g 1.0;
       let pos = rogue_pos g in
       let (monl, movl) = monsters_and_moves_around g in
       let monl =
-        list__filter
+        list_filter
           (fun mov ->
              let ch_mon = dung_char g.dung (add_mov pos mov) in
              ch_mon = mch ||
@@ -5584,7 +5598,7 @@ let apply g t message =
       if message <> "" then
         begin
           tempo g 1.0;
-          let na = NAfight (mch, true, prev_a) in Coth ' ', na, t.t_prev_mov
+          let na = NAfight (mch, true, prev_a) in Coth ` `, na, t.t_prev_mov
         end
       else
         begin match treat_critical_situation g t t.t_next_action with
@@ -5592,13 +5606,13 @@ let apply g t message =
         | None ->
             if not g.confused && not answered then
               let na = NAfight (mch, false, prev_a) in
-              Coth 's', na, t.t_prev_mov
+              Coth `s`, na, t.t_prev_mov
             else
               let pos = rogue_pos g in
               let in_room = current_room_possibly_at_door g pos <> None in
               let (nmon, nmov) = monsters_and_moves_around g in
               let nmon =
-                list__filter
+                list_filter
                   (fun mov ->
                      let mch = dung_char g.dung (add_mov pos mov) in
                      not (is_not_attackable_monster g mch))
@@ -5613,9 +5627,9 @@ let apply g t message =
                   NAseek_gold_or_monster (_, _) | NAseek_object _ |
                   NAthrow_in_the_garbage (_, _, _, _) |
                   NAwear_armor_and_test_scrolls (_, _, _) ->
-                    Coth ' ', prev_a, t.t_prev_mov
+                    Coth ` `, prev_a, t.t_prev_mov
                 | NAnone ->
-                    if in_room then Coth ' ', NAnone, t.t_prev_mov
+                    if in_room then Coth ` `, NAnone, t.t_prev_mov
                     else
                       begin match
                         let pred _ pos = list__mem pos g.regrets in
@@ -5623,13 +5637,13 @@ let apply g t message =
                       with
                         Some gp ->
                           let na = NAseek_object gp in
-                          Coth ' ', na, t.t_prev_mov
+                          Coth ` `, na, t.t_prev_mov
                       | None ->
                           match t.t_prev_mov with
                             Some mov ->
                               let mov = opposite_move mov in
                               move_in_corridor_starting_with_move g pos mov
-                          | None -> Coth ' ', NAnone, t.t_prev_mov
+                          | None -> Coth ` `, NAnone, t.t_prev_mov
                       end
                 | NAmove_in_corridor (_, _, trail) ->
                     continue_move_in_corridor g t pos pos trail
@@ -5641,9 +5655,9 @@ let apply g t message =
         begin
           tempo g 1.0;
           let na = NArun_away (mch, room_path, prev_a) in
-          Coth ' ', na, t.t_prev_mov
+          Coth ` `, na, t.t_prev_mov
         end
-      else if t.t_on_stairs then begin tempo g 1.0; Coth '>', NAnone, None end
+      else if t.t_on_stairs then begin tempo g 1.0; Coth `>`, NAnone, None end
       else
         let pos = rogue_pos g in
         let in_room = g.rogue_room_and_door <> None in
@@ -5653,9 +5667,9 @@ let apply g t message =
             NAwear_armor_and_test_scrolls (_, _, _) |
             NAthrow_in_the_garbage (_, _, _, _) | NAglobal_search1 (_, _) |
             NAglobal_search2 (_, _, _) ->
-              Coth ' ', prev_a, t.t_prev_mov
+              Coth ` `, prev_a, t.t_prev_mov
           | NAnone ->
-              if in_room then Coth ' ', NAnone, t.t_prev_mov
+              if in_room then Coth ` `, NAnone, t.t_prev_mov
               else
                 begin match t.t_prev_mov with
                   Some mov -> move_in_corridor_starting_with_move g pos mov
@@ -5682,7 +5696,7 @@ let apply g t message =
           if message <> "" then
             begin
               tempo g 1.0;
-              let na = NAzap (mov, ch, na, 3) in Coth ' ', na, None
+              let na = NAzap (mov, ch, na, 3) in Coth ` `, na, None
             end
           else
             begin
@@ -5694,7 +5708,7 @@ let apply g t message =
                   else assert false
               | _ -> assert false
               end;
-              Coth ' ', na, t.t_prev_mov
+              Coth ` `, na, t.t_prev_mov
             end
       | step -> failwith (sprintf "NAzap step %d not impl" step)
       end
@@ -5702,11 +5716,11 @@ let apply g t message =
       if message <> "" then
         begin
           tempo g 1.0;
-          let na = NAcheck_no_trap (pos, pos1) in Coth ' ', na, None
+          let na = NAcheck_no_trap (pos, pos1) in Coth ` `, na, None
         end
       else if rogue_pos g = pos1 then
         begin tempo g 0.5; move_command3 g pos1 pos NAnone end
-      else Coth ' ', NAnone, t.t_prev_mov
+      else Coth ` `, NAnone, t.t_prev_mov
   | NAdrop_scare (ch_opt, na) ->
       let pos = rogue_pos g in
       if g.ring_of_slow_digestion_on_hand <> None then g.hist_dung <- [];
@@ -5719,7 +5733,7 @@ let apply g t message =
                 Some (ch, _) ->
                   let na = NAdrop_scare (None, na) in
                   let uo = UOread_scroll (ch, RSread_what) in
-                  let na = NAuse_object (uo, na) in Coth 'r', na, t.t_prev_mov
+                  let na = NAuse_object (uo, na) in Coth `r`, na, t.t_prev_mov
               | None -> random_move g pos na
             end
           else
@@ -5733,7 +5747,7 @@ let apply g t message =
           if message <> "" then
             begin
               tempo g 1.0;
-              let na = NAdrop_scare (None, na) in Coth ' ', na, t.t_prev_mov
+              let na = NAdrop_scare (None, na) in Coth ` `, na, t.t_prev_mov
             end
           else if g.attacked_by_flame > 0 || health_is_maximum g then
             match na with
@@ -5757,16 +5771,16 @@ let apply g t message =
                                     move_command3 g pos gp.epos na
                                   }
                                 | [] -> do {
-                                    (Coth ' ', na, t.t_prev_mov)
+                                    (Coth ` `, na, t.t_prev_mov)
                                   } ]
                 *)
-                let na = NAalone_in_room ar in Coth ' ', na, t.t_prev_mov
+                let na = NAalone_in_room ar in Coth ` `, na, t.t_prev_mov
             | NAdrop_scare_and_kill ds ->
                 let base = ds.ds_base in
                 let gp = old_path_excl_from_to g [] pos base 1 in
-                let na = ds_return_to_base g ds gp in Coth ' ', na, None
+                let na = ds_return_to_base g ds gp in Coth ` `, na, None
             | _ -> assert false
-          else let na = NAdrop_scare (None, na) in Coth '.', na, t.t_prev_mov
+          else let na = NAdrop_scare (None, na) in Coth `.`, na, t.t_prev_mov
       end
   | NAdrop_scare_and_kill ds -> drop_scare_and_kill g t message ds
   | NAalone_in_room ar -> alone_in_room g t message ar
@@ -5778,7 +5792,7 @@ let apply g t message =
               tempo g 1.0;
               g.weapon_cursed <- true;
               let na = NAwield_bow_test_moving (mpos, mch, 2) in
-              Coth ' ', na, None
+              Coth ` `, na, None
             end
           else
             begin match short_bow_in_pack g.pack with
@@ -5792,7 +5806,7 @@ let apply g t message =
             begin
               tempo g 1.0;
               let na = NAwield_bow_test_moving (mpos, mch, 2) in
-              Coth ' ', na, None
+              Coth ` `, na, None
             end
           else
             let pos = rogue_pos g in
@@ -5816,17 +5830,17 @@ let apply g t message =
                 [mpos] ->
                   if mpos.row = pos.row || mpos.col = pos.col then
                     let na = NAmove_throw2 (mpos, mch, "direction") in
-                    Coth 't', na, None
+                    Coth `t`, na, None
                   else
                     begin
                       tempo g 0.5;
                       let na = NAwield_bow_test_moving (mpos, mch, 2) in
-                      Coth '.', na, None
+                      Coth `.`, na, None
                     end
               | _ ->
                   let ch = g.main_sword in
                   let uo = UOwield_sword (ch, "wield what") in
-                  let na = NAuse_object (uo, NAnone) in Coth 'w', na, None
+                  let na = NAuse_object (uo, NAnone) in Coth `w`, na, None
             else
               let room =
                 match current_room_possibly_at_door g pos with
@@ -5840,7 +5854,7 @@ let apply g t message =
       let pos = rogue_pos g in
       let (monl, movl) = monsters_and_moves_around g in
       let monl =
-        list__filter
+        list_filter
           (fun mov ->
              is_attackable_monster g (dung_char g.dung (add_mov pos mov)))
           monl
@@ -5848,10 +5862,10 @@ let apply g t message =
       if message <> "" then
         begin
           tempo g 1.0;
-          let na =           (*next_action*)NAnone in Coth ' ', na, None
+          let na =           (*next_action*)NAnone in Coth ` `, na, None
         end
-      else if g.move_result = MRteleported then Coth ' ', NAnone, t.t_prev_mov
-      else if list__length monl > 0 then
+      else if g.move_result = MRteleported then Coth ` `, NAnone, t.t_prev_mov
+      else if list__list_length monl > 0 then
         let na = NAnone in attack_monsters g t movl monl na
       else if is_moving g t mpos then
         begin
@@ -5869,10 +5883,10 @@ let apply g t message =
           in
           if g.weapon_cursed || short_bow_in_pack g.pack = None then
             let na = NAmove_throw2 (mpos, mch, "direction") in
-            Coth 't', na, None
+            Coth `t`, na, None
           else
             let na = NAmove_throw2 (mpos, mch, "what bow") in
-            Coth 'w', na, None
+            Coth `w`, na, None
         end
       else
         begin match path with
@@ -5880,10 +5894,10 @@ let apply g t message =
             tempo g 1.0;
             if g.weapon_cursed || short_bow_in_pack g.pack = None then
               let na = NAmove_throw2 (mpos, mch, "direction") in
-              Coth 't', na, None
+              Coth `t`, na, None
             else
               let na = NAmove_throw2 (mpos, mch, "what bow") in
-              Coth 'w', na, None
+              Coth `w`, na, None
         | mov :: path ->
             tempo g 0.1;
             let na = NAmove_throw1 (path, mpos, mch) in
@@ -5897,7 +5911,7 @@ let apply g t message =
               tempo g 1.0;
               g.weapon_cursed <- true;
               let na = NAmove_throw2 (mpos, mch, "ready") in
-              Coth ' ', na, None
+              Coth ` `, na, None
             end
           else
             begin match short_bow_in_pack g.pack with
@@ -5919,17 +5933,17 @@ let apply g t message =
                   Some (ch, _) -> g.pack <- list__remove_assoc ch g.pack
                 | None -> ()
                 end;
-              let na = NAmove_throw2 (mpos, mch, step) in Coth ' ', na, None
+              let na = NAmove_throw2 (mpos, mch, step) in Coth ` `, na, None
             end
           else
             let na = NAmove_throw2 (mpos, mch, "direction") in
-            Coth 't', na, None
+            Coth `t`, na, None
       | "direction" ->
           let pos = rogue_pos g in
           let ch =
-            if pos.row = mpos.row then if pos.col < mpos.col then 'l' else 'h'
-            else if pos.row < mpos.row then 'j'
-            else 'k'
+            if pos.row = mpos.row then if pos.col < mpos.col then `l` else `h`
+            else if pos.row < mpos.row then `j`
+            else `k`
           in
           let na = NAmove_throw2 (mpos, mch, "throw what") in
           Coth ch, na, None
@@ -5944,7 +5958,7 @@ let apply g t message =
           if message <> "" then
             begin
               tempo g 1.0;
-              let na = NAmove_throw2 (mpos, mch, step) in Coth ' ', na, None
+              let na = NAmove_throw2 (mpos, mch, step) in Coth ` `, na, None
             end
           else
             let pos = rogue_pos g in
@@ -5957,7 +5971,7 @@ let apply g t message =
                     then
                       let step = "wield sword and attack" in
                       let na = NAmove_throw2 (mpos, mch, step) in
-                      Coth 'w', na, None
+                      Coth `w`, na, None
                     else if distance pos mpos = 1 then
                       let na =
                         NAmove_throw2 (mpos, mch, "attack with sword")
@@ -5965,18 +5979,18 @@ let apply g t message =
                       move_command3 g pos mpos na
                     else
                       let na = NAmove_throw2 (mpos, mch, "direction") in
-                      Coth 't', na, None
+                      Coth `t`, na, None
                 | None ->
-                    if g.weapon_cursed then Coth ' ', NAnone, t.t_prev_mov
+                    if g.weapon_cursed then Coth ` `, NAnone, t.t_prev_mov
                     else
                       let na = NAmove_throw2 (mpos, mch, "wield sword") in
-                      Coth 'w', na, None
+                      Coth `w`, na, None
                 end
             | None ->
-                if g.weapon_cursed then Coth ' ', NAnone, t.t_prev_mov
+                if g.weapon_cursed then Coth ` `, NAnone, t.t_prev_mov
                 else
                   let na = NAmove_throw2 (mpos, mch, "wield sword") in
-                  Coth 'w', na, None
+                  Coth `w`, na, None
             end
       | "wield sword" -> g.hist_dung <- []; Coth g.main_sword, NAnone, None
       | "wield sword and attack" ->
@@ -5987,7 +6001,7 @@ let apply g t message =
           if message <> "" then
             begin
               tempo g 1.0;
-              let na = NAmove_throw2 (mpos, mch, step) in Coth ' ', na, None
+              let na = NAmove_throw2 (mpos, mch, step) in Coth ` `, na, None
             end
           else
             let pos = rogue_pos g in
@@ -5996,16 +6010,16 @@ let apply g t message =
                 if distance pos mpos = 1 then
                   let na = NAmove_throw2 (mpos, mch, step) in
                   move_command3 g pos mpos na
-                else begin tempo g 1.0; Coth ' ', NAnone, t.t_prev_mov end
-            | None -> tempo g 1.0; Coth ' ', NAnone, t.t_prev_mov
+                else begin tempo g 1.0; Coth ` `, NAnone, t.t_prev_mov end
+            | None -> tempo g 1.0; Coth ` `, NAnone, t.t_prev_mov
             end
-      | step -> failwith (sprintf "NAmove_throw2 step '%s'" step)
+      | step -> failwith (sprintf "NAmove_throw2 step `%s`" step)
       end
   | NAglobal_search1 (gp, around) ->
       if message <> "" then
         begin
           tempo g 1.0;
-          let na = NAglobal_search1 (gp, around) in Coth ' ', na, None
+          let na = NAglobal_search1 (gp, around) in Coth ` `, na, None
         end
       else
         begin match treat_moving_monsters_at_one_move2 g t with
@@ -6026,11 +6040,11 @@ let apply g t message =
                     make_graph g insist
                   in
                   let na = NAglobal_search2 (graph, around, 1) in
-                  Coth 's', na, None
+                  Coth `s`, na, None
                 else if
                   g.confused && monsters_around g pos = [] && g.attacked = 0
                 then
-                  let na = NAglobal_search1 (gp, around) in Coth 's', na, None
+                  let na = NAglobal_search1 (gp, around) in Coth `s`, na, None
                 else if pos = gp.epos then
                   match gp.path with
                     pos1 :: path ->
@@ -6055,7 +6069,7 @@ let apply g t message =
                       | [] ->
                           (* already there, likely after being teleported *)
                           let na = NAglobal_search2 (graph, around, 1) in
-                          Coth 's', na, None
+                          Coth `s`, na, None
                       end
                   | None ->
                       (* happened one day when teleported in an isolated room *)
@@ -6068,7 +6082,7 @@ let apply g t message =
                 (*
                           attack_monsters g t movl monl na
                 *)
-                let mov = list__nth monl (random_int g (list__length monl)) in
+                let mov = list_nth monl (random_int g (list__list_length monl)) in
                 move_command2 g pos (add_mov pos mov) na
               end
         end
@@ -6077,7 +6091,7 @@ let apply g t message =
         begin
           tempo g 1.0;
           let na = NAglobal_search2 (graph, around, ntimes) in
-          Coth ' ', na, None
+          Coth ` `, na, None
         end
       else
         let pos = rogue_pos g in
@@ -6092,7 +6106,7 @@ let apply g t message =
               None ->
                 if ntimes < 5 then
                   let na = NAglobal_search2 (graph, around, ntimes + 1) in
-                  Coth 's', na, None
+                  Coth `s`, na, None
                 else if ntimes = 5 then
                   begin
                     (* test possible invisible monster *)
@@ -6100,15 +6114,15 @@ let apply g t message =
                     let na = NAglobal_search2 (graph, around, ntimes + 1) in
                     let rec loop movl k =
                       if k = 8 then
-                        if movl = [] then Coth ' ', na, None
+                        if movl = [] then Coth ` `, na, None
                         else
-                          let len = list__length movl in
-                          let mov = list__nth movl (random_int g len) in
+                          let len = list__list_length movl in
+                          let mov = list_nth movl (random_int g len) in
                           move_command2 g pos (add_mov pos mov) na
                       else
                         let mov = mov_of_k k in
                         let pos1 = add_mov pos mov in
-                        if in_dung g pos1 && dung_char g.dung pos1 = ' ' then
+                        if in_dung g pos1 && dung_char g.dung pos1 = ` ` then
                           loop (mov :: movl) (k + 1)
                         else loop movl (k + 1)
                     in
@@ -6147,7 +6161,7 @@ let apply g t message =
                             start_search g t graph
                         | Some sp ->
                             let tpos =
-                              list__nth sp (random_int g (list__length sp))
+                              list_nth sp (random_int g (list__list_length sp))
                             in
                             go_to_stairs g t graph pos tpos false
                   end
@@ -6158,7 +6172,7 @@ let apply g t message =
                   if mov.di = 0 || mov.dj = 0 then
                     let na = NAnone in
                     move_command3 g pos (add_mov pos mov) na
-                  else Coth ' ', NAnone, t.t_prev_mov
+                  else Coth ` `, NAnone, t.t_prev_mov
                 else move_in_corridor_starting_with_move g pos mov
           end
         else
@@ -6169,7 +6183,7 @@ let apply g t message =
         begin
           tempo g 1.0;
           let na = NAsearch_and_back (from, around, ntimes) in
-          Coth ' ', na, t.t_prev_mov
+          Coth ` `, na, t.t_prev_mov
         end
       else
         let pos = rogue_pos g in
@@ -6205,7 +6219,7 @@ let apply g t message =
                   [] ->
                     (* likely at door; restarting the search *)
                     let na = NAsearch_and_back (from, around, 0) in
-                    Coth 's', na, t.t_prev_mov
+                    Coth `s`, na, t.t_prev_mov
                 | all_paths ->
                     let paths =
                       select_less_explorated_paths_in_corridor g all_paths
@@ -6215,8 +6229,8 @@ let apply g t message =
                                     let paths = select_ahead_moves_in_corridor g pos mov paths in
                     *)
                     let paths = if paths = [] then all_paths else paths in
-                    let len = list__length paths in
-                    let (path, tpos) = list__nth paths (random_int g len) in
+                    let len = list__list_length paths in
+                    let (path, tpos) = list_nth paths (random_int g len) in
                     match path with
                       pos1 :: path ->
                         let gp = {epos = pos1; tpos = tpos; path = path} in
@@ -6227,12 +6241,12 @@ let apply g t message =
                 begin
                   tempo g 0.1;
                   let na = NAsearch_and_back (from, around, ntimes + 1) in
-                  Coth 's', na, t.t_prev_mov
+                  Coth `s`, na, t.t_prev_mov
                 end
           end
   | NAnone ->
       let pos = rogue_pos g in
-      if message <> "" then begin tempo g 1.0; Coth ' ', NAnone, None end
+      if message <> "" then begin tempo g 1.0; Coth ` `, NAnone, None end
       else if g.blind then random_move g pos NAnone
       else
         match
@@ -6242,17 +6256,17 @@ let apply g t message =
           Some (ch_scr, _) ->
             if wearing_best_armor g then
               let uo = UOread_scroll (ch_scr, RSread_what) in
-              let na = NAuse_object (uo, NAnone) in Coth 'r', na, t.t_prev_mov
+              let na = NAuse_object (uo, NAnone) in Coth `r`, na, t.t_prev_mov
             else
               let ws = WStoken_off in
               let na = NAread_scroll_for_best_armor (ch_scr, NAnone, ws) in
-              Coth 'T', na, t.t_prev_mov
+              Coth `T`, na, t.t_prev_mov
         | None ->
             match scroll_of_enchant_weapon_in_pack g.pack with
               Some (ch, _) ->
                 let uo = UOread_scroll (ch, RSread_what) in
                 let na = NAuse_object (uo, NAnone) in
-                Coth 'r', na, t.t_prev_mov
+                Coth `r`, na, t.t_prev_mov
             | None ->
                 if g.pack_full && g.attacked = 0 && monsters_around g pos = []
                 then
@@ -6266,22 +6280,22 @@ let apply g t message =
                     else unidentified_armor_in_pack g.pack
                   with
                     Some (ch, _) ->
-                      Coth 'T', NAwear (ch, 1, NAnone), t.t_prev_mov
+                      Coth `T`, NAwear (ch, 1, NAnone), t.t_prev_mov
                   | None ->
                       if not g.armor_cursed && g.worn_armor <> None &&
                          not (worn_armor_protected g) && aquator_around g
                       then
-                        Coth 'T', NAwear (' ', 1, NAnone), t.t_prev_mov
+                        Coth `T`, NAwear (` `, 1, NAnone), t.t_prev_mov
                       else if
                         not (wielding_a_two_handed_sword g) &&
                         two_handed_swords_in_pack g <> []
                       then
                         let list = two_handed_swords_in_pack g in
-                        let len = list__length list in
-                        let (ch, _) = list__nth list (random_int g len) in
+                        let len = list__list_length list in
+                        let (ch, _) = list_nth list (random_int g len) in
                         let uo = UOwield_sword (ch, "wield what") in
                         let na = NAuse_object (uo, NAnone) in
-                        Coth 'w', na, t.t_prev_mov
+                        Coth `w`, na, t.t_prev_mov
                       else
                         match
                           if g.ring_of_slow_digestion_on_hand <> None ||
@@ -6293,7 +6307,7 @@ let apply g t message =
                           Some (ch, _) ->
                             let uo = UOread_scroll (ch, RSread_what) in
                             let na = NAuse_object (uo, NAnone) in
-                            Coth 'r', na, t.t_prev_mov
+                            Coth `r`, na, t.t_prev_mov
                         | None ->
                             if not g.blind && not (wearing_best_armor g) &&
                                scroll_of_protect_armor_in_pack g.pack <> None
@@ -6311,7 +6325,7 @@ let apply g t message =
                                     NAwear_armor_and_test_scrolls
                                       (ch_arm, ch_scr, WStoken_off)
                                   in
-                                  Coth 'T', na, t.t_prev_mov
+                                  Coth `T`, na, t.t_prev_mov
                               | None -> failwith "no armor"
                             else
                               match
@@ -6325,7 +6339,7 @@ let apply g t message =
                                       UOread_scroll (ch_scr, RSread_what)
                                     in
                                     let na = NAuse_object (uo, NAnone) in
-                                    Coth 'r', na, t.t_prev_mov
+                                    Coth `r`, na, t.t_prev_mov
                                   else
                                     begin match best_armor g with
                                       Some (ch_arm, _) ->
@@ -6333,7 +6347,7 @@ let apply g t message =
                                           NAwear_armor_and_test_scrolls
                                             (ch_arm, ch_scr, WStoken_off)
                                         in
-                                        Coth 'T', na, t.t_prev_mov
+                                        Coth `T`, na, t.t_prev_mov
                                     | None -> failwith "no armors"
                                     end
                               | None ->
@@ -6346,7 +6360,7 @@ let apply g t message =
                                   then
                                     begin
                                       tempo g 1.0;
-                                      Coth '>', NAnone, None
+                                      Coth `>`, NAnone, None
                                     end
                                   else if
                                     g.time_in_level > max_time_in_level &&
@@ -6359,8 +6373,8 @@ let apply g t message =
                                       let sp = stairs_pos g in
                                       let graph = make_graph g false in
                                       let tpos =
-                                        list__nth sp
-                                          (random_int g (list__length sp))
+                                        list_nth sp
+                                          (random_int g (list__list_length sp))
                                       in
                                       go_to_stairs g t graph pos tpos false
                                     end
