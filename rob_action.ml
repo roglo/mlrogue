@@ -1260,7 +1260,8 @@ let rec connected_to_rooms_without_exit g pos =
           begin match find_doors g room with
             [_] -> true
           | [d1, _; d2, _] ->
-              assert (tpos = d1 || tpos = d2);
+              if (tpos = d1 || tpos = d2) then ()
+              else failwith "tpos = d1 || tpos = d2";
               let d = if tpos = d1 then d2 else d1 in
               connected_to_rooms_without_exit g d
           | [] -> failwith "assert false"
@@ -1274,10 +1275,10 @@ let rec connected_to_rooms_without_exit g pos =
 let room_contents g (rmin, cmin, rmax, cmax) =
   let has_mon = ref false in
   let a =
-    Array.init (rmax - rmin + 1)
+    vect__init_vect (rmax - rmin + 1)
       (fun i ->
          let row = rmin + i in
-         Array.init (cmax - cmin + 1)
+         vect__init_vect (cmax - cmin + 1)
            (fun j ->
               let col = cmin + j in
               let ch = g.dung.tab.(row).[col] in
@@ -1363,7 +1364,7 @@ let monster_behind_a_hidden_door g room =
   let possible_hidden_doors_dirs =
     let rec loop list =
       function
-        (_, dir) :: rest -> loop (list_filter ((<>) dir) list) rest
+        (_, dir) :: rest -> loop (list_filter (fun x -> dir <> x) list) rest
       | [] -> list
     in
     loop [DoorUp; DoorDown; DoorLeft; DoorRight] dl
@@ -1402,7 +1403,7 @@ let check_room g room pred =
     else if pos.col = cmax + 1 then loop {row = pos.row + 1; col = cmin}
     else
       let mch = dung_char g.dung pos in
-      if pred mch then true else loop {pos with col = pos.col + 1}
+      if pred mch then true else loop {row = pos.row; col = pos.col + 1}
   in
   loop {row = rmin; col = cmin}
 ;;
@@ -1420,6 +1421,7 @@ type step_go_corr =
   | SGChome
 ;;
 
+(*
 let step_go_in_corridor_and_hit g t message base gp step =
   let pos = rogue_pos g in
   match step with
@@ -1512,6 +1514,7 @@ let step_go_in_corridor_and_hit g t message base gp step =
   | "7" -> SGCchar (`.`, "on the way")
   | step -> failwith (sprintf "step_go_in_corridor_and_hit step `%s`" step)
 ;;
+*)
 
 let monster_perhaps_blocked_in_corridor_by_scroll g ipos pos =
   match g.rogue_room_and_door with
@@ -1531,7 +1534,7 @@ let monster_perhaps_blocked_in_corridor_by_scroll g ipos pos =
       in
       let paths =
         sort__sort
-          (fun (p1, _) (p2, _) -> compare (list__list_length p1) (list__list_length p2))
+          (fun (p1, _) (p2, _) -> list__list_length p1 <= list__list_length p2)
           paths
       in
       begin match paths with
@@ -1683,7 +1686,7 @@ let manage_full_pack g t =
                             list__map
                               (fun (dpos, _) -> distance pos dpos, dpos) dl2
                           in
-                          let dl2 = sort__sort compare dl2 in
+                          let dl2 = sort__sort (fun x y -> x <= y) dl2 in
                           let (_, dpos) = list__hd dl2 in
                           match path_excl_from_to g [] pos dpos with
                             Some gp ->
