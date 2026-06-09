@@ -9,10 +9,10 @@ type ('a, 't) PosMap =
     find : position -> 't -> 'a }
 ;;
 
-type 't PosSet =
-  { empty : 't;
-    add : position -> 't -> 't;
-    mem : position -> 't -> bool }
-;;
+type PosSet_t;;
 
-value PosSet : 'a PosSet;;
+type PosSet =
+  { empty : PosSet_t;
+    add : position -> PosSet_t -> PosSet_t;
+    mem : position -> PosSet_t -> bool }
+;;
