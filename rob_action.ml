@@ -1873,6 +1873,7 @@ let is_safe_to_go_to_stairs_room g t base =
   | [] | _ :: _ -> false
 ;;
 
+(*
 let drop_scare_and_kill g t message ds =
   let transl = transl g in
   let pos = rogue_pos g in
@@ -2016,7 +2017,7 @@ let drop_scare_and_kill g t message ds =
                     with
                       Some dir ->
                         if mov = one_step_to_exit_room dir then
-                          Some {ds with ds_last_corridor_kill_time = g.time}
+                          Some {(*ds with*) ds_last_corridor_kill_time = g.time}
                         else if
                           len = 1 && ds.ds_last_corridor_kill_time > 0 &&
                           g.time > ds.ds_last_corridor_kill_time + 100
@@ -2027,7 +2028,7 @@ let drop_scare_and_kill g t message ds =
                   in
                   match ds_opt with
                     Some ds ->
-                      let ds = {ds with ds_outside_tested = false} in
+                      let ds = {(*ds with*) ds_outside_tested = false} in
                       let na = NAdrop_scare_and_kill ds in Coth `F`, na, None
                   | None ->
                       (* perhaps a `scare monsters` scroll in the corridor *)
@@ -2116,7 +2117,7 @@ let drop_scare_and_kill g t message ds =
                           function
                             spos :: spos_list ->
                               let sdist =
-                                let pred _ = (=) spos in
+                                let pred _ pos2 = spos = pos2 in
                                 match direct_path_excl g [] pos pred with
                                   Some (path, _) -> list__list_length path
                                 | None -> max_int
@@ -2416,7 +2417,7 @@ let drop_scare_and_kill g t message ds =
                                     let ds = drop_scare ds DScheck_monsters in
                                     let ds =
                                       let n = ds.ds_nb_attempt + 1 in
-                                      {ds with ds_nb_killed_in_corr = 0;
+                                      {(*ds with*) ds_nb_killed_in_corr = 0;
                                        ds_nb_attempt = n}
                                     in
                                     let na = NAdrop_scare_and_kill ds in
@@ -2424,7 +2425,7 @@ let drop_scare_and_kill g t message ds =
                                     Coth `9`, na, None
                                   else
                                     let ds =
-                                      {ds with ds_nb_killed_in_corr = 0;
+                                      {(*ds with*) ds_nb_killed_in_corr = 0;
                                        ds_nb_attempt = 0}
                                     in
                                     ds_go_in_corridor_and_hit g pos ds
@@ -2648,17 +2649,17 @@ let drop_scare_and_kill g t message ds =
                               let mov = list__hd monl in
                               let ch = basic_command_of_move mov in
                               let ds =
-                                {ds with ds_monster_perhaps_blocked = None}
+                                {(*ds with*) ds_monster_perhaps_blocked = None}
                               in
                               let ds = drop_scare ds (DSforce_kill ch) in
                               let nb_killed_in_corr =
                                 ds.ds_nb_killed_in_corr + 1
                               in
                               let ds =
-                                {ds with ds_nb_killed_in_corr =
+                                {(*ds with*) ds_nb_killed_in_corr =
                                   nb_killed_in_corr}
                               in
-                              let ds = {ds with ds_outside_tested = false} in
+                              let ds = {(*ds with*) ds_outside_tested = false} in
                               let na = NAdrop_scare_and_kill ds in
                               Coth `F`, na, None
                             else
@@ -2670,9 +2671,9 @@ let drop_scare_and_kill g t message ds =
       begin match step with
         1 ->
           if stime <> "" then
-            let len = String.length stime in
+            let len = string__string_length stime in
             let ch = stime.[0] in
-            let stime = String.sub stime 1 (len - 1) in
+            let stime = string__sub_string stime 1 (len - 1) in
             let ds = drop_scare ds (DSgive_them_chance (stime, 1)) in
             let na = NAdrop_scare_and_kill ds in Coth ch, na, None
           else if message <> "" then
@@ -3122,13 +3123,13 @@ let drop_scare_and_kill g t message ds =
                                             perhaps_blocked
                                         in
                                         let ds =
-                                          {ds with ds_monster_perhaps_blocked =
+                                          {(*ds with*) ds_monster_perhaps_blocked =
                                             mpb}
                                         in
                                         match block with
                                           Some (gp, mpos) ->
                                             let ds =
-                                              {ds with ds_state = DSdropped 0}
+                                              {(*ds with*) ds_state = DSdropped 0}
                                             in
                                             let na =
                                               NAdrop_scare_and_kill ds
@@ -3166,7 +3167,7 @@ let drop_scare_and_kill g t message ds =
                         else
                           let dss = DSdropped (ntest + 1) in
                           let ds = drop_scare ds dss in
-                          let ds = {ds with ds_outside_tested = true} in
+                          let ds = {(*ds with*) ds_outside_tested = true} in
                           let na = NAdrop_scare_and_kill ds in
                           Coth `.`, na, t.t_prev_mov
                     end
@@ -3186,7 +3187,7 @@ let drop_scare_and_kill g t message ds =
             let ds = drop_scare ds (DStest_out_in (move, rc, 2)) in
             let na = NAdrop_scare_and_kill ds in Coth `m`, na, None
         | 2 ->
-            let ds = {ds with ds_outside_tested = true} in
+            let ds = {(*ds with*) ds_outside_tested = true} in
             let ds = drop_scare ds (DStest_move (0, rc)) in
             let na = NAdrop_scare_and_kill ds in
             let (comm, na) =
@@ -3195,16 +3196,17 @@ let drop_scare_and_kill g t message ds =
             comm, na, None
         | _ -> failwith (sprintf "not impl DStest_out_in step %d" step)
 ;;
+*)
 
 let set_ar_door_trip_cnt pos ar =
   let dl =
     list__map
       (fun ard ->
-         if ard.ard_pos = pos then {ard with ard_trip_cnt = ar.ar_trip_cnt}
+         if ard.ard_pos = pos then {(*ard with*) ard_trip_cnt = ar.ar_trip_cnt}
          else ard)
       ar.ar_doors
   in
-  {ar with ar_doors = dl}
+  {(*ar with*) ar_doors = dl}
 ;;
 
 let get_ar_door_trip_cnt pos ar =
@@ -4065,7 +4067,7 @@ let at_dot = [`@`; `.`];;
 
 let around_diff a1 a2 =
   let rec loop k =
-    if k = String.length a1.ar then None
+    if k = string__string_length a1.ar then None
     else if
       a1.ar.[k] = a2.ar.[k] || list__mem a1.ar.[k] at_dot ||
       list__mem a2.ar.[k] at_dot
@@ -4619,7 +4621,7 @@ let apply g t message =
                   | [_] ->
                       let mov = move_between pos gp.tpos in
                       let ch = basic_command_of_move mov in
-                      let str = String.make 1 ch in
+                      let str = string__make 1 ch in
                       let na = NAgo_identify_trap (gp, "ask", na) in
                       let na = NAstring (str, false, na) in
                       Coth `^`, na, t.t_prev_mov
@@ -5040,9 +5042,9 @@ let apply g t message =
       else
         let ch = str.[0] in
         let na =
-          if String.length str = 1 then na
+          if string__string_length str = 1 then na
           else
-            let str = String.sub str 1 (String.length str - 1) in
+            let str = string__sub_string str 1 (string__string_length str - 1) in
             NAstring (str, skip_mess, na)
         in
         Coth ch, na, t.t_prev_mov
