@@ -29,3 +29,5 @@ value wake_up : monster -> unit;;
 
 value nth_field : string -> int -> string;;
 value string_eq : string -> int -> string -> int -> int -> bool;;
+
+value list_nth : 'a list -> int -> 'a;;
