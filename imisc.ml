@@ -50,11 +50,11 @@ let gr_row_col g mask m =
 ;;
 
 let has_amulet g =
-  List.exists (fun (_, ob) -> ob.ob_kind = Amulet) g.rogue.pack
+  list__exists (fun (_, ob) -> ob.ob_kind = Amulet) g.rogue.pack
 ;;
 
 let gr_obj_char () =
-  let rs = "%!?]=/):*" in let r = get_rand 0 (String.length rs - 1) in rs.[r]
+  let rs = "%!?]=/):*" in let r = get_rand 0 (string__string_length rs - 1) in rs.[r]
 ;;
 
 let hp_raise g = if g.wizard then 10 else get_rand 3 10;;
@@ -96,27 +96,27 @@ let get_damage g (n, d, kl) r =
 let rand_around g i r c =
   if i = 0 then
     begin
-      f_int.Efield.set g.env "rand_around_row" r;
-      f_int.Efield.set g.env "rand_around_col" c;
+      f_int.efield__set g.env "rand_around_row" r;
+      f_int.efield__set g.env "rand_around_col" c;
       let o = get_rand 1 8 in
       for j = 0 to 4 do
         let x = get_rand 0 8 in
         let y = (x + o) mod 9 in
         let pos =
-          f_array.Efield.get g.env "rand_around_pos"
+          f_array.efield__get g.env "rand_around_pos"
             [| 8; 7; 1; 3; 4; 5; 2; 6; 0 |]
         in
         let t = pos.(x) in
         pos.(x) <- pos.(y);
         pos.(y) <- t;
-        f_array.Efield.set g.env "rand_around_pos" pos
+        f_array.efield__set g.env "rand_around_pos" pos
       done
     end;
   let pos =
-    f_array.Efield.get g.env "rand_around_pos" [| 8; 7; 1; 3; 4; 5; 2; 6; 0 |]
+    f_array.efield__get g.env "rand_around_pos" [| 8; 7; 1; 3; 4; 5; 2; 6; 0 |]
   in
-  let row = f_int.Efield.get g.env "rand_around_row" 0 in
-  let col = f_int.Efield.get g.env "rand_around_col" 0 in
+  let row = f_int.efield__get g.env "rand_around_row" 0 in
+  let col = f_int.efield__get g.env "rand_around_col" 0 in
   match pos.(i) with
     0 -> row + 1, col + 1
   | 1 -> row + 1, col - 1
@@ -127,15 +127,15 @@ let rand_around g i r c =
   | 6 -> row, col
   | 7 -> row - 1, col
   | 8 -> row, col - 1
-  | _ -> assert false
+  | _ -> failwith "assert false"
 ;;
 
 let rec nth_field s n =
   let rec loop i n =
-    match try Some (String.index_from s i '/') with Not_found -> None with
-      Some j -> if n = 0 then String.sub s i j else loop (j + 1) (n - 1)
+    match try Some (string__index_from s i '/') with Not_found -> None with
+      Some j -> if n = 0 then string__sub s i j else loop (j + 1) (n - 1)
     | None ->
-        if n = 0 then String.sub s i (String.length s - i) else nth_field s 0
+        if n = 0 then string__sub s i (string__string_length s - i) else nth_field s 0
   in
   loop 0 n
 ;;
@@ -189,7 +189,7 @@ let insert_object obj =
 let first_avail_ichar pack =
   let rec loop c =
     if c > 'z' then '?'
-    else if List.mem_assoc c pack then loop (Char.chr (Char.code c + 1))
+    else if list__mem_assoc c pack then loop (Char.chr (Char.code c + 1))
     else c
   in
   loop 'a'
@@ -202,7 +202,7 @@ let add_to_pack g obj =
       [] -> let c = first_avail_ichar rpack in obj, c, [c, obj]
     | (c, obj) :: _ -> obj, c, pack
   in
-  g.rogue.pack <- List.rev_append rpack pack; c, obj
+  g.rogue.pack <- list__rev_append rpack pack; c, obj
 ;;
 
 let do_wear g c a =
@@ -220,8 +220,8 @@ let get_armor_class =
 let string_eq s i t j =
   let rec loop i j len =
     if len <= 0 then true
-    else if i = String.length s then false
-    else if j = String.length t then false
+    else if i = string__string_length s then false
+    else if j = string__string_length t then false
     else if s.[i] = t.[j] then loop (i + 1) (j + 1) (len - 1)
     else false
   in
