@@ -440,6 +440,22 @@ and unset_edit () =
   | None -> ()
 ;;
 
+let rec parse_int_loop n =
+  function
+    [< '`0`..`9` as c;
+       (parse_int_loop (10 * n + char__int_of_char c - char__int_of_char `0`))
+         m >] -> m
+  | [< >] -> n
+;;
+
+let parse_int = parse_int_loop 0;;
+
+let parse_screen_size =
+  function
+    [< '`\027`; '`[`; parse_int row; '`;`; parse_int col; '`R` >] ->
+      (row, col)
+;;
+
 let initscr () =
   if d.no_output then begin d.max_row <- 24; d.max_col <- 80 end
   else
@@ -462,15 +478,18 @@ let initscr () =
         loop_i 0
       in
       try
-        Scanf.sscanf (string_of_bytes line) "\027[%d;%dR"
-          (fun x y -> d.max_row <- x; d.max_col <- y)
-      with Scanf.Scan_failure _ | End_of_file ->
+        let (row, col) =
+          parse_screen_size (stream__stream_of_string (string_of_bytes line))
+        in
+        d.max_row <- row;
+        d.max_col <- col
+      with stream__Parse_failure | stream__Parse_error ->
         d.max_row <- 24; d.max_col <- 80
     end;
-  d.bcur <- vect__init d.max_row (fun _ -> vect__make d.max_col utf8_sp);
-  d.bnew <- vect__init d.max_row (fun _ -> vect__make d.max_col utf8_sp);
-  d.acur <- vect__init d.max_row (fun _ -> vect__make d.max_col no_attr);
-  d.anew <- vect__init d.max_row (fun _ -> vect__make d.max_col no_attr);
+  d.bcur <- vect__init_vect d.max_row (fun _ -> vect__make_vect d.max_col utf8_sp);
+  d.bnew <- vect__init_vect d.max_row (fun _ -> vect__make_vect d.max_col utf8_sp);
+  d.acur <- vect__init_vect d.max_row (fun _ -> vect__make_vect d.max_col no_attr);
+  d.anew <- vect__init_vect d.max_row (fun _ -> vect__make_vect d.max_col no_attr);
   d.attr_set <- no_attr;
   d.cur_attr <- no_attr;
   clear ()
