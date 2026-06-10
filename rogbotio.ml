@@ -11,11 +11,21 @@ let is_socket_file name =
   let stats = unix__lstat name in stats.unix__st_kind = unix__S_SOCK
 ;;
 
+let sys_file_exists fname =
+  try
+    let ic = io__open_in fname in
+    io__close_in ic;
+    true
+  with sys__Sys_error _ -> false
+;;
+
+let inet_addr_any = unix__inet_addr_of_string "0.0.0.0";;
+
 let socket str =
   let addr =
-    try unix__ADDR_INET (unix__inet_addr_any, int_of_string str) with
+    try unix__ADDR_INET (inet_addr_any, int_of_string str) with
       Failure _ ->
-        if Sys.file_exists str then
+        if sys_file_exists str then
           if is_socket_file str then unix__unlink str
           else failwith (sprintf "error: file \'%s\' exists." str);
         unix__ADDR_UNIX str
