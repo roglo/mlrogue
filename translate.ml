@@ -282,7 +282,7 @@ let rec eval_shift s =
                     begin string_set t j ` `; j + 1 end
                   else j
                 in
-                string__blit s l t j len; i, j + len
+                string__blit_string s l t j len; i, j + len
             in
             loop i j
           else
@@ -291,17 +291,17 @@ let rec eval_shift s =
                 if s.[i] = ` ` then
                   begin
                     string_set t j ` `;
-                    string__blit s l t (j + 1) len;
+                    string__blit_string s l t (j + 1) len;
                     i, j + 1 + len
                   end
                 else begin string_set t j s.[i]; loop (i + 1) (j + 1) end
               else if k < string__string_length s && s.[k] = ` ` then
                 begin
                   string_set t j ` `;
-                  string__blit s l t (j + 1) len;
+                  string__blit_string s l t (j + 1) len;
                   i, j + 1 + len
                 end
-              else begin string__blit s l t j len; i, j + len end
+              else begin string__blit_string s l t j len; i, j + len end
             in
             loop i j
         in
@@ -377,7 +377,7 @@ let etransl str =
 ;;
 
 let translc lang c =
-  let s = transl lang (string__make 1 c) in
+  let s = transl lang (string__make_string 1 c) in
   if string__string_length s = 1 then s.[0] else c
 ;;
 
