@@ -1,146 +1,138 @@
 (* $Id: translate.ml,v 1.28 2018/04/26 09:52:37 deraugla Exp $ *)
 
-value string_create = Bytes.create;
-value string_set = Bytes.set;
-value string_get = Bytes.get;
-value string_sub = Bytes.sub;
-value string_of_bytes = Bytes.to_string;
+let string_create = string__create_string;;
+let string_set = string__set_nth_char;;
+let string_get = string__nth_char;;
+let string_sub = string__sub_string;;
+let string_of_bytes (s : string) = s;;
 
-value lex = "rogue.lexicon";
+let lex = "rogue.lexicon";;
 
-value lexicon = Hashtbl.create 1;
-value lexicon_mtime = ref 0.0;
-value lang = ref "";
+let lexicon = hashtbl__new 1;;
+let lexicon_mtime = ref 0.0;;
+let lang = ref "";;
 
-value add_lexicon word transl =
+let add_lexicon word transl =
   let transl =
     match transl with
-    [ Some transl -> transl
-    | None -> "[" ^ word ^ "]" ]
+      Some transl -> transl
+    | None -> "[" ^ word ^ "]"
   in
-  Hashtbl.add lexicon word transl
-;
+  hashtbl__add lexicon word transl
+;;
 
-value cut_trail_dot s =
-  let len = String.length s in
+let cut_trail_dot s =
+  let len = string__string_length s in
   if (len >= 3 && s.[len-2] = ' ' || len = 1) && s.[len-1] = '.' then
-    String.sub s 0 (len - 1)
+    string__sub s 0 (len - 1)
   else s
-;
+;;
 
-value read_lexicon () = do {
+let read_lexicon () =
   let ic = open_in lex in
-  try
-    while True do {
-      let s =
-        let s = input_line ic in
-        cut_trail_dot s
-      in
-      let len = String.length s in
-      if len >= 4 && String.sub s 0 4 = "    " then
-        let s = String.sub s 4 (len - 4) in
-        if lang.val <> "" then
-          loop "" where rec loop default =
-            let t = try Some (input_line ic) with [ End_of_file -> None ] in
+  begin try
+    while true do
+      let s = let s = input_line ic in cut_trail_dot s in
+      let len = string__string_length s in
+      if len >= 4 && string__sub s 0 4 = "    " then
+        let s = string__sub s 4 (len - 4) in
+        if !lang <> "" then
+          let rec loop default =
+            let t = try Some (input_line ic) with End_of_file -> None in
             let ti =
               match t with
-              [ Some t ->
-                  try Some (t, String.index t ':') with
-                  [ Not_found -> None ]
-              | None -> None ]
+                Some t ->
+                  (try Some (t, string__index t ':') with Not_found -> None)
+              | None -> None
             in
             match ti with
-            [ Some (t, i) ->
-                let line_lang = String.sub t 0 i in
-                if line_lang = lang.val ||
-                   String.length lang.val > String.length line_lang &&
-                   String.sub lang.val 0 (String.length line_lang) =
-                     line_lang
+              Some (t, i) ->
+                let line_lang = string__sub t 0 i in
+                if line_lang = !lang ||
+                   string__string_length !lang > string__string_length line_lang &&
+                   string__sub !lang 0 (string__string_length line_lang) = line_lang
                 then
                   let t =
-                    if i + 2 < String.length t then
-                      String.sub t (i + 2) (String.length t - i - 2)
+                    if i + 2 < string__string_length t then
+                      string__sub t (i + 2) (string__string_length t - i - 2)
                     else ""
                   in
                   let t = cut_trail_dot t in
-                  if line_lang = lang.val then add_lexicon s (Some t)
-                  else loop t
+                  if line_lang = !lang then add_lexicon s (Some t) else loop t
                 else loop default
             | None ->
-                add_lexicon s (if default = "" then None else Some default) ]
+                add_lexicon s (if default = "" then None else Some default)
+          in
+          loop ""
         else add_lexicon s (Some s)
-      else ();
-    }
-  with
-  [ End_of_file -> () ];
-  close_in ic;
-};
+    done
+  with End_of_file -> ()
+  end;
+  close_in ic
+;;
 
-value gen_transl glang str = do {
+let gen_transl glang str =
   if Sys.file_exists lex then
-    let stbuf = Unix.stat lex in
-    if stbuf.Unix.st_mtime > lexicon_mtime.val then do {
-      lang.val := glang;
-      Hashtbl.clear lexicon;
-      lexicon_mtime.val := stbuf.Unix.st_mtime;
-      read_lexicon ();
-    }
-    else ()
-  else ();
-  Hashtbl.find lexicon str
-};
+    begin let stbuf = Unix.stat lex in
+      if stbuf.Unix.st_mtime > !lexicon_mtime then
+        begin
+          lang := glang;
+          hashtbl__clear lexicon;
+          lexicon_mtime := stbuf.Unix.st_mtime;
+          read_lexicon ()
+        end
+    end;
+  hashtbl__find lexicon str
+;;
 
-value transl glang str =
+let transl glang str =
   try gen_transl glang str with
-  [ Not_found -> if lang.val = "" then str else "[" ^ str ^ "]" ]
-;
+    Not_found -> if !lang = "" then str else "[" ^ str ^ "]"
+;;
 
-value fast_transl glang str =
-  try Hashtbl.find lexicon str with
-  [ Not_found -> transl glang str ]
-;
+let fast_transl glang str =
+  try hashtbl__find lexicon str with Not_found -> transl glang str
+;;
 
-value check_format ini_fmt (r : string) =
-  let s : string = string_of_format (ini_fmt : format 'a 'b 'c) in
+let check_format ini_fmt (r : string) =
+  let s : string = string_of_format (ini_fmt : ('a, 'b, 'c) format) in
   let rec loop i j =
-    if i < String.length s - 1 && j < String.length r - 1 then
-      match (s.[i], s.[i + 1], r.[j], r.[j + 1]) with
-      [ ('%', x, '%', y) ->
-          if x = y then loop (i + 2) (j + 2) else None
-      | ('%', _, _, _) -> loop i (j + 1)
-      | (_, _, '%', _) -> loop (i + 1) j
-      | _ -> loop (i + 1) (j + 1) ]
-    else if i < String.length s - 1 then
+    if i < string__string_length s - 1 && j < string__string_length r - 1 then
+      match s.[i], s.[i+1], r.[j], r.[j+1] with
+        '%', x, '%', y -> if x = y then loop (i + 2) (j + 2) else None
+      | '%', _, _, _ -> loop i (j + 1)
+      | _, _, '%', _ -> loop (i + 1) j
+      | _ -> loop (i + 1) (j + 1)
+    else if i < string__string_length s - 1 then
       if s.[i] = '%' then None else loop (i + 1) j
-    else if j < String.length r - 1 then
+    else if j < string__string_length r - 1 then
       if r.[j] = '%' then None else loop i (j + 1)
-    else
-      Some (Scanf.format_from_string r ini_fmt : format 'a 'b 'c)
+    else Some (Scanf.format_from_string r ini_fmt : ('a, 'b, 'c) format)
   in
   loop 0 0
-;
+;;
 
-value tnf s = "[" ^ s ^ "]";
+let tnf s = "[" ^ s ^ "]";;
 
-value valid_format ini_fmt r =
+let valid_format ini_fmt r =
   match check_format ini_fmt r with
-  | Some fmt -> fmt
+    Some fmt -> fmt
   | None -> Scanf.format_from_string (tnf (string_of_format ini_fmt)) ini_fmt
-  end
-;
+;;
 
-value ftransl glang (fmt : format 'a 'b 'c) =
+let ftransl glang (fmt : ('a, 'b, 'c) format) =
   let sfmt : string = string_of_format fmt in
   try valid_format fmt (gen_transl glang sfmt) with
-  [ Not_found ->
-      if lang.val = "" then fmt
+    Not_found ->
+      if !lang = "" then fmt
       else
-        (Scanf.format_from_string ("[" ^ sfmt ^ "]") fmt : format 'a 'b 'c) ]
-;
+        (Scanf.format_from_string ("[" ^ sfmt ^ "]") fmt :
+         ('a, 'b, 'c) format)
+;;
 
-value erase str i j =
-  String.sub str 0 i ^ String.sub str j (String.length str - j)
-;
+let erase str i j =
+  string__sub str 0 i ^ string__sub str j (string__string_length str - j)
+;;
 
 (*
  * eval_set scans strings of the form @(x) where x is a list of characters
@@ -149,48 +141,50 @@ value erase str i j =
  * character if any.
  *)
 
-value eval_set str =
-  loop [] str 0 where rec loop set str i =
-    if i + 3 < String.length str then
+let eval_set str =
+  let rec loop set str i =
+    if i + 3 < string__string_length str then
       if str.[i] = '@' && str.[i+1] = '(' && str.[i+3] <> '?' &&
          str.[i+3] <> '-'
       then
-        if str.[i+2] = '&' && str.[i+3] = ')' && i + 4 < String.length str
+        if str.[i+2] = '&' && str.[i+3] = ')' && i + 4 < string__string_length str
         then
           loop set (erase str i (i + 5)) i
         else
           let (set, j) =
-            loop set (i + 2) where rec loop set i =
-              if i < String.length str then
-                if str.[i] <> ')' then loop [str.[i] :: set] (i + 1)
-                else (set, i + 1)
-              else (set, i)
+            let rec loop set i =
+              if i < string__string_length str then
+                if str.[i] <> ')' then loop (str.[i] :: set) (i + 1)
+                else set, i + 1
+              else set, i
+            in
+            loop set (i + 2)
           in
           loop set (erase str i j) i
       else loop set str (i + 1)
-    else (set, str)
-;
+    else set, str
+  in
+  loop [] str 0
+;;
 
-value rec apply_expr set str i =
-  if i + 1 < String.length str && str.[i+1] = '?' then
+let rec apply_expr set str i =
+  if i + 1 < string__string_length str && str.[i+1] = '?' then
     if List.mem str.[i] set then
       let str = erase str i (i + 2) in
       let (str, i) = apply_expr set str i in
-      if i < String.length str && str.[i] = ':' then
-        let (str, j) = apply_expr set str (i + 1) in
-        (erase str i j, i)
-      else (str, i)
+      if i < string__string_length str && str.[i] = ':' then
+        let (str, j) = apply_expr set str (i + 1) in erase str i j, i
+      else str, i
     else
       let (str, j) = apply_expr set str (i + 2) in
       let str = erase str i j in
-      if i < String.length str && str.[i] = ':' then
-        let str = erase str i (i + 1) in
-        apply_expr set str i
-      else (str, i)
-  else if i < String.length str && (str.[i] = ':' || str.[i] = ')') then
-    (str, i)
+      if i < string__string_length str && str.[i] = ':' then
+        let str = erase str i (i + 1) in apply_expr set str i
+      else str, i
+  else if i < string__string_length str && (str.[i] = ':' || str.[i] = ')') then
+    str, i
   else apply_expr set str (i + 1)
-;
+;;
 
 (*
  * eval_app scans strings matching expressions between @( and ).
@@ -211,20 +205,20 @@ value rec apply_expr set str i =
  *    m is for masculine, w for feminine and n for neuter
  *)
 
-value eval_app set str =
-  loop str 0 where rec loop str i =
-    if i + 3 < String.length str then
-      if str.[i] = '@' && str.[i+1] = '(' && str.[i+3] <> '-' then (
+let eval_app set str =
+  let rec loop str i =
+    if i + 3 < string__string_length str then
+      if str.[i] = '@' && str.[i+1] = '(' && str.[i+3] <> '-' then
         let str = erase str i (i + 2) in
         let (str, i) = apply_expr set str i in
-        if i < String.length str then
-          if str.[i] = ')' then loop (erase str i (i + 1)) i
-          else loop str i
+        if i < string__string_length str then
+          if str.[i] = ')' then loop (erase str i (i + 1)) i else loop str i
         else str
-      )
       else loop str (i + 1)
     else str
-;
+  in
+  loop str 0
+;;
 
 (*
  * eval_shift scans strings matching:
@@ -237,81 +231,73 @@ value eval_app set str =
  *    after: "Sie haben einen kurzen Bogen geworfen"
  *)
 
-value rec eval_shift s =
-  let t = string_create (String.length s) in
-  loop False 0 0 where rec loop changed i j =
-    if i + 4 < String.length s && s.[i] = '@' && s.[i+1] = '(' &&
+let rec eval_shift s =
+  let t = string_create (string__string_length s) in
+  let rec loop changed i j =
+    if i + 4 < string__string_length s && s.[i] = '@' && s.[i+1] = '(' &&
        s.[i+3] = '-'
     then
       let nleft = Char.code s.[i+2] - Char.code '0' in
       let to_the_end = s.[i+4] = '-' in
       let k = if to_the_end then i + 5 else i + 4 in
-      if k < String.length s && s.[k] = ')' then (
+      if k < string__string_length s && s.[k] = ')' then
         let l =
-          loop nleft (i - 1) where rec loop nleft l =
+          let rec loop nleft l =
             if l > 0 then
               if s.[l] = ' ' then
-                if nleft <= 1 then l + 1
-                else loop (nleft - 1) (l - 1)
+                if nleft <= 1 then l + 1 else loop (nleft - 1) (l - 1)
               else loop nleft (l - 1)
             else 0
+          in
+          loop nleft (i - 1)
         in
         let len = i - l in
         let j = j - len in
         let k = k + 1 in
-        let i = if k < String.length s && s.[k] = ' ' then k + 1 else k in
+        let i = if k < string__string_length s && s.[k] = ' ' then k + 1 else k in
         let (i, j) =
           if to_the_end then
-            loop i j where rec loop i j =
-              if i < String.length s then do {
-                string_set t j s.[i];
-                loop (i + 1) (j + 1)
-              }
-              else do {
+            let rec loop i j =
+              if i < string__string_length s then
+                begin string_set t j s.[i]; loop (i + 1) (j + 1) end
+              else
                 let j =
-                  if string_get t (j-1) <> ' ' then do {
-		    string_set t j ' '; j + 1
-		  }
+                  if string_get t (j - 1) <> ' ' then
+                    begin string_set t j ' '; j + 1 end
                   else j
                 in
-                String.blit s l t j len;
-                (i, j + len)
-              }
+                string__blit s l t j len; i, j + len
+            in
+            loop i j
           else
-            loop i j where rec loop i j =
-              if i < String.length s then
-                if s.[i] = ' ' then do {
+            let rec loop i j =
+              if i < string__string_length s then
+                if s.[i] = ' ' then
+                  begin
+                    string_set t j ' ';
+                    string__blit s l t (j + 1) len;
+                    i, j + 1 + len
+                  end
+                else begin string_set t j s.[i]; loop (i + 1) (j + 1) end
+              else if k < string__string_length s && s.[k] = ' ' then
+                begin
                   string_set t j ' ';
-                  String.blit s l t (j + 1) len;
-                  (i, j + 1 + len)
-                }
-                else do {
-                  string_set t j s.[i];
-                  loop (i + 1) (j + 1)
-                }
-              else if k < String.length s && s.[k] = ' ' then do {
-                string_set t j ' ';
-                String.blit s l t (j + 1) len;
-                (i, j + 1 + len)
-              }
-              else do {
-                String.blit s l t j len;
-                (i, j + len)
-              }
+                  string__blit s l t (j + 1) len;
+                  i, j + 1 + len
+                end
+              else begin string__blit s l t j len; i, j + len end
+            in
+            loop i j
         in
-        loop True i j
-      )
-      else do {
-        string_set t j s.[i];
-        loop changed (i + 1) (j + 1)
-      }
-    else if i < String.length s then do {
-      string_set t j s.[i];
-      loop changed (i + 1) (j + 1)
-    }
+        loop true i j
+      else begin string_set t j s.[i]; loop changed (i + 1) (j + 1) end
+    else if i < string__string_length s then
+      begin string_set t j s.[i]; loop changed (i + 1) (j + 1) end
     else if changed then eval_shift (string_of_bytes (string_sub t 0 j))
     else string_of_bytes (string_sub t 0 j)
-;
+  in
+  loop false 0 0
+;;
 
 (* etransl make grammatical transformations indicated inside strings
    between "@(" and ")". This system allows e.g. to conjugate articles,
@@ -369,18 +355,14 @@ value rec eval_shift s =
        Sie haben einen +1,+0 kurzen Bogen geworfen
 *)
 
-value etransl str =
+let etransl str =
   let (set, str) = eval_set str in
-  let str = eval_app set str in
-  eval_shift str
-;
+  let str = eval_app set str in eval_shift str
+;;
 
-value translc lang c =
-  let s = transl lang (String.make 1 c) in
-  if String.length s = 1 then s.[0] else c
-;
+let translc lang c =
+  let s = transl lang (string__make 1 c) in
+  if string__string_length s = 1 then s.[0] else c
+;;
 
-value clear_lexicon lang = do {
-  Hashtbl.clear lexicon;
-  lexicon_mtime.val := 0.0;
-};
+let clear_lexicon lang = hashtbl__clear lexicon; lexicon_mtime := 0.0;;
