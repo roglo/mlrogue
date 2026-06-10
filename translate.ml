@@ -1,5 +1,13 @@
 (* $Id: translate.ml,v 1.28 2018/04/26 09:52:37 deraugla Exp $ *)
 
+let sys_file_exists fname =
+  try
+    let ic = io__open_in fname in
+    io__close_in ic;
+    true
+  with sys__Sys_error _ -> false
+;;
+
 let string_create = string__create_string;;
 let string_set = string__set_nth_char;;
 let string_get = string__nth_char;;
@@ -73,12 +81,12 @@ let read_lexicon () =
 
 let gen_transl glang str =
   if sys_file_exists lex then
-    begin let stbuf = Unix.stat lex in
-      if stbuf.Unix.st_mtime > !lexicon_mtime then
+    begin let stbuf = unix__stat lex in
+      if float_of_int stbuf.unix__st_mtime >. !lexicon_mtime then
         begin
           lang := glang;
           hashtbl__clear lexicon;
-          lexicon_mtime := stbuf.Unix.st_mtime;
+          lexicon_mtime := float_of_int stbuf.unix__st_mtime;
           read_lexicon ()
         end
     end;

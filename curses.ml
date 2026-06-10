@@ -22,9 +22,9 @@ and attr =
   { a_standout : bool; a_bold : bool; a_back_col : int; a_fore_col : int }
 ;;
 
-let utf8_of_char c = {utf8_v = string__make 1 c};;
+let utf8_of_char c = {utf8_v = string__make_string 1 c};;
 let utf8_to_char u =
-  if string__length u.utf8_v = 1 then u.utf8_v.[0]
+  if string__string_length u.utf8_v = 1 then u.utf8_v.[0]
   else invalid_arg "utf8_to_char"
 ;;
 
@@ -85,19 +85,19 @@ let set_attr a =
 let utf8_to_string u = u.utf8_v;;
 
 let utf8_of_substring s i =
-  if i >= string__length s then
+  if i >= string__string_length s then
     failwith (Printf.sprintf "utf8_of_substring \"%s\" %d" s i)
   else if Char.code s.[i] land 0x80 = 0 then utf8_of_char s.[i], i + 1
   else if Char.code s.[i] land 0x40 = 0 then
     failwith (Printf.sprintf "utf8_of_substring \"%s\" %d, bad utf8" s i)
   else if Char.code s.[i] land 0x20 = 0 then
-    if i + 1 >= string__length s then failwith "utf8_of_substring error"
+    if i + 1 >= string__string_length s then failwith "utf8_of_substring error"
     else {utf8_v = string__sub s i 2}, i + 2
   else if Char.code s.[i] land 0x10 = 0 then
-    if i + 2 >= string__length s then failwith "utf8_of_substring error"
+    if i + 2 >= string__string_length s then failwith "utf8_of_substring error"
     else {utf8_v = string__sub s i 3}, i + 3
   else if Char.code s.[i] land 0x08 = 0 then
-    if i + 3 >= string__length s then failwith "utf8_of_substring error"
+    if i + 3 >= string__string_length s then failwith "utf8_of_substring error"
     else {utf8_v = string__sub s i 4}, i + 4
   else
     failwith
@@ -228,7 +228,7 @@ let addch c = adduch (utf8_of_char c);;
 
 let addstr s =
   let rec loop i =
-    if i = string__length s then ()
+    if i = string__string_length s then ()
     else let (c, i) = utf8_of_substring s i in adduch c; loop i
   in
   loop 0
@@ -339,7 +339,7 @@ let mvaddstr row col s =
   d.nrow <- row;
   d.ncol <- col;
   let rec loop j =
-    if j = string__length s then ()
+    if j = string__string_length s then ()
     else if check d.nrow d.ncol then
       let (uc, k) = utf8_of_substring s j in
       string_set d.bnew.(d.nrow) d.ncol uc;

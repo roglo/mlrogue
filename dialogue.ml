@@ -27,7 +27,7 @@ let armor_desc g a =
   let t =
     if a.ar_identified || g.wizard then
       sprintf "%s%d %s [%d]" (if a.ar_enchant >= 0 then "+" else "")
-        a.ar_enchant t (Imisc.get_armor_class (Some (' ', a)))
+        a.ar_enchant t (imisc__get_armor_class (Some (` `, a)))
     else t
   in
   if a.ar_in_use then sprintf "%s %s" t (transl g.lang "being worn") else t
@@ -50,7 +50,7 @@ let name_of g obj =
   | Weapon w ->
       let i = int_of_weapon w.we_kind in
       let t = weapon_tab.(i).o_title in
-      transl g.lang (Imisc.nth_field t (if obj.ob_quantity = 1 then 0 else 1))
+      transl g.lang (imisc__nth_field t (if obj.ob_quantity = 1 then 0 else 1))
   | Armor _ -> transl g.lang "armor"
   | Ring _ -> transl g.lang "ring"
   | Amulet -> transl g.lang "amulet"
@@ -93,10 +93,10 @@ let weapon_desc g obj w cap =
     if obj.ob_quantity = 1 then
       sprintf "%s %s%s"
         (if cap then transl g.lang "A@(n?n)" else transl g.lang "a@(n?n)") id
-        (transl g.lang (Imisc.nth_field t 0))
+        (transl g.lang (imisc__nth_field t 0))
     else
       sprintf "%d %s%s" obj.ob_quantity id
-        (transl g.lang (Imisc.nth_field t 1))
+        (transl g.lang (imisc__nth_field t 1))
   in
   if w.we_in_use then t ^ " " ^ transl g.lang "in hand" else t
 ;;
@@ -174,13 +174,13 @@ let save_screen () =
         let spaces = ref 0 in
         for j = 0 to 80 - 1 do
           match Curses.mvinch i j with
-            ' ' -> incr spaces
+            ` ` -> incr spaces
           | ch ->
-              for i = 1 to !spaces do output_char oc ' ' done;
+              for i = 1 to !spaces do output_char oc ` ` done;
               output_char oc ch;
               spaces := 0
         done;
-        output_char oc '\n'
+        output_char oc `\n`
       done;
       close_out oc
   | None -> ()
@@ -188,8 +188,8 @@ let save_screen () =
 
 let rec rgetchar_stdin =
   function
-    '\018' -> Curses.wrefresh_curscr (); rgetchar_stdin (Curses.getch ())
-  | 'X' -> save_screen (); rgetchar_stdin (Curses.getch ())
+    `\018` -> Curses.wrefresh_curscr (); rgetchar_stdin (Curses.getch ())
+  | `X` -> save_screen (); rgetchar_stdin (Curses.getch ())
   | ch -> ch
 ;;
 let rgetchar_human () = rgetchar_stdin (Curses.getch ());;
@@ -209,7 +209,7 @@ let display_pause line =
   let something =
     let rec loop len i =
       if len = 0 then false
-      else if line.[i] = ' ' then loop (len - 1) (i - 1)
+      else if line.[i] = ` ` then loop (len - 1) (i - 1)
       else true
     in
     loop (String.length txt) 79
@@ -226,7 +226,7 @@ let display_pause line =
     Curses.refresh ()
 ;;
 
-let pause_char = '\003';;
+let pause_char = `\003`;;
 
 let rgetchar_local_robot g rob =
   let (row, col) = Curses.pos_get () in
@@ -241,7 +241,7 @@ let rgetchar_local_robot g rob =
           begin
             Curses.wrefresh_curscr ();
             f_bool.Efield.set g.env "break" false;
-            Some '\027'
+            Some `\027`
           end
         else Some ch
       end
@@ -299,9 +299,9 @@ let rgetchar g =
 
 (* message *)
 
-let sound_bell () = print_char '\007'; flush stdout;;
+let sound_bell () = print_char `\007`; flush stdout;;
 
-let wait_for_ack g = while rgetchar g <> ' ' do () done;;
+let wait_for_ack g = while rgetchar g <> ` ` do () done;;
 
 let check_message g =
   if g.msg_cleared then ()
@@ -333,7 +333,7 @@ let message g msg intrpt =
     let buf = sprintf " (%d)" (g.same_msg + 1) in
     Curses.addstr buf; g.msg_col <- String.length buf
   else g.msg_col <- 0;
-  Curses.addch ' ';
+  Curses.addch ` `;
   Curses.refresh ();
   g.msg_cleared <- false;
   g.msg_col <- g.msg_col + String.length msg;
@@ -353,15 +353,15 @@ let inv_sel g pack mask prompt term =
         (fun (c, obj) (list, maxlen) ->
            let p =
              match obj with
-               {ob_kind = Armor {ar_is_protected = true}} -> '}'
+               {ob_kind = Armor {ar_is_protected = true}} -> `}`
              | {ob_kind = Weapon w} ->
                  if w.we_has_been_uncursed &&
                     (not w.we_identified || w.we_hit_enchant < 0 ||
                      w.we_d_enchant < 0)
                  then
-                   '|'
-                 else ')'
-             | _ -> ')'
+                   `|`
+                 else `)`
+             | _ -> `)`
            in
            let s = sprintf " %c%c %s" c p (etransl (get_desc g obj true)) in
            let s = Ustring.of_string s in
@@ -372,7 +372,7 @@ let inv_sel g pack mask prompt term =
     let maxlen = max maxlen (String.length prompt) in
     let col = 80 - (maxlen + 2) in
     let saved =
-      Array.init (len + 1) (fun _ -> string_make (maxlen + 2) ' ')
+      Array.init (len + 1) (fun _ -> string_make (maxlen + 2) ` `)
     in
     for i = 0 to len do
       for j = 0 to maxlen + 1 do
@@ -431,17 +431,17 @@ let inventory g pack mask =
 
 let rec scanbrd brd i n =
   let pp1 = i in
-  let pp2 = try String.index_from brd i ':' with Not_found -> -1 in
+  let pp2 = try String.index_from brd i `:` with Not_found -> -1 in
   if pp2 >= 0 then
     let pp2 = pp2 + 2 in
     if n > 0 then
-      let pp2 = try String.index_from brd pp2 ' ' with Not_found -> -1 in
+      let pp2 = try String.index_from brd pp2 ` ` with Not_found -> -1 in
       if pp2 >= 0 then scanbrd brd (pp2 + 1) (n - 1) else None
     else Some (pp1, pp2)
   else None
 ;;
 
-let pad s n = for i = String.length s to n - 1 do Curses.addch ' ' done;;
+let pad s n = for i = String.length s to n - 1 do Curses.addch ` ` done;;
 
 let print_stats g stat_mask =
   let brd =
@@ -468,7 +468,7 @@ let print_stats g stat_mask =
     (sprintf "%d(%d)" (g.rogue.str_current + g.rogue.add_strength)
        g.rogue.str_max)
     6;
-  pr 0o20 4 (string_of_int (Imisc.get_armor_class g.rogue.armor)) 2;
+  pr 0o20 4 (string_of_int (imisc__get_armor_class g.rogue.armor)) 2;
   pr 0o40 5 (sprintf "%d/%d" g.rogue.exp g.rogue.exp_points) 11;
   if stat_mask land 0o100 <> 0 then
     begin
@@ -493,63 +493,63 @@ let in_use =
 
 let is_pack_letter g ch mask =
   match ch with
-    'a'..'z' | '\027' | '*' -> Some (ch, mask)
-  | '?' ->
+    `a`..`z` | `\027` | `*` -> Some (ch, mask)
+  | `?` ->
       Some
-        ('*',
+        (`*`,
          (function
             Scroll _ -> true
           | _ -> false))
-  | '!' ->
+  | `!` ->
       Some
-        ('*',
+        (`*`,
          (function
             Potion _ -> true
           | _ -> false))
-  | ':' ->
+  | `:` ->
       Some
-        ('*',
+        (`*`,
          (function
             Food _ -> true
           | _ -> false))
-  | ')' ->
+  | `)` ->
       Some
-        ('*',
+        (`*`,
          (function
             Weapon _ -> true
           | _ -> false))
-  | ']' ->
+  | `]` ->
       Some
-        ('*',
+        (`*`,
          (function
             Armor _ -> true
           | _ -> false))
-  | '/' ->
+  | `/` ->
       Some
-        ('*',
+        (`*`,
          (function
             Wand _ -> true
           | _ -> false))
-  | '=' ->
+  | `=` ->
       Some
-        ('*',
+        (`*`,
          (function
             Ring _ -> true
           | _ -> false))
-  | ',' ->
+  | `,` ->
       Some
-        ('*',
+        (`*`,
          (function
             Amulet -> true
           | _ -> false))
-  | '.' -> Some ('*', in_use)
+  | `.` -> Some (`*`, in_use)
   | _ -> None
 ;;
 
 let pack_letter g prompt mask =
   let tmask = mask in
   if not (mask_pack g.rogue.pack mask) then
-    begin message g (transl g.lang "Nothing appropriate.") false; '\027' end
+    begin message g (transl g.lang "Nothing appropriate.") false; `\027` end
   else
     let ch =
       let rec loop () =
@@ -563,7 +563,7 @@ let pack_letter g prompt mask =
           in
           loop1 ()
         in
-        if ch = '*' then
+        if ch = `*` then
           let ch =
             let rec loop mask =
               check_message g;
@@ -575,7 +575,7 @@ let pack_letter g prompt mask =
               match cho with
                 Some ch ->
                   begin match ch with
-                    '\027' | ' ' | 'a'..'z' -> ch
+                    `\027` | ` ` | `a`..`z` -> ch
                   | _ ->
                       match is_pack_letter g ch tmask with
                         Some (_, mask) -> loop mask
@@ -586,7 +586,7 @@ let pack_letter g prompt mask =
             loop mask
           in
           match ch with
-            'a'..'z' -> ch
+            `a`..`z` -> ch
           | _ -> loop ()
         else ch
       in
@@ -603,13 +603,13 @@ let wizard_sel create list =
       (fun (ch, list) t ->
          let list = (ch, create (Some t)) :: list in
          Char.chr (Char.code ch + 1), list)
-      ('a', []) list
+      (`a`, []) list
   in
   list
 ;;
 
 let new_object_for_wizard g =
-  if Imisc.pack_count g None >= 24 then
+  if imisc__pack_count g None >= 24 then
     message g (transl g.lang "Pack full.") false
   else
     let obj_sel = "!?:)]=/," in
@@ -627,37 +627,37 @@ let new_object_for_wizard g =
       let rec lloop ch =
         let obj_list =
           match ch with
-            '!' ->
+            `!` ->
               wizard_sel gr_potion
                 [IncreaseStrength; RestoreStrength; Healing; ExtraHealing;
                  Poison; RaiseLevel; Blindness; Hallucination; DetectMonsters;
                  DetectObjects; Confusion; Levitation; HasteSelf;
                  SeeInvisible]
-          | '?' ->
+          | `?` ->
               wizard_sel gr_scroll
                 [ProtectArmor; HoldMonster; EnchantWeapon; EnchantArmor;
                  Identify; Teleport; Sleep; ScareMonster; RemoveCurse;
                  CreateMonster; AggravateMonster; MagicMapping]
-          | ':' -> wizard_sel get_food [Ration; Fruit]
-          | ')' ->
+          | `:` -> wizard_sel get_food [Ration; Fruit]
+          | `)` ->
               wizard_sel gr_weapon
                 [Bow; Dart; Arrow; Dagger; Shuriken; Mace; LongSword;
                  TwoHandedSword]
-          | ']' ->
+          | `]` ->
               wizard_sel gr_armor
                 [Leather; Ringmail; Scale; Chain; Banded; Splint; Plate]
-          | '=' ->
+          | `=` ->
               wizard_sel gr_ring
                 [Stealth; RTeleport; Regeneration; SlowDigest; AddStrength;
                  SustainStrength; Dexterity; Adornment; RSeeInvisible;
                  MaintainArmor; Searching]
-          | '/' ->
+          | `/` ->
               wizard_sel gr_wand
                 [TeleportAway; SlowMonster; ConfuseMonster; Invisibility;
                  Polymorph; HasteMonster; PutToSleep; MagicMissile;
                  Cancellation; DoNothing]
-          | ',' -> wizard_sel get_amulet [()]
-          | ' ' | '\027' -> []
+          | `,` -> wizard_sel get_amulet [()]
+          | ` ` | `\027` -> []
           | _ -> []
         in
         if obj_list = [] then ()
@@ -672,11 +672,11 @@ let new_object_for_wizard g =
               (" " ^ transl g.lang "Choose:" ^ " ") sel
           in
           match retc with
-            None | Some (' ' | '\027') -> loop ()
+            None | Some (` ` | `\027`) -> loop ()
           | Some ch ->
               try
                 let obj = List.assoc ch obj_list in
-                let (c, obj) = Imisc.add_to_pack g obj in
+                let (c, obj) = imisc__add_to_pack g obj in
                 let desc = etransl (get_desc g obj true) in
                 message g (sprintf "%s (%c)" desc c) false
               with Not_found -> lloop ch

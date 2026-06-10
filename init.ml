@@ -42,10 +42,10 @@ let max_metal =
 
 let my_int_of_string s =
   let (i, sign) =
-    if 0 < String.length s && s.[0] = '-' then 1, -1 else 0, 1
+    if 0 < string__string_length s && s.[0] = '-' then 1, -1 else 0, 1
   in
   let rec loop_i n i =
-    if i = String.length s then sign * n
+    if i = string__string_length s then sign * n
     else
       match s.[i] with
         '0'..'9' -> loop_i (10 * n + Char.code s.[i] - Char.code '0') (i + 1)
@@ -108,12 +108,12 @@ Usage: %s [args] [restore_file]
   loop_i 1
 ;;
 
-let start_with s i t = Imisc.string_eq s i t 0 (String.length t);;
+let start_with s i t = Imisc.string_eq s i t 0 (string__string_length t);;
 
 let env_get_value s i =
   let rec loop_j j =
-    if j = String.length s then String.sub s i (j - i), j
-    else if s.[j] = ',' then String.sub s i (j - i), j
+    if j = string__string_length s then string__sub s i (j - i), j
+    else if s.[j] = ',' then string__sub s i (j - i), j
     else loop_j (j + 1)
   in
   loop_j i
@@ -137,39 +137,39 @@ let do_opts () =
   match try Some (Sys.getenv "ROGUEOPTS") with Not_found -> None with
     Some eptr ->
       let rec loop_i i =
-        if i < String.length eptr then
+        if i < string__string_length eptr then
           if eptr.[i] = ' ' then loop_i (i + 1)
           else
             let i =
               if start_with eptr i "fruit=" then
-                let i = i + String.length "fruit=" in
+                let i = i + string__string_length "fruit=" in
                 let (v, i) = env_get_value eptr i in opts.opt_fruit <- v; i
               else if start_with eptr i "file=" then
-                let i = i + String.length "file=" in
+                let i = i + string__string_length "file=" in
                 let (v, i) = env_get_value eptr i in
                 opts.opt_save_file <- v; i
               else if start_with eptr i "nojump" then
-                let i = i + String.length "nojump" in
+                let i = i + string__string_length "nojump" in
                 opts.opt_jump <- false; i
               else if start_with eptr i "name=" then
-                let i = i + String.length "name=" in
+                let i = i + string__string_length "name=" in
                 let (v, i) = env_get_value eptr i in
                 opts.opt_nick_name <- v; i
               else if start_with eptr i "noaskquit" then
-                let i = i + String.length "noaskquit" in
+                let i = i + string__string_length "noaskquit" in
                 opts.opt_ask_quit <- false; i
               else if start_with eptr i "noskull" then
-                let i = i + String.length "noskull" in
+                let i = i + string__string_length "noskull" in
                 opts.opt_show_skull <- false; i
               else if start_with eptr i "notomb" then
-                let i = i + String.length "notomb" in
+                let i = i + string__string_length "notomb" in
                 opts.opt_show_skull <- false; i
               else if start_with eptr i "fast" then
-                let i = i + String.length "fast" in opts.opt_fast <- true; i
+                let i = i + string__string_length "fast" in opts.opt_fast <- true; i
               else i + 1
             in
             let i =
-              if i < String.length eptr && eptr.[i] = ',' then i + 1 else i
+              if i < string__string_length eptr && eptr.[i] = ',' then i + 1 else i
             in
             loop_i i
         else opts
