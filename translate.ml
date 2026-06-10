@@ -103,7 +103,7 @@ let fast_transl glang str =
 ;;
 
 let check_format ini_fmt (r : string) =
-  let s : string = string_of_format (ini_fmt : ('a, 'b, 'c) format) in
+  let s = string_of_format (ini_fmt : ('a, 'b, 'c) format) in
   let rec loop i j =
     if i < string__string_length s - 1 && j < string__string_length r - 1 then
       match s.[i], s.[i+1], r.[j], r.[j+1] with

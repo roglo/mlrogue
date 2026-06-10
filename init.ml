@@ -42,13 +42,13 @@ let max_metal =
 
 let my_int_of_string s =
   let (i, sign) =
-    if 0 < string__string_length s && s.[0] = '-' then 1, -1 else 0, 1
+    if 0 < string__string_length s && s.[0] = `-` then 1, -1 else 0, 1
   in
   let rec loop_i n i =
     if i = string__string_length s then sign * n
     else
       match s.[i] with
-        '0'..'9' -> loop_i (10 * n + Char.code s.[i] - Char.code '0') (i + 1)
+        `0`..`9` -> loop_i (10 * n + Char.code s.[i] - Char.code `0`) (i + 1)
       | _ -> failwith "int_of_string"
   in
   loop_i 0 i
@@ -90,7 +90,7 @@ let do_args argv =
         begin args.arg_batch <- true; loop_i (i + 1) end
       else if argv.(i) = "-s" then
         begin args.arg_score_only <- true; loop_i (i + 1) end
-      else if argv.(i).[0] = '-' then
+      else if argv.(i).[0] = `-` then
         begin
           eprintf "Unknown option %s\n" argv.(i);
           eprintf "\
@@ -113,7 +113,7 @@ let start_with s i t = Imisc.string_eq s i t 0 (string__string_length t);;
 let env_get_value s i =
   let rec loop_j j =
     if j = string__string_length s then string__sub s i (j - i), j
-    else if s.[j] = ',' then string__sub s i (j - i), j
+    else if s.[j] = `,` then string__sub s i (j - i), j
     else loop_j (j + 1)
   in
   loop_j i
@@ -138,7 +138,7 @@ let do_opts () =
     Some eptr ->
       let rec loop_i i =
         if i < string__string_length eptr then
-          if eptr.[i] = ' ' then loop_i (i + 1)
+          if eptr.[i] = ` ` then loop_i (i + 1)
           else
             let i =
               if start_with eptr i "fruit=" then
@@ -169,7 +169,7 @@ let do_opts () =
               else i + 1
             in
             let i =
-              if i < string__string_length eptr && eptr.[i] = ',' then i + 1 else i
+              if i < string__string_length eptr && eptr.[i] = `,` then i + 1 else i
             in
             loop_i i
         else opts
@@ -231,7 +231,7 @@ let make_scroll_titles g =
       in
       loop "" 0
     in
-    g.id_scrolls.(i) <- Unidentified (sprintf "'%s'" title)
+    g.id_scrolls.(i) <- Unidentified (sprintf "`%s`" title)
   done
 ;;
 
@@ -293,7 +293,7 @@ let create_g saved_uid true_uid login_name args opts lang =
      left_ring = None; right_ring = None; e_rings = 0; r_rings = 0;
      r_teleport = false; r_see_invisible = false; maintain_armor = false;
      sustain_strength = false; add_strength = 0; regeneration = 0;
-     ring_exp = 0; auto_search = 0; fchar = '@'}
+     ring_exp = 0; auto_search = 0; fchar = `@`}
   in
   let fruit =
     if opts.opt_fruit <> "" then opts.opt_fruit else Object.default_fruit
@@ -334,7 +334,7 @@ let robot_env nhr =
         if str = "" then Some ""
         else
           match str.[0] with
-            '0'..'9' -> Some str
+            `0`..`9` -> Some str
           | _ -> None
       in
       begin match locrob with

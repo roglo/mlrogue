@@ -13,9 +13,9 @@
 #open "printf";;
 #open "translate";;
 
-let string_create = Bytes.create;;
-let string_length = Bytes.length;;
-let string_of_bytes = Bytes.to_string;;
+let string_create = string__create_string;;
+let string_length = string__string_length;;
+let string_of_bytes (s : string) = a;;
 
 let level_points =
   [| 10; 20; 40; 80; 160; 320; 640; 1300; 2600; 5200; 10000; 20000; 40000;

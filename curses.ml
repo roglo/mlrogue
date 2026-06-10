@@ -28,15 +28,15 @@ let utf8_to_char u =
   else invalid_arg "utf8_to_char"
 ;;
 
-let string_make = Bytes.make;;
-let string_get = Array.get;;
-let string_set = Array.set;;
-let string_sub = Bytes.sub;;
-let string_length = Array.length;;
-let string_fill = Bytes.fill;;
-let string_contains = Bytes.contains;;
-let string_of_bytes = Bytes.to_string;;
-let string_to_bytes = Bytes.of_string;;
+let string_make = string__make;;
+let string_get = vect__get;;
+let string_set = vect__set;;
+let string_sub = string__sub;;
+let string_length = vect__length;;
+let string_fill = string__fill;;
+let string_contains = string__contains;;
+let string_of_bytes = string__to_string;;
+let string_to_bytes = string__of_string;;
 
 let no_attr =
   {a_standout = false; a_bold = false; a_back_col = -1; a_fore_col = -1}
@@ -160,7 +160,7 @@ let rec gap_equal k c n j =
 ;;
 
 let cflush () =
-  for i = 0 to Array.length d.bcur - 1 do
+  for i = 0 to vect__length d.bcur - 1 do
     let c = d.bcur.(i) in
     let n = d.bnew.(i) in
     let ac = d.acur.(i) in
@@ -259,11 +259,11 @@ let utf8_sp = utf8_of_char ' ';;
 let clear () =
   cprint_string "\027[H";
   cprint_string vt_erase_in_display;
-  for i = 0 to Array.length d.bcur - 1 do
-    Array.fill d.bcur.(i) 0 (Array.length d.bcur.(i)) utf8_sp;
-    Array.fill d.bnew.(i) 0 (Array.length d.bnew.(i)) utf8_sp;
-    Array.fill d.acur.(i) 0 (Array.length d.bcur.(i)) no_attr;
-    Array.fill d.anew.(i) 0 (Array.length d.bnew.(i)) no_attr
+  for i = 0 to vect__length d.bcur - 1 do
+    vect__fill d.bcur.(i) 0 (vect__length d.bcur.(i)) utf8_sp;
+    vect__fill d.bnew.(i) 0 (vect__length d.bnew.(i)) utf8_sp;
+    vect__fill d.acur.(i) 0 (vect__length d.bcur.(i)) no_attr;
+    vect__fill d.anew.(i) 0 (vect__length d.bnew.(i)) no_attr
   done;
   d.crow <- 0;
   d.ccol <- 0;
@@ -276,13 +276,13 @@ let clrtoeol () =
   cprint_string vt_erase_line_from_cursor;
   if check d.crow d.ccol && check d.nrow d.ncol then
     let s = d.bcur.(d.crow) in
-    Array.fill s d.ccol (Array.length s - d.ccol) utf8_sp;
+    vect__fill s d.ccol (vect__length s - d.ccol) utf8_sp;
     let s = d.bnew.(d.nrow) in
-    Array.fill s d.ccol (Array.length s - d.ncol) utf8_sp;
+    vect__fill s d.ccol (vect__length s - d.ncol) utf8_sp;
     let s = d.acur.(d.nrow) in
-    Array.fill s d.ccol (Array.length s - d.ncol) no_attr;
+    vect__fill s d.ccol (vect__length s - d.ncol) no_attr;
     let s = d.anew.(d.nrow) in
-    Array.fill s d.ccol (Array.length s - d.ncol) no_attr
+    vect__fill s d.ccol (vect__length s - d.ncol) no_attr
 ;;
 
 let color_set fg bg =
@@ -367,8 +367,8 @@ let standout () = d.attr_set <- {d.attr_set with a_standout = true};;
 let wrefresh_curscr () =
   cprint_string "\027[H";
   cprint_string vt_erase_in_display;
-  for i = 0 to Array.length d.bcur - 1 do
-    Array.fill d.bcur.(i) 0 (string_length d.bcur.(i)) utf8_sp
+  for i = 0 to vect__length d.bcur - 1 do
+    vect__fill d.bcur.(i) 0 (string_length d.bcur.(i)) utf8_sp
   done;
   d.crow <- 0;
   d.ccol <- 0;
@@ -419,8 +419,8 @@ let initscr () =
   else
     begin let fd = tty_fd () in
       let s = string_to_bytes ("\027[99;99H" ^ vt_device_status_report) in
-      let len = Unix.write fd s 0 (Bytes.length s) in
-      if len <> Bytes.length s then failwith "Curses.initscr";
+      let len = Unix.write fd s 0 (string__length s) in
+      if len <> string__length s then failwith "Curses.initscr";
       set_edit ();
       let line =
         let buff = string_make 20 ' ' in
@@ -428,7 +428,7 @@ let initscr () =
           let (icl, _, _) = Unix.select [fd] [] [] 1.0 in
           if icl = [] then string_sub buff 0 i
           else
-            let len = Unix.read fd buff i (Bytes.length buff - i) in
+            let len = Unix.read fd buff i (string__length buff - i) in
             if len = 0 || string_contains buff 'R' then
               string_sub buff 0 (i + len)
             else loop_i (i + len)
@@ -441,10 +441,10 @@ let initscr () =
       with Scanf.Scan_failure _ | End_of_file ->
         d.max_row <- 24; d.max_col <- 80
     end;
-  d.bcur <- Array.init d.max_row (fun _ -> Array.make d.max_col utf8_sp);
-  d.bnew <- Array.init d.max_row (fun _ -> Array.make d.max_col utf8_sp);
-  d.acur <- Array.init d.max_row (fun _ -> Array.make d.max_col no_attr);
-  d.anew <- Array.init d.max_row (fun _ -> Array.make d.max_col no_attr);
+  d.bcur <- vect__init d.max_row (fun _ -> vect__make d.max_col utf8_sp);
+  d.bnew <- vect__init d.max_row (fun _ -> vect__make d.max_col utf8_sp);
+  d.acur <- vect__init d.max_row (fun _ -> vect__make d.max_col no_attr);
+  d.anew <- vect__init d.max_row (fun _ -> vect__make d.max_col no_attr);
   d.attr_set <- no_attr;
   d.cur_attr <- no_attr;
   clear ()
