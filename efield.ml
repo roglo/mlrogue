@@ -1,30 +1,27 @@
 (* $Id: efield.ml,v 1.4 2010/04/27 11:46:10 deraugla Exp $ *)
 
-open Printf;
+#open "printf";;
 
-type t 'a = Hashtbl.t string 'a;
+type 'a t == (string, 'a) hashtbl__t;;
 
-type field_fun 'a 'b =
-  { get : t 'a -> string -> 'b -> 'b;
-    set : t 'a -> string -> 'b -> unit }
-;
+let make () = hashtbl__new 1;;
 
-value make () = Hashtbl.create 1;
+let get_env env var = try Some (hashtbl__find env var) with Not_found -> None;;
 
-value get_env env var =
-  try Some (Hashtbl.find env var) with [ Not_found -> None ]
-;
+let set_env env var v =
+  hashtbl__remove env var;
+  hashtbl__add env var v
+;;
 
-value set_env env var v = Hashtbl.replace env var v;
-
-value make_fun a_name (get, set) =
-  {get env var def =
-     match get_env env var with
-     [ Some t -> do {
-         match get t with
-         [ Some x -> x
-         | None -> failwith (sprintf "field %s not %s" var a_name) ];
-       }
-     | None -> def ];
-   set env var x = set_env env var (set x)}
-;
+let make_fun a_name (get, set) =
+  {get =
+    (fun env var def ->
+       match get_env env var with
+         Some t ->
+           begin match get t with
+             Some x -> x
+           | None -> failwith (sprintf "field %s not %s" var a_name)
+           end
+       | None -> def);
+   set = fun env var x -> set_env env var (set x)}
+;;
