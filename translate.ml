@@ -102,8 +102,16 @@ let fast_transl glang str =
   try hashtbl__find lexicon str with Not_found -> transl glang str
 ;;
 
+let string_of_format (fmt : ('a, 'b, 'c) printf__format) =
+  (obj__magic fmt : string)
+;;
+
+let format_of_string (s : string) (fmt : ('a, 'b, 'c) printf__format) =
+  (obj__magic s : ('a, 'b, 'c) printf__format)
+;;
+
 let check_format ini_fmt (r : string) =
-  let s = string_of_format (ini_fmt : ('a, 'b, 'c) format) in
+  let s = string_of_format (ini_fmt : ('a, 'b, 'c) printf__format) in
   let rec loop i j =
     if i < string__string_length s - 1 && j < string__string_length r - 1 then
       match s.[i], s.[i+1], r.[j], r.[j+1] with
@@ -115,7 +123,7 @@ let check_format ini_fmt (r : string) =
       if s.[i] = `%` then None else loop (i + 1) j
     else if j < string__string_length r - 1 then
       if r.[j] = `%` then None else loop i (j + 1)
-    else Some (Scanf.format_from_string r ini_fmt : ('a, 'b, 'c) format)
+    else Some (format_of_string r ini_fmt : ('a, 'b, 'c) printf__format)
   in
   loop 0 0
 ;;
@@ -125,17 +133,17 @@ let tnf s = "[" ^ s ^ "]";;
 let valid_format ini_fmt r =
   match check_format ini_fmt r with
     Some fmt -> fmt
-  | None -> Scanf.format_from_string (tnf (string_of_format ini_fmt)) ini_fmt
+  | None -> format_of_string (tnf (string_of_format ini_fmt)) ini_fmt
 ;;
 
-let ftransl glang (fmt : ('a, 'b, 'c) format) =
-  let sfmt : string = string_of_format fmt in
+let ftransl glang (fmt : ('a, 'b, 'c) printf__format) =
+  let sfmt = string_of_format fmt in
   try valid_format fmt (gen_transl glang sfmt) with
     Not_found ->
       if !lang = "" then fmt
       else
-        (Scanf.format_from_string ("[" ^ sfmt ^ "]") fmt :
-         ('a, 'b, 'c) format)
+        (format_of_string ("[" ^ sfmt ^ "]") fmt :
+         ('a, 'b, 'c) printf__format)
 ;;
 
 let erase str i j =
@@ -177,7 +185,7 @@ let eval_set str =
 
 let rec apply_expr set str i =
   if i + 1 < string__string_length str && str.[i+1] = `?` then
-    if List.mem str.[i] set then
+    if list__mem str.[i] set then
       let str = erase str i (i + 2) in
       let (str, i) = apply_expr set str i in
       if i < string__string_length str && str.[i] = `:` then
@@ -245,7 +253,7 @@ let rec eval_shift s =
     if i + 4 < string__string_length s && s.[i] = `@` && s.[i+1] = `(` &&
        s.[i+3] = `-`
     then
-      let nleft = Char.code s.[i+2] - Char.code `0` in
+      let nleft = char__int_of_char s.[i+2] - char__int_of_char `0` in
       let to_the_end = s.[i+4] = `-` in
       let k = if to_the_end then i + 5 else i + 4 in
       if k < string__string_length s && s.[k] = `)` then
