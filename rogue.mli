@@ -151,7 +151,7 @@ type objet =
     mutable ob_picked_up : bool }
 ;;
 
-type mon_flags = int;;
+type mon_flags == int;;
 
 type monster =
   { mn_unique_id : int;

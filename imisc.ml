@@ -201,6 +201,12 @@ let first_avail_ichar pack =
   loop `a`
 ;;
 
+let rec list_rev_append l1 l2 =
+  match l1 with
+    [] -> l2
+  | a :: l -> list_rev_append l (a :: l2)
+;;
+
 let add_to_pack g obj =
   let (rpack, pack) = insert_object obj g.rogue.pack in
   let (obj, c, pack) =
@@ -208,7 +214,7 @@ let add_to_pack g obj =
       [] -> let c = first_avail_ichar rpack in obj, c, [c, obj]
     | (c, obj) :: _ -> obj, c, pack
   in
-  g.rogue.pack <- list__rev_append rpack pack; c, obj
+  g.rogue.pack <- list_rev_append rpack pack; c, obj
 ;;
 
 let do_wear g c a =
