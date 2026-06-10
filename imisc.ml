@@ -132,10 +132,10 @@ let rand_around g i r c =
 
 let rec nth_field s n =
   let rec loop i n =
-    match try Some (string__index_from s i '/') with Not_found -> None with
-      Some j -> if n = 0 then string__sub s i j else loop (j + 1) (n - 1)
+    match try Some (string__index_char_from s i `/`) with Not_found -> None with
+      Some j -> if n = 0 then string__sub_string s i j else loop (j + 1) (n - 1)
     | None ->
-        if n = 0 then string__sub s i (string__string_length s - i) else nth_field s 0
+        if n = 0 then string__sub_string s i (string__string_length s - i) else nth_field s 0
   in
   loop 0 n
 ;;
@@ -178,7 +178,13 @@ let insert_object obj =
     function
       (c, obj1) :: pack ->
         if same_objects obj obj1 then
-          let obj1 = {obj1 with ob_quantity = obj1.ob_quantity + 1} in
+          let obj1 =
+            {ob_quantity = obj1.ob_quantity + 1;
+             ob_kind = obj1.ob_kind;
+             ob_row = obj1.ob_row;
+             ob_col = obj1.ob_col;
+             ob_picked_up = obj1.ob_picked_up}
+          in
           rpack, (c, obj1) :: pack
         else loop ((c, obj1) :: rpack) pack
     | [] -> rpack, []
@@ -188,11 +194,11 @@ let insert_object obj =
 
 let first_avail_ichar pack =
   let rec loop c =
-    if c > 'z' then '?'
-    else if list__mem_assoc c pack then loop (Char.chr (Char.code c + 1))
+    if c > `z` then `?`
+    else if list__mem_assoc c pack then loop (char__char_of_int (char__int_of_char c + 1))
     else c
   in
-  loop 'a'
+  loop `a`
 ;;
 
 let add_to_pack g obj =
