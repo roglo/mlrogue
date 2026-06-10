@@ -28,15 +28,17 @@ let utf8_to_char u =
   else invalid_arg "utf8_to_char"
 ;;
 
-let string_make = string__make;;
-let string_get = vect__get;;
-let string_set = vect__set;;
-let string_sub = string__sub;;
-let string_length = vect__length;;
-let string_fill = string__fill;;
-let string_contains = string__contains;;
-let string_of_bytes = string__to_string;;
-let string_to_bytes = string__of_string;;
+let string_make = string__make_string;;
+let string_get = vect__vect_item;;
+let string_set = vect__vect_assign;;
+let string_sub = string__sub_string;;
+let string_length = vect__vect_length;;
+let string_fill = string__fill_string;;
+let string_contains s c =
+  try let _ = string__index_char s c in true with Not_found -> false
+;;
+let string_of_bytes (s : string) = s;;
+let string_to_bytes (s : string) = s;;
 
 let no_attr =
   {a_standout = false; a_bold = false; a_back_col = -1; a_fore_col = -1}
@@ -86,23 +88,23 @@ let utf8_to_string u = u.utf8_v;;
 
 let utf8_of_substring s i =
   if i >= string__string_length s then
-    failwith (Printf.sprintf "utf8_of_substring \"%s\" %d" s i)
-  else if Char.code s.[i] land 0x80 = 0 then utf8_of_char s.[i], i + 1
-  else if Char.code s.[i] land 0x40 = 0 then
-    failwith (Printf.sprintf "utf8_of_substring \"%s\" %d, bad utf8" s i)
-  else if Char.code s.[i] land 0x20 = 0 then
+    failwith (printf__sprintf "utf8_of_substring \"%s\" %d" s i)
+  else if char__int_of_char s.[i] land 0x80 = 0 then utf8_of_char s.[i], i + 1
+  else if char__int_of_char s.[i] land 0x40 = 0 then
+    failwith (printf__sprintf "utf8_of_substring \"%s\" %d, bad utf8" s i)
+  else if char__int_of_char s.[i] land 0x20 = 0 then
     if i + 1 >= string__string_length s then failwith "utf8_of_substring error"
-    else {utf8_v = string__sub s i 2}, i + 2
-  else if Char.code s.[i] land 0x10 = 0 then
+    else {utf8_v = string__sub_string s i 2}, i + 2
+  else if char__int_of_char s.[i] land 0x10 = 0 then
     if i + 2 >= string__string_length s then failwith "utf8_of_substring error"
-    else {utf8_v = string__sub s i 3}, i + 3
-  else if Char.code s.[i] land 0x08 = 0 then
+    else {utf8_v = string__sub_string s i 3}, i + 3
+  else if char__int_of_char s.[i] land 0x08 = 0 then
     if i + 3 >= string__string_length s then failwith "utf8_of_substring error"
-    else {utf8_v = string__sub s i 4}, i + 4
+    else {utf8_v = string__sub_string s i 4}, i + 4
   else
     failwith
-      (Printf.sprintf "utf8_of_substring case not impl 0x%0x"
-         (Char.code s.[i]))
+      (printf__sprintf "utf8_of_substring case not impl 0x%0x"
+         (char__int_of_char s.[i]))
 ;;
 
 let print_encode_char c =
@@ -111,7 +113,7 @@ let print_encode_char c =
 
 let cprint_string s = if d.no_output then () else print_string s;;
 
-let update (c : _ vect) (n : _ vect) ac an i jbeg j =
+let update (c : 'a vect) (n : 'b vect) ac an i jbeg j =
   if i = d.crow && jbeg = d.ccol then ()
   else if i = d.crow && jbeg = d.ccol - 1 then cprint_string "\b"
   else if i = d.crow && jbeg = d.ccol + 1 then
@@ -160,7 +162,7 @@ let rec gap_equal k c n j =
 ;;
 
 let cflush () =
-  for i = 0 to vect__length d.bcur - 1 do
+  for i = 0 to vect__vect_length d.bcur - 1 do
     let c = d.bcur.(i) in
     let n = d.bnew.(i) in
     let ac = d.acur.(i) in
@@ -235,18 +237,34 @@ let addstr s =
 ;;
 
 let attroff al =
-  List.iter
+  list__do_list
     (function
-       A_standout -> d.attr_set <- {d.attr_set with a_standout = false}
-     | A_bold -> d.attr_set <- {d.attr_set with a_bold = false})
+       A_standout ->
+         d.attr_set <-
+           {a_standout = false; a_bold = d.attr_set.a_bold;
+            a_back_col = d.attr_set.a_back_col;
+            a_fore_col = d.attr_set.a_fore_col}
+     | A_bold ->
+         d.attr_set <-
+           {a_bold = false; a_standout = d.attr_set.a_standout;
+            a_back_col = d.attr_set.a_back_col;
+            a_fore_col = d.attr_set.a_fore_col})
     al
 ;;
 
 let attron al =
-  List.iter
+  list__do_list
     (function
-       A_standout -> d.attr_set <- {d.attr_set with a_standout = true}
-     | A_bold -> d.attr_set <- {d.attr_set with a_bold = true})
+       A_standout ->
+         d.attr_set <-
+           {a_standout = true; a_bold = d.attr_set.a_bold;
+            a_back_col = d.attr_set.a_back_col;
+            a_fore_col = d.attr_set.a_fore_col}
+     | A_bold ->
+         d.attr_set <-
+           {a_standout = true; a_bold = d.attr_set.a_bold;
+            a_back_col = d.attr_set.a_back_col;
+            a_fore_col = d.attr_set.a_fore_col})
     al
 ;;
 
@@ -254,16 +272,16 @@ let vt_device_status_report = "\027[6n";;
 let vt_erase_in_display = "\027[J";;
 let vt_erase_line_from_cursor = "\027[K";;
 
-let utf8_sp = utf8_of_char ' ';;
+let utf8_sp = utf8_of_char ` `;;
 
 let clear () =
   cprint_string "\027[H";
   cprint_string vt_erase_in_display;
-  for i = 0 to vect__length d.bcur - 1 do
-    vect__fill d.bcur.(i) 0 (vect__length d.bcur.(i)) utf8_sp;
-    vect__fill d.bnew.(i) 0 (vect__length d.bnew.(i)) utf8_sp;
-    vect__fill d.acur.(i) 0 (vect__length d.bcur.(i)) no_attr;
-    vect__fill d.anew.(i) 0 (vect__length d.bnew.(i)) no_attr
+  for i = 0 to vect__vect_length d.bcur - 1 do
+    vect__fill_vect d.bcur.(i) 0 (vect__vect_length d.bcur.(i)) utf8_sp;
+    vect__fill_vect d.bnew.(i) 0 (vect__vect_length d.bnew.(i)) utf8_sp;
+    vect__fill_vect d.acur.(i) 0 (vect__vect_length d.bcur.(i)) no_attr;
+    vect__fill_vect d.anew.(i) 0 (vect__vect_length d.bnew.(i)) no_attr
   done;
   d.crow <- 0;
   d.ccol <- 0;
@@ -276,17 +294,20 @@ let clrtoeol () =
   cprint_string vt_erase_line_from_cursor;
   if check d.crow d.ccol && check d.nrow d.ncol then
     let s = d.bcur.(d.crow) in
-    vect__fill s d.ccol (vect__length s - d.ccol) utf8_sp;
+    vect__fill_vect s d.ccol (vect__vect_length s - d.ccol) utf8_sp;
     let s = d.bnew.(d.nrow) in
-    vect__fill s d.ccol (vect__length s - d.ncol) utf8_sp;
+    vect__fill_vect s d.ccol (vect__vect_length s - d.ncol) utf8_sp;
     let s = d.acur.(d.nrow) in
-    vect__fill s d.ccol (vect__length s - d.ncol) no_attr;
+    vect__fill_vect s d.ccol (vect__vect_length s - d.ncol) no_attr;
     let s = d.anew.(d.nrow) in
-    vect__fill s d.ccol (vect__length s - d.ncol) no_attr
+    vect__fill_vect s d.ccol (vect__vect_length s - d.ncol) no_attr
 ;;
 
 let color_set fg bg =
-  d.attr_set <- {d.attr_set with a_fore_col = fg; a_back_col = bg}
+  d.attr_set <-
+    {a_fore_col = fg; a_back_col = bg;
+     a_standout = d.attr_set.a_standout;
+     a_bold = d.attr_set.a_bold}
 ;;
 
 let color_get i j =
@@ -355,20 +376,25 @@ let mvinch row col =
   d.ncol <- col;
   if check row col then
     try utf8_to_char (string_get d.bnew.(row) col) with
-      Invalid_argument _ -> ' '
-  else ' '
+      Invalid_argument _ -> ` `
+  else ` `
 ;;
 
 let refresh () = cflush (); flush stdout;;
 
 let standend () = d.attr_set <- no_attr;;
-let standout () = d.attr_set <- {d.attr_set with a_standout = true};;
+let standout () =
+  d.attr_set <-
+    {a_standout = true; a_bold = d.attr_set.a_bold;
+     a_back_col = d.attr_set.a_back_col;
+     a_fore_col = d.attr_set.a_fore_col}
+;;
 
 let wrefresh_curscr () =
   cprint_string "\027[H";
   cprint_string vt_erase_in_display;
-  for i = 0 to vect__length d.bcur - 1 do
-    vect__fill d.bcur.(i) 0 (string_length d.bcur.(i)) utf8_sp
+  for i = 0 to vect__vect_length d.bcur - 1 do
+    vect__fill_vect d.bcur.(i) 0 (string_length d.bcur.(i)) utf8_sp
   done;
   d.crow <- 0;
   d.ccol <- 0;
@@ -383,8 +409,8 @@ let tty_fd () =
   match !tty_fd_and_ini_attr with
     Some (fd, _) -> fd
   | None ->
-      let fd = Unix.openfile "/dev/tty" [Unix.O_RDWR] 0o000 in
-      let ini_attr = Unix.tcgetattr fd in
+      let fd = unix__open "/dev/tty" [unix__O_RDWR] 0o000 in
+      let ini_attr = unix__tcgetattr fd in
       tty_fd_and_ini_attr := Some (fd, ini_attr); fd
 ;;
 
@@ -396,21 +422,21 @@ let set_edit () =
       Some e -> e
     | None ->
         let fd = tty_fd () in
-        let tcio = Unix.tcgetattr fd in
-        tcio.Unix.c_echo <- false;
-        tcio.Unix.c_icanon <- false;
-        tcio.Unix.c_vmin <- 1;
-        tcio.Unix.c_isig <- false;
-        tcio.Unix.c_ixon <- false;
-        tcio.Unix.c_inlcr <- false;
-        tcio.Unix.c_icrnl <- false;
+        let tcio = unix__tcgetattr fd in
+        tcio.unix__c_echo <- false;
+        tcio.unix__c_icanon <- false;
+        tcio.unix__c_vmin <- 1;
+        tcio.unix__c_isig <- false;
+        tcio.unix__c_ixon <- false;
+        tcio.unix__c_inlcr <- false;
+        tcio.unix__c_icrnl <- false;
         edit_tcio := Some tcio;
         tcio
   in
-  let fd = tty_fd () in Unix.tcsetattr fd Unix.TCSADRAIN tcio
+  let fd = tty_fd () in unix__tcsetattr fd unix__TCSADRAIN tcio
 and unset_edit () =
   match !tty_fd_and_ini_attr with
-    Some (fd, ini_attr) -> Unix.tcsetattr fd Unix.TCSADRAIN ini_attr
+    Some (fd, ini_attr) -> unix__tcsetattr fd unix__TCSADRAIN ini_attr
   | None -> ()
 ;;
 
@@ -419,17 +445,17 @@ let initscr () =
   else
     begin let fd = tty_fd () in
       let s = string_to_bytes ("\027[99;99H" ^ vt_device_status_report) in
-      let len = Unix.write fd s 0 (string__length s) in
-      if len <> string__length s then failwith "Curses.initscr";
+      let len = unix__write fd s 0 (string__string_length s) in
+      if len <> string__string_length s then failwith "Curses.initscr";
       set_edit ();
       let line =
-        let buff = string_make 20 ' ' in
+        let buff = string_make 20 ` ` in
         let rec loop_i i =
-          let (icl, _, _) = Unix.select [fd] [] [] 1.0 in
+          let (icl, _, _) = unix__select [fd] [] [] 1.0 in
           if icl = [] then string_sub buff 0 i
           else
-            let len = Unix.read fd buff i (string__length buff - i) in
-            if len = 0 || string_contains buff 'R' then
+            let len = unix__read fd buff i (string__string_length buff - i) in
+            if len = 0 || string_contains buff `R` then
               string_sub buff 0 (i + len)
             else loop_i (i + len)
         in
