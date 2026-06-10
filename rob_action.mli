@@ -9,7 +9,9 @@ type result == command * next_action * move option;;
 value run_away_if_possible :
   game -> bool -> move list -> move -> (move * move list) option;;
 
+(*
 value stop_paradise : t -> 'a;;
+*)
 value start_drop_scare : position -> char -> drop_scare;;
 
 value start_search : game -> t -> graph -> result;;
@@ -20,4 +22,6 @@ value random_move : game -> position -> next_action -> result;;
 
 value slow_down : game -> t -> unit;;
 
+(*
 value apply : game -> t -> string -> result;;
+*)

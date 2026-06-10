@@ -3198,6 +3198,7 @@ let drop_scare_and_kill g t message ds =
 ;;
 *)
 
+(*
 let set_ar_door_trip_cnt pos ar =
   let dl =
     list__map
@@ -6433,3 +6434,4 @@ let apply g t message =
                                       find_something_to_do g t
                                     end
 ;;
+*)
