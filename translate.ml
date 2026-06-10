@@ -23,8 +23,8 @@ let add_lexicon word transl =
 
 let cut_trail_dot s =
   let len = string__string_length s in
-  if (len >= 3 && s.[len-2] = ' ' || len = 1) && s.[len-1] = '.' then
-    string__sub s 0 (len - 1)
+  if (len >= 3 && s.[len-2] = ` ` || len = 1) && s.[len-1] = `.` then
+    string__sub_string s 0 (len - 1)
   else s
 ;;
 
@@ -34,27 +34,27 @@ let read_lexicon () =
     while true do
       let s = let s = input_line ic in cut_trail_dot s in
       let len = string__string_length s in
-      if len >= 4 && string__sub s 0 4 = "    " then
-        let s = string__sub s 4 (len - 4) in
+      if len >= 4 && string__sub_string s 0 4 = "    " then
+        let s = string__sub_string s 4 (len - 4) in
         if !lang <> "" then
           let rec loop default =
             let t = try Some (input_line ic) with End_of_file -> None in
             let ti =
               match t with
                 Some t ->
-                  (try Some (t, string__index t ':') with Not_found -> None)
+                  (try Some (t, string__index_char t `:`) with Not_found -> None)
               | None -> None
             in
             match ti with
               Some (t, i) ->
-                let line_lang = string__sub t 0 i in
+                let line_lang = string__sub_string t 0 i in
                 if line_lang = !lang ||
                    string__string_length !lang > string__string_length line_lang &&
-                   string__sub !lang 0 (string__string_length line_lang) = line_lang
+                   string__sub_string !lang 0 (string__string_length line_lang) = line_lang
                 then
                   let t =
                     if i + 2 < string__string_length t then
-                      string__sub t (i + 2) (string__string_length t - i - 2)
+                      string__sub_string t (i + 2) (string__string_length t - i - 2)
                     else ""
                   in
                   let t = cut_trail_dot t in
@@ -72,7 +72,7 @@ let read_lexicon () =
 ;;
 
 let gen_transl glang str =
-  if Sys.file_exists lex then
+  if sys_file_exists lex then
     begin let stbuf = Unix.stat lex in
       if stbuf.Unix.st_mtime > !lexicon_mtime then
         begin
@@ -99,14 +99,14 @@ let check_format ini_fmt (r : string) =
   let rec loop i j =
     if i < string__string_length s - 1 && j < string__string_length r - 1 then
       match s.[i], s.[i+1], r.[j], r.[j+1] with
-        '%', x, '%', y -> if x = y then loop (i + 2) (j + 2) else None
-      | '%', _, _, _ -> loop i (j + 1)
-      | _, _, '%', _ -> loop (i + 1) j
+        `%`, x, `%`, y -> if x = y then loop (i + 2) (j + 2) else None
+      | `%`, _, _, _ -> loop i (j + 1)
+      | _, _, `%`, _ -> loop (i + 1) j
       | _ -> loop (i + 1) (j + 1)
     else if i < string__string_length s - 1 then
-      if s.[i] = '%' then None else loop (i + 1) j
+      if s.[i] = `%` then None else loop (i + 1) j
     else if j < string__string_length r - 1 then
-      if r.[j] = '%' then None else loop i (j + 1)
+      if r.[j] = `%` then None else loop i (j + 1)
     else Some (Scanf.format_from_string r ini_fmt : ('a, 'b, 'c) format)
   in
   loop 0 0
@@ -131,7 +131,7 @@ let ftransl glang (fmt : ('a, 'b, 'c) format) =
 ;;
 
 let erase str i j =
-  string__sub str 0 i ^ string__sub str j (string__string_length str - j)
+  string__sub_string str 0 i ^ string__sub_string str j (string__string_length str - j)
 ;;
 
 (*
@@ -144,17 +144,17 @@ let erase str i j =
 let eval_set str =
   let rec loop set str i =
     if i + 3 < string__string_length str then
-      if str.[i] = '@' && str.[i+1] = '(' && str.[i+3] <> '?' &&
-         str.[i+3] <> '-'
+      if str.[i] = `@` && str.[i+1] = `(` && str.[i+3] <> `?` &&
+         str.[i+3] <> `-`
       then
-        if str.[i+2] = '&' && str.[i+3] = ')' && i + 4 < string__string_length str
+        if str.[i+2] = `&` && str.[i+3] = `)` && i + 4 < string__string_length str
         then
           loop set (erase str i (i + 5)) i
         else
           let (set, j) =
             let rec loop set i =
               if i < string__string_length str then
-                if str.[i] <> ')' then loop (str.[i] :: set) (i + 1)
+                if str.[i] <> `)` then loop (str.[i] :: set) (i + 1)
                 else set, i + 1
               else set, i
             in
@@ -168,20 +168,20 @@ let eval_set str =
 ;;
 
 let rec apply_expr set str i =
-  if i + 1 < string__string_length str && str.[i+1] = '?' then
+  if i + 1 < string__string_length str && str.[i+1] = `?` then
     if List.mem str.[i] set then
       let str = erase str i (i + 2) in
       let (str, i) = apply_expr set str i in
-      if i < string__string_length str && str.[i] = ':' then
+      if i < string__string_length str && str.[i] = `:` then
         let (str, j) = apply_expr set str (i + 1) in erase str i j, i
       else str, i
     else
       let (str, j) = apply_expr set str (i + 2) in
       let str = erase str i j in
-      if i < string__string_length str && str.[i] = ':' then
+      if i < string__string_length str && str.[i] = `:` then
         let str = erase str i (i + 1) in apply_expr set str i
       else str, i
-  else if i < string__string_length str && (str.[i] = ':' || str.[i] = ')') then
+  else if i < string__string_length str && (str.[i] = `:` || str.[i] = `)`) then
     str, i
   else apply_expr set str (i + 1)
 ;;
@@ -208,11 +208,11 @@ let rec apply_expr set str i =
 let eval_app set str =
   let rec loop str i =
     if i + 3 < string__string_length str then
-      if str.[i] = '@' && str.[i+1] = '(' && str.[i+3] <> '-' then
+      if str.[i] = `@` && str.[i+1] = `(` && str.[i+3] <> `-` then
         let str = erase str i (i + 2) in
         let (str, i) = apply_expr set str i in
         if i < string__string_length str then
-          if str.[i] = ')' then loop (erase str i (i + 1)) i else loop str i
+          if str.[i] = `)` then loop (erase str i (i + 1)) i else loop str i
         else str
       else loop str (i + 1)
     else str
@@ -234,17 +234,17 @@ let eval_app set str =
 let rec eval_shift s =
   let t = string_create (string__string_length s) in
   let rec loop changed i j =
-    if i + 4 < string__string_length s && s.[i] = '@' && s.[i+1] = '(' &&
-       s.[i+3] = '-'
+    if i + 4 < string__string_length s && s.[i] = `@` && s.[i+1] = `(` &&
+       s.[i+3] = `-`
     then
-      let nleft = Char.code s.[i+2] - Char.code '0' in
-      let to_the_end = s.[i+4] = '-' in
+      let nleft = Char.code s.[i+2] - Char.code `0` in
+      let to_the_end = s.[i+4] = `-` in
       let k = if to_the_end then i + 5 else i + 4 in
-      if k < string__string_length s && s.[k] = ')' then
+      if k < string__string_length s && s.[k] = `)` then
         let l =
           let rec loop nleft l =
             if l > 0 then
-              if s.[l] = ' ' then
+              if s.[l] = ` ` then
                 if nleft <= 1 then l + 1 else loop (nleft - 1) (l - 1)
               else loop nleft (l - 1)
             else 0
@@ -254,7 +254,7 @@ let rec eval_shift s =
         let len = i - l in
         let j = j - len in
         let k = k + 1 in
-        let i = if k < string__string_length s && s.[k] = ' ' then k + 1 else k in
+        let i = if k < string__string_length s && s.[k] = ` ` then k + 1 else k in
         let (i, j) =
           if to_the_end then
             let rec loop i j =
@@ -262,8 +262,8 @@ let rec eval_shift s =
                 begin string_set t j s.[i]; loop (i + 1) (j + 1) end
               else
                 let j =
-                  if string_get t (j - 1) <> ' ' then
-                    begin string_set t j ' '; j + 1 end
+                  if string_get t (j - 1) <> ` ` then
+                    begin string_set t j ` `; j + 1 end
                   else j
                 in
                 string__blit s l t j len; i, j + len
@@ -272,16 +272,16 @@ let rec eval_shift s =
           else
             let rec loop i j =
               if i < string__string_length s then
-                if s.[i] = ' ' then
+                if s.[i] = ` ` then
                   begin
-                    string_set t j ' ';
+                    string_set t j ` `;
                     string__blit s l t (j + 1) len;
                     i, j + 1 + len
                   end
                 else begin string_set t j s.[i]; loop (i + 1) (j + 1) end
-              else if k < string__string_length s && s.[k] = ' ' then
+              else if k < string__string_length s && s.[k] = ` ` then
                 begin
-                  string_set t j ' ';
+                  string_set t j ` `;
                   string__blit s l t (j + 1) len;
                   i, j + 1 + len
                 end

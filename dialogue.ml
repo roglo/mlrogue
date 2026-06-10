@@ -8,18 +8,18 @@
 (* #use "keyboard.def" *)
 
 
-open Rogue;;
-open Rfield;;
-open Object;;
-open Printf;;
-open Translate;;
+#open "rogue";;
+#open "rfield";;
+#open "object";;
+#open "printf";;
+#open "translate";;
 
-let string_make = Bytes.make;;
-let string_create = Bytes.create;;
-let string_length = Bytes.length;;
-let string_get = Bytes.get;;
-let string_set = Bytes.set;;
-let string_of_bytes = Bytes.to_string;;
+let string_make = string__make_string;;
+let string_create = string__create_string;;
+let string_length = string__string_length;;
+let string_get = string__nth_char;;
+let string_set = string__set_nth_char;;
+let string_of_bytes (s : string) = s;;
 
 let armor_desc g a =
   let i = int_of_armor a.ar_kind in

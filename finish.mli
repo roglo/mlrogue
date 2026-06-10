@@ -4,5 +4,5 @@
 
 value clean_up : string -> 'a;;
 value put_scores : string -> bool -> (game * ending) option -> unit;;
-value win : game -> _;;
-value killed_by : game -> ending -> _;;
+value win : game -> 'a;;
+value killed_by : game -> ending -> 'a;;

@@ -2,11 +2,11 @@
 
 #open "printf";;
 
-let string_make = string__make;;
+let string_make = string__make_string;;
 let string_create = string__create_string;;
 let string_get = string__nth_char;;
 let string_length = string__string_length;;
-let string_copy = string__copy;;
+let string_copy = string__string_copy;;
 let string_of_bytes = string__to_string;;
 let string_to_bytes = string__of_string;;
 

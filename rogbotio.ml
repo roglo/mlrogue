@@ -1,11 +1,11 @@
 (* $Id: rogbotio.ml,v 1.6 2018/04/26 09:52:37 deraugla Exp $ *)
 
-open Printf;;
+#open "printf";;
 
-let string_create = Bytes.create;;
-let string_set = Bytes.set;;
-let string_of_bytes = Bytes.to_string;;
-let string_to_bytes = Bytes.of_string;;
+let string_create = string__create_string;;
+let string_set = string__set_nth_char;;
+let string_of_bytes (s : string) = s;;
+let string_to_bytes (s : string) = s;;
 
 let is_socket_file name =
   let stats = Unix.lstat name in stats.Unix.st_kind = Unix.S_SOCK

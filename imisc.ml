@@ -277,3 +277,11 @@ let rec list_nth l n =
     [] -> failwith "list_nth"
   | x :: l -> if n = 0 then x else list_nth l (n - 1)
 ;;
+
+let sys_file_exists fname =
+  try
+    let ic = io__open_in fname in
+    io__close_in ic;
+    true
+  with sys__Sys_error _ -> false
+;;
