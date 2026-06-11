@@ -25,7 +25,7 @@ let win_message g =
           let rec loop () =
             let line = input_line ic in
             try
-              let i = string__index line ':' in
+              let i = string__index_char line ':' in
               if string_eq g.lang 0 line 0 i then () else raise Not_found
             with Not_found -> loop ()
           in

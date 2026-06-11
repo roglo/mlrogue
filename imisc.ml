@@ -272,6 +272,12 @@ let wake_up monster =
       monster.mn_flags land lnot (0o10 lor 0o20000000 lor 0o20)
 ;;
 
+let rec list_filter f =
+  function
+    [] -> []
+  | x :: l -> if f x then x :: list_filter f l else list_filter f l
+;;
+
 let rec list_nth l n =
   match l with
     [] -> failwith "list_nth"

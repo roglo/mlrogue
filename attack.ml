@@ -298,7 +298,7 @@ let zap g =
     loop true
   in
   check_message g;
-  if dir = '\027' then false
+  if dir = `\027` then false
   else
     let ch =
       pack_letter g (transl g.lang "Zap with what?")
@@ -306,7 +306,7 @@ let zap g =
            Wand _ -> true
          | _ -> false)
     in
-    if ch = '\027' then false
+    if ch = `\027` then false
     else
       begin
         check_message g;
@@ -327,7 +327,7 @@ let zap g =
               end;
             true
         | Some _ ->
-            message g (transl g.lang "You can't zap with that" ^ ".") false;
+            message g (transl g.lang "You can`t zap with that" ^ ".") false;
             false
       end
 ;;
@@ -335,7 +335,7 @@ let zap g =
 let throw_at_monster g monster obj =
   let weapon =
     match obj.ob_kind with
-      Weapon w -> Some (' ', w)
+      Weapon w -> Some (` `, w)
     | _ -> None
   in
   let hit_chance = get_hit_chance g weapon in
@@ -471,7 +471,7 @@ let flop_weapon g obj row col =
          let mch = curses__mvinch row col in
          let monster = monster_at g row col in
          monster.mn_trail_char <- dch;
-         (if mch < 'A' || mch > 'Z' then curses__mvaddch row col dch)
+         (if mch < `A` || mch > `Z` then curses__mvaddch row col dch)
        else curses__mvaddch row col dch;
        g.dungeon.(row).(col) <- g.dungeon.(row).(col) lor mon)
   else

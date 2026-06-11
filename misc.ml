@@ -241,7 +241,7 @@ let add_exp g e promotion =
   else dialogue__print_stats g 0o40
 ;;
 
-type saved = game * char vect vect;;
+type saved == game * char vect vect;;
 let save_magic = "RGSV0005";;
 
 module OLD_GAME =

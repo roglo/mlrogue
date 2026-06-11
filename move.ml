@@ -139,9 +139,9 @@ let tele g =
 ;;
 
 let take_a_nap g =
-  if not (fast g) then Unix.sleep 1;
+  if not (fast g) then unix__sleep 1;
   for i = 1 to get_rand 2 5 do Monster.mv_mons g done;
-  if not (fast g) then Unix.sleep 1;
+  if not (fast g) then unix__sleep 1;
   message g (transl g.lang "You can move again.") false
 ;;
 

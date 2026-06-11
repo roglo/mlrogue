@@ -241,10 +241,10 @@ let mon_name g monster =
     "something"
   else if g.rogue.halluc > 0 then
     let ch = get_rand (char__int_of_char `A`) (char__int_of_char `Z`) - char__int_of_char `A` in
-    Imonster.visible_mon_name g ch
+    imonster__visible_mon_name g ch
   else
     let ch = char__int_of_char monster.mn_char - char__int_of_char `A` in
-    Imonster.visible_mon_name g ch
+    imonster__visible_mon_name g ch
 ;;
 
 let confuse g =
@@ -274,7 +274,7 @@ let rogue_damage g d monster =
       g.rogue.hp_current <- 0;
       print_stats g 0o4;
       let i = char__int_of_char monster.mn_char - char__int_of_char `A` in
-      Finish.killed_by g (Monster (Imonster.visible_mon_name g i))
+      Finish.killed_by g (Monster (imonster__visible_mon_name g i))
     end
   else
     begin

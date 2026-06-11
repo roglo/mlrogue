@@ -350,10 +350,10 @@ let inv_sel g pack mask prompt term =
   if pack = [] then
     begin message g (transl g.lang "Your pack is empty.") true; None end
   else
-    let list = list__filter (fun (_, obj) -> mask obj.ob_kind) pack in
-    let list = list__sort compare list in
+    let list = imisc__list_filter (fun (_, obj) -> mask obj.ob_kind) pack in
+    let list = sort__sort (fun x y -> x <= y) list in
     let (list, maxlen) =
-      list__fold_right
+      list__list_it
         (fun (c, obj) (list, maxlen) ->
            let p =
              match obj with
@@ -368,8 +368,8 @@ let inv_sel g pack mask prompt term =
              | _ -> `)`
            in
            let s = sprintf " %c%c %s" c p (etransl (get_desc g obj true)) in
-           let s = Ustring.of_string s in
-           s :: list, max maxlen (Ustring.length s))
+           let s = ustring__of_string s in
+           s :: list, max maxlen (ustring__length s))
         list ([], 0)
     in
     let len = list__list_length list in
@@ -396,7 +396,7 @@ let inv_sel g pack mask prompt term =
       function
         s :: sl ->
           if row > 0 then ();
-          curses__mvaddstr row col (Ustring.to_string s);
+          curses__mvaddstr row col (ustring__to_string s);
           curses__clrtoeol ();
           loop (row + 1) sl
       | [] -> ()
@@ -408,7 +408,7 @@ let inv_sel g pack mask prompt term =
     let retc =
       let rec loop () =
         let retc = rgetchar g in
-        try let _ = string__index term retc in retc with Not_found -> loop ()
+        try let _ = string__index_char term retc in retc with Not_found -> loop ()
       in
       loop ()
     in
@@ -424,7 +424,7 @@ let inv_sel g pack mask prompt term =
 ;;
 
 let inventory g pack mask =
-  let _ : char option =
+  let (_ : char option) =
     inv_sel g pack mask (transl g.lang " -- Press space to continue --")
       " \027"
   in
@@ -435,11 +435,11 @@ let inventory g pack mask =
 
 let rec scanbrd brd i n =
   let pp1 = i in
-  let pp2 = try string__index_from brd i `:` with Not_found -> -1 in
+  let pp2 = try string__index_char_from brd i `:` with Not_found -> -1 in
   if pp2 >= 0 then
     let pp2 = pp2 + 2 in
     if n > 0 then
-      let pp2 = try string__index_from brd pp2 ` ` with Not_found -> -1 in
+      let pp2 = try string__index_char_from brd pp2 ` ` with Not_found -> -1 in
       if pp2 >= 0 then scanbrd brd (pp2 + 1) (n - 1) else None
     else Some (pp1, pp2)
   else None
@@ -603,10 +603,10 @@ let pack_letter g prompt mask =
 
 let wizard_sel create list =
   let (_, list) =
-    list__fold_left
+    list__it_list
       (fun (ch, list) t ->
          let list = (ch, create (Some t)) :: list in
-         Char.chr (Char.code ch + 1), list)
+         char__char_of_int (char__int_of_char ch + 1), list)
       (`a`, []) list
   in
   list
@@ -622,7 +622,7 @@ let new_object_for_wizard g =
       let ch =
         let rec loop () =
           let ch = rgetchar g in
-          try let _ : int = string__index (obj_sel ^ " \027") ch in ch with
+          try let (_ : int) = string__index_char (obj_sel ^ " \027") ch in ch with
             Not_found -> loop ()
         in
         loop ()
@@ -668,7 +668,7 @@ let new_object_for_wizard g =
         else
           let sel =
             string__concat ""
-              (list__map (string__make 1) (list__map fst obj_list))
+              (list__map (string__make_string 1) (list__map fst obj_list))
           in
           let sel = sel ^ obj_sel ^ " \027" in
           let retc =

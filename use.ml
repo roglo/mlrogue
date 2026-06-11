@@ -35,7 +35,7 @@ let potion_heal g extra =
   else
     begin let ratio = if ratio < 0.33 then 0.33 else ratio in
       let add = ratio *. float_of_int (rogue.hp_max - rogue.hp_current) in
-      rogue.hp_current <- rogue.hp_current + int_of_float_of_int add;
+      rogue.hp_current <- rogue.hp_current + int_of_float add;
       rogue.hp_current <- min rogue.hp_current rogue.hp_max
     end;
   if rogue.blind > 0 then move__unblind g;
