@@ -412,10 +412,12 @@ let steal_item g monster =
             let (ch, obj) = list_nth objs n in
             let obj1 =
               {ob_quantity =
-                 match obj.ob_kind with
+                 begin match obj.ob_kind with
                    Weapon _ -> obj.ob_quantity
-                 | _ -> 1;
-               obj_kind = obj.obj_kind}
+                 | _ -> 1
+                 end;
+               ob_kind = obj.ob_kind; ob_row = obj.ob_row;
+               ob_col = obj.ob_col}
             in
             let msg =
               transl g.lang "She stole" ^ " " ^ get_desc g obj1 false

@@ -90,7 +90,7 @@ let drop g =
               Weapon w ->
                 if w.we_in_use then unwield g; take_from_pack g ch; obj
             | Armor a ->
-                if a.ar_in_use then begin Monster.mv_aquators g; unwear g end;
+                if a.ar_in_use then begin monster__mv_aquators g; unwear g end;
                 print_stats g 0o20;
                 take_from_pack g ch;
                 obj
@@ -99,11 +99,11 @@ let drop g =
                 if obj.ob_quantity > 1 then
                   begin
                     obj.ob_quantity <- obj.ob_quantity - 1;
-                    {obj with ob_quantity = 1}
+                    {ob_quantity = 1; ob_kind = obj.ob_kind}
                   end
                 else begin take_from_pack g ch; obj end
           in
-          Level.place_at g obj g.rogue.row g.rogue.col;
+          level__place_at g obj g.rogue.row g.rogue.col;
           let msg = transl g.lang "Dropped" ^ " " ^ get_desc g obj false in
           message g (etransl msg ^ ".") false; move__reg_move g
 ;;
@@ -781,7 +781,7 @@ let rec game_loop g =
   print_stats g 0o377;
   play_level g;
   Curses.clear ();
-  Level.create g;
+  level__create g;
   init_display g;
   game_loop g
 ;;
@@ -826,7 +826,7 @@ let main () =
       f_bool.Efield.set g.env "no handle robot" nhr;
       f_bool.Efield.set g.env "fast" fast;
       f_bool.Efield.set g.env "batch" batch;
-      Level.create g;
+      level__create g;
       init_display g;
       if no_record_score then g.score_only <- true;
       game g

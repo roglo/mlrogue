@@ -105,7 +105,7 @@ let sell_pack g =
   curses__clear ();
   curses__mvaddstr 1 0 (transl g.lang "Value      Item");
   let _ =
-    List.fold_left
+    list__it_list
       (fun row (_, obj) ->
          match obj.ob_kind with
            Food _ -> row
@@ -118,7 +118,7 @@ let sell_pack g =
                  curses__mvaddstr row 0 line
                end;
              row + 1)
-      2 (List.sort (fun (a, _) (b, _) -> compare a b) g.rogue.pack)
+      2 (sort__sort (fun (a, _) (b, _) -> a <= b) g.rogue.pack)
   in
   curses__refresh (); message g "" false
 ;;
@@ -138,16 +138,16 @@ type score_type =
 
 let read_scores () =
   let ic =
-    match try Some (open_in_bin score_file) with Sys_error _ -> None with
+    match try Some (open_in_bin score_file) with sys__Sys_error _ -> None with
       Some ic ->
-        let b = string_create (string__length score_magic) in
+        let b = string_create (string__string_length score_magic) in
         really_input ic b 0 (string_length b);
         let b = string_of_bytes b in
         if b <> score_magic then begin close_in ic; None end else Some ic
     | None -> None
   in
   match ic with
-    Some ic -> let v : score_type list = input_value ic in close_in ic; v
+    Some ic -> let (v : score_type list) = input_value ic in close_in ic; v
   | None ->
       [{sc_score = 100; sc_name = "john"; sc_ending = Monster "hobgoblin";
         sc_level = 3; sc_with_amulet = false};
@@ -159,7 +159,7 @@ let write_scores scores =
   match try Some (open_out_bin score_file) with Sys_error _ -> None with
     Some oc ->
       let scores =
-        if List.length scores > 15 then List.rev (List.tl (List.rev scores))
+        if list__length scores > 15 then list__rev (list__tl (list__rev scores))
         else scores
       in
       output_string oc score_magic;
@@ -246,7 +246,7 @@ let put_scores lang score_only g_ending =
   curses__mvaddstr 3 30 (transl lang "Top  Rogueists");
   curses__mvaddstr 5 0 (transl lang "Rank   Score   Name");
   let _ =
-    List.fold_left
+    list__it_list
       (fun rank score ->
          if rank > 15 && rank <> n then rank + 1
          else
@@ -263,7 +263,7 @@ let put_scores lang score_only g_ending =
            in
            let txt =
              if rank = n then
-               let len = 80 - string__length txt - 2 in
+               let len = 80 - string__string_length txt - 2 in
                txt ^ string__make (max 0 len) ` `
              else txt
            in
@@ -280,7 +280,7 @@ let put_scores lang score_only g_ending =
 let win g =
   (* ... *)
   win_message g;
-  id_all g (List.map snd g.rogue.pack);
+  id_all g (list__map snd g.rogue.pack);
   sell_pack g;
   put_scores g.lang g.score_only (Some (g, Win));
   message g "" false;
@@ -289,7 +289,7 @@ let win g =
 ;;
 
 let has_unidentifed_objects g pack =
-  List.exists
+  list__exists
     (fun (_, obj) ->
        match obj.ob_kind with
          Armor a -> not a.ar_identified
@@ -363,7 +363,7 @@ let killed_by g death =
   begin match death with
     Monster _ | Hypothermia | Starvation | PoisonDart when g.show_skull ->
       let center row buf =
-        let margin = (80 - string__length buf) / 2 in
+        let margin = (80 - string__string_length buf) / 2 in
         curses__mvaddstr row margin buf
       in
       curses__clear ();
@@ -392,7 +392,7 @@ let killed_by g death =
   message g "" false;
   let pack_opt =
     if g.rogue.pack <> [] && has_unidentifed_objects g g.rogue.pack then
-      let pack = List.filter (select_unidentified g) g.rogue.pack in Some pack
+      let pack = list__filter (select_unidentified g) g.rogue.pack in Some pack
     else None
   in
   id_all g g.level_objects;
@@ -412,7 +412,7 @@ let killed_by g death =
     | None -> ()
     end;
     let retc =
-      inv_sel g (List.map (fun obj -> `.`, obj) g.level_objects)
+      inv_sel g (list__map (fun obj -> `.`, obj) g.level_objects)
         (fun _ -> true) prompt2 term2
     in
     match retc with

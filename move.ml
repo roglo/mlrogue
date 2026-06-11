@@ -319,7 +319,7 @@ let rec check_hunger g messages_only =
           (); rogue.moves_left <- rogue.moves_left - rogue.moves_left mod 2
       | 2 ->
           rogue.moves_left <- rogue.moves_left - 1;
-          let _ : bool = check_hunger g true in
+          let (_ : bool) = check_hunger g true in
           (); rogue.moves_left <- rogue.moves_left - 1
       | _ -> failwith "assert false"
       end;
@@ -331,7 +331,7 @@ let wanderer g =
   let found =
     let rec loop_i i =
       if i < 15 then
-        let monster = Imonster.gr_monster g (Some 0) in
+        let monster = imonster__gr_monster g (Some 0) in
         if monster.mn_flags land (0o20 lor 0o40) = 0 then loop_i (i + 1)
         else Some monster
       else None
@@ -360,7 +360,7 @@ let wanderer g =
   | None -> ()
 ;;
 
-let rec reg_move g = let _ : bool = reg_move_and_check_fainted g in ()
+let rec reg_move g = let (_ : bool) = reg_move_and_check_fainted g in ()
 and reg_move_and_check_fainted g =
   let fainted =
     if g.rogue.moves_left <= 300 || g.cur_level >= g.max_level then
@@ -513,7 +513,7 @@ let pick_up g row col =
           (transl g.lang "The scroll turns to dust as you pick it up.") false;
         g.dungeon.(row).(col) <- g.dungeon.(row).(col) land lnot 0o1;
         g.level_objects <- list_remove obj g.level_objects;
-        g.id_scrolls.(Object.int_of_scroll ScareMonster) <- Identified;
+        g.id_scrolls.(object__int_of_scroll ScareMonster) <- Identified;
         g.experimented_pick_up_scare_monster <- true
       end;
     None, false
@@ -561,7 +561,7 @@ let one_move g dirch pickup =
     begin tele g; StoppedOnSomething end
   else if g.dungeon.(row).(col) land 0o2 <> 0 then
     begin
-      Attack.rogue_hit g (monster_at g row col) false;
+      attack__rogue_hit g (monster_at g row col) false;
       reg_move g;
       MoveFailed
     end

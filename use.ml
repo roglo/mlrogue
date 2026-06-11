@@ -151,7 +151,7 @@ let apply_potion g =
       if g.rogue.halluc > 0 then
         message g (transl g.lang "What a trippy feeling.") false
       else message g (transl g.lang "You feel confused.") false;
-      Monster.confuse g
+      monster__confuse g
   | Levitation ->
       message g (transl g.lang "You start to float in the air.") false;
       g.rogue.levitate <- g.rogue.levitate + get_rand 15 30;
@@ -198,7 +198,7 @@ let quaff g =
 
 let get_ench_color g =
   if g.rogue.halluc > 0 then
-    transl g.lang colours.(get_rand 0 (Array.length colours - 1))
+    transl g.lang colours.(get_rand 0 (vect__vect_length colours - 1))
   else transl g.lang "blue"
 ;;
 
@@ -319,7 +319,7 @@ let create_monster g =
   in
   match found with
     Some (row, col) ->
-      let monster = Imonster.gr_monster g (Some 0) in
+      let monster = imonster__gr_monster g (Some 0) in
       put_m_at g row col monster;
       monster.mn_trail_char <- curses__mvinch row col;
       show_monster g row col monster (gmc g monster);
@@ -380,7 +380,7 @@ let apply_scroll g =
   | EnchantWeapon ->
       begin match g.rogue.weapon with
         Some (ch, w) ->
-          let n = (List.assoc ch g.rogue.pack).ob_quantity in
+          let n = (list__assoc ch g.rogue.pack).ob_quantity in
           let i = int_of_weapon w.we_kind in
           let t = weapon_tab.(i).o_title in
           let t = transl g.lang (nth_field t (if n <= 1 then 0 else 1)) in
@@ -591,7 +591,7 @@ let take_off g =
         message g (transl g.lang "You can't, it appears to be cursed.") false
       else
         begin
-          Monster.mv_aquators g;
+          monster__mv_aquators g;
           unwear g;
           let msg = transl g.lang "Was wearing" ^ " " ^ armor_desc g a in
           message g (etransl msg ^ ".") false;

@@ -29,13 +29,13 @@ let single_unix_read s b ofs len =
 let rogbot_magic = "RGBT0001";;
 
 let check_magic s =
-  let buff = string_make (string__length rogbot_magic) ' ' in
+  let buff = string_make (string__string_length rogbot_magic) ` ` in
   let len = single_unix_read s buff 0 (string_length buff) in
   if len = 0 then false
   else
     let buff = string_of_bytes buff in
     if buff = rogbot_magic then true
-    else if string__sub buff 0 4 = string__sub rogbot_magic 0 4 then
+    else if string__sub_string buff 0 4 = string__sub_string rogbot_magic 0 4 then
       failwith
         (sprintf "rogbot magic incompatible version (%s instead of %s)" buff
            rogbot_magic)
@@ -54,9 +54,9 @@ let input_int s =
   let rec loop n =
     let _ : int = single_unix_read s buff 0 1 in
     match string_get buff 0 with
-      '0'..'9' ->
-        loop (10 * n + Char.code (string_get buff 0) - Char.code '0')
-    | '\n' -> n
+      `0`..`9` ->
+        loop (10 * n + Char.code (string_get buff 0) - Char.code `0`)
+    | `\n` -> n
     | c ->
         failwith (sprintf "unexpected char '%s' in protocol" (Char.escaped c))
   in
