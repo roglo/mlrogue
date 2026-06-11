@@ -251,6 +251,7 @@ let add_exp g e promotion =
 type saved == game * char vect vect;;
 let save_magic = "RGSV0005";;
 
+(*
 module OLD_GAME =
   struct
     type t =
@@ -338,6 +339,7 @@ let g_of_old_g g =
 
 type old_saved = OLD_GAME.t * char vect vect;;
 let old_save_magic = "RGSV0004";;
+*)
 
 let save_into_file g fname =
   if g.score_only then
