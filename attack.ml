@@ -374,7 +374,7 @@ let throw_at_monster g monster obj =
 ;;
 
 let tempo g =
-  if fast g then () else let (_, _, _) = Unix.select [] [] [] 0.05 in ()
+  if fast g then () else let (_, _, _) = unix__select [] [] [] 0.05 in ()
 ;;
 
 let get_thrown_at_monster g obj dir orow ocol =
@@ -432,10 +432,10 @@ let get_thrown_at_monster g obj dir orow ocol =
 let extract_copy_of_weapon obj =
   let copy_object_kind =
     function
-      Weapon w -> Weapon {w with we_kind = w.we_kind; we_in_use = false}
+      Weapon w -> Weapon {(*w with*) we_kind = w.we_kind; we_in_use = false}
     | x -> x
   in
-  {obj with ob_kind = copy_object_kind obj.ob_kind; ob_quantity = 1}
+  {(*obj with*) ob_kind = copy_object_kind obj.ob_kind; ob_quantity = 1}
 ;;
 
 let flop_weapon g obj row col =

@@ -62,7 +62,7 @@ let go_blind g =
         let rm = g.rooms.(rn) in
         for i = rm.top_row + 1 to rm.bottom_row - 1 do
           for j = rm.left_col + 1 to rm.right_col - 1 do
-            Curses.mvaddch i j ' '
+            curses__mvaddch i j ` `
           done
         done
   | None -> ()
@@ -83,16 +83,16 @@ let show_objects g =
              begin let monster = monster_at g row col in
                monster.mn_trail_char <- rc
              end;
-           let mc = Curses.mvinch row col in
-           if (mc < 'A' || mc > 'Z') &&
+           let mc = curses__mvinch row col in
+           if (mc < `A` || mc > `Z`) &&
               (row <> g.rogue.row || col <> g.rogue.col)
            then
-             Curses.mvaddch row col rc)
+             curses__mvaddch row col rc)
         g.level_objects;
       list__do_list
         (fun monster ->
            if monster.mn_flags land 0o20000000 <> 0 then
-             Curses.mvaddch monster.mn_row monster.mn_col monster.mn_disguise)
+             curses__mvaddch monster.mn_row monster.mn_col monster.mn_disguise)
         g.level_monsters
     end
 ;;
@@ -181,7 +181,7 @@ let quaff g =
          Potion _ -> true
        | _ -> false)
   in
-  if ch = '\027' then ()
+  if ch = `\027` then ()
   else
     match get_letter_object g ch false with
       None -> ()
@@ -208,7 +208,7 @@ let idntfy g =
       pack_letter g (transl g.lang "What would you like to identify?")
         (fun _ -> true)
     in
-    if ch = '\027' then ()
+    if ch = `\027` then ()
     else
       match get_letter_object g ch true with
         None -> message g "" false; check_message g; loop ()
@@ -248,8 +248,8 @@ let draw_magic_map g wizard_key =
     for j = 0 to 80 - 1 do
       let s = g.dungeon.(i).(j) in
       if s land mask <> 0 then
-        let ch = Curses.mvinch i j in
-        if ch = ' ' || ch >= 'A' && ch <= 'Z' ||
+        let ch = curses__mvinch i j in
+        if ch = ` ` || ch >= `A` && ch <= `Z` ||
            s land (0o400 lor 0o1000) <> 0
         then
           let och = ch in
@@ -257,18 +257,18 @@ let draw_magic_map g wizard_key =
             g.dungeon.(i).(j) <- g.dungeon.(i).(j) land lnot 0o1000;
           let ch =
             if g.dungeon.(i).(j) land 0o1000 <> 0 then get_dungeon_char g i j
-            else if s land 0o10 <> 0 then '-'
-            else if s land 0o20 <> 0 then '|'
-            else if s land 0o40 <> 0 then '+'
-            else if s land 0o400 <> 0 then '^'
-            else if s land 0o4 <> 0 then '%'
-            else if s land 0o200 <> 0 then '#'
-            else ' '
+            else if s land 0o10 <> 0 then `-`
+            else if s land 0o20 <> 0 then `|`
+            else if s land 0o40 <> 0 then `+`
+            else if s land 0o400 <> 0 then `^`
+            else if s land 0o4 <> 0 then `%`
+            else if s land 0o200 <> 0 then `#`
+            else ` `
           in
-          if ch = ' ' then ()
+          if ch = ` ` then ()
           else
             begin
-              if s land 0o2 = 0 || och = ' ' then Curses.addch ch;
+              if s land 0o2 = 0 || och = ` ` then curses__addch ch;
               if s land 0o2 <> 0 then
                 let monster = monster_at g i j in monster.mn_trail_char <- ch
             end
@@ -280,16 +280,16 @@ let draw_magic_map g wizard_key =
       if rm.is_room land (0o2 lor 0o4) = 0 then
         begin
           for col = rm.left_col to rm.right_col do
-            if Curses.mvinch rm.top_row col = ' ' then
-              Curses.mvaddch rm.top_row col '\'';
-            if Curses.mvinch rm.bottom_row col = ' ' then
-              Curses.mvaddch rm.bottom_row col '\''
+            if curses__mvinch rm.top_row col = ` ` then
+              curses__mvaddch rm.top_row col `\``;
+            if curses__mvinch rm.bottom_row col = ` ` then
+              curses__mvaddch rm.bottom_row col `\``
           done;
           for row = rm.top_row to rm.bottom_row do
-            if Curses.mvinch row rm.left_col = ' ' then
-              Curses.mvaddch row rm.left_col '\'';
-            if Curses.mvinch row rm.right_col = ' ' then
-              Curses.mvaddch row rm.right_col '\''
+            if curses__mvinch row rm.left_col = ` ` then
+              curses__mvaddch row rm.left_col `\``;
+            if curses__mvinch row rm.right_col = ` ` then
+              curses__mvaddch row rm.right_col `\``
           done
         end
     done
@@ -321,7 +321,7 @@ let create_monster g =
     Some (row, col) ->
       let monster = Imonster.gr_monster g (Some 0) in
       put_m_at g row col monster;
-      monster.mn_trail_char <- Curses.mvinch row col;
+      monster.mn_trail_char <- curses__mvinch row col;
       show_monster g row col monster (gmc g monster);
       if monster.mn_flags land (0o40 lor 0o20) <> 0 then wake_up monster
   | None ->
@@ -337,7 +337,7 @@ let aggravate_monster g =
        wake_up monster;
        monster.mn_flags <- monster.mn_flags land lnot 0o20000000;
        if rogue_can_see g monster.mn_row monster.mn_col then
-         Curses.mvaddch monster.mn_row monster.mn_col
+         curses__mvaddch monster.mn_row monster.mn_col
            (tgmc g monster.mn_char))
     g.level_monsters
 ;;
@@ -456,7 +456,7 @@ let read_scroll g =
            Scroll _ -> true
          | _ -> false)
     in
-    if ch = '\027' then ()
+    if ch = `\027` then ()
     else
       match get_letter_object g ch false with
         None -> ()
@@ -477,7 +477,7 @@ let eat g =
          Food _ -> true
        | _ -> false)
   in
-  if ch = '\027' then ()
+  if ch = `\027` then ()
   else
     match get_letter_object g ch false with
       None -> ()
@@ -526,7 +526,7 @@ let wear g =
         | _ -> false
       in
       let ch = pack_letter g (transl g.lang "Wear what?") mask in
-      if ch = '\027' then ()
+      if ch = `\027` then ()
       else
         match get_letter_object g ch false with
           None -> ()
@@ -558,7 +558,7 @@ let wield g =
            Weapon _ -> true
          | _ -> false)
     in
-    if ch = '\027' then ()
+    if ch = `\027` then ()
     else
       match get_letter_object g ch false with
         None -> ()
@@ -621,7 +621,7 @@ let put_on_ring g =
            Ring _ -> true
          | _ -> false)
     in
-    if ch = '\027' then ()
+    if ch = `\027` then ()
     else
       match get_letter_object g ch false with
         None -> ()
@@ -634,15 +634,15 @@ let put_on_ring g =
               else
                 let ch =
                   if g.rogue.r_rings = 1 then
-                    if g.rogue.left_ring <> None then translc g.lang 'r'
-                    else translc g.lang 'l'
+                    if g.rogue.left_ring <> None then translc g.lang `r`
+                    else translc g.lang `l`
                   else
                     begin
                       message g (transl g.lang "Left or right hand?") false;
                       let rec loop () =
                         let ch = rgetchar g in
-                        if ch <> '\027' && ch <> translc g.lang 'r' &&
-                           ch <> translc g.lang 'l'
+                        if ch <> `\027` && ch <> translc g.lang `r` &&
+                           ch <> translc g.lang `l`
                         then
                           loop ()
                         else ch
@@ -650,10 +650,10 @@ let put_on_ring g =
                       loop ()
                     end
                 in
-                if ch = '\027' then check_message g
+                if ch = `\027` then check_message g
                 else
                   begin
-                    do_put_on g ring (ch = translc g.lang 'l');
+                    do_put_on g ring (ch = translc g.lang `l`);
                     check_message g;
                     ring_stats g;
                     print_stats g 0o10;
@@ -702,14 +702,14 @@ let remove_ring g =
         message g (transl g.lang "Left or right hand?") false;
         let rec loop () =
           let ch = rgetchar g in
-          if ch <> '\027' && ch <> translc g.lang 'r' && ch <> '\r' &&
-             ch <> translc g.lang 'l'
+          if ch <> `\027` && ch <> translc g.lang `r` && ch <> `\r` &&
+             ch <> translc g.lang `l`
           then
             loop ()
           else
             begin
               check_message g;
-              ch = translc g.lang 'l', ch = translc g.lang 'r'
+              ch = translc g.lang `l`, ch = translc g.lang `r`
             end
         in
         loop ()

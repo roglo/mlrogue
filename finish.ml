@@ -13,6 +13,9 @@
 #open "translate";;
 
 let string_create = string__create_string;;
+let string_contains s c =
+  try let _ = string__index_char s c in true with Not_found -> false
+;;
 let string_length = string__string_length;;
 let string_of_bytes (s : string) = s;;
 
@@ -36,7 +39,7 @@ let win_message g =
       begin try
         let rec loop i =
           let line = input_line ic in
-          if string__contains line `:` then ()
+          if string_contains line `:` then ()
           else begin f i 11 line; loop (i + 1) end
         in
         loop 7
@@ -60,11 +63,11 @@ let win_message g =
 ;;
 
 let id_all g pack =
-  Array.fill g.id_potions 0 (Array.length g.id_potions) Identified;
-  Array.fill g.id_rings 0 (Array.length g.id_rings) Identified;
-  Array.fill g.id_scrolls 0 (Array.length g.id_scrolls) Identified;
-  Array.fill g.id_wands 0 (Array.length g.id_wands) Identified;
-  List.iter
+  vect__fill_vect g.id_potions 0 (vect__vect_length g.id_potions) Identified;
+  vect__fill_vect g.id_rings 0 (vect__vect_length g.id_rings) Identified;
+  vect__fill_vect g.id_scrolls 0 (vect__vect_length g.id_scrolls) Identified;
+  vect__fill_vect g.id_wands 0 (vect__vect_length g.id_wands) Identified;
+  list__do_list
     (fun obj ->
        match obj.ob_kind with
          Armor a -> a.ar_identified <- true

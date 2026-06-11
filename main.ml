@@ -30,7 +30,7 @@ let init_display g =
   let col = g.rogue.col in
   relight g;
   begin match get_room_number g row col with
-    Some rn -> Move.wake_room g rn true row col
+    Some rn -> move__wake_room g rn true row col
   | None -> ()
   end;
   if g.new_level_message <> "" then
@@ -57,7 +57,7 @@ let check_up g =
       message g (transl g.lang "Your way is magically blocked.") false;
       false
     end
-  else if g.cur_level = 1 then Finish.win g
+  else if g.cur_level = 1 then finish__win g
   else
     begin
       g.new_level_message <-
@@ -75,7 +75,7 @@ let drop g =
     message g (transl g.lang "You have nothing to drop.") false
   else
     let ch = pack_letter g (transl g.lang "Drop what?") (fun _ -> true) in
-    if ch = '\027' then ()
+    if ch = `\027` then ()
     else
       match get_letter_object g ch false with
         None -> ()
@@ -105,13 +105,13 @@ let drop g =
           in
           Level.place_at g obj g.rogue.row g.rogue.col;
           let msg = transl g.lang "Dropped" ^ " " ^ get_desc g obj false in
-          message g (etransl msg ^ ".") false; Move.reg_move g
+          message g (etransl msg ^ ".") false; move__reg_move g
 ;;
 
 let show_traps g =
   for i = 0 to 24 - 1 do
     for j = 0 to 80 - 1 do
-      if g.dungeon.(i).(j) land 0o400 <> 0 then Curses.mvaddch i j '^'
+      if g.dungeon.(i).(j) land 0o400 <> 0 then Curses.mvaddch i j `^`
     done
   done
 ;;
@@ -133,26 +133,26 @@ let get_input_line g prompt insert if_cancelled do_echo =
   let (buf, ch) =
     let rec loop_i buf i =
       let ch = rgetchar g in
-      if ch <> '\r' && ch <> '\n' && ch <> '\027' then
+      if ch <> `\r` && ch <> `\n` && ch <> `\027` then
         let (buf, i) =
-          if ch = '\b' || ch = '\127' then
+          if ch = `\b` || ch = `\127` then
             if i > 0 then
               begin
-                Curses.mvaddch 0 (i + n) ' ';
+                Curses.mvaddch 0 (i + n) ` `;
                 Curses.move (1 - 1) (i + n);
                 let buf = Ustring.but_last buf in buf, Ustring.length buf
               end
             else buf, i
-          else if ch = '\021' then
+          else if ch = `\021` then
             begin
-              for i = 1 to i do Curses.mvaddch 0 (n + i) ' ' done;
+              for i = 1 to i do Curses.mvaddch 0 (n + i) ` ` done;
               Curses.move (1 - 1) (n + 1);
               Ustring.of_string "", 0
             end
           else if i < 30 - 2 then
-            if ch <> ' ' || i > 0 then
+            if ch <> ` ` || i > 0 then
               let buf = Ustring.append_char buf ch in
-              if do_echo then Curses.addch ch else Curses.addch '.';
+              if do_echo then Curses.addch ch else Curses.addch `.`;
               buf, Ustring.length buf
             else buf, i
           else buf, i
@@ -166,12 +166,12 @@ let get_input_line g prompt insert if_cancelled do_echo =
   let buf =
     let rec loop buf =
       if Ustring.is_empty buf then buf
-      else if Ustring.last_char buf = ' ' then loop (Ustring.but_last buf)
+      else if Ustring.last_char buf = ` ` then loop (Ustring.but_last buf)
       else buf
     in
     loop buf
   in
-  if ch = '\027' || Ustring.is_empty buf then
+  if ch = `\027` || Ustring.is_empty buf then
     begin if if_cancelled <> "" then message g if_cancelled false; "" end
   else Ustring.to_string buf
 ;;
@@ -183,7 +183,7 @@ let call_it g =
          Scroll _ | Potion _ | Wand _ | Ring _ -> true
        | _ -> false)
   in
-  if ch = '\027' then ()
+  if ch = `\027` then ()
   else
     match get_letter_object g ch false with
       None -> ()
@@ -223,18 +223,18 @@ let single_inv g ichar =
       Some ichar -> ichar
     | None -> pack_letter g (transl g.lang "Inventory what?") (fun _ -> true)
   in
-  if ch = '\027' then ()
+  if ch = `\027` then ()
   else
     match get_letter_object g ch false with
       None -> ()
     | Some obj ->
         let p =
           match obj with
-            {ob_kind = Armor {ar_is_protected = true}} -> '}'
+            {ob_kind = Armor {ar_is_protected = true}} -> `}`
           | {ob_kind =
                Weapon {we_has_been_uncursed = true; we_identified = false}} ->
-              '|'
-          | _ -> ')'
+              `|`
+          | _ -> `)`
         in
         let s = sprintf "%c%c %s" ch p (etransl (get_desc g obj true)) in
         message g s false
@@ -286,7 +286,7 @@ let discovered_kind g title name id tab =
   let col = 80 - (maxlen + 2) in
   let saved = Array.make (len + 1) (string_to_bytes "") in
   for i = 0 to len do
-    let a = string_make (maxlen + 2) ' ' in
+    let a = string_make (maxlen + 2) ` ` in
     saved.(i) <- a;
     for j = 0 to maxlen + 1 do string_set a j (Curses.mvinch i (j + col)) done
   done;
@@ -320,30 +320,30 @@ let discovered g =
       loop ()
     in
     check_message g;
-    if ch = '\027' || ch = ' ' then ()
+    if ch = `\027` || ch = ` ` then ()
     else
       let rec loop ch =
         let ch =
           match ch with
-            '!' ->
+            `!` ->
               let name _ = "potion" in
               discovered_kind g (transl g.lang "potions") name g.id_potions
                 potion_tab
-          | '?' ->
+          | `?` ->
               let name _ = "scroll" in
               discovered_kind g (transl g.lang "scrolls") name g.id_scrolls
                 scroll_tab
-          | '=' ->
+          | `=` ->
               let name _ = "ring" in
               discovered_kind g (transl g.lang "rings") name g.id_rings
                 ring_tab
-          | '/' ->
+          | `/` ->
               let name i = if g.is_wood.(i) then "staff" else "wand" in
               discovered_kind g (transl g.lang "staffs and wands") name
                 g.id_wands wand_tab
           | _ -> ch
         in
-        if ch = '\027' || ch = ' ' then loop_ok () else loop ch
+        if ch = `\027` || ch = ` ` then loop_ok () else loop ch
       in
       loop ch
   in
@@ -354,7 +354,7 @@ let rest g count =
   g.interrupted <- false;
   let rec loop i =
     if i < count then
-      if g.interrupted then () else begin Move.reg_move g; loop (i + 1) end
+      if g.interrupted then () else begin move__reg_move g; loop (i + 1) end
   in
   loop 0
 ;;
@@ -374,7 +374,7 @@ let throw g count =
     loop true
   in
   check_message g;
-  if dir = '\027' then ()
+  if dir = `\027` then ()
   else
     let ch =
       pack_letter g
@@ -386,7 +386,7 @@ let throw g count =
            Weapon _ -> true
          | _ -> false)
     in
-    if ch = '\027' then ()
+    if ch = `\027` then ()
     else
       begin
         check_message g;
@@ -407,7 +407,7 @@ let throw g count =
               if count = 0 then ()
               else
                 let just_once = Attack.one_throw g dir (ch, obj) in
-                Move.reg_move g;
+                move__reg_move g;
                 if just_once || g.interrupted then () else loop (count - 1)
             in
             loop count
@@ -420,7 +420,7 @@ let quit g from_intrpt =
       begin
         check_message g;
         message g (transl g.lang "Really quit? (y/n)") true;
-        if rgetchar g <> translc g.lang 'y' then
+        if rgetchar g <> translc g.lang `y` then
           begin
             (* ... *)
             check_message g;
@@ -435,7 +435,7 @@ let quit g from_intrpt =
     begin
       (* ... *)
       check_message g;
-      Finish.killed_by g Quit
+      finish__killed_by g Quit
     end
 ;;
 
@@ -443,10 +443,10 @@ let unknown_command g ch =
   message g
     (sprintf "%s '%s'" (transl g.lang "Unknown command")
        (if Char.code ch <= 26 then
-          sprintf "ctrl-%c" (Char.chr (Char.code ch + Char.code 'a' - 1))
-        else if ch = '\027' then "esc"
-        else if ch = '\127' then "del"
-        else if ch = '\\' then "\\"
+          sprintf "ctrl-%c" (Char.chr (Char.code ch + Char.code `a` - 1))
+        else if ch = `\027` then "esc"
+        else if ch = `\127` then "del"
+        else if ch = `\\` then "\\"
         else Char.escaped ch))
     false
 ;;
@@ -480,30 +480,30 @@ let whatisit g =
   let ch = Curses.getch () in
   check_message g;
   match ch with
-    'A'..'Z' ->
+    `A`..`Z` ->
       let tch = itgmc g ch in
-      let i = Char.code tch - Char.code 'A' in
+      let i = Char.code tch - Char.code `A` in
       let s = transl g.lang (Imonster.visible_mon_name g i) in
       let art = transl g.lang "a@(n?n)" in msg_is g ch (art ^ " " ^ s)
-  | '\027' -> ()
-  | '|' | '-' -> msg_is g ch (transl g.lang "the wall")
-  | '+' -> msg_is g ch (transl g.lang "a door")
-  | '#' -> msg_is g ch (transl g.lang "a tunnel")
-  | '.' -> msg_is g ch (transl g.lang "a floor tile")
-  | '!' ->
+  | `\027` -> ()
+  | `|` | `-` -> msg_is g ch (transl g.lang "the wall")
+  | `+` -> msg_is g ch (transl g.lang "a door")
+  | `#` -> msg_is g ch (transl g.lang "a tunnel")
+  | `.` -> msg_is g ch (transl g.lang "a floor tile")
+  | `!` ->
       msg_is g ch (transl g.lang "a@(n?n)" ^ " " ^ transl g.lang "potion")
-  | '?' ->
+  | `?` ->
       msg_is g ch (transl g.lang "a@(n?n)" ^ " " ^ transl g.lang "scroll")
-  | ')' -> msg_is g ch (transl g.lang "a weapon")
-  | ']' -> msg_is g ch (transl g.lang "a suit of armour")
-  | '*' -> msg_is g ch (transl g.lang "some gold")
-  | ':' -> msg_is g ch (transl g.lang "some food")
-  | '/' -> msg_is g ch (transl g.lang "a wand or staff")
-  | '=' -> msg_is g ch (transl g.lang "a@(n?n)" ^ " " ^ transl g.lang "ring")
-  | ',' -> msg_is g ch (transl g.lang "The Amulet of Yendor")
-  | '^' -> msg_is g ch (transl g.lang "a trap")
-  | '%' -> msg_is g ch (transl g.lang "stairs")
-  | '@' -> msg_is g ch (transl g.lang "you")
+  | `)` -> msg_is g ch (transl g.lang "a weapon")
+  | `]` -> msg_is g ch (transl g.lang "a suit of armour")
+  | `*` -> msg_is g ch (transl g.lang "some gold")
+  | `:` -> msg_is g ch (transl g.lang "some food")
+  | `/` -> msg_is g ch (transl g.lang "a wand or staff")
+  | `=` -> msg_is g ch (transl g.lang "a@(n?n)" ^ " " ^ transl g.lang "ring")
+  | `,` -> msg_is g ch (transl g.lang "The Amulet of Yendor")
+  | `^` -> msg_is g ch (transl g.lang "a trap")
+  | `%` -> msg_is g ch (transl g.lang "stairs")
+  | `@` -> msg_is g ch (transl g.lang "you")
   | _ ->
       message g
         (sprintf (ftransl g.lang "I don't know what <%c> is either") ch ^ ".")
@@ -516,54 +516,54 @@ let conv_instr s =
   let b = Buffer.create 80 in
   let rec loop i =
     if i < String.length s then
-      if i + 1 < String.length s && s.[i] = '%' then
+      if i + 1 < String.length s && s.[i] = `%` then
         let c =
           match s.[i+1] with
-            'y' -> 'y'
-          | 'k' -> 'k'
-          | 'u' -> 'u'
-          | 'h' -> 'h'
-          | 'l' -> 'l'
-          | 'b' -> 'b'
-          | 'j' -> 'j'
-          | 'n' -> 'n'
-          | '?' -> '?'
-          | '.' -> '.'
-          | 's' -> 's'
-          | 'i' -> 'i'
-          | 'f' -> 'f'
-          | 'F' -> 'F'
-          | 'e' -> 'e'
-          | 'q' -> 'q'
-          | 'r' -> 'r'
-          | 'm' -> 'm'
-          | 'd' -> 'd'
-          | 'P' -> 'P'
-          | 'R' -> 'R'
-          | '>' -> '>'
-          | '<' -> '<'
-          | ')' -> ')'
-          | ']' -> ']'
-          | '=' -> '='
-          | '^' -> '^'
-          | 'I' -> 'I'
-          | 'D' -> 'D'
-          | 'T' -> 'T'
-          | 'W' -> 'W'
-          | 'w' -> 'w'
-          | 'c' -> 'c'
-          | 'z' -> 'z'
-          | 't' -> 't'
-          | ',' -> ','
-          | '@' -> '@'
-          | 'v' -> 'v'
-          | 'Q' -> 'Q'
-          | 'S' -> 'S'
-          | '/' -> '/'
-          | 'X' -> 'X'
-          | x -> '?'
+            `y` -> `y`
+          | `k` -> `k`
+          | `u` -> `u`
+          | `h` -> `h`
+          | `l` -> `l`
+          | `b` -> `b`
+          | `j` -> `j`
+          | `n` -> `n`
+          | `?` -> `?`
+          | `.` -> `.`
+          | `s` -> `s`
+          | `i` -> `i`
+          | `f` -> `f`
+          | `F` -> `F`
+          | `e` -> `e`
+          | `q` -> `q`
+          | `r` -> `r`
+          | `m` -> `m`
+          | `d` -> `d`
+          | `P` -> `P`
+          | `R` -> `R`
+          | `>` -> `>`
+          | `<` -> `<`
+          | `)` -> `)`
+          | `]` -> `]`
+          | `=` -> `=`
+          | `^` -> `^`
+          | `I` -> `I`
+          | `D` -> `D`
+          | `T` -> `T`
+          | `W` -> `W`
+          | `w` -> `w`
+          | `c` -> `c`
+          | `z` -> `z`
+          | `t` -> `t`
+          | `,` -> `,`
+          | `@` -> `@`
+          | `v` -> `v`
+          | `Q` -> `Q`
+          | `S` -> `S`
+          | `/` -> `/`
+          | `X` -> `X`
+          | x -> `?`
         in
-        Buffer.add_char b c; Buffer.add_char b ' '; loop (i + 2)
+        Buffer.add_char b c; Buffer.add_char b ` `; loop (i + 2)
       else begin Buffer.add_char b s.[i]; loop (i + 1) end
     else Buffer.contents b
   in
@@ -578,14 +578,14 @@ let instructions g =
           let rec loop () =
             let line = input_line ic in
             try
-              let i = String.index line ':' in
+              let i = String.index line `:` in
               if string_eq g.lang 0 line 0 i then () else raise Not_found
             with Not_found -> loop ()
           in
           loop ()
         with End_of_file -> seek_in ic 0
         end;
-      let buffer = Array.init 24 (fun _ -> Array.make 80 ' ') in
+      let buffer = Array.init 24 (fun _ -> Array.make 80 ` `) in
       for row = 0 to 24 - 1 do
         for col = 0 to 80 - 1 do
           buffer.(row).(col) <- Curses.mvinch row col
@@ -638,7 +638,7 @@ let save_game g =
       check_message g;
       message g fname false;
       save_into_file g fname;
-      Finish.clean_up ""
+      finish__clean_up ""
     end
 ;;
 
@@ -689,86 +689,86 @@ let rec play_level g =
       let (count, ch) =
         let rec loop count ch =
           match ch with
-            '0'..'9' ->
+            `0`..`9` ->
               Curses.move g.rogue.row g.rogue.col;
               Curses.refresh ();
               let count =
-                if count < 1000 then 10 * count + Char.code ch - Char.code '0'
+                if count < 1000 then 10 * count + Char.code ch - Char.code `0`
                 else count
               in
               let ch = rgetchar g in
-              loop (if ch = '\027' then 0 else count) ch
+              loop (if ch = `\027` then 0 else count) ch
           | ch -> count, ch
         in
         loop 0 ch
       in
       let cont =
         match ch with
-          '>' -> not (drop_check g)
-        | '<' -> not (check_up g)
+          `>` -> not (drop_check g)
+        | `<` -> not (check_up g)
         | _ ->
             begin match ch with
-              '?' -> instructions g
-            | '.' -> rest g (max 1 count)
-            | 's' -> Move.search g (max 1 count) false
-            | 'i' -> inventory g g.rogue.pack (fun _ -> true)
-            | 'f' -> Move.fight g false
-            | 'F' -> Move.fight g true
-            | 'k' | 'j' | 'l' | 'h' | 'u' | 'y' | 'n' | 'b' ->
-                Move.one_move_rogue g ch true
-            | 'H' | 'J' | 'K' | 'L' | 'Y' | 'U' | 'N' | 'B' | '\b' | '\n' |
-              '\011' | '\012' | '\025' | '\021' | '\014' | '\002' ->
-                Move.multiple_move_rogue g ch
-            | 'e' -> Use.eat g
-            | 'q' -> Use.quaff g
-            | 'r' -> Use.read_scroll g
-            | 'm' -> Move.move_onto g
-            | 'd' -> drop g
-            | 'P' -> Use.put_on_ring g
-            | 'R' -> Use.remove_ring g
-            | '\016' -> remessage g
-            | '\023' -> wizardize g
-            | ']' -> inv_armor g
-            | ')' -> inv_weapon g
-            | '=' -> Use.inv_rings g
-            | '^' -> Move.id_trap g
-            | 'I' -> single_inv g None
-            | 'D' -> discovered g
-            | '@' -> change_lang g
-            | 'T' -> Use.take_off g
-            | 'W' -> Use.wear g
-            | 'w' -> Use.wield g
-            | 'c' -> call_it g
-            | 'z' -> if Attack.zap g then Move.reg_move g
-            | 't' -> throw g (max 1 count)
-            | 'v' ->
+              `?` -> instructions g
+            | `.` -> rest g (max 1 count)
+            | `s` -> move__search g (max 1 count) false
+            | `i` -> inventory g g.rogue.pack (fun _ -> true)
+            | `f` -> move__fight g false
+            | `F` -> move__fight g true
+            | `k` | `j` | `l` | `h` | `u` | `y` | `n` | `b` ->
+                move__one_move_rogue g ch true
+            | `H` | `J` | `K` | `L` | `Y` | `U` | `N` | `B` | `\b` | `\n` |
+              `\011` | `\012` | `\025` | `\021` | `\014` | `\002` ->
+                move__multiple_move_rogue g ch
+            | `e` -> Use.eat g
+            | `q` -> Use.quaff g
+            | `r` -> Use.read_scroll g
+            | `m` -> move__move_onto g
+            | `d` -> drop g
+            | `P` -> Use.put_on_ring g
+            | `R` -> Use.remove_ring g
+            | `\016` -> remessage g
+            | `\023` -> wizardize g
+            | `]` -> inv_armor g
+            | `)` -> inv_weapon g
+            | `=` -> Use.inv_rings g
+            | `^` -> move__id_trap g
+            | `I` -> single_inv g None
+            | `D` -> discovered g
+            | `@` -> change_lang g
+            | `T` -> Use.take_off g
+            | `W` -> Use.wear g
+            | `w` -> Use.wield g
+            | `c` -> call_it g
+            | `z` -> if Attack.zap g then move__reg_move g
+            | `t` -> throw g (max 1 count)
+            | `v` ->
                 message g
                   (sprintf "mlrogue %s (%s %s)" version g.nick_name
                      g.login_name)
                   false
-            | 'Q' -> quit g false
-            | ' ' | '\027' -> ()
-            | '\t' ->
+            | `Q` -> quit g false
+            | ` ` | `\027` -> ()
+            | `\t` ->
                 if g.wizard then
-                  inventory g (List.map (fun obj -> '.', obj) g.level_objects)
+                  inventory g (List.map (fun obj -> `.`, obj) g.level_objects)
                     (fun _ -> true)
                 else unknown_command g ch
-            | '\019' ->
+            | `\019` ->
                 if g.wizard then Use.draw_magic_map g true
                 else unknown_command g ch
-            | '\020' ->
+            | `\020` ->
                 if g.wizard then show_traps g else unknown_command g ch
-            | '\015' ->
+            | `\015` ->
                 if g.wizard then Use.show_objects g else unknown_command g ch
-            | '\001' -> show_average_hp g
-            | '\127' ->
+            | `\001` -> show_average_hp g
+            | `\127` ->
                 if g.wizard then new_object_for_wizard g
                 else unknown_command g ch
-            | '\r' ->
+            | `\r` ->
                 if g.wizard then show_monsters g else unknown_command g ch
-            | 'S' -> save_game g
-            | ',' -> Move.kick_into_pack g
-            | '/' -> whatisit g
+            | `S` -> save_game g
+            | `,` -> move__kick_into_pack g
+            | `/` -> whatisit g
             | _ -> unknown_command g ch
             end;
             true
@@ -788,7 +788,7 @@ let rec game_loop g =
 
 let handle_game g =
   Sys.Signal_handle
-    (fun s -> save_into_file g ".rogue.saved"; Finish.clean_up "")
+    (fun s -> save_into_file g ".rogue.saved"; finish__clean_up "")
 ;;
 
 let game g =
@@ -816,7 +816,7 @@ let main () =
   if batch then Curses.no_output ();
   Curses.initscr ();
   if Curses.lines () < 24 || Curses.cols () < 80 then
-    Finish.clean_up
+    finish__clean_up
       (sprintf (ftransl lang "Must be played on a %d x %d or better screen")
          24 80);
   match init with
@@ -878,11 +878,11 @@ let main () =
           ring_stats g;
           game g
       | Right (Sys_error _ | Failure _) ->
-          Finish.clean_up
+          finish__clean_up
             (sprintf "%s: %s" rest_file (transl lang "cannot open file"))
       | Right e -> raise e
       end
-  | Init.ScoreOnly -> Finish.put_scores lang true None; Finish.clean_up ""
+  | Init.ScoreOnly -> finish__put_scores lang true None; finish__clean_up ""
 ;;
 
 try main () with e -> Curses.endwin (); raise e;;

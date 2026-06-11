@@ -343,7 +343,7 @@ let old_save_magic = "RGSV0004";;
 
 let save_into_file g fname =
   if g.score_only then
-    f_random.Efield.set g.env "random" (Some (Random.get_state ()));
+    f_random.efield__set g.env "random" (Some (random__get_state ()));
   let oc = open_out_bin fname in
   let buf =
     Array.init 24 (fun i -> Array.init 80 (fun j -> curses__mvinch i j))
@@ -572,4 +572,4 @@ let get_letter_object g ch mess_try_again =
       None
 ;;
 
-let fast g = f_bool.Efield.get g.env "fast" false;;
+let fast g = f_bool.efield__get g.env "fast" false;;

@@ -409,12 +409,13 @@ let steal_item g monster =
           if len = 0 then ()
           else
             let n = get_rand 0 (len - 1) in
-            let (ch, obj) = list__nth objs n in
+            let (ch, obj) = list_nth objs n in
             let obj1 =
-              {obj with ob_quantity =
-                match obj.ob_kind with
-                  Weapon _ -> obj.ob_quantity
-                | _ -> 1}
+              {ob_quantity =
+                 match obj.ob_kind with
+                   Weapon _ -> obj.ob_quantity
+                 | _ -> 1;
+               obj_kind = obj.obj_kind}
             in
             let msg =
               transl g.lang "She stole" ^ " " ^ get_desc g obj1 false

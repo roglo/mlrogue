@@ -667,7 +667,7 @@ let new_object_for_wizard g =
         if obj_list = [] then ()
         else
           let sel =
-            string__concat ""
+            string__concat
               (list__map (string__make_string 1) (list__map fst obj_list))
           in
           let sel = sel ^ obj_sel ^ " \027" in

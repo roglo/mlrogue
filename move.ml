@@ -173,7 +173,7 @@ let trap_player g row col =
               rogue.str_current <- rogue.str_current - 1;
             print_stats g (0o4 lor 0o10);
             show_rogue g;
-            if rogue.hp_current <= 0 then Finish.killed_by g PoisonDart
+            if rogue.hp_current <= 0 then finish__killed_by g PoisonDart
         | SleepingGasTrap ->
             message g (transl g.lang (level__trap_mess t)) true; take_a_nap g
         | RustTrap ->
@@ -226,12 +226,12 @@ value heal =
 
 let heal g =
   if g.rogue.hp_current = g.rogue.hp_max then
-    f_int.Efield.set g.env "heal_c" 0
+    f_int.efield__set g.env "heal_c" 0
   else
-    let heal_exp = f_int.Efield.get g.env "heal_exp" (-1) in
+    let heal_exp = f_int.efield__get g.env "heal_exp" (-1) in
     if g.rogue.exp <> heal_exp then
       begin let heal_exp = g.rogue.exp in
-        f_int.Efield.set g.env "heal_exp" heal_exp;
+        f_int.efield__set g.env "heal_exp" heal_exp;
         let n =
           match heal_exp with
             1 -> 20
@@ -247,19 +247,19 @@ let heal g =
           | 11 -> 3
           | _ -> 2
         in
-        f_int.Efield.set g.env "heal_n" n
+        f_int.efield__set g.env "heal_n" n
       end;
-    let c = f_int.Efield.get g.env "heal_c" 0 in
+    let c = f_int.efield__get g.env "heal_c" 0 in
     let c = c + 1 in
-    f_int.Efield.set g.env "heal_c" c;
-    let n = f_int.Efield.get g.env "heal_n" 0 in
+    f_int.efield__set g.env "heal_c" c;
+    let n = f_int.efield__get g.env "heal_n" 0 in
     if c >= n then
       let c = 0 in
-      f_int.Efield.set g.env "heal_c" c;
+      f_int.efield__set g.env "heal_c" c;
       g.rogue.hp_current <- g.rogue.hp_current + 1;
-      let alt = f_bool.Efield.get g.env "heal_alt" false in
+      let alt = f_bool.efield__get g.env "heal_alt" false in
       let alt = not alt in
-      f_bool.Efield.set g.env "heal_alt" alt;
+      f_bool.efield__set g.env "heal_alt" alt;
       if alt then g.rogue.hp_current <- g.rogue.hp_current + 1;
       g.rogue.hp_current <- g.rogue.hp_current + g.rogue.regeneration;
       g.rogue.hp_current <- min g.rogue.hp_max g.rogue.hp_current;
@@ -306,7 +306,7 @@ let rec check_hunger g messages_only =
     else false
   in
   if messages_only then fainted
-  else if rogue.moves_left <= 0 then Finish.killed_by g Starvation
+  else if rogue.moves_left <= 0 then finish__killed_by g Starvation
   else
     begin
       begin match rogue.e_rings with
@@ -315,7 +315,7 @@ let rec check_hunger g messages_only =
       | 0 -> rogue.moves_left <- rogue.moves_left - 1
       | 1 ->
           rogue.moves_left <- rogue.moves_left - 1;
-          let _ : bool = check_hunger g true in
+          let (_ : bool) = check_hunger g true in
           (); rogue.moves_left <- rogue.moves_left - rogue.moves_left mod 2
       | 2 ->
           rogue.moves_left <- rogue.moves_left - 1;

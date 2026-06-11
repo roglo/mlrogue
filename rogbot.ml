@@ -16,8 +16,8 @@ let clear_scr () = printf "\027[J";;
 let single_unix_read s b ofs len =
   let rec loop nrd ofs len =
     match
-      try Some (Unix.read s b ofs len) with
-        Unix.Unix_error (Unix.ECONNRESET, _, _) -> None
+      try Some (unix__read s b ofs len) with
+        unix__Unix_error (unix__ECONNRESET, _, _) -> None
     with
       Some 0 | None -> 0
     | Some n ->
@@ -29,13 +29,13 @@ let single_unix_read s b ofs len =
 let rogbot_magic = "RGBT0001";;
 
 let check_magic s =
-  let buff = string_make (String.length rogbot_magic) ' ' in
+  let buff = string_make (string__length rogbot_magic) ' ' in
   let len = single_unix_read s buff 0 (string_length buff) in
   if len = 0 then false
   else
     let buff = string_of_bytes buff in
     if buff = rogbot_magic then true
-    else if String.sub buff 0 4 = String.sub rogbot_magic 0 4 then
+    else if string__sub buff 0 4 = string__sub rogbot_magic 0 4 then
       failwith
         (sprintf "rogbot magic incompatible version (%s instead of %s)" buff
            rogbot_magic)
@@ -95,7 +95,7 @@ let rec play_loop info s =
       flush stdout;
       let stab = Array.init nrow (fun i -> string_of_bytes tab.(i)) in
       let (ch, info) = Robot.play stab nrow ncol info in
-      let _ : int = Unix.write s (string_make 1 ch) 0 1 in play_loop info s
+      let _ : int = unix__write s (string_make 1 ch) 0 1 in play_loop info s
   | None -> ()
 ;;
 
@@ -112,22 +112,22 @@ let main () =
   Arg.parse speclist anonfun usage;
   let addr =
     match !arg_addr with
-      Some str -> Unix.ADDR_UNIX str
+      Some str -> unix__ADDR_UNIX str
     | None ->
         eprintf "missing addr; type -help for usage\n"; flush stderr; exit 2
   in
-  let s = Unix.socket (Unix.domain_of_sockaddr addr) Unix.SOCK_STREAM 0 in
+  let s = unix__socket (unix__domain_of_sockaddr addr) unix__SOCK_STREAM 0 in
   begin let rec loop () =
-    try Unix.connect s addr with
-      Unix.Unix_error ((Unix.ECONNREFUSED | Unix.ENOENT), _, _) ->
-        Unix.sleep 1; loop ()
+    try unix__connect s addr with
+      unix__Unix_error ((unix__ECONNREFUSED | unix__ENOENT), _, _) ->
+        unix__sleep 1; loop ()
   in
     loop ()
   end;
   home ();
   clear_scr ();
   let rob = Robot.make !arg_speed in
-  (try play_loop rob s with e -> Unix.close s; raise e); Unix.close s
+  (try play_loop rob s with e -> unix__close s; raise e); unix__close s
 ;;
 
 main ();;
