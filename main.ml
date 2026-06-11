@@ -99,7 +99,8 @@ let drop g =
                 if obj.ob_quantity > 1 then
                   begin
                     obj.ob_quantity <- obj.ob_quantity - 1;
-                    {ob_quantity = 1; ob_kind = obj.ob_kind}
+                    {ob_quantity = 1; ob_kind = obj.ob_kind;
+                     ob_row = obj.ob_row}
                   end
                 else begin take_from_pack g ch; obj end
           in

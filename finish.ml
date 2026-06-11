@@ -156,7 +156,7 @@ let read_scores () =
 ;;
 
 let write_scores scores =
-  match try Some (open_out_bin score_file) with Sys_error _ -> None with
+  match try Some (open_out_bin score_file) with sys__Sys_error _ -> None with
     Some oc ->
       let scores =
         if list__length scores > 15 then list__rev (list__tl (list__rev scores))

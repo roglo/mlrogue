@@ -720,11 +720,11 @@ let remove_ring g =
       if left then
         match g.rogue.left_ring with
           Some ring -> ring
-        | None -> assert false
+        | None -> failwith "assert false"
       else
         match g.rogue.right_ring with
           Some ring -> ring
-        | None -> assert false
+        | None -> failwith "assert false"
     in
     if ring.rg_is_cursed then
       message g (transl g.lang "You can't, it appears to be cursed.") false

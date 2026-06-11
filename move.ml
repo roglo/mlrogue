@@ -695,7 +695,7 @@ let multiple_move_rogue g dirch =
       let monsters_in_room =
         match get_room_number_not_maze g with
           Some rn ->
-            list__filter
+            list_filter
               (fun monster ->
                  match get_room_number g monster.mn_row monster.mn_col with
                    Some rn2 -> rn = rn2

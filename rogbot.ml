@@ -44,7 +44,7 @@ let check_magic s =
 
 let skip_newline s =
   let buff = string_to_bytes " " in
-  let _ : int = single_unix_read s buff 0 1 in
+  let (_ : int) = single_unix_read s buff 0 1 in
   if string_of_bytes buff = "\n" then ()
   else failwith "newline expected in protocol"
 ;;
