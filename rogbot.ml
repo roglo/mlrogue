@@ -10,6 +10,16 @@ let string_copy = misc__string_copy;;
 let string_of_bytes (s : string) = s;;
 let string_to_bytes (s : string) = s;;
 
+let is_inet6_addr s =
+  string__string_length (unix__string_of_inet_addr s) = 16
+;;
+
+let unix_domain_of_sockaddr = function
+    unix__ADDR_UNIX _ -> unix__PF_UNIX
+  | unix__ADDR_INET(a, _) ->
+      if is_inet6_addr a then unix__PF_INET else unix__PF_INET
+;;
+
 let home () = printf "\027[H";;
 let clear_scr () = printf "\027[J";;
 
@@ -118,6 +128,7 @@ let usage = "Usage: " ^ sys__argv.(0) ^ " [option]... <addr>\n\nOptions:";;
 *)
 let usage = "Usage: " ^ "mlrobot" ^ " [option]... <addr>\n\nOptions:";;
 
+(*
 let main () =
   arg__parse speclist anonfun usage;
   let addr =
@@ -126,7 +137,7 @@ let main () =
     | None ->
         eprintf "missing addr; type -help for usage\n"; flush stderr; exit 2
   in
-  let s = unix__socket (unix__domain_of_sockaddr addr) unix__SOCK_STREAM 0 in
+  let s = unix__socket (unix_domain_of_sockaddr addr) unix__SOCK_STREAM 0 in
   begin let rec loop () =
     try unix__connect s addr with
       unix__Unix_error ((unix__ECONNREFUSED | unix__ENOENT), _, _) ->
@@ -141,3 +152,4 @@ let main () =
 ;;
 
 main ();;
+*)

@@ -24,6 +24,9 @@ let string_set = string__set_nth_char;;
 let string_copy = misc__string_copy;;
 let string_of_bytes (s : string) = s;;
 let string_to_bytes (s : string) = s;;
+let string_contains s c =
+  try let _ = string__index_char s c in true with Not_found -> false
+;;
 
 let init_display g =
   let row = g.rogue.row in
@@ -271,7 +274,7 @@ let discovered_kind g title name id tab =
     in
     loop_i [] 0
   in
-  let list = sort__sort compare list in
+  let list = sort__sort (fun x y -> x <= y) list in
   let title = " *** " ^ etransl title ^ " ***" in
   let (list, _) =
     list__list_it
@@ -292,13 +295,17 @@ let discovered_kind g title name id tab =
     saved.(i) <- a;
     for j = 0 to maxlen + 1 do string_set a j (curses__mvinch i (j + col)) done
   done;
-  vect__iteri (fun i str -> curses__mvaddstr i col str; curses__clrtoeol ())
-    (vect__of_list list);
+  let v = vect__vect_of_list list in
+  for i = 0 to vect__vect_length v - 1 do
+    let str = v.(i) in
+    curses__mvaddstr i col str;
+    curses__clrtoeol ();
+  done;
   curses__refresh ();
   let ch =
     let rec loop () =
       let ch = rgetchar g in
-      if string__contains "!?=/ \027" ch then ch else loop ()
+      if string_contains "!?=/ \027" ch then ch else loop ()
     in
     loop ()
   in
@@ -317,7 +324,7 @@ let discovered g =
     let ch =
       let rec loop () =
         let ch = rgetchar g in
-        if string__contains (obj_sel ^ " \027") ch then ch else loop ()
+        if string_contains (obj_sel ^ " \027") ch then ch else loop ()
       in
       loop ()
     in
@@ -408,7 +415,7 @@ let throw g count =
             let rec loop count =
               if count = 0 then ()
               else
-                let just_once = Attack.one_throw g dir (ch, obj) in
+                let just_once = attack__one_throw g dir (ch, obj) in
                 move__reg_move g;
                 if just_once || g.interrupted then () else loop (count - 1)
             in
@@ -444,12 +451,12 @@ let quit g from_intrpt =
 let unknown_command g ch =
   message g
     (sprintf "%s '%s'" (transl g.lang "Unknown command")
-       (if Char.code ch <= 26 then
-          sprintf "ctrl-%c" (Char.chr (Char.code ch + Char.code `a` - 1))
+       (if char__int_of_char ch <= 26 then
+          sprintf "ctrl-%c" (char__char_of_int (char__int_of_char ch + char__int_of_char `a` - 1))
         else if ch = `\027` then "esc"
         else if ch = `\127` then "del"
         else if ch = `\\` then "\\"
-        else Char.escaped ch))
+        else char__char_for_read ch))
     false
 ;;
 
@@ -484,8 +491,8 @@ let whatisit g =
   match ch with
     `A`..`Z` ->
       let tch = itgmc g ch in
-      let i = Char.code tch - Char.code `A` in
-      let s = transl g.lang (Imonster.visible_mon_name g i) in
+      let i = char__int_of_char tch - char__int_of_char `A` in
+      let s = transl g.lang (imonster__visible_mon_name g i) in
       let art = transl g.lang "a@(n?n)" in msg_is g ch (art ^ " " ^ s)
   | `\027` -> ()
   | `|` | `-` -> msg_is g ch (transl g.lang "the wall")
@@ -695,7 +702,7 @@ let rec play_level g =
               curses__move g.rogue.row g.rogue.col;
               curses__refresh ();
               let count =
-                if count < 1000 then 10 * count + Char.code ch - Char.code `0`
+                if count < 1000 then 10 * count + char__int_of_char ch - char__int_of_char `0`
                 else count
               in
               let ch = rgetchar g in
@@ -741,7 +748,7 @@ let rec play_level g =
             | `W` -> Use.wear g
             | `w` -> Use.wield g
             | `c` -> call_it g
-            | `z` -> if Attack.zap g then move__reg_move g
+            | `z` -> if attack__zap g then move__reg_move g
             | `t` -> throw g (max 1 count)
             | `v` ->
                 message g
