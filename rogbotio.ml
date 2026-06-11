@@ -21,6 +21,16 @@ let sys_file_exists fname =
 
 let inet_addr_any = unix__inet_addr_of_string "0.0.0.0";;
 
+let is_inet6_addr s =
+  string__string_length (unix__string_of_inet_addr s) = 16
+;;
+
+let unix_domain_of_sockaddr = function
+    unix__ADDR_UNIX _ -> unix__PF_UNIX
+  | unix__ADDR_INET(a, _) ->
+      if is_inet6_addr a then unix__PF_INET else unix__PF_INET
+;;
+
 let socket str =
   let addr =
     try unix__ADDR_INET (inet_addr_any, int_of_string str) with
@@ -30,7 +40,7 @@ let socket str =
           else failwith (sprintf "error: file \'%s\' exists." str);
         unix__ADDR_UNIX str
   in
-  let s = unix__socket (unix__domain_of_sockaddr addr) unix__SOCK_STREAM 0 in
+  let s = unix__socket (unix_domain_of_sockaddr addr) unix__SOCK_STREAM 0 in
   begin try
     unix__setsockopt s unix__SO_REUSEADDR true;
     unix__bind s addr;
