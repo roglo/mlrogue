@@ -554,7 +554,7 @@ let show_monsters g =
   g.rogue.detect_monster <- true;
   if g.rogue.blind > 0 then ()
   else
-    list__iter
+    list__do_list
       (fun monster ->
          show_monster g monster.mn_row monster.mn_col monster
            (tgmc g monster.mn_char);

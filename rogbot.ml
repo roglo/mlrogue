@@ -55,10 +55,10 @@ let input_int s =
     let (_ : int) = single_unix_read s buff 0 1 in
     match string_get buff 0 with
       `0`..`9` ->
-        loop (10 * n + Char.code (string_get buff 0) - Char.code `0`)
+        loop (10 * n + char__int_of_char (string_get buff 0) - char__int_of_char `0`)
     | `\n` -> n
     | c ->
-        failwith (sprintf "unexpected char '%s' in protocol" (Char.escaped c))
+        failwith (sprintf "unexpected char '%s' in protocol" (char__char_for_read c))
   in
   loop 0
 ;;

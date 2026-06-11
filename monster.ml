@@ -779,8 +779,8 @@ and flame_broil g monster =
           begin let row = monster.mn_row in
             let col = monster.mn_col in
             let (row, col) = get_closer row col g.rogue.row g.rogue.col in
-            let tempo1 () = let (_, _, _) = Unix.select [] [] [] 0.08 in () in
-            let tempo2 () = let (_, _, _) = Unix.select [] [] [] 0.02 in () in
+            let tempo1 () = let (_, _, _) = unix__select [] [] [] 0.08 in () in
+            let tempo2 () = let (_, _, _) = unix__select [] [] [] 0.02 in () in
             begin let rec loop row col =
               curses__mvaddch row col `~`;
               curses__move g.rogue.row g.rogue.col;

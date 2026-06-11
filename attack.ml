@@ -438,10 +438,12 @@ let extract_copy_of_weapon obj =
            we_damage = w.we_damage; we_quiver = w.we_quiver;
            we_is_cursed = w.we_is_cursed;
            we_has_been_uncursed = w.we_has_been_uncursed;
-           we_hit_enchant = w.we_hit_enchant; we_d_enchant = w.we_d_enchant}
+           we_hit_enchant = w.we_hit_enchant; we_d_enchant = w.we_d_enchant;
+           we_identified = w.we_identified}
     | x -> x
   in
-  {(*obj with*) ob_kind = copy_object_kind obj.ob_kind; ob_quantity = 1}
+  {ob_kind = copy_object_kind obj.ob_kind; ob_quantity = 1;
+   ob_row = obj.ob_row; ob_col = obj.ob_col}
 ;;
 
 let flop_weapon g obj row col =

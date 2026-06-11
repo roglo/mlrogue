@@ -100,7 +100,8 @@ let drop g =
                   begin
                     obj.ob_quantity <- obj.ob_quantity - 1;
                     {ob_quantity = 1; ob_kind = obj.ob_kind;
-                     ob_row = obj.ob_row; ob_col = obj.ob_col}
+                     ob_row = obj.ob_row; ob_col = obj.ob_col;
+                     ob_picked_up = obj.ob_picked_up}
                   end
                 else begin take_from_pack g ch; obj end
           in
@@ -112,25 +113,25 @@ let drop g =
 let show_traps g =
   for i = 0 to 24 - 1 do
     for j = 0 to 80 - 1 do
-      if g.dungeon.(i).(j) land 0o400 <> 0 then Curses.mvaddch i j `^`
+      if g.dungeon.(i).(j) land 0o400 <> 0 then curses__mvaddch i j `^`
     done
   done
 ;;
 
 let get_input_line g prompt insert if_cancelled do_echo =
   message g prompt false;
-  let n = Ustring.length (Ustring.of_string prompt) in
+  let n = ustring__length (ustring__of_string prompt) in
   let (i, buf) =
     if insert <> "" then
       begin
-        Curses.mvaddstr 0 (n + 1) insert;
-        Curses.refresh ();
-        let i = Ustring.length (Ustring.of_string insert) in
+        curses__mvaddstr 0 (n + 1) insert;
+        curses__refresh ();
+        let i = ustring__length (ustring__of_string insert) in
         i, string_of_bytes (string_copy (string_to_bytes insert))
       end
     else 0, ""
   in
-  let buf = Ustring.of_string buf in
+  let buf = ustring__of_string buf in
   let (buf, ch) =
     let rec loop_i buf i =
       let ch = rgetchar g in
@@ -139,26 +140,26 @@ let get_input_line g prompt insert if_cancelled do_echo =
           if ch = `\b` || ch = `\127` then
             if i > 0 then
               begin
-                Curses.mvaddch 0 (i + n) ` `;
-                Curses.move (1 - 1) (i + n);
-                let buf = Ustring.but_last buf in buf, Ustring.length buf
+                curses__mvaddch 0 (i + n) ` `;
+                curses__move (1 - 1) (i + n);
+                let buf = ustring__but_last buf in buf, ustring__length buf
               end
             else buf, i
           else if ch = `\021` then
             begin
-              for i = 1 to i do Curses.mvaddch 0 (n + i) ` ` done;
-              Curses.move (1 - 1) (n + 1);
-              Ustring.of_string "", 0
+              for i = 1 to i do curses__mvaddch 0 (n + i) ` ` done;
+              curses__move (1 - 1) (n + 1);
+              ustring__of_string "", 0
             end
           else if i < 30 - 2 then
             if ch <> ` ` || i > 0 then
-              let buf = Ustring.append_char buf ch in
-              if do_echo then Curses.addch ch else Curses.addch `.`;
-              buf, Ustring.length buf
+              let buf = ustring__append_char buf ch in
+              if do_echo then curses__addch ch else curses__addch `.`;
+              buf, ustring__length buf
             else buf, i
           else buf, i
         in
-        Curses.refresh (); loop_i buf i
+        curses__refresh (); loop_i buf i
       else buf, ch
     in
     loop_i buf i
@@ -166,15 +167,15 @@ let get_input_line g prompt insert if_cancelled do_echo =
   check_message g;
   let buf =
     let rec loop buf =
-      if Ustring.is_empty buf then buf
-      else if Ustring.last_char buf = ` ` then loop (Ustring.but_last buf)
+      if ustring__is_empty buf then buf
+      else if ustring__last_char buf = ` ` then loop (ustring__but_last buf)
       else buf
     in
     loop buf
   in
-  if ch = `\027` || Ustring.is_empty buf then
+  if ch = `\027` || ustring__is_empty buf then
     begin if if_cancelled <> "" then message g if_cancelled false; "" end
-  else Ustring.to_string buf
+  else ustring__to_string buf
 ;;
 
 let call_it g =
@@ -289,11 +290,11 @@ let discovered_kind g title name id tab =
   for i = 0 to len do
     let a = string_make (maxlen + 2) ` ` in
     saved.(i) <- a;
-    for j = 0 to maxlen + 1 do string_set a j (Curses.mvinch i (j + col)) done
+    for j = 0 to maxlen + 1 do string_set a j (curses__mvinch i (j + col)) done
   done;
-  Array.iteri (fun i str -> Curses.mvaddstr i col str; Curses.clrtoeol ())
+  Array.iteri (fun i str -> curses__mvaddstr i col str; curses__clrtoeol ())
     (Array.of_list list);
-  Curses.refresh ();
+  curses__refresh ();
   let ch =
     let rec loop () =
       let ch = rgetchar g in
@@ -303,7 +304,7 @@ let discovered_kind g title name id tab =
   in
   for i = 0 to len do
     for j = 0 to maxlen + 1 do
-      Curses.mvaddch i (j + col) (string_get saved.(i) j)
+      curses__mvaddch i (j + col) (string_get saved.(i) j)
     done
   done;
   ch
@@ -478,7 +479,7 @@ let msg_is g ch s =
 
 let whatisit g =
   message g (transl g.lang "What character would you like to know?") false;
-  let ch = Curses.getch () in
+  let ch = curses__getch () in
   check_message g;
   match ch with
     `A`..`Z` ->
@@ -589,21 +590,21 @@ let instructions g =
       let buffer = Array.init 24 (fun _ -> Array.make 80 ` `) in
       for row = 0 to 24 - 1 do
         for col = 0 to 80 - 1 do
-          buffer.(row).(col) <- Curses.mvinch row col
+          buffer.(row).(col) <- curses__mvinch row col
         done
       done;
-      Curses.clear ();
+      curses__clear ();
       begin try
         let rec loop i =
           if i < 24 then
             let line = conv_instr (input_line ic) in
-            Curses.mvaddstr i 0 line; loop (i + 1)
+            curses__mvaddstr i 0 line; loop (i + 1)
         in
         loop 0
       with End_of_file -> ()
       end;
       close_in ic;
-      Curses.refresh ();
+      curses__refresh ();
       let _ : char = rgetchar g in display_dungeon g buffer
   | None -> message g (transl g.lang "Help file not on line.") false
 ;;
@@ -682,8 +683,8 @@ let rec play_level g =
   if g.trap_door then g.trap_door <- false
   else
     begin
-      Curses.move g.rogue.row g.rogue.col;
-      Curses.refresh ();
+      curses__move g.rogue.row g.rogue.col;
+      curses__refresh ();
       backup_if_required g;
       let ch = rgetchar g in
       check_message g;
@@ -691,8 +692,8 @@ let rec play_level g =
         let rec loop count ch =
           match ch with
             `0`..`9` ->
-              Curses.move g.rogue.row g.rogue.col;
-              Curses.refresh ();
+              curses__move g.rogue.row g.rogue.col;
+              curses__refresh ();
               let count =
                 if count < 1000 then 10 * count + Char.code ch - Char.code `0`
                 else count
@@ -781,7 +782,7 @@ let rec play_level g =
 let rec game_loop g =
   print_stats g 0o377;
   play_level g;
-  Curses.clear ();
+  curses__clear ();
   level__create g;
   init_display g;
   game_loop g
@@ -814,9 +815,9 @@ let main () =
       Some (ps, ehr) -> ps, ehr
     | None -> PShuman, false
   in
-  if batch then Curses.no_output ();
-  Curses.initscr ();
-  if Curses.lines () < 24 || Curses.cols () < 80 then
+  if batch then curses__no_output ();
+  curses__initscr ();
+  if curses__lines () < 24 || curses__cols () < 80 then
     finish__clean_up
       (sprintf (ftransl lang "Must be played on a %d x %d or better screen")
          24 80);
@@ -886,4 +887,4 @@ let main () =
   | Init.ScoreOnly -> finish__put_scores lang true None; finish__clean_up ""
 ;;
 
-try main () with e -> Curses.endwin (); raise e;;
+try main () with e -> curses__endwin (); raise e;;
