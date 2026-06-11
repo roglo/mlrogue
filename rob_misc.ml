@@ -14,6 +14,26 @@ let string_create = create_string;;
 let string_set = set_nth_char;;
 let string_of_bytes (s : string) = s;;
 
+let sys_file_exists fname =
+  try
+    let ic = io__open_in fname in
+    io__close_in ic;
+    true
+  with sys__Sys_error _ -> false
+;;
+
+let rec list_filter f =
+  function
+    [] -> []
+  | x :: l -> if f x then x :: list_filter f l else list_filter f l
+;;
+
+let rec list_nth l n =
+  match l with
+    [] -> failwith "list_nth"
+  | x :: l -> if n = 0 then x else list_nth l (n - 1)
+;;
+
 (* language dependent *)
 
 let end_with str s =

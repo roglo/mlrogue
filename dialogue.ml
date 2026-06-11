@@ -168,12 +168,12 @@ let get_desc g obj cap =
 ;;
 
 let save_screen () =
-  match try Some (open_out "rogue.screen") with Sys_error _ -> None with
+  match try Some (open_out "rogue.screen") with sys__Sys_error _ -> None with
     Some oc ->
       for i = 0 to 24 - 1 do
         let spaces = ref 0 in
         for j = 0 to 80 - 1 do
-          match Curses.mvinch i j with
+          match curses__mvinch i j with
             ` ` -> incr spaces
           | ch ->
               for i = 1 to !spaces do output_char oc ` ` done;
@@ -188,18 +188,18 @@ let save_screen () =
 
 let rec rgetchar_stdin =
   function
-    `\018` -> Curses.wrefresh_curscr (); rgetchar_stdin (Curses.getch ())
-  | `X` -> save_screen (); rgetchar_stdin (Curses.getch ())
+    `\018` -> curses__wrefresh_curscr (); rgetchar_stdin (curses__getch ())
+  | `X` -> save_screen (); rgetchar_stdin (curses__getch ())
   | ch -> ch
 ;;
-let rgetchar_human () = rgetchar_stdin (Curses.getch ());;
+let rgetchar_human () = rgetchar_stdin (curses__getch ());;
 
 let dungeon_string g =
-  Array.init (Array.length g.dungeon)
+  vect__init_vect (vect__vect_length g.dungeon)
     (fun i ->
-       let line = string_create (Array.length g.dungeon.(i)) in
+       let line = string_create (vect__vect_length g.dungeon.(i)) in
        for j = 0 to string_length line - 1 do
-         string_set line j (Curses.mvinch i j)
+         string_set line j (curses__mvinch i j)
        done;
        line)
 ;;
@@ -212,49 +212,49 @@ let display_pause line =
       else if line.[i] = ` ` then loop (len - 1) (i - 1)
       else true
     in
-    loop (String.length txt) 79
+    loop (string__string_length txt) 79
   in
   if something then ()
   else
-    let (row, col) = Curses.pos_get () in
-    Curses.move 0 (79 - String.length txt);
-    Curses.refresh ();
+    let (row, col) = curses__pos_get () in
+    curses__move 0 (79 - string__string_length txt);
+    curses__refresh ();
     printf "%s" txt;
     flush stdout;
     flush stderr;
-    Curses.move row col;
-    Curses.refresh ()
+    curses__move row col;
+    curses__refresh ()
 ;;
 
 let pause_char = `\003`;;
 
 let rgetchar_local_robot g rob =
-  let (row, col) = Curses.pos_get () in
+  let (row, col) = curses__pos_get () in
   let dung = dungeon_string g in
-  Curses.move row col;
+  curses__move row col;
   let char_on_input =
-    if f_bool.Efield.get g.env "break" false then
+    if f_bool.efield__get g.env "break" false then
       begin
         display_pause (string_of_bytes dung.(0));
-        let ch = Curses.getch () in
+        let ch = curses__getch () in
         if ch = pause_char then
           begin
-            Curses.wrefresh_curscr ();
-            f_bool.Efield.set g.env "break" false;
+            curses__wrefresh_curscr ();
+            f_bool.efield__set g.env "break" false;
             Some `\027`
           end
         else Some ch
       end
     else
-      let (fd_in, _, _) = Unix.select [Unix.stdin] [] [] 0.0 in
+      let (fd_in, _, _) = unix__select [unix__stdin] [] [] 0.0 in
       if List.length fd_in <> 0 then
-        let ch = Curses.getch () in
+        let ch = curses__getch () in
         if ch = pause_char then
           begin
             display_pause (string_of_bytes dung.(0));
-            let ch = Curses.getch () in
-            if ch = pause_char then begin Curses.wrefresh_curscr (); None end
-            else begin f_bool.Efield.set g.env "break" true; Some ch end
+            let ch = curses__getch () in
+            if ch = pause_char then begin curses__wrefresh_curscr (); None end
+            else begin f_bool.efield__set g.env "break" true; Some ch end
           end
         else None
       else None
@@ -262,36 +262,36 @@ let rgetchar_local_robot g rob =
   match char_on_input with
     Some ch -> rgetchar_stdin ch
   | None ->
-      let nrow = Array.length dung in
+      let nrow = vect__vect_length dung in
       let ncol = string_length dung.(0) in
       match
-        let sdung = Array.init nrow (fun i -> string_of_bytes dung.(i)) in
+        let sdung = vect__init_vect nrow (fun i -> string_of_bytes dung.(i)) in
         try Some (Robot.play sdung nrow ncol rob) with
           exc ->
-            if f_bool.Efield.get g.env "no handle robot" false then raise exc
+            if f_bool.efield__get g.env "no handle robot" false then raise exc
             else
               begin
-                Curses.home ();
+                curses__home ();
                 printf "\n";
                 printf "%s" (Printexc.to_string exc);
-                Curses.home ();
+                curses__home ();
                 flush stdout;
                 flush stderr;
                 None
               end
       with
         Some (ch, rob) ->
-          f_player_species.Efield.set g.env "player_species" (PSrobot rob); ch
+          f_player_species.efield__set g.env "player_species" (PSrobot rob); ch
       | None ->
-          f_bool.Efield.set g.env "failed" true;
-          f_player_species.Efield.set g.env "player_species" (PSrobot rob);
+          f_bool.efield__set g.env "failed" true;
+          f_player_species.efield__set g.env "player_species" (PSrobot rob);
           rgetchar_human ()
 ;;
 
 let rgetchar g =
-  if f_bool.Efield.get g.env "failed" false then rgetchar_human ()
+  if f_bool.efield__get g.env "failed" false then rgetchar_human ()
   else
-    match f_player_species.Efield.get g.env "player_species" PShuman with
+    match f_player_species.efield__get g.env "player_species" PShuman with
       PSsocket s -> Rogbotio.getchar 24 80 s
     | PSrobot rob -> rgetchar_local_robot g rob
     | PShuman -> rgetchar_human ()
@@ -307,9 +307,9 @@ let check_message g =
   if g.msg_cleared then ()
   else
     begin
-      Curses.move (1 - 1) 0;
-      Curses.clrtoeol ();
-      Curses.refresh ();
+      curses__move (1 - 1) 0;
+      curses__clrtoeol ();
+      curses__refresh ();
       g.msg_cleared <- true
     end
 ;;
@@ -319,8 +319,8 @@ let message g msg intrpt =
   g.can_int <- true;
   if not g.msg_cleared then
     begin
-      Curses.mvaddstr (1 - 1) g.msg_col (transl g.lang " -- More --");
-      Curses.refresh ();
+      curses__mvaddstr (1 - 1) g.msg_col (transl g.lang " -- More --");
+      curses__refresh ();
       wait_for_ack g;
       check_message g;
       if msg <> "" && msg = g.msg_line then g.same_msg <- g.same_msg + 1
@@ -328,15 +328,15 @@ let message g msg intrpt =
     end
   else g.same_msg <- 0;
   g.msg_line <- msg;
-  Curses.mvaddstr (1 - 1) 0 msg;
+  curses__mvaddstr (1 - 1) 0 msg;
   if g.same_msg > 0 then
     let buf = sprintf " (%d)" (g.same_msg + 1) in
-    Curses.addstr buf; g.msg_col <- String.length buf
+    curses__addstr buf; g.msg_col <- string__string_length buf
   else g.msg_col <- 0;
-  Curses.addch ` `;
-  Curses.refresh ();
+  curses__addch ` `;
+  curses__refresh ();
   g.msg_cleared <- false;
-  g.msg_col <- g.msg_col + String.length msg;
+  g.msg_col <- g.msg_col + string__string_length msg;
   g.can_int <- false
 ;;
 
@@ -369,53 +369,53 @@ let inv_sel g pack mask prompt term =
         list ([], 0)
     in
     let len = List.length list in
-    let maxlen = max maxlen (String.length prompt) in
+    let maxlen = max maxlen (string__string_length prompt) in
     let col = 80 - (maxlen + 2) in
     let saved =
-      Array.init (len + 1) (fun _ -> string_make (maxlen + 2) ` `)
+      vect__init_vect (len + 1) (fun _ -> string_make (maxlen + 2) ` `)
     in
     for i = 0 to len do
       for j = 0 to maxlen + 1 do
-        string_set saved.(i) j (Curses.mvinch i (j + col))
+        string_set saved.(i) j (curses__mvinch i (j + col))
       done
     done;
     let saved_col =
-      Array.init (len + 1)
-        (fun _ -> Array.init (maxlen + 2) (fun _ -> -1, -1))
+      vect__init_vect (len + 1)
+        (fun _ -> vect__init_vect (maxlen + 2) (fun _ -> -1, -1))
     in
     for i = 0 to len do
       for j = 0 to maxlen + 1 do
-        saved_col.(i).(j) <- Curses.color_get i (j + col)
+        saved_col.(i).(j) <- curses__color_get i (j + col)
       done
     done;
     let rec loop row =
       function
         s :: sl ->
           if row > 0 then ();
-          Curses.mvaddstr row col (Ustring.to_string s);
-          Curses.clrtoeol ();
+          curses__mvaddstr row col (Ustring.to_string s);
+          curses__clrtoeol ();
           loop (row + 1) sl
       | [] -> ()
     in
     loop 0 list;
-    Curses.mvaddstr len col prompt;
-    Curses.clrtoeol ();
-    Curses.refresh ();
+    curses__mvaddstr len col prompt;
+    curses__clrtoeol ();
+    curses__refresh ();
     let retc =
       let rec loop () =
         let retc = rgetchar g in
-        try let _ = String.index term retc in retc with Not_found -> loop ()
+        try let _ = string__index term retc in retc with Not_found -> loop ()
       in
       loop ()
     in
     for i = 0 to len do
       for j = 0 to maxlen + 1 do
         let (fg, bg) = saved_col.(i).(j) in
-        Curses.color_set fg bg;
-        Curses.mvaddch i (j + col) (string_get saved.(i) j)
+        curses__color_set fg bg;
+        curses__mvaddch i (j + col) (string_get saved.(i) j)
       done
     done;
-    Curses.color_set (-1) (-1);
+    curses__color_set (-1) (-1);
     Some retc
 ;;
 
@@ -431,17 +431,17 @@ let inventory g pack mask =
 
 let rec scanbrd brd i n =
   let pp1 = i in
-  let pp2 = try String.index_from brd i `:` with Not_found -> -1 in
+  let pp2 = try string__index_from brd i `:` with Not_found -> -1 in
   if pp2 >= 0 then
     let pp2 = pp2 + 2 in
     if n > 0 then
-      let pp2 = try String.index_from brd pp2 ` ` with Not_found -> -1 in
+      let pp2 = try string__index_from brd pp2 ` ` with Not_found -> -1 in
       if pp2 >= 0 then scanbrd brd (pp2 + 1) (n - 1) else None
     else Some (pp1, pp2)
   else None
 ;;
 
-let pad s n = for i = String.length s to n - 1 do Curses.addch ` ` done;;
+let pad s n = for i = string__string_length s to n - 1 do curses__addch ` ` done;;
 
 let print_stats g stat_mask =
   let brd =
@@ -450,14 +450,14 @@ let print_stats g stat_mask =
   in
   let row = 24 - 1 in
   if stat_mask = 0o377 then
-    begin Curses.mvaddstr row 0 ""; Curses.clrtoeol () end;
+    begin curses__mvaddstr row 0 ""; curses__clrtoeol () end;
   let label = stat_mask land 0o200 <> 0 in
   let pr mask1 start1 b1 pad1 =
     if stat_mask land mask1 <> 0 then
       match scanbrd brd 0 start1 with
         Some (p1, p2) ->
-          if label then Curses.mvaddnstr row p1 brd p1 (p2 - p1);
-          Curses.mvaddstr row p2 b1;
+          if label then curses__mvaddnstr row p1 brd p1 (p2 - p1);
+          curses__mvaddstr row p2 b1;
           pad b1 pad1
       | None -> ()
   in
@@ -472,11 +472,11 @@ let print_stats g stat_mask =
   pr 0o40 5 (sprintf "%d/%d" g.rogue.exp g.rogue.exp_points) 11;
   if stat_mask land 0o100 <> 0 then
     begin
-      Curses.mvaddstr row 73
+      curses__mvaddstr row 73
         (if g.hunger_str <> "" then transl g.lang g.hunger_str else "");
-      Curses.clrtoeol ()
+      curses__clrtoeol ()
     end;
-  Curses.refresh ()
+  curses__refresh ()
 ;;
 
 (* pack select *)
@@ -618,7 +618,7 @@ let new_object_for_wizard g =
       let ch =
         let rec loop () =
           let ch = rgetchar g in
-          try let _ : int = String.index (obj_sel ^ " \027") ch in ch with
+          try let _ : int = string__index (obj_sel ^ " \027") ch in ch with
             Not_found -> loop ()
         in
         loop ()
@@ -663,8 +663,8 @@ let new_object_for_wizard g =
         if obj_list = [] then ()
         else
           let sel =
-            String.concat ""
-              (List.map (String.make 1) (List.map fst obj_list))
+            string__concat ""
+              (List.map (string__make 1) (List.map fst obj_list))
           in
           let sel = sel ^ obj_sel ^ " \027" in
           let retc =

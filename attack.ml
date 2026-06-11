@@ -8,12 +8,12 @@
 (* #use "keyboard.def" *)
 
 
-open Rogue;;
-open Dialogue;;
-open Imisc;;
-open Misc;;
-open Printf;;
-open Translate;;
+#open "rogue";;
+#open "dialogue";;
+#open "imisc";;
+#open "misc";;
+#open "printf";;
+#open "translate";;
 
 let check_imitator g monster =
   if monster.mn_flags land 0o20000000 <> 0 then
@@ -21,12 +21,12 @@ let check_imitator g monster =
       wake_up monster;
       if g.rogue.blind = 0 then
         begin
-          Curses.mvaddch monster.mn_row monster.mn_col
+          curses__mvaddch monster.mn_row monster.mn_col
             (get_dungeon_char g monster.mn_row monster.mn_col);
           check_message g;
           let mess =
             sprintf (ftransl g.lang "Wait, that's a %s!")
-              (transl g.lang (Monster.mon_name g monster))
+              (transl g.lang (monster__mon_name g monster))
           in
           message g (etransl mess) true
         end;
@@ -143,7 +143,7 @@ let cough_up g monster =
               Level.place_at g obj row col;
               if row <> g.rogue.row || col <> g.rogue.col then
                 if g.dungeon.(row).(col) land 0o2 = 0 then
-                  Curses.mvaddch row col (get_dungeon_char g row col)
+                  curses__mvaddch row col (get_dungeon_char g row col)
                 else
                   let mon = monster_at g row col in
                   mon.mn_trail_char <- get_mask_char obj
@@ -158,10 +158,10 @@ let mon_damage g monster damage =
     let row = monster.mn_row in
     let col = monster.mn_col in
     g.dungeon.(row).(col) <- g.dungeon.(row).(col) land lnot 0o2;
-    Curses.mvaddch row col (get_dungeon_char g row col);
+    curses__mvaddch row col (get_dungeon_char g row col);
     g.rogue.fight_monster <- None;
     cough_up g monster;
-    let mn = transl g.lang (Monster.mon_name g monster) in
+    let mn = transl g.lang (monster__mon_name g monster) in
     let msg = sprintf (ftransl g.lang "Defeated the %s.") mn in
     (*
     let msg = msg ^ sprintf " (%d-%d<=0)." (monster.mn_hp_to_kill + damage) damage in
@@ -208,13 +208,13 @@ let rogue_hit g monster force_hit =
 let tele_away g monster =
   if monster.mn_flags land 0o4000 <> 0 then g.rogue.being_held <- false;
   let (row, col, _) = gr_row_col g (0o100 lor 0o200 lor 0o4 lor 0o1) 0 in
-  Curses.mvaddch monster.mn_row monster.mn_col monster.mn_trail_char;
+  curses__mvaddch monster.mn_row monster.mn_col monster.mn_trail_char;
   g.dungeon.(monster.mn_row).(monster.mn_col) <-
     g.dungeon.(monster.mn_row).(monster.mn_col) land lnot 0o2;
   monster.mn_row <- row;
   monster.mn_col <- col;
   g.dungeon.(row).(col) <- g.dungeon.(row).(col) lor 0o2;
-  monster.mn_trail_char <- Curses.mvinch row col;
+  monster.mn_trail_char <- curses__mvinch row col;
   if g.rogue.detect_monster || rogue_can_see g row col then
     show_monster g row col monster (gmc g monster)
 ;;
@@ -393,27 +393,27 @@ let get_thrown_at_monster g obj dir orow ocol =
           if i <> 0 && rogue_can_see g orow ocol then
             begin
               tempo g;
-              Curses.mvaddch orow ocol (get_dungeon_char g orow ocol);
-              Curses.move rogue.row rogue.col
+              curses__mvaddch orow ocol (get_dungeon_char g orow ocol);
+              curses__move rogue.row rogue.col
             end;
           if rogue_can_see g row col then
             begin
               if g.dungeon.(row).(col) land 0o2 = 0 then
                 begin
                   if i = 0 then tempo g;
-                  Curses.mvaddch row col ch;
-                  Curses.move rogue.row rogue.col
+                  curses__mvaddch row col ch;
+                  curses__move rogue.row rogue.col
                 end;
-              Curses.refresh ()
+              curses__refresh ()
             end;
           if g.dungeon.(row).(col) land 0o2 <> 0 && not (imitating g row col)
           then
             begin
               if rogue_can_see g row col then
                 begin
-                  Curses.mvaddch row col ch;
-                  Curses.move rogue.row rogue.col;
-                  Curses.refresh ()
+                  curses__mvaddch row col ch;
+                  curses__move rogue.row rogue.col;
+                  curses__refresh ()
                 end;
               tempo g;
               Some (monster_at g row col), row, col
@@ -468,11 +468,11 @@ let flop_weapon g obj row col =
        g.dungeon.(row).(col) <- g.dungeon.(row).(col) land lnot 0o2;
        let dch = get_dungeon_char g row col in
        if mon <> 0 then
-         let mch = Curses.mvinch row col in
+         let mch = curses__mvinch row col in
          let monster = monster_at g row col in
          monster.mn_trail_char <- dch;
-         (if mch < 'A' || mch > 'Z' then Curses.mvaddch row col dch)
-       else Curses.mvaddch row col dch;
+         (if mch < 'A' || mch > 'Z' then curses__mvaddch row col dch)
+       else curses__mvaddch row col dch;
        g.dungeon.(row).(col) <- g.dungeon.(row).(col) lor mon)
   else
     let t = obj.ob_quantity in
@@ -493,15 +493,15 @@ let one_throw g dir (ch, obj) =
       {ob_kind = Weapon {we_in_use = true}; ob_quantity = 1} ->
         unwield g; true
     | {ob_kind = Armor {ar_in_use = true}} ->
-        Monster.mv_aquators g; unwear g; print_stats g 0o20; true
+        monster__mv_aquators g; unwear g; print_stats g 0o20; true
     | {ob_kind = Ring ({rg_in_use = Some _} as r)} -> un_put_on g r; true
     | _ -> false
   in
   let (monster, row, col) = get_thrown_at_monster g obj dir row col in
   show_rogue g;
-  Curses.refresh ();
+  curses__refresh ();
   if rogue_can_see g row col && (row <> rogue.row || col <> rogue.col) then
-    Curses.mvaddch row col (get_dungeon_char g row col);
+    curses__mvaddch row col (get_dungeon_char g row col);
   let just_once =
     match monster with
       Some monster ->

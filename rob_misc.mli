@@ -107,3 +107,7 @@ value list_find : ('a -> bool) -> 'a list -> 'a option;;
 
 value monster : game -> char -> char;;
 value is_gold_seeker_monster : game -> char -> bool;;
+
+value sys_file_exists : string -> bool;;
+value list_filter : ('a -> bool) -> 'a list -> 'a list;;
+value list_nth : 'a list -> int -> 'a;;

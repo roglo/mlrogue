@@ -8,23 +8,23 @@
 (* #use "keyboard.def" *)
 
 
-open Rogue;;
-open Rfield;;
-open Dialogue;;
-open Imisc;;
-open Misc;;
-open Object;;
-open Printf;;
-open Translate;;
+#open "rogue";;
+#open "rfield";;
+#open "dialogue";;
+#open "imisc";;
+#open "misc";;
+#open "object";;
+#open "printf";;
+#open "translate";;
 
 let version = "1.05-exp";;
 
-let string_make = Bytes.make;;
-let string_get = Bytes.get;;
-let string_set = Bytes.set;;
-let string_copy = Bytes.copy;;
-let string_of_bytes = Bytes.to_string;;
-let string_to_bytes = Bytes.of_string;;
+let string_make = string__make_string;;
+let string_get = string__nth_char;;
+let string_set = string__set_nth_char;;
+let string_copy = string__copy;;
+let string_of_bytes (s : string) = s;;
+let string_to_bytes (s : string) = s;;
 
 let init_display g =
   let row = g.rogue.row in

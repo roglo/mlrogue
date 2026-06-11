@@ -8,27 +8,27 @@
 (* #use "keyboard.def" *)
 
 
-open Rogue;;
-open Rfield;;
-open Dialogue;;
-open Imisc;;
-open Misc;;
-open Printf;;
-open Translate;;
+#open "rogue";;
+#open "rfield";;
+#open "dialogue";;
+#open "imisc";;
+#open "misc";;
+#open "printf";;
+#open "translate";;
 
 type one_move = Moved | StoppedOnSomething | MoveFailed;;
 
 let gr_dir () =
   match get_rand 1 8 with
-    1 -> 'j'
-  | 2 -> 'k'
-  | 3 -> 'l'
-  | 4 -> 'h'
-  | 5 -> 'y'
-  | 6 -> 'u'
-  | 7 -> 'b'
-  | 8 -> 'n'
-  | _ -> assert false
+    1 -> `j`
+  | 2 -> `k`
+  | 3 -> `l`
+  | 4 -> `h`
+  | 5 -> `y`
+  | 6 -> `u`
+  | 7 -> `b`
+  | 8 -> `n`
+  | _ -> failwith "assert false"
 ;;
 
 let unhallucinate g =
@@ -44,17 +44,17 @@ let hallucinate g =
       List.iter
         (fun obj ->
            let ch = Curses.mvinch obj.ob_row obj.ob_col in
-           if (ch < 'A' || ch > 'Z') &&
+           if (ch < `A` || ch > `Z`) &&
               (obj.ob_row <> g.rogue.row || obj.ob_col <> g.rogue.col)
            then
-             if ch <> ' ' && ch <> '.' && ch <> '#' && ch <> '+' then
+             if ch <> ` ` && ch <> `.` && ch <> `#` && ch <> `+` then
                Curses.addch (gr_obj_char ()))
         g.level_objects;
       List.iter
         (fun monster ->
            let ch = Curses.mvinch monster.mn_row monster.mn_col in
-           if ch >= 'A' && ch <= 'Z' then
-             let ch = Char.chr (get_rand (Char.code 'A') (Char.code 'Z')) in
+           if ch >= `A` && ch <= `Z` then
+             let ch = Char.chr (get_rand (Char.code `A`) (Char.code `Z`)) in
              Curses.addch (tgmc g ch))
         g.level_monsters
     end
@@ -81,19 +81,19 @@ let unconfuse g =
 let darken_room g rn =
   for i = g.rooms.(rn).top_row + 1 to g.rooms.(rn).bottom_row - 1 do
     for j = g.rooms.(rn).left_col + 1 to g.rooms.(rn).right_col - 1 do
-      if g.rogue.blind > 0 then Curses.mvaddch i j ' '
+      if g.rogue.blind > 0 then Curses.mvaddch i j ` `
       else if
         g.dungeon.(i).(j) land (0o1 lor 0o4) = 0 &&
         not (g.rogue.detect_monster && g.dungeon.(i).(j) land 0o2 <> 0)
       then
         begin
-          if not (imitating g i j) then Curses.mvaddch i j ' ';
+          if not (imitating g i j) then Curses.mvaddch i j ` `;
           if g.dungeon.(i).(j) land 0o400 <> 0 &&
              g.dungeon.(i).(j) land 0o1000 = 0
           then
             match trap_at g i j with
               Some t -> show_trap i j t
-            | None -> Curses.mvaddch i j '^'
+            | None -> Curses.mvaddch i j `^`
         end
     done
   done
@@ -161,7 +161,7 @@ let trap_player g row col =
         | BearTrap ->
             message g (transl g.lang (Level.trap_mess t)) true;
             g.rogue.bear_trap <- get_rand 4 7
-        | TeleTrap -> Curses.mvaddch rogue.row rogue.col '^'; tele g
+        | TeleTrap -> Curses.mvaddch rogue.row rogue.col `^`; tele g
         | DartTrap ->
             message g (transl g.lang (Level.trap_mess t)) true;
             rogue.hp_current <-
@@ -321,7 +321,7 @@ let rec check_hunger g messages_only =
           rogue.moves_left <- rogue.moves_left - 1;
           let _ : bool = check_hunger g true in
           (); rogue.moves_left <- rogue.moves_left - 1
-      | _ -> assert false
+      | _ -> failwith "assert false"
       end;
       fainted
     end
@@ -491,8 +491,8 @@ let ask_pick_up_scroll g =
   let yes =
     let rec loop () =
       let r = rgetchar g in
-      if r = translc g.lang 'y' then true
-      else if r = translc g.lang 'n' then false
+      if r = translc g.lang `y` then true
+      else if r = translc g.lang `n` then false
       else loop ()
     in
     loop ()
@@ -575,7 +575,7 @@ let one_move g dirch pickup =
                 g.cur_room <- Some rn;
                 light_up_room g rn;
                 wake_room g rn true row col
-            | None -> assert false
+            | None -> failwith "assert false"
             end
         | Some _ -> light_passage g row col
       else if
@@ -588,7 +588,7 @@ let one_move g dirch pickup =
             wake_room g rn false g.rogue.row g.rogue.col;
             darken_room g rn;
             g.cur_room <- None
-        | None -> assert false
+        | None -> failwith "assert false"
       else if g.dungeon.(row).(col) land 0o200 <> 0 then
         light_passage g row col;
       Curses.mvaddch g.rogue.row g.rogue.col
@@ -691,7 +691,7 @@ let get_room_number_not_maze g =
 
 let multiple_move_rogue g dirch =
   match dirch with
-    '\b' | '\n' | '\011' | '\012' | '\025' | '\021' | '\014' | '\002' ->
+    `\b` | `\n` | `\011` | `\012` | `\025` | `\021` | `\014` | `\002` ->
       let monsters_in_room =
         match get_room_number_not_maze g with
           Some rn ->
@@ -703,7 +703,7 @@ let multiple_move_rogue g dirch =
               g.level_monsters
         | None -> []
       in
-      let tmpdirch = Char.chr (Char.code dirch + Char.code 'a' - 1) in
+      let tmpdirch = Char.chr (Char.code dirch + Char.code `a` - 1) in
       let rec loop tmpdirch =
         let row = g.rogue.row in
         let col = g.rogue.col in
@@ -712,14 +712,14 @@ let multiple_move_rogue g dirch =
           MoveFailed ->
             if g.dungeon.(row).(col) land 0o200 <> 0 then
               begin match tmpdirch with
-                'h' | 'l' ->
+                `h` | `l` ->
                   let dir1 = if is_passable g (row - 1) col then 1 else 0 in
                   let dir2 = if is_passable g (row + 1) col then 1 else 0 in
-                  if dir1 + dir2 = 1 then loop (if dir1 = 1 then 'k' else 'j')
-              | 'k' | 'j' ->
+                  if dir1 + dir2 = 1 then loop (if dir1 = 1 then `k` else `j`)
+              | `k` | `j` ->
                   let dir1 = if is_passable g row (col - 1) then 1 else 0 in
                   let dir2 = if is_passable g row (col + 1) then 1 else 0 in
-                  if dir1 + dir2 = 1 then loop (if dir1 = 1 then 'h' else 'l')
+                  if dir1 + dir2 = 1 then loop (if dir1 = 1 then `h` else `l`)
               | _ -> ()
               end
         | StoppedOnSomething -> ()
@@ -743,8 +743,8 @@ let multiple_move_rogue g dirch =
               | None -> loop tmpdirch
       in
       loop tmpdirch
-  | 'H' | 'J' | 'K' | 'L' | 'Y' | 'U' | 'N' | 'B' ->
-      let c = Char.chr (Char.code dirch - Char.code 'A' + Char.code 'a') in
+  | `H` | `J` | `K` | `L` | `Y` | `U` | `N` | `B` ->
+      let c = Char.chr (Char.code dirch - Char.code `A` + Char.code `a`) in
       let rec loop hp =
         if one_move g c true = Moved then
           if g.rogue.hp_current < hp then () else loop g.rogue.hp_current
@@ -761,14 +761,14 @@ let move_onto g =
   let rec loop first_miss ch =
     if not (is_direction ch) then
       begin
-        if ch = 'm' then () else sound_bell ();
+        if ch = `m` then () else sound_bell ();
         if first_miss then message g (transl g.lang "Direction?") false;
         loop false (rgetchar g)
       end
     else
       begin
         check_message g;
-        if ch <> '\027' then one_move_rogue g ch false
+        if ch <> `\027` then one_move_rogue g ch false
       end
   in
   loop true (rgetchar g)
@@ -784,7 +784,7 @@ let id_trap g =
     loop ()
   in
   check_message g;
-  if dir = '\027' then ()
+  if dir = `\027` then ()
   else
     let row = g.rogue.row in
     let col = g.rogue.col in
@@ -832,11 +832,11 @@ let fight g to_the_death =
     loop true
   in
   check_message g;
-  if ch = '\027' then ()
+  if ch = `\027` then ()
   else
     let (row, col) = get_dir_rc ch rogue.row rogue.col false in
     let c = Curses.mvinch row col in
-    if c < 'A' || c > 'Z' || not (can_move g rogue.row rogue.col row col) then
+    if c < `A` || c > `Z` || not (can_move g rogue.row rogue.col row col) then
       message g (transl g.lang "I see no monster there.") false
     else
       let monster = monster_at g row col in

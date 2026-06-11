@@ -4,21 +4,21 @@
 (* #use "rogue.def" *)
 
 
-open Rogue;;
-open Rfield;;
-open Dialogue;;
-open Imisc;;
-open Object;;
-open Printf;;
-open Translate;;
+#open "rogue";;
+#open "rfield";;
+#open "dialogue";;
+#open "imisc";;
+#open "object";;
+#open "printf";;
+#open "translate";;
 
-let string_create = Bytes.create;;
-let string_length = Bytes.length;;
-let string_of_bytes = Bytes.to_string;;
+let string_create = string__create_string;;
+let string_length = string__string_length;;
+let string_of_bytes (s : string) = s;;
 
 let win_message g =
-  let f = Curses.mvaddstr in
-  match try Some (open_in "rogue.win") with Sys_error _ -> None with
+  let f = curses__mvaddstr in
+  match try Some (open_in "rogue.win") with sys__Sys_error _ -> None with
     Some ic ->
       if g.lang <> "" then
         begin try
@@ -32,7 +32,7 @@ let win_message g =
           loop ()
         with End_of_file -> seek_in ic 0
         end;
-      Curses.clear ();
+      curses__clear ();
       begin try
         let rec loop i =
           let line = input_line ic in
@@ -46,7 +46,7 @@ let win_message g =
       message g "" true;
       message g "" true
   | None ->
-      Curses.clear ();
+      curses__clear ();
       f 10 11 "@   @  @@@   @   @      @  @  @   @@@   @   @   @";
       f 11 11 " @ @  @   @  @   @      @  @  @  @   @  @@  @   @";
       f 12 11 "  @   @   @  @   @      @  @  @  @   @  @ @ @   @";
@@ -99,8 +99,8 @@ let get_value g obj =
 ;;
 
 let sell_pack g =
-  Curses.clear ();
-  Curses.mvaddstr 1 0 (transl g.lang "Value      Item");
+  curses__clear ();
+  curses__mvaddstr 1 0 (transl g.lang "Value      Item");
   let _ =
     List.fold_left
       (fun row (_, obj) ->
@@ -112,12 +112,12 @@ let sell_pack g =
              if row < 24 then
                begin let d = get_desc g obj true in
                  let line = sprintf "%5d      %s" v (etransl d) in
-                 Curses.mvaddstr row 0 line
+                 curses__mvaddstr row 0 line
                end;
              row + 1)
       2 (List.sort (fun (a, _) (b, _) -> compare a b) g.rogue.pack)
   in
-  Curses.refresh (); message g "" false
+  curses__refresh (); message g "" false
 ;;
 
 (* *)
@@ -201,9 +201,9 @@ let text_of_ending lang =
 ;;
 
 let clean_up estr =
-  Curses.mvaddstr (Curses.lines () - 1) 0 estr;
-  Curses.refresh ();
-  Curses.endwin ();
+  curses__mvaddstr (curses__lines () - 1) 0 estr;
+  curses__refresh ();
+  curses__endwin ();
   printf "\n";
   flush stdout;
   exit 0
@@ -226,7 +226,7 @@ let put_scores lang score_only g_ending =
     match g_ending with
       Some (g, ending) ->
         (* ... *)
-        Curses.refresh ();
+        curses__refresh ();
         let score =
           {sc_score = g.rogue.gold;
            sc_name = if g.nick_name <> "" then g.nick_name else g.login_name;
@@ -239,9 +239,9 @@ let put_scores lang score_only g_ending =
     | _ -> scores, 15 + 1
   in
   if score_only then () else write_scores scores;
-  Curses.clear ();
-  Curses.mvaddstr 3 30 (transl lang "Top  Rogueists");
-  Curses.mvaddstr 5 0 (transl lang "Rank   Score   Name");
+  curses__clear ();
+  curses__mvaddstr 3 30 (transl lang "Top  Rogueists");
+  curses__mvaddstr 5 0 (transl lang "Rank   Score   Name");
   let _ =
     List.fold_left
       (fun rank score ->
@@ -264,14 +264,14 @@ let put_scores lang score_only g_ending =
                txt ^ String.make (max 0 len) ' '
              else txt
            in
-           Curses.move (6 + rank) 0;
-           if not score_only && rank = n then Curses.standout ();
-           Curses.addstr txt;
-           if not score_only && rank = n then Curses.standend ();
+           curses__move (6 + rank) 0;
+           if not score_only && rank = n then curses__standout ();
+           curses__addstr txt;
+           if not score_only && rank = n then curses__standend ();
            rank + 1)
       1 scores
   in
-  (); Curses.refresh ()
+  (); curses__refresh ()
 ;;
 
 let win g =
@@ -361,25 +361,25 @@ let killed_by g death =
     Monster _ | Hypothermia | Starvation | PoisonDart when g.show_skull ->
       let center row buf =
         let margin = (80 - String.length buf) / 2 in
-        Curses.mvaddstr row margin buf
+        curses__mvaddstr row margin buf
       in
-      Curses.clear ();
-      Curses.mvaddstr 04 27 "     __---------__";
-      Curses.mvaddstr 05 27 "   _~             ~_";
-      Curses.mvaddstr 06 27 "  /                 \\";
-      Curses.mvaddstr 07 27 " ~                   ~";
-      Curses.mvaddstr 08 27 "/                     \\";
-      Curses.mvaddstr 09 27 "|    XXXX     XXXX    |";
-      Curses.mvaddstr 10 27 "|    XXXX     XXXX    |";
-      Curses.mvaddstr 11 27 "|    XXX       XXX    |";
-      Curses.mvaddstr 12 27 " \\         @         /";
-      Curses.mvaddstr 13 27 "  --\\     @@@     /--";
-      Curses.mvaddstr 14 27 "   | |    @@@    | |";
-      Curses.mvaddstr 15 27 "   | |           | |";
-      Curses.mvaddstr 16 27 "   | vvVvvvvvvvVvv |";
-      Curses.mvaddstr 17 27 "   |  ^^^^^^^^^^^  |";
-      Curses.mvaddstr 18 27 "    \\_           _/";
-      Curses.mvaddstr 19 27 "      ~---------~";
+      curses__clear ();
+      curses__mvaddstr 04 27 "     __---------__";
+      curses__mvaddstr 05 27 "   _~             ~_";
+      curses__mvaddstr 06 27 "  /                 \\";
+      curses__mvaddstr 07 27 " ~                   ~";
+      curses__mvaddstr 08 27 "/                     \\";
+      curses__mvaddstr 09 27 "|    XXXX     XXXX    |";
+      curses__mvaddstr 10 27 "|    XXXX     XXXX    |";
+      curses__mvaddstr 11 27 "|    XXX       XXX    |";
+      curses__mvaddstr 12 27 " \\         @         /";
+      curses__mvaddstr 13 27 "  --\\     @@@     /--";
+      curses__mvaddstr 14 27 "   | |    @@@    | |";
+      curses__mvaddstr 15 27 "   | |           | |";
+      curses__mvaddstr 16 27 "   | vvVvvvvvvvVvv |";
+      curses__mvaddstr 17 27 "   |  ^^^^^^^^^^^  |";
+      curses__mvaddstr 18 27 "    \\_           _/";
+      curses__mvaddstr 19 27 "      ~---------~";
       center 21 (if g.nick_name <> "" then g.nick_name else g.login_name);
       center 22 buf;
       check_message g;

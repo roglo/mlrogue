@@ -4,12 +4,12 @@
 (* #use "rogue.def" *)
 
 
-open Rogue;;
-open Dialogue;;
-open Imisc;;
-open Misc;;
-open Printf;;
-open Translate;;
+#open "rogue";;
+#open "dialogue";;
+#open "imisc";;
+#open "misc";;
+#open "printf";;
+#open "translate";;
 
 let mon_can_go g monster row col =
   let dr = monster.mn_row - row in
@@ -97,7 +97,7 @@ let dr_course g monster entering =
       | None -> assert false
     in
     if entering then
-      let tried = Array.make 9 false in
+      let tried = vect__make_vect 9 false in
       let rec loop_i i =
         if i < 9 then
           let rr = get_rand 0 (9 - 1) in
@@ -139,8 +139,8 @@ let dr_course g monster entering =
               in
               loop_j list g.rooms.(rn).left_col
             else if list <> [] then
-              let r = get_rand 0 (List.length list - 1) in
-              monster.mn_target <- Some (List.nth list r)
+              let r = get_rand 0 (list__length list - 1) in
+              monster.mn_target <- Some (list__nth list r)
             else
               let rec loop_i i =
                 if i < 9 then
@@ -403,13 +403,13 @@ let steal_item g monster =
       if g.rogue.pack = [] then ()
       else
         begin let objs =
-          List.filter (fun (_, obj) -> not (in_use obj)) g.rogue.pack
+          list__filter (fun (_, obj) -> not (in_use obj)) g.rogue.pack
         in
-          let len = List.length objs in
+          let len = list__length objs in
           if len = 0 then ()
           else
             let n = get_rand 0 (len - 1) in
-            let (ch, obj) = List.nth objs n in
+            let (ch, obj) = list__nth objs n in
             let obj1 =
               {obj with ob_quantity =
                 match obj.ob_kind with
@@ -464,11 +464,11 @@ let move_confused g monster =
 let rec mv_mons g =
   if g.rogue.haste_self mod 2 = 1 then ()
   else
-    List.iter
+    list__iter
       (fun monster ->
          if g.mon_disappeared &&
             not
-              (List.exists (fun mn -> mn.mn_unique_id = monster.mn_unique_id)
+              (list__exists (fun mn -> mn.mn_unique_id = monster.mn_unique_id)
                  g.level_monsters)
          then
            ()
@@ -575,7 +575,7 @@ and mv_monster g monster row col init_pos_opt =
       ()
     else if mtry g monster row col then ()
     else
-      let tried = Array.make 6 false in
+      let tried = vect__make_vect 6 false in
       begin let rec loop_i i =
         if i < 6 then
           let n = get_rand 0 5 in
@@ -807,7 +807,7 @@ and flame_broil g monster =
 ;;
 
 let mv_aquators g =
-  List.iter
+  list__iter
     (fun monster ->
        if monster.mn_flags land 0o2000 <> 0 &&
           mon_can_go g monster g.rogue.row g.rogue.col

@@ -13,9 +13,29 @@
 #open "printf";;
 #open "translate";;
 
+let sys_file_exists fname =
+  try
+    let ic = io__open_in fname in
+    io__close_in ic;
+    true
+  with sys__Sys_error _ -> false
+;;
+
+let rec list_filter f =
+  function
+    [] -> []
+  | x :: l -> if f x then x :: list_filter f l else list_filter f l
+;;
+
+let rec list_nth l n =
+  match l with
+    [] -> failwith "list_nth"
+  | x :: l -> if n = 0 then x else list_nth l (n - 1)
+;;
+
 let string_create = string__create_string;;
 let string_length = string__string_length;;
-let string_of_bytes (s : string) = a;;
+let string_of_bytes (s : string) = s;;
 
 let level_points =
   [| 10; 20; 40; 80; 160; 320; 640; 1300; 2600; 5200; 10000; 20000; 40000;
@@ -36,13 +56,13 @@ let is_passable g row col =
 
 let object_at g row col =
   try
-    List.find (fun ob -> ob.ob_row = row && ob.ob_col = col) g.level_objects
+    list__find (fun ob -> ob.ob_row = row && ob.ob_col = col) g.level_objects
   with Not_found -> invalid_arg "object_at"
 ;;
 
 let monster_at g row col =
   try
-    List.find (fun mn -> mn.mn_row = row && mn.mn_col = col) g.level_monsters
+    list__find (fun mn -> mn.mn_row = row && mn.mn_col = col) g.level_monsters
   with Not_found -> invalid_arg "monster_at"
 ;;
 
@@ -62,7 +82,7 @@ let trap_at g row col =
 let gold_at g row col =
   try
     let obj =
-      List.find (fun ob -> ob.ob_row = row && ob.ob_col = col) g.level_objects
+      list__find (fun ob -> ob.ob_row = row && ob.ob_col = col) g.level_objects
     in
     obj.ob_kind = Gold
   with Not_found -> false
@@ -76,18 +96,18 @@ let imitating g row col =
 ;;
 
 let take_from_pack g ch =
-  g.rogue.pack <- List.filter (fun (c, _) -> ch <> c) g.rogue.pack
+  g.rogue.pack <- list_filter (fun (c, _) -> ch <> c) g.rogue.pack
 ;;
 
 let take_from_monsters g monster =
   g.level_monsters <-
-    List.filter (fun mn -> mn.mn_unique_id <> monster.mn_unique_id)
+    list_filter (fun mn -> mn.mn_unique_id <> monster.mn_unique_id)
       g.level_monsters
 ;;
 
 let tgmc g c =
   let t = fast_transl g.lang "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in
-  let m = Char.code c - Char.code 'A' in
+  let m = char__int_of_char c - char__int_of_char 'A' in
   if String.length t = 26 && t.[m] >= 'A' && t.[m] <= 'Z' then t.[m] else c
 ;;
 
@@ -97,11 +117,11 @@ let itgmc g ch =
     if c > 'Z' then ch
     else
       let cc =
-        let m = Char.code c - Char.code 'A' in
+        let m = char__int_of_char c - char__int_of_char 'A' in
         if String.length t = 26 && t.[m] >= 'A' && t.[m] <= 'Z' then t.[m]
         else c
       in
-      if cc = ch then c else loop_c (Char.chr (Char.code c + 1))
+      if cc = ch then c else loop_c (Char.chr (char__int_of_char c + 1))
   in
   loop_c 'A'
 ;;
@@ -178,7 +198,7 @@ let show_rogue g =
 
 let show_monster g row col monster ch =
   if ch >= 'A' && ch <= 'Z' then
-    let i = Char.code monster.mn_char - Char.code 'A' in
+    let i = char__int_of_char monster.mn_char - char__int_of_char 'A' in
     let init_hp = Imonster.mon_init_hp g i in
     let hp = monster.mn_hp_to_kill in
     if hp < init_hp then Curses.color_set 1 (-1);
@@ -521,7 +541,7 @@ let show_monsters g =
   g.rogue.detect_monster <- true;
   if g.rogue.blind > 0 then ()
   else
-    List.iter
+    list__iter
       (fun monster ->
          show_monster g monster.mn_row monster.mn_col monster
            (tgmc g monster.mn_char);
@@ -534,7 +554,7 @@ let show_monsters g =
 ;;
 
 let get_letter_object g ch mess_try_again =
-  try Some (List.assoc ch g.rogue.pack) with
+  try Some (list__assoc ch g.rogue.pack) with
     Not_found ->
       Dialogue.message g
         (if mess_try_again then transl g.lang "No such item. Try again."

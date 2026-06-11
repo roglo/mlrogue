@@ -108,12 +108,12 @@ Usage: %s [args] [restore_file]
   loop_i 1
 ;;
 
-let start_with s i t = Imisc.string_eq s i t 0 (string__string_length t);;
+let start_with s i t = imisc__string_eq s i t 0 (string__string_length t);;
 
 let env_get_value s i =
   let rec loop_j j =
-    if j = string__string_length s then string__sub s i (j - i), j
-    else if s.[j] = `,` then string__sub s i (j - i), j
+    if j = string__string_length s then string__sub_string s i (j - i), j
+    else if s.[j] = `,` then string__sub_string s i (j - i), j
     else loop_j (j + 1)
   in
   loop_j i
@@ -134,7 +134,7 @@ let do_opts () =
     {opt_fruit = ""; opt_save_file = ""; opt_jump = true; opt_nick_name = "";
      opt_ask_quit = true; opt_show_skull = false; opt_fast = false}
   in
-  match try Some (Sys.getenv "ROGUEOPTS") with Not_found -> None with
+  match try Some (sys__getenv "ROGUEOPTS") with Not_found -> None with
     Some eptr ->
       let rec loop_i i =
         if i < string__string_length eptr then
@@ -179,24 +179,24 @@ let do_opts () =
 ;;
 
 let mix_colours g =
-  let len = vect__vect_length Object.colours in
-  let mix = vect__init len (fun i -> i) in
+  let len = vect__vect_length object__colours in
+  let mix = vect__init_vect len (fun i -> i) in
   for i = 0 to 31 do
-    let j = Imisc.get_rand 0 (len - 1) in
-    let k = Imisc.get_rand 0 (len - 1) in
+    let j = imisc__get_rand 0 (len - 1) in
+    let k = imisc__get_rand 0 (len - 1) in
     let t = mix.(j) in mix.(j) <- mix.(k); mix.(k) <- t
   done;
-  for i = 0 to vect__vect_length Object.potion_tab - 1 do
-    g.id_potions.(i) <- Unidentified Object.colours.(mix.(i))
+  for i = 0 to vect__vect_length object__potion_tab - 1 do
+    g.id_potions.(i) <- Unidentified object__colours.(mix.(i))
   done
 ;;
 
 let get_wand_and_ring_materials g =
-  let used = vect__make (vect__vect_length wand_materials) false in
-  for i = 0 to vect__vect_length Object.wand_tab - 1 do
+  let used = vect__make_vect (vect__vect_length wand_materials) false in
+  for i = 0 to vect__vect_length object__wand_tab - 1 do
     let j =
       let rec loop () =
-        let j = Imisc.get_rand 0 (vect__vect_length wand_materials - 1) in
+        let j = imisc__get_rand 0 (vect__vect_length wand_materials - 1) in
         if used.(j) then loop () else j
       in
       loop ()
@@ -205,11 +205,11 @@ let get_wand_and_ring_materials g =
     g.id_wands.(i) <- Unidentified wand_materials.(j);
     g.is_wood.(i) <- j > max_metal
   done;
-  let used = vect__make (vect__vect_length gems) false in
-  for i = 0 to vect__vect_length Object.ring_tab - 1 do
+  let used = vect__make_vect (vect__vect_length gems) false in
+  for i = 0 to vect__vect_length object__ring_tab - 1 do
     let j =
       let rec loop () =
-        let j = Imisc.get_rand 0 (vect__vect_length gems - 1) in
+        let j = imisc__get_rand 0 (vect__vect_length gems - 1) in
         if used.(j) then loop () else j
       in
       loop ()
@@ -219,13 +219,13 @@ let get_wand_and_ring_materials g =
 ;;
 
 let make_scroll_titles g =
-  for i = 0 to vect__vect_length Object.scroll_tab - 1 do
-    let sylls = Imisc.get_rand 2 5 in
+  for i = 0 to vect__vect_length object__scroll_tab - 1 do
+    let sylls = imisc__get_rand 2 5 in
     let title =
       let rec loop t j =
         if j = sylls then t
         else
-          let s = Imisc.get_rand 1 max_syllabes - 1 in
+          let s = imisc__get_rand 1 max_syllabes - 1 in
           let syll = syllabes.(s) in
           loop (if t = "" then syll else t ^ " " ^ syll) (j + 1)
       in
@@ -237,8 +237,8 @@ let make_scroll_titles g =
 
 let player_init g =
   g.rogue.pack <- [];
-  let _ : char * objet =
-    let ob = Object.get_food (Some Ration) in Imisc.add_to_pack g ob
+  let (_ : char * objet) =
+    let ob = object__get_food (Some Ration) in imisc__add_to_pack g ob
   in
   let a =
     {ar_kind = Ringmail; ar_class = 3; ar_is_cursed = false;
@@ -246,34 +246,34 @@ let player_init g =
      ar_identified = false}
   in
   let (c, _) =
-    let ob = Object.create_obj (Armor a) 1 in Imisc.add_to_pack g ob
+    let ob = object__create_obj (Armor a) 1 in imisc__add_to_pack g ob
   in
-  Imisc.do_wear g c a;
+  imisc__do_wear g c a;
   let w =
     {we_kind = Mace; we_damage = 2, 3, None; we_quiver = 0;
      we_is_cursed = false; we_has_been_uncursed = false; we_hit_enchant = 1;
      we_d_enchant = 1; we_in_use = false; we_identified = true}
   in
   let (c, _) =
-    let ob = Object.create_obj (Weapon w) 1 in Imisc.add_to_pack g ob
+    let ob = object__create_obj (Weapon w) 1 in imisc__add_to_pack g ob
   in
-  Imisc.do_wield g c w;
+  imisc__do_wield g c w;
   let w =
     {we_kind = Bow; we_damage = 1, 2, None; we_quiver = 0;
      we_is_cursed = false; we_has_been_uncursed = false; we_hit_enchant = 1;
      we_d_enchant = 0; we_in_use = false; we_identified = true}
   in
-  let _ : char * objet =
-    let ob = Object.create_obj (Weapon w) 1 in Imisc.add_to_pack g ob
+  let (_ : char * objet) =
+    let ob = object__create_obj (Weapon w) 1 in imisc__add_to_pack g ob
   in
   let w =
     {we_kind = Arrow; we_damage = 1, 2, None; we_quiver = 1;
      we_is_cursed = false; we_has_been_uncursed = false; we_hit_enchant = 0;
      we_d_enchant = 0; we_in_use = false; we_identified = true}
   in
-  let _ : char * objet =
-    let q = Imisc.get_rand 25 35 in
-    let ob = Object.create_obj (Weapon w) q in Imisc.add_to_pack g ob
+  let (_ : char * objet) =
+    let q = imisc__get_rand 25 35 in
+    let ob = object__create_obj (Weapon w) q in imisc__add_to_pack g ob
   in
   ()
 ;;
@@ -281,7 +281,7 @@ let player_init g =
 let create_g saved_uid true_uid login_name args opts lang =
   let empty_room _ =
     {bottom_row = 0; right_col = 0; left_col = 0; top_row = 0;
-     doors = vect__make 4 None; is_room = 0}
+     doors = vect__make_vect 4 None; is_room = 0}
   in
   let rogue =
     {armor = None; weapon = None; gold = 0; hp_current = 12; hp_max = 12;
@@ -296,9 +296,9 @@ let create_g saved_uid true_uid login_name args opts lang =
      ring_exp = 0; auto_search = 0; fchar = `@`}
   in
   let fruit =
-    if opts.opt_fruit <> "" then opts.opt_fruit else Object.default_fruit
+    if opts.opt_fruit <> "" then opts.opt_fruit else object__default_fruit
   in
-  let env = Efield.make () in
+  let env = efield__make () in
   {saved_uid = saved_uid; true_uid = true_uid; cur_level = 0; max_level = 1;
    cur_room = None; lang = lang; score_only = args.arg_score_only;
    save_file = opts.opt_save_file; nick_name = opts.opt_nick_name;
@@ -312,21 +312,16 @@ let create_g saved_uid true_uid login_name args opts lang =
    same_msg = 0; m_moves = 0; wizard = false;
    experimented_pick_up_scare_monster = false; rogue = rogue;
    random_rooms = [| 3; 7; 5; 2; 0; 6; 1; 4; 8 |];
-   id_potions = vect__make (vect__vect_length Object.potion_tab) Identified;
-   id_rings = vect__make (vect__vect_length Object.ring_tab) Identified;
-   id_scrolls = vect__make (vect__vect_length Object.scroll_tab) Identified;
-   id_wands = vect__make (vect__vect_length Object.wand_tab) Identified;
-   is_wood = vect__make (vect__vect_length Object.wand_tab) false;
-   rooms = vect__init 9 empty_room; traps = vect__make 10 None;
+   id_potions = vect__make_vect (vect__vect_length object__potion_tab) Identified;
+   id_rings = vect__make_vect (vect__vect_length object__ring_tab) Identified;
+   id_scrolls = vect__make_vect (vect__vect_length object__scroll_tab) Identified;
+   id_wands = vect__make_vect (vect__vect_length object__wand_tab) Identified;
+   is_wood = vect__make_vect (vect__vect_length object__wand_tab) false;
+   rooms = vect__init_vect 9 empty_room; traps = vect__make_vect 10 None;
    dungeon = vect__make_matrix 24 80 0; env = env}
 ;;
 
-type init =
-    NewGame of game
-  | RestoreGame of string
-  | ScoreOnly
-;;
-
+(*
 let robot_env nhr =
   function
     Some str ->
@@ -338,11 +333,12 @@ let robot_env nhr =
           | _ -> None
       in
       begin match locrob with
-        Some str -> Some (PSrobot (Robot.make str), nhr)
+        Some str -> Some (PSrobot (robot__make str), nhr)
       | None -> Some (PSsocket (Rogbotio.socket str), nhr)
       end
   | None -> None
 ;;
+*)
 
 let backup_env =
   function
@@ -386,7 +382,7 @@ let f argv =
         get_wand_and_ring_materials g;
         make_scroll_titles g;
         player_init g;
-        g.party_counter <- Imisc.get_rand 1 10;
+        g.party_counter <- imisc__get_rand 1 10;
         NewGame g
       end
   in

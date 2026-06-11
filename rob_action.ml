@@ -10,14 +10,6 @@
 #open "rob_path";;
 #open "rob_position";;
 
-let sys_file_exists fname =
-  try
-    let ic = io__open_in fname in
-    io__close_in ic;
-    true
-  with sys__Sys_error _ -> false
-;;
-
 (*
 let test_jeopardized g t monl =
   let pos = rogue_pos g in
@@ -66,18 +58,6 @@ let flame_risk g t =
   | None -> 0
 ;;
 *)
-
-let rec list_filter f =
-  function
-    [] -> []
-  | x :: l -> if f x then x :: list_filter f l else list_filter f l
-;;
-
-let rec list_nth l n =
-  match l with
-    [] -> failwith "list_nth"
-  | x :: l -> if n = 0 then x else list_nth l (n - 1)
-;;
 
 (*
 let test_monsters_risk g t monl =

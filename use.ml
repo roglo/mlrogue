@@ -8,13 +8,13 @@
 (* #use "keyboard.def" *)
 
 
-open Rogue;;
-open Dialogue;;
-open Imisc;;
-open Misc;;
-open Object;;
-open Printf;;
-open Translate;;
+#open "rogue";;
+#open "dialogue";;
+#open "imisc";;
+#open "misc";;
+#open "object";;
+#open "printf";;
+#open "translate";;
 
 let potion_heal g extra =
   let rogue = g.rogue in
@@ -38,10 +38,10 @@ let potion_heal g extra =
       rogue.hp_current <- rogue.hp_current + int_of_float add;
       rogue.hp_current <- min rogue.hp_current rogue.hp_max
     end;
-  if rogue.blind > 0 then Move.unblind g;
-  if rogue.confused > 0 && extra then Move.unconfuse g
+  if rogue.blind > 0 then move__unblind g;
+  if rogue.confused > 0 && extra then move__unconfuse g
   else if rogue.confused > 0 then rogue.confused <- rogue.confused / 2 + 1;
-  if rogue.halluc > 0 && extra then Move.unhallucinate g
+  if rogue.halluc > 0 && extra then move__unhallucinate g
   else if rogue.halluc > 0 then rogue.halluc <- rogue.halluc / 2 + 1;
   show_rogue g
 ;;
@@ -124,7 +124,7 @@ let apply_potion g =
       if not g.rogue.sustain_strength then
         g.rogue.str_current <- max 1 (g.rogue.str_current - get_rand 1 3);
       message g (transl g.lang "You feel very sick now.") false;
-      if g.rogue.halluc > 0 then Move.unhallucinate g
+      if g.rogue.halluc > 0 then move__unhallucinate g
   | Blindness -> go_blind g
   | RaiseLevel ->
       if g.rogue.exp_points < 10000000 then
@@ -169,7 +169,7 @@ let apply_potion g =
            else transl g.lang g.fruit ^ " ")
       in
       message g (etransl buf) false;
-      if g.rogue.blind > 0 then Move.unblind g;
+      if g.rogue.blind > 0 then move__unblind g;
       g.rogue.see_invisible <- true;
       relight g
 ;;
@@ -192,7 +192,7 @@ let quaff g =
             print_stats g (0o10 lor 0o4);
             g.id_potions.(int_of_potion p) <- Identified;
             vanish g ch obj;
-            Move.reg_move g
+            move__reg_move g
         | _ -> message g (transl g.lang "You can't drink that!") false
 ;;
 
@@ -425,9 +425,9 @@ let apply_scroll g =
       message g (transl g.lang "This is a scroll of identify.") false;
       g.id_scrolls.(int_of_scroll Identify) <- Identified;
       idntfy g
-  | Teleport -> Move.tele g
+  | Teleport -> move__tele g
   | Sleep ->
-      message g (transl g.lang "You fall asleep.") false; Move.take_a_nap g
+      message g (transl g.lang "You fall asleep.") false; move__take_a_nap g
   | RemoveCurse ->
       if g.rogue.halluc > 0 then
         message g
@@ -466,7 +466,7 @@ let read_scroll g =
               apply_scroll g s;
               g.id_scrolls.(int_of_scroll s) <- Identified;
               vanish g ch obj;
-              if s <> Sleep then Move.reg_move g
+              if s <> Sleep then move__reg_move g
           | _ -> message g (transl g.lang "You can't read that!") false
 ;;
 
@@ -512,7 +512,7 @@ let eat g =
             g.hunger_str <- "";
             print_stats g 0o100;
             vanish g ch obj;
-            Move.reg_move g
+            move__reg_move g
         | _ -> message g (transl g.lang "You can't eat that!") false
 ;;
 
@@ -539,7 +539,7 @@ let wear g =
                 let msg = transl g.lang "Wearing" ^ " " ^ d in
                 message g (etransl msg ^ ".") false;
                 print_stats g 0o20;
-                Move.reg_move g
+                move__reg_move g
             | _ -> message g (transl g.lang "You can't wear that" ^ ".") false
 ;;
 
@@ -575,7 +575,7 @@ let wield g =
                   in
                   message g (etransl msg) false;
                   do_wield g ch w;
-                  Move.reg_move g
+                  move__reg_move g
                 end
           | _ ->
               let msg =
@@ -596,7 +596,7 @@ let take_off g =
           let msg = transl g.lang "Was wearing" ^ " " ^ armor_desc g a in
           message g (etransl msg ^ ".") false;
           print_stats g 0o20;
-          Move.reg_move g
+          move__reg_move g
         end
   | None -> message g (transl g.lang "Not wearing any" ^ ".") false
 ;;
@@ -659,7 +659,7 @@ let put_on_ring g =
                     print_stats g 0o10;
                     relight g;
                     let desc = get_desc g obj true in
-                    message g (etransl desc) false; Move.reg_move g
+                    message g (etransl desc) false; move__reg_move g
                   end
           | _ -> message g (transl g.lang "That's not a ring!") false
 ;;
@@ -732,6 +732,6 @@ let remove_ring g =
       begin
         un_put_on g ring;
         let msg = transl g.lang "Removed" ^ " " ^ ring_desc g ring false in
-        message g (etransl msg) false; Move.reg_move g
+        message g (etransl msg) false; move__reg_move g
       end
 ;;
