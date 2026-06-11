@@ -48,7 +48,7 @@ let my_int_of_string s =
     if i = string__string_length s then sign * n
     else
       match s.[i] with
-        `0`..`9` -> loop_i (10 * n + Char.code s.[i] - Char.code `0`) (i + 1)
+        `0`..`9` -> loop_i (10 * n + char__int_of_char s.[i] - char__int_of_char `0`) (i + 1)
       | _ -> failwith "int_of_string"
   in
   loop_i 0 i
@@ -72,17 +72,17 @@ let do_args argv =
      arg_backup = None; arg_rest_file = ""}
   in
   let rec loop_i i =
-    if i < vect__length argv then
-      if argv.(i) = "-lang" && i + 1 < vect__length argv then
+    if i < vect__vect_length argv then
+      if argv.(i) = "-lang" && i + 1 < vect__vect_length argv then
         begin args.arg_lang <- Some argv.(i+1); loop_i (i + 2) end
-      else if argv.(i) = "-seed" && i + 1 < vect__length argv then
+      else if argv.(i) = "-seed" && i + 1 < vect__vect_length argv then
         begin
           args.arg_seed <- Some (my_int_of_string argv.(i+1));
           loop_i (i + 2)
         end
-      else if argv.(i) = "-backup" && i + 1 < vect__length argv then
+      else if argv.(i) = "-backup" && i + 1 < vect__vect_length argv then
         begin args.arg_backup <- Some argv.(i+1); loop_i (i + 2) end
-      else if argv.(i) = "-r" && i + 1 < vect__length argv then
+      else if argv.(i) = "-r" && i + 1 < vect__vect_length argv then
         begin args.arg_robot_player <- Some argv.(i+1); loop_i (i + 2) end
       else if argv.(i) = "-nhr" then
         begin args.arg_no_handle_robot <- true; loop_i (i + 1) end
@@ -179,24 +179,24 @@ let do_opts () =
 ;;
 
 let mix_colours g =
-  let len = vect__length Object.colours in
+  let len = vect__vect_length Object.colours in
   let mix = vect__init len (fun i -> i) in
   for i = 0 to 31 do
     let j = Imisc.get_rand 0 (len - 1) in
     let k = Imisc.get_rand 0 (len - 1) in
     let t = mix.(j) in mix.(j) <- mix.(k); mix.(k) <- t
   done;
-  for i = 0 to vect__length Object.potion_tab - 1 do
+  for i = 0 to vect__vect_length Object.potion_tab - 1 do
     g.id_potions.(i) <- Unidentified Object.colours.(mix.(i))
   done
 ;;
 
 let get_wand_and_ring_materials g =
-  let used = vect__make (vect__length wand_materials) false in
-  for i = 0 to vect__length Object.wand_tab - 1 do
+  let used = vect__make (vect__vect_length wand_materials) false in
+  for i = 0 to vect__vect_length Object.wand_tab - 1 do
     let j =
       let rec loop () =
-        let j = Imisc.get_rand 0 (vect__length wand_materials - 1) in
+        let j = Imisc.get_rand 0 (vect__vect_length wand_materials - 1) in
         if used.(j) then loop () else j
       in
       loop ()
@@ -205,11 +205,11 @@ let get_wand_and_ring_materials g =
     g.id_wands.(i) <- Unidentified wand_materials.(j);
     g.is_wood.(i) <- j > max_metal
   done;
-  let used = vect__make (vect__length gems) false in
-  for i = 0 to vect__length Object.ring_tab - 1 do
+  let used = vect__make (vect__vect_length gems) false in
+  for i = 0 to vect__vect_length Object.ring_tab - 1 do
     let j =
       let rec loop () =
-        let j = Imisc.get_rand 0 (vect__length gems - 1) in
+        let j = Imisc.get_rand 0 (vect__vect_length gems - 1) in
         if used.(j) then loop () else j
       in
       loop ()
@@ -219,7 +219,7 @@ let get_wand_and_ring_materials g =
 ;;
 
 let make_scroll_titles g =
-  for i = 0 to vect__length Object.scroll_tab - 1 do
+  for i = 0 to vect__vect_length Object.scroll_tab - 1 do
     let sylls = Imisc.get_rand 2 5 in
     let title =
       let rec loop t j =
@@ -312,11 +312,11 @@ let create_g saved_uid true_uid login_name args opts lang =
    same_msg = 0; m_moves = 0; wizard = false;
    experimented_pick_up_scare_monster = false; rogue = rogue;
    random_rooms = [| 3; 7; 5; 2; 0; 6; 1; 4; 8 |];
-   id_potions = vect__make (vect__length Object.potion_tab) Identified;
-   id_rings = vect__make (vect__length Object.ring_tab) Identified;
-   id_scrolls = vect__make (vect__length Object.scroll_tab) Identified;
-   id_wands = vect__make (vect__length Object.wand_tab) Identified;
-   is_wood = vect__make (vect__length Object.wand_tab) false;
+   id_potions = vect__make (vect__vect_length Object.potion_tab) Identified;
+   id_rings = vect__make (vect__vect_length Object.ring_tab) Identified;
+   id_scrolls = vect__make (vect__vect_length Object.scroll_tab) Identified;
+   id_wands = vect__make (vect__vect_length Object.wand_tab) Identified;
+   is_wood = vect__make (vect__vect_length Object.wand_tab) false;
    rooms = vect__init 9 empty_room; traps = vect__make 10 None;
    dungeon = vect__make_matrix 24 80 0; env = env}
 ;;

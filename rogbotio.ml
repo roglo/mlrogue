@@ -42,7 +42,9 @@ let socket str =
   in
   let s = unix__socket (unix_domain_of_sockaddr addr) unix__SOCK_STREAM 0 in
   begin try
+(*
     unix__setsockopt s unix__SO_REUSEADDR true;
+*)
     unix__bind s addr;
     unix__listen s 1
   with e -> unix__close s; raise e
@@ -56,20 +58,20 @@ let rogbot_magic = "RGBT0001";;
 
 let getchar nrow ncol s =
   let txt = sprintf "%s\n" rogbot_magic in
-  let _ : int = unix__write s (string_to_bytes txt) 0 (String.length txt) in
+  let _ = unix__write s (string_to_bytes txt) 0 (string__string_length txt) in
   let txt = sprintf "%d\n" nrow in
-  let _ : int = unix__write s (string_to_bytes txt) 0 (String.length txt) in
+  let _ = unix__write s (string_to_bytes txt) 0 (string__string_length txt) in
   let txt = sprintf "%d\n" ncol in
-  let _ : int = unix__write s (string_to_bytes txt) 0 (String.length txt) in
+  let _ = unix__write s (string_to_bytes txt) 0 (string__string_length txt) in
   let line = string_create ncol in
   for row = 0 to nrow - 1 do
     for col = 0 to ncol - 1 do
-      string_set line col (Curses.mvinch row col)
+      string_set line col (curses__mvinch row col)
     done;
     let txt = sprintf "%s\n" (string_of_bytes line) in
-    let _ : int = unix__write s (string_to_bytes txt) 0 (String.length txt) in
+    let _ = unix__write s (string_to_bytes txt) 0 (string__string_length txt) in
     ()
   done;
-  let b = " " in let _ : int = unix__read s (string_to_bytes b) 0 1 in b.[0]
+  let b = " " in let _ = unix__read s (string_to_bytes b) 0 1 in b.[0]
 ;;
 
