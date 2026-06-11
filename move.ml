@@ -754,7 +754,7 @@ let multiple_move_rogue g dirch =
 ;;
 
 let one_move_rogue g dirch pickup =
-  let _ : one_move = one_move g dirch pickup in ()
+  let (_ : one_move) = one_move g dirch pickup in ()
 ;;
 
 let move_onto g =

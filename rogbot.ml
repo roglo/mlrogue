@@ -52,7 +52,7 @@ let skip_newline s =
 let input_int s =
   let buff = string_to_bytes " " in
   let rec loop n =
-    let _ : int = single_unix_read s buff 0 1 in
+    let (_ : int) = single_unix_read s buff 0 1 in
     match string_get buff 0 with
       `0`..`9` ->
         loop (10 * n + Char.code (string_get buff 0) - Char.code `0`)

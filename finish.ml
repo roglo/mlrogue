@@ -159,7 +159,7 @@ let write_scores scores =
   match try Some (open_out_bin score_file) with sys__Sys_error _ -> None with
     Some oc ->
       let scores =
-        if list__length scores > 15 then list__rev (list__tl (list__rev scores))
+        if list__list_length scores > 15 then list__rev (list__tl (list__rev scores))
         else scores
       in
       output_string oc score_magic;
@@ -236,7 +236,7 @@ let put_scores lang score_only g_ending =
            sc_ending = ending; sc_level = g.max_level;
            sc_with_amulet = has_amulet g}
         in
-        if f_bool.Efield.get g.env "batch" false then
+        if f_bool.efield__get g.env "batch" false then
           (let s = ending_reason_line lang score in printf "%s" s);
         insert_score score scores
     | _ -> scores, 15 + 1
@@ -264,7 +264,7 @@ let put_scores lang score_only g_ending =
            let txt =
              if rank = n then
                let len = 80 - string__string_length txt - 2 in
-               txt ^ string__make (max 0 len) ` `
+               txt ^ string__make_string (max 0 len) ` `
              else txt
            in
            curses__move (6 + rank) 0;
@@ -392,7 +392,7 @@ let killed_by g death =
   message g "" false;
   let pack_opt =
     if g.rogue.pack <> [] && has_unidentifed_objects g g.rogue.pack then
-      let pack = list__filter (select_unidentified g) g.rogue.pack in Some pack
+      let pack = list_filter (select_unidentified g) g.rogue.pack in Some pack
     else None
   in
   id_all g g.level_objects;

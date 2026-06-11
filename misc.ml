@@ -342,19 +342,21 @@ let old_save_magic = "RGSV0004";;
 *)
 
 let save_into_file g fname =
+(*
   if g.score_only then
     f_random.efield__set g.env "random" (Some (random__get_state ()));
+*)
   let oc = open_out_bin fname in
   let buf =
-    Array.init 24 (fun i -> Array.init 80 (fun j -> curses__mvinch i j))
+    vect__init_vect 24 (fun i -> vect__init_vect 80 (fun j -> curses__mvinch i j))
   in
   output_string oc save_magic; output_value oc (g, buf : saved); close_out oc
 ;;
 
 let display_dungeon g buf =
-  for i = 0 to Array.length buf - 1 do
+  for i = 0 to vect__vect_length buf - 1 do
     let line = buf.(i) in
-    for j = 0 to Array.length line - 1 do
+    for j = 0 to vect__vect_length line - 1 do
       if line.(j) >= `A` && line.(j) <= `Z` && g.dungeon.(i).(j) land 0o2 <> 0
       then
         let monster = monster_at g i j in
@@ -375,12 +377,14 @@ let restore fname =
   let b = string_of_bytes b in
   if b = save_magic then
     let (g, buf) = (input_value ic : saved) in
-    display_dungeon g buf; show_rogue g; close_in ic; Sys.remove fname; g
+    display_dungeon g buf; show_rogue g; close_in ic; sys__remove fname; g
+(*
   else if b = old_save_magic then
     let (old_g, buf) = (input_value ic : old_saved) in
     let g = g_of_old_g old_g in
-    display_dungeon g buf; close_in ic; Sys.remove fname; g
+    display_dungeon g buf; close_in ic; sys__remove fname; g
   else
+*)
     begin close_in ic; failwith (sprintf "not a mlrogue saved file %s" b) end
 ;;
 

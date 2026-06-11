@@ -417,7 +417,7 @@ let steal_item g monster =
                  | _ -> 1
                  end;
                ob_kind = obj.ob_kind; ob_row = obj.ob_row;
-               ob_col = obj.ob_col}
+               ob_col = obj.ob_col; ob_picked_up = obj.ob_picked_up}
             in
             let msg =
               transl g.lang "She stole" ^ " " ^ get_desc g obj1 false
@@ -467,7 +467,7 @@ let move_confused g monster =
 let rec mv_mons g =
   if g.rogue.haste_self mod 2 = 1 then ()
   else
-    list__iter
+    list__do_list
       (fun monster ->
          if g.mon_disappeared &&
             not
@@ -810,7 +810,7 @@ and flame_broil g monster =
 ;;
 
 let mv_aquators g =
-  list__iter
+  list__do_list
     (fun monster ->
        if monster.mn_flags land 0o2000 <> 0 &&
           mon_can_go g monster g.rogue.row g.rogue.col
