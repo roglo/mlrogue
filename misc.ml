@@ -383,8 +383,8 @@ let restore fname =
     let (old_g, buf) = (input_value ic : old_saved) in
     let g = g_of_old_g old_g in
     display_dungeon g buf; close_in ic; sys__remove fname; g
-  else
 *)
+  else
     begin close_in ic; failwith (sprintf "not a mlrogue saved file %s" b) end
 ;;
 
