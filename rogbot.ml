@@ -71,7 +71,7 @@ let input_dungeon s =
       let ncols = input_int s in
       let buff = string_create ncols in
       let a =
-        vect__init nrows
+        vect__init_vect nrows
           (fun row ->
              let len = single_unix_read s buff 0 ncols in
              if len <> ncols then failwith "bad dungeon line in protocol"
@@ -82,34 +82,44 @@ let input_dungeon s =
   else None
 ;;
 
+(*
 let rec play_loop info s =
   match input_dungeon s with
     Some tab ->
       home ();
-      let nrow = vect__length tab in
+      let nrow = vect__vect_length tab in
       let ncol = string_length tab.(0) in
       for row = 0 to nrow - 1 do
         printf "%s" (string_of_bytes tab.(row));
         if row <> nrow - 1 then printf "\n"
       done;
       flush stdout;
-      let stab = vect__init nrow (fun i -> string_of_bytes tab.(i)) in
-      let (ch, info) = Robot.play stab nrow ncol info in
+      let stab = vect__init_vect nrow (fun i -> string_of_bytes tab.(i)) in
+      let (ch, info) = robot__play stab nrow ncol info in
       let _ : int = unix__write s (string_make 1 ch) 0 1 in play_loop info s
   | None -> ()
 ;;
+*)
 
 let arg_addr = ref None;;
 let arg_speed = ref "";;
 
+(*
 let speclist =
-  Arg.align ["-speed", Arg.Set_string arg_speed, "<num> Speed (default: 1.0)"]
+  arg__align ["-speed", arg__Set_string arg_speed, "<num> Speed (default: 1.0)"]
+;;
+*)
+let speclist =
+  ["-speed", arg__String (fun s -> arg_speed := s)]
 ;;
 let anonfun s = arg_addr := Some s;;
-let usage = "Usage: " ^ Sys.argv.(0) ^ " [option]... <addr>\n\nOptions:";;
+(*
+let usage = "Usage: " ^ sys__argv.(0) ^ " [option]... <addr>\n\nOptions:";;
+*)
+let usage = "Usage: " ^ "mlrobot" ^ " [option]... <addr>\n\nOptions:";;
 
 let main () =
-  Arg.parse speclist anonfun usage;
+  arg__parse speclist anonfun usage;
   let addr =
     match !arg_addr with
       Some str -> unix__ADDR_UNIX str
@@ -126,7 +136,7 @@ let main () =
   end;
   home ();
   clear_scr ();
-  let rob = Robot.make !arg_speed in
+  let rob = robot__make !arg_speed in
   (try play_loop rob s with e -> unix__close s; raise e); unix__close s
 ;;
 

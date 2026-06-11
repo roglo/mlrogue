@@ -258,7 +258,7 @@ let discovered_kind g title name id tab =
   let prompt = transl g.lang " -- Press space to continue --" in
   let list =
     let rec loop_i list i =
-      if i = vect__length id then List.rev list
+      if i = vect__vect_length id then list__rev list
       else
         match id.(i) with
           Identified ->
@@ -271,10 +271,10 @@ let discovered_kind g title name id tab =
     in
     loop_i [] 0
   in
-  let list = List.sort compare list in
+  let list = sort__sort compare list in
   let title = " *** " ^ etransl title ^ " ***" in
   let (list, _) =
-    List.fold_right
+    list__list_it
       (fun (interest, name, tit) (list, prev_interest) ->
          let s = sprintf " %s" (etransl (transl g.lang name ^ " " ^ tit)) in
          if list <> [] && interest <> prev_interest then
@@ -283,10 +283,10 @@ let discovered_kind g title name id tab =
       list ([], Harmful)
   in
   let list = title :: "" :: (list @ [""; prompt]) in
-  let maxlen = List.fold_left max 0 (List.map String.length list) in
-  let len = List.length list in
+  let maxlen = list__it_list max 0 (list__map string__string_length list) in
+  let len = list__list_length list in
   let col = 80 - (maxlen + 2) in
-  let saved = vect__make (len + 1) (string_to_bytes "") in
+  let saved = vect__make_vect (len + 1) (string_to_bytes "") in
   for i = 0 to len do
     let a = string_make (maxlen + 2) ` ` in
     saved.(i) <- a;
@@ -298,7 +298,7 @@ let discovered_kind g title name id tab =
   let ch =
     let rec loop () =
       let ch = rgetchar g in
-      if String.contains "!?=/ \027" ch then ch else loop ()
+      if string__contains "!?=/ \027" ch then ch else loop ()
     in
     loop ()
   in
@@ -317,7 +317,7 @@ let discovered g =
     let ch =
       let rec loop () =
         let ch = rgetchar g in
-        if String.contains (obj_sel ^ " \027") ch then ch else loop ()
+        if string__contains (obj_sel ^ " \027") ch then ch else loop ()
       in
       loop ()
     in
@@ -517,8 +517,8 @@ let instructions_file = "rogue.instr";;
 let conv_instr s =
   let b = Buffer.create 80 in
   let rec loop i =
-    if i < String.length s then
-      if i + 1 < String.length s && s.[i] = `%` then
+    if i < string__string_length s then
+      if i + 1 < string__string_length s && s.[i] = `%` then
         let c =
           match s.[i+1] with
             `y` -> `y`
@@ -580,14 +580,14 @@ let instructions g =
           let rec loop () =
             let line = input_line ic in
             try
-              let i = String.index line `:` in
+              let i = string__index line `:` in
               if string_eq g.lang 0 line 0 i then () else raise Not_found
             with Not_found -> loop ()
           in
           loop ()
         with End_of_file -> seek_in ic 0
         end;
-      let buffer = vect__init 24 (fun _ -> vect__make 80 ` `) in
+      let buffer = vect__init 24 (fun _ -> vect__make_vect 80 ` `) in
       for row = 0 to 24 - 1 do
         for col = 0 to 80 - 1 do
           buffer.(row).(col) <- curses__mvinch row col
@@ -618,7 +618,7 @@ let change_lang g =
       g.lang <- new_lang;
       clear_lexicon g.lang;
       print_stats g 0o377;
-      List.iter
+      list__iter
         (fun mon ->
            if mon.mn_flags land 0o20000000 <> 0 then ()
            else if
@@ -752,7 +752,7 @@ let rec play_level g =
             | ` ` | `\027` -> ()
             | `\t` ->
                 if g.wizard then
-                  inventory g (List.map (fun obj -> `.`, obj) g.level_objects)
+                  inventory g (list__map (fun obj -> `.`, obj) g.level_objects)
                     (fun _ -> true)
                 else unknown_command g ch
             | `\019` ->
