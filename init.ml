@@ -9,6 +9,8 @@
 #open "printf";;
 #open "translate";;
 
+let random_self_init () = random__init (unix__time ());;
+
 let syllabes =
   [| "blech"; "foo"; "barf"; "rech"; "bar"; "quo"; "bloto"; "woh"; "caca";
      "blorp"; "erp"; "festr"; "rot"; "slie"; "snorf"; "iky"; "yuky"; "ooze";
@@ -347,20 +349,20 @@ let backup_env =
 ;;
 
 let f argv =
-  let saved_uid = Unix.geteuid () in
-  let true_uid = Unix.getuid () in
-  Unix.setuid true_uid;
-  let login_name = (Unix.getpwuid (Unix.getuid ())).Unix.pw_name in
+  let saved_uid = unix__geteuid () in
+  let true_uid = unix__getuid () in
+  unix__setuid true_uid;
+  let login_name = (unix__getpwuid (unix__getuid ())).unix__pw_name in
   let args = do_args argv in
   begin match args.arg_seed with
-    Some seed -> Random.init seed
-  | None -> Random.self_init ()
+    Some seed -> random__init seed
+  | None -> random_self_init ()
   end;
   let opts = do_opts () in
   let lang =
     match args.arg_lang with
       Some lang -> lang
-    | None -> try Sys.getenv "LANG" with Not_found -> ""
+    | None -> try sys__getenv "LANG" with Not_found -> ""
   in
   let r =
     if args.arg_score_only then ScoreOnly
@@ -375,7 +377,7 @@ let f argv =
               (if opts.opt_nick_name <> "" then opts.opt_nick_name
                else login_name);
             flush stdout;
-            Unix.sleep 2
+            unix__sleep 2
           end;
         let g = create_g saved_uid true_uid login_name args opts lang in
         mix_colours g;
@@ -387,7 +389,11 @@ let f argv =
       end
   in
   let no_handle_robot = args.arg_no_handle_robot || args.arg_batch in
+(*
   let robenv = robot_env no_handle_robot args.arg_robot_player in
+*)
+  let robenv = None in
+(**)
   let backupenv = backup_env args.arg_backup in
   let fast = opts.opt_fast || args.arg_batch in
   let batch = args.arg_batch in

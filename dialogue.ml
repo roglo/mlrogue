@@ -228,6 +228,7 @@ let display_pause line =
 
 let pause_char = `\003`;;
 
+(*
 let rgetchar_local_robot g rob =
   let (row, col) = curses__pos_get () in
   let dung = dungeon_string g in
@@ -247,7 +248,7 @@ let rgetchar_local_robot g rob =
       end
     else
       let (fd_in, _, _) = unix__select [unix__stdin] [] [] 0.0 in
-      if List.length fd_in <> 0 then
+      if list__list_length fd_in <> 0 then
         let ch = curses__getch () in
         if ch = pause_char then
           begin
@@ -266,7 +267,7 @@ let rgetchar_local_robot g rob =
       let ncol = string_length dung.(0) in
       match
         let sdung = vect__init_vect nrow (fun i -> string_of_bytes dung.(i)) in
-        try Some (Robot.play sdung nrow ncol rob) with
+        try Some (robot__play sdung nrow ncol rob) with
           exc ->
             if f_bool.efield__get g.env "no handle robot" false then raise exc
             else
@@ -287,13 +288,16 @@ let rgetchar_local_robot g rob =
           f_player_species.efield__set g.env "player_species" (PSrobot rob);
           rgetchar_human ()
 ;;
+*)
 
 let rgetchar g =
   if f_bool.efield__get g.env "failed" false then rgetchar_human ()
   else
     match f_player_species.efield__get g.env "player_species" PShuman with
-      PSsocket s -> Rogbotio.getchar 24 80 s
+      PSsocket s -> rogbotio__getchar 24 80 s
+(*
     | PSrobot rob -> rgetchar_local_robot g rob
+*)
     | PShuman -> rgetchar_human ()
 ;;
 
@@ -346,10 +350,10 @@ let inv_sel g pack mask prompt term =
   if pack = [] then
     begin message g (transl g.lang "Your pack is empty.") true; None end
   else
-    let list = List.filter (fun (_, obj) -> mask obj.ob_kind) pack in
-    let list = List.sort compare list in
+    let list = list__filter (fun (_, obj) -> mask obj.ob_kind) pack in
+    let list = list__sort compare list in
     let (list, maxlen) =
-      List.fold_right
+      list__fold_right
         (fun (c, obj) (list, maxlen) ->
            let p =
              match obj with
@@ -368,7 +372,7 @@ let inv_sel g pack mask prompt term =
            s :: list, max maxlen (Ustring.length s))
         list ([], 0)
     in
-    let len = List.length list in
+    let len = list__list_length list in
     let maxlen = max maxlen (string__string_length prompt) in
     let col = 80 - (maxlen + 2) in
     let saved =
@@ -481,7 +485,7 @@ let print_stats g stat_mask =
 
 (* pack select *)
 
-let mask_pack pack mask = List.exists (fun (_, x) -> mask x.ob_kind) pack;;
+let mask_pack pack mask = list__exists (fun (_, x) -> mask x.ob_kind) pack;;
 
 let in_use =
   function
@@ -599,7 +603,7 @@ let pack_letter g prompt mask =
 
 let wizard_sel create list =
   let (_, list) =
-    List.fold_left
+    list__fold_left
       (fun (ch, list) t ->
          let list = (ch, create (Some t)) :: list in
          Char.chr (Char.code ch + 1), list)
@@ -664,7 +668,7 @@ let new_object_for_wizard g =
         else
           let sel =
             string__concat ""
-              (List.map (string__make 1) (List.map fst obj_list))
+              (list__map (string__make 1) (list__map fst obj_list))
           in
           let sel = sel ^ obj_sel ^ " \027" in
           let retc =
@@ -675,7 +679,7 @@ let new_object_for_wizard g =
             None | Some (` ` | `\027`) -> loop ()
           | Some ch ->
               try
-                let obj = List.assoc ch obj_list in
+                let obj = list__assoc ch obj_list in
                 let (c, obj) = imisc__add_to_pack g obj in
                 let desc = etransl (get_desc g obj true) in
                 message g (sprintf "%s (%c)" desc c) false

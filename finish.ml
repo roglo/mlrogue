@@ -25,7 +25,7 @@ let win_message g =
           let rec loop () =
             let line = input_line ic in
             try
-              let i = String.index line ':' in
+              let i = string__index line ':' in
               if string_eq g.lang 0 line 0 i then () else raise Not_found
             with Not_found -> loop ()
           in
@@ -36,7 +36,7 @@ let win_message g =
       begin try
         let rec loop i =
           let line = input_line ic in
-          if String.contains line ':' then ()
+          if string__contains line ':' then ()
           else begin f i 11 line; loop (i + 1) end
         in
         loop 7
@@ -137,7 +137,7 @@ let read_scores () =
   let ic =
     match try Some (open_in_bin score_file) with Sys_error _ -> None with
       Some ic ->
-        let b = string_create (String.length score_magic) in
+        let b = string_create (string__length score_magic) in
         really_input ic b 0 (string_length b);
         let b = string_of_bytes b in
         if b <> score_magic then begin close_in ic; None end else Some ic
@@ -260,8 +260,8 @@ let put_scores lang score_only g_ending =
            in
            let txt =
              if rank = n then
-               let len = 80 - String.length txt - 2 in
-               txt ^ String.make (max 0 len) ' '
+               let len = 80 - string__length txt - 2 in
+               txt ^ string__make (max 0 len) ' '
              else txt
            in
            curses__move (6 + rank) 0;
@@ -360,7 +360,7 @@ let killed_by g death =
   begin match death with
     Monster _ | Hypothermia | Starvation | PoisonDart when g.show_skull ->
       let center row buf =
-        let margin = (80 - String.length buf) / 2 in
+        let margin = (80 - string__length buf) / 2 in
         curses__mvaddstr row margin buf
       in
       curses__clear ();

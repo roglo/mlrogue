@@ -107,23 +107,23 @@ let take_from_monsters g monster =
 
 let tgmc g c =
   let t = fast_transl g.lang "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in
-  let m = char__int_of_char c - char__int_of_char 'A' in
-  if String.length t = 26 && t.[m] >= 'A' && t.[m] <= 'Z' then t.[m] else c
+  let m = char__int_of_char c - char__int_of_char `A` in
+  if string__string_length t = 26 && t.[m] >= `A` && t.[m] <= `Z` then t.[m] else c
 ;;
 
 let itgmc g ch =
   let t = fast_transl g.lang "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in
   let rec loop_c c =
-    if c > 'Z' then ch
+    if c > `Z` then ch
     else
       let cc =
-        let m = char__int_of_char c - char__int_of_char 'A' in
-        if String.length t = 26 && t.[m] >= 'A' && t.[m] <= 'Z' then t.[m]
+        let m = char__int_of_char c - char__int_of_char `A` in
+        if string__string_length t = 26 && t.[m] >= `A` && t.[m] <= `Z` then t.[m]
         else c
       in
-      if cc = ch then c else loop_c (Char.chr (char__int_of_char c + 1))
+      if cc = ch then c else loop_c (char__char_of_int (char__int_of_char c + 1))
   in
-  loop_c 'A'
+  loop_c `A`
 ;;
 
 let gmc g monster =
@@ -140,36 +140,36 @@ let gmc g monster =
 
 let get_mask_char obj =
   match obj.ob_kind with
-    Amulet -> ','
-  | Armor _ -> ']'
-  | Food _ -> ':'
-  | Gold -> '*'
-  | Potion _ -> '!'
-  | Ring _ -> '='
-  | Scroll _ -> '?'
-  | Wand _ -> '/'
-  | Weapon _ -> ')'
+    Amulet -> `,`
+  | Armor _ -> `]`
+  | Food _ -> `:`
+  | Gold -> `*`
+  | Potion _ -> `!`
+  | Ring _ -> `=`
+  | Scroll _ -> `?`
+  | Wand _ -> `/`
+  | Weapon _ -> `)`
 ;;
 
 let get_dungeon_char g row col =
   let mask = g.dungeon.(row).(col) in
   if mask land 0o2 <> 0 then gmc g (monster_at g row col)
   else if mask land 0o1 <> 0 then get_mask_char (object_at g row col)
-  else if mask land 0o4 <> 0 then '%'
-  else if mask land 0o200 <> 0 && mask land 0o1000 = 0 then '#'
-  else if mask land 0o10 <> 0 then '-'
-  else if mask land 0o20 <> 0 then '|'
+  else if mask land 0o4 <> 0 then `%`
+  else if mask land 0o200 <> 0 && mask land 0o1000 = 0 then `#`
+  else if mask land 0o10 <> 0 then `-`
+  else if mask land 0o20 <> 0 then `|`
   else if mask land 0o100 <> 0 then
-    if mask land 0o400 <> 0 && mask land 0o1000 = 0 then '^' else '.'
+    if mask land 0o400 <> 0 && mask land 0o1000 = 0 then `^` else `.`
   else if mask land 0o40 <> 0 then
     if mask land 0o1000 <> 0 then
       if col > 0 && g.dungeon.(row).(col-1) land 0o10 <> 0 ||
          col < 80 - 1 && g.dungeon.(row).(col+1) land 0o10 <> 0
       then
-        '-'
-      else '|'
-    else '+'
-  else ' '
+        `-`
+      else `|`
+    else `+`
+  else ` `
 ;;
 
 let get_exp_level e =
@@ -183,41 +183,41 @@ let get_exp_level e =
 let show_rogue g =
   let rogue = g.rogue in
   (*
-    if rogue.hp_current <= rogue.hp_max / 2 then Curses.color_set 1 (-1)
+    if rogue.hp_current <= rogue.hp_max / 2 then curses__color_set 1 (-1)
     else ();
   *)
-  if rogue.confused > 0 then Curses.color_set 2 (-1);
+  if rogue.confused > 0 then curses__color_set 2 (-1);
   (**)
-  Curses.mvaddch rogue.row rogue.col rogue.fchar;
+  curses__mvaddch rogue.row rogue.col rogue.fchar;
   (*
-    if rogue.hp_current <= rogue.hp_max / 2 then Curses.color_set (-1) (-1)
+    if rogue.hp_current <= rogue.hp_max / 2 then curses__color_set (-1) (-1)
     else ()
   *)
-  if rogue.confused > 0 then Curses.color_set (-1) (-1)
+  if rogue.confused > 0 then curses__color_set (-1) (-1)
 ;;
 
 let show_monster g row col monster ch =
-  if ch >= 'A' && ch <= 'Z' then
-    let i = char__int_of_char monster.mn_char - char__int_of_char 'A' in
-    let init_hp = Imonster.mon_init_hp g i in
+  if ch >= `A` && ch <= `Z` then
+    let i = char__int_of_char monster.mn_char - char__int_of_char `A` in
+    let init_hp = imonster__mon_init_hp g i in
     let hp = monster.mn_hp_to_kill in
-    if hp < init_hp then Curses.color_set 1 (-1);
-    Curses.mvaddch row col ch;
-    (if hp < init_hp then Curses.color_set (-1) (-1))
-  else Curses.mvaddch row col ch
+    if hp < init_hp then curses__color_set 1 (-1);
+    curses__mvaddch row col ch;
+    (if hp < init_hp then curses__color_set (-1) (-1))
+  else curses__mvaddch row col ch
 ;;
 
 let show_trap i j t =
   (*
     match t with
-    [ TrapDoor -> Curses.color_set 1 (-1)
-    | BearTrap -> Curses.color_set 2 (-1)
-    | TeleTrap -> Curses.color_set 3 (-1)
-    | DartTrap -> Curses.color_set 4 (-1)
-    | SleepingGasTrap -> Curses.color_set 5 (-1)
-    | RustTrap -> Curses.color_set 6 (-1) ];
+    [ TrapDoor -> curses__color_set 1 (-1)
+    | BearTrap -> curses__color_set 2 (-1)
+    | TeleTrap -> curses__color_set 3 (-1)
+    | DartTrap -> curses__color_set 4 (-1)
+    | SleepingGasTrap -> curses__color_set 5 (-1)
+    | RustTrap -> curses__color_set 6 (-1) ];
   *)
-  Curses.mvaddch i j '^'
+  curses__mvaddch i j `^`
 ;;
 
 let add_exp g e promotion =
@@ -230,18 +230,18 @@ let add_exp g e promotion =
       let mbuf =
         sprintf (ftransl g.lang "Welcome to experience level %d!") i
       in
-      Dialogue.message g mbuf false;
+      dialogue__message g mbuf false;
       let hp = promotion g in
       rogue.hp_current <- rogue.hp_current + hp;
       rogue.hp_max <- rogue.hp_max + hp;
       rogue.exp <- i;
-      Dialogue.print_stats g (0o4 lor 0o40);
+      dialogue__print_stats g (0o4 lor 0o40);
       show_rogue g
     done
-  else Dialogue.print_stats g 0o40
+  else dialogue__print_stats g 0o40
 ;;
 
-type saved = game * char array array;;
+type saved = game * char vect vect;;
 let save_magic = "RGSV0005";;
 
 module OLD_GAME =
@@ -284,15 +284,15 @@ module OLD_GAME =
         mutable wizard : bool;
         mutable experimented_pick_up_scare_monster : bool;
         rogue : fighter;
-        random_rooms : int array;
-        id_potions : id array;
-        id_rings : id array;
-        id_scrolls : id array;
-        id_wands : id array;
-        is_wood : bool array;
-        rooms : room array;
-        traps : trap option array;
-        dungeon : int array array }
+        random_rooms : int vect;
+        id_potions : id vect;
+        id_rings : id vect;
+        id_scrolls : id vect;
+        id_wands : id vect;
+        is_wood : bool vect;
+        rooms : room vect;
+        traps : trap option vect;
+        dungeon : int vect vect }
     ;;
   end
 ;;
@@ -329,7 +329,7 @@ let g_of_old_g g =
    env = Efield.make ()}
 ;;
 
-type old_saved = OLD_GAME.t * char array array;;
+type old_saved = OLD_GAME.t * char vect vect;;
 let old_save_magic = "RGSV0004";;
 
 let save_into_file g fname =
@@ -337,7 +337,7 @@ let save_into_file g fname =
     f_random.Efield.set g.env "random" (Some (Random.get_state ()));
   let oc = open_out_bin fname in
   let buf =
-    Array.init 24 (fun i -> Array.init 80 (fun j -> Curses.mvinch i j))
+    Array.init 24 (fun i -> Array.init 80 (fun j -> curses__mvinch i j))
   in
   output_string oc save_magic; output_value oc (g, buf : saved); close_out oc
 ;;
@@ -346,22 +346,22 @@ let display_dungeon g buf =
   for i = 0 to Array.length buf - 1 do
     let line = buf.(i) in
     for j = 0 to Array.length line - 1 do
-      if line.(j) >= 'A' && line.(j) <= 'Z' && g.dungeon.(i).(j) land 0o2 <> 0
+      if line.(j) >= `A` && line.(j) <= `Z` && g.dungeon.(i).(j) land 0o2 <> 0
       then
         let monster = monster_at g i j in
         show_monster g i j monster (gmc g monster)
-      else if line.(j) = '^' then
+      else if line.(j) = `^` then
         match trap_at g i j with
           Some trap -> show_trap i j trap
-        | None -> Curses.mvaddch i j line.(j)
-      else Curses.mvaddch i j line.(j)
+        | None -> curses__mvaddch i j line.(j)
+      else curses__mvaddch i j line.(j)
     done
   done
 ;;
 
 let restore fname =
   let ic = open_in_bin fname in
-  let b = string_create (String.length save_magic) in
+  let b = string_create (string__string_length save_magic) in
   really_input ic b 0 (string_length b);
   let b = string_of_bytes b in
   if b = save_magic then
@@ -377,20 +377,20 @@ let restore fname =
 
 let get_dir_rc dir row col allow_off_screen =
   match dir with
-    'h' -> row, (if allow_off_screen || col > 0 then col - 1 else col)
-  | 'j' -> (if allow_off_screen || row < 24 - 2 then row + 1 else row), col
-  | 'k' -> (if allow_off_screen || row > 1 then row - 1 else row), col
-  | 'l' -> row, (if allow_off_screen || col < 80 - 1 then col + 1 else col)
-  | 'y' ->
+    `h` -> row, (if allow_off_screen || col > 0 then col - 1 else col)
+  | `j` -> (if allow_off_screen || row < 24 - 2 then row + 1 else row), col
+  | `k` -> (if allow_off_screen || row > 1 then row - 1 else row), col
+  | `l` -> row, (if allow_off_screen || col < 80 - 1 then col + 1 else col)
+  | `y` ->
       if allow_off_screen || row > 1 && col > 0 then row - 1, col - 1
       else row, col
-  | 'u' ->
+  | `u` ->
       if allow_off_screen || row > 1 && col < 80 - 1 then row - 1, col + 1
       else row, col
-  | 'b' ->
+  | `b` ->
       if allow_off_screen || row < 24 - 2 && col > 0 then row + 1, col - 1
       else row, col
-  | 'n' ->
+  | `n` ->
       if allow_off_screen || row < 24 - 2 && col < 80 - 1 then
         row + 1, col + 1
       else row, col
@@ -399,7 +399,7 @@ let get_dir_rc dir row col allow_off_screen =
 
 let is_direction =
   function
-    'h' | 'j' | 'k' | 'l' | 'b' | 'y' | 'u' | 'n' | '\027' -> true
+    `h` | `j` | `k` | `l` | `b` | `y` | `u` | `n` | `\027` -> true
   | _ -> false
 ;;
 
@@ -428,7 +428,7 @@ let light_passage g row col =
           if g.dungeon.(i).(j) land 0o2 <> 0 then
             let monster = monster_at g i j in
             show_monster g i j monster (gmc g monster)
-          else Curses.mvaddch i j (get_dungeon_char g i j)
+          else curses__mvaddch i j (get_dungeon_char g i j)
       done
     done
 ;;
@@ -446,11 +446,11 @@ let light_up_room g rn =
           show_monster g i j monster (gmc g monster)
         else
           let ch = get_dungeon_char g i j in
-          if ch = '^' then
+          if ch = `^` then
             match trap_at g i j with
               Some t -> show_trap i j t
-            | None -> Curses.mvaddch i j ch
-          else Curses.mvaddch i j ch
+            | None -> curses__mvaddch i j ch
+          else curses__mvaddch i j ch
       done
     done;
     show_rogue g
@@ -519,7 +519,7 @@ let un_put_on g ring =
   end;
   ring.rg_in_use <- None;
   ring_stats g;
-  Dialogue.print_stats g 0o10;
+  dialogue__print_stats g 0o10;
   relight g
 ;;
 
@@ -556,7 +556,7 @@ let show_monsters g =
 let get_letter_object g ch mess_try_again =
   try Some (list__assoc ch g.rogue.pack) with
     Not_found ->
-      Dialogue.message g
+      dialogue__message g
         (if mess_try_again then transl g.lang "No such item. Try again."
          else transl g.lang "No such item.")
         false;

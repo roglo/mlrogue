@@ -41,21 +41,21 @@ let hallucinate g =
   if g.rogue.blind > 0 then ()
   else
     begin
-      List.iter
+      list__do_list
         (fun obj ->
-           let ch = Curses.mvinch obj.ob_row obj.ob_col in
+           let ch = curses__mvinch obj.ob_row obj.ob_col in
            if (ch < `A` || ch > `Z`) &&
               (obj.ob_row <> g.rogue.row || obj.ob_col <> g.rogue.col)
            then
              if ch <> ` ` && ch <> `.` && ch <> `#` && ch <> `+` then
-               Curses.addch (gr_obj_char ()))
+               curses__addch (gr_obj_char ()))
         g.level_objects;
-      List.iter
+      list__do_list
         (fun monster ->
-           let ch = Curses.mvinch monster.mn_row monster.mn_col in
+           let ch = curses__mvinch monster.mn_row monster.mn_col in
            if ch >= `A` && ch <= `Z` then
-             let ch = Char.chr (get_rand (Char.code `A`) (Char.code `Z`)) in
-             Curses.addch (tgmc g ch))
+             let ch = char__char_of_int (get_rand (char__int_of_char `A`) (char__int_of_char `Z`)) in
+             curses__addch (tgmc g ch))
         g.level_monsters
     end
 ;;
@@ -81,19 +81,19 @@ let unconfuse g =
 let darken_room g rn =
   for i = g.rooms.(rn).top_row + 1 to g.rooms.(rn).bottom_row - 1 do
     for j = g.rooms.(rn).left_col + 1 to g.rooms.(rn).right_col - 1 do
-      if g.rogue.blind > 0 then Curses.mvaddch i j ` `
+      if g.rogue.blind > 0 then curses__mvaddch i j ` `
       else if
         g.dungeon.(i).(j) land (0o1 lor 0o4) = 0 &&
         not (g.rogue.detect_monster && g.dungeon.(i).(j) land 0o2 <> 0)
       then
         begin
-          if not (imitating g i j) then Curses.mvaddch i j ` `;
+          if not (imitating g i j) then curses__mvaddch i j ` `;
           if g.dungeon.(i).(j) land 0o400 <> 0 &&
              g.dungeon.(i).(j) land 0o1000 = 0
           then
             match trap_at g i j with
               Some t -> show_trap i j t
-            | None -> Curses.mvaddch i j `^`
+            | None -> curses__mvaddch i j `^`
         end
     done
   done
@@ -105,7 +105,7 @@ let wake_room g rn entering row col =
     if g.rogue.stealthy > 0 then wake_percent / (3 + g.rogue.stealthy)
     else wake_percent
   in
-  List.iter
+  list__do_list
     (fun monster ->
        let in_room =
          get_room_number g monster.mn_row monster.mn_col = Some rn
@@ -122,12 +122,12 @@ let wake_room g rn entering row col =
 
 let tele g =
   let dc = get_dungeon_char g g.rogue.row g.rogue.col in
-  Curses.mvaddch g.rogue.row g.rogue.col dc;
+  curses__mvaddch g.rogue.row g.rogue.col dc;
   begin match g.cur_room with
     Some rn -> if rn >= 0 then darken_room g rn
   | None -> ()
   end;
-  Level.put_player g (get_room_number g g.rogue.row g.rogue.col);
+  level__put_player g (get_room_number g g.rogue.row g.rogue.col);
   relight g;
   begin match g.cur_room with
     Some rn -> wake_room g rn true g.rogue.row g.rogue.col
@@ -157,13 +157,13 @@ let trap_player g row col =
         match t with
           TrapDoor ->
             g.trap_door <- true;
-            g.new_level_message <- transl g.lang (Level.trap_mess t)
+            g.new_level_message <- transl g.lang (level__trap_mess t)
         | BearTrap ->
-            message g (transl g.lang (Level.trap_mess t)) true;
+            message g (transl g.lang (level__trap_mess t)) true;
             g.rogue.bear_trap <- get_rand 4 7
-        | TeleTrap -> Curses.mvaddch rogue.row rogue.col `^`; tele g
+        | TeleTrap -> curses__mvaddch rogue.row rogue.col `^`; tele g
         | DartTrap ->
-            message g (transl g.lang (Level.trap_mess t)) true;
+            message g (transl g.lang (level__trap_mess t)) true;
             rogue.hp_current <-
               rogue.hp_current - get_damage g (1, 6, None) true;
             rogue.hp_current <- max 0 rogue.hp_current;
@@ -175,9 +175,9 @@ let trap_player g row col =
             show_rogue g;
             if rogue.hp_current <= 0 then Finish.killed_by g PoisonDart
         | SleepingGasTrap ->
-            message g (transl g.lang (Level.trap_mess t)) true; take_a_nap g
+            message g (transl g.lang (level__trap_mess t)) true; take_a_nap g
         | RustTrap ->
-            message g (transl g.lang (Level.trap_mess t)) true;
+            message g (transl g.lang (level__trap_mess t)) true;
             Monster.rust g None
 ;;
 
@@ -351,7 +351,7 @@ let wanderer g =
               if not (rogue_can_see g row col) then
                 begin
                   put_m_at g row col monster;
-                  monster.mn_trail_char <- Curses.mvinch row col
+                  monster.mn_trail_char <- curses__mvinch row col
                 end
               else loop_i (i + 1)
           | None -> ()
@@ -446,11 +446,11 @@ and search g n is_auto =
                         if g.rogue.blind = 0 &&
                            (row <> g.rogue.row || col <> g.rogue.col)
                         then
-                          Curses.mvaddch row col (get_dungeon_char g row col);
+                          curses__mvaddch row col (get_dungeon_char g row col);
                         if g.dungeon.(row).(col) land 0o400 <> 0 then
                           begin match trap_at g row col with
                             Some t ->
-                              message g (transl g.lang (Level.trap_string t))
+                              message g (transl g.lang (level__trap_string t))
                                 true
                           | None -> ()
                           end;
@@ -591,12 +591,12 @@ let one_move g dirch pickup =
         | None -> failwith "assert false"
       else if g.dungeon.(row).(col) land 0o200 <> 0 then
         light_passage g row col;
-      Curses.mvaddch g.rogue.row g.rogue.col
+      curses__mvaddch g.rogue.row g.rogue.col
         (get_dungeon_char g g.rogue.row g.rogue.col);
       g.rogue.row <- row;
       g.rogue.col <- col;
       show_rogue g;
-      if not g.jump then Curses.refresh ();
+      if not g.jump then curses__refresh ();
       if g.dungeon.(row).(col) land 0o1 <> 0 then
         begin
           if g.rogue.levitate > 0 && pickup then reg_move g
@@ -695,7 +695,7 @@ let multiple_move_rogue g dirch =
       let monsters_in_room =
         match get_room_number_not_maze g with
           Some rn ->
-            List.filter
+            list__filter
               (fun monster ->
                  match get_room_number g monster.mn_row monster.mn_col with
                    Some rn2 -> rn = rn2
@@ -703,7 +703,7 @@ let multiple_move_rogue g dirch =
               g.level_monsters
         | None -> []
       in
-      let tmpdirch = Char.chr (Char.code dirch + Char.code `a` - 1) in
+      let tmpdirch = char__char_of_int (char__int_of_char dirch + char__int_of_char `a` - 1) in
       let rec loop tmpdirch =
         let row = g.rogue.row in
         let col = g.rogue.col in
@@ -728,14 +728,14 @@ let multiple_move_rogue g dirch =
               match get_room_number_not_maze g with
                 Some rn ->
                   let new_monster_appeared =
-                    List.exists
+                    list__exists
                       (fun monster ->
                          match
                            get_room_number g monster.mn_row monster.mn_col
                          with
                            Some rn2 ->
                              rn = rn2 &&
-                             not (List.mem monster monsters_in_room)
+                             not (list__mem monster monsters_in_room)
                          | None -> false)
                       g.level_monsters
                   in
@@ -744,7 +744,7 @@ let multiple_move_rogue g dirch =
       in
       loop tmpdirch
   | `H` | `J` | `K` | `L` | `Y` | `U` | `N` | `B` ->
-      let c = Char.chr (Char.code dirch - Char.code `A` + Char.code `a`) in
+      let c = char__char_of_int (char__int_of_char dirch - char__int_of_char `A` + char__int_of_char `a`) in
       let rec loop hp =
         if one_move g c true = Moved then
           if g.rogue.hp_current < hp then () else loop g.rogue.hp_current
@@ -793,7 +793,7 @@ let id_trap g =
        g.dungeon.(row).(col) land 0o1000 = 0
     then
       match trap_at g row col with
-        Some t -> message g (transl g.lang (Level.trap_string t)) false
+        Some t -> message g (transl g.lang (level__trap_string t)) false
       | None -> ()
     else message g (transl g.lang "No trap there.") false
 ;;
@@ -835,7 +835,7 @@ let fight g to_the_death =
   if ch = `\027` then ()
   else
     let (row, col) = get_dir_rc ch rogue.row rogue.col false in
-    let c = Curses.mvinch row col in
+    let c = curses__mvinch row col in
     if c < `A` || c > `Z` || not (can_move g rogue.row rogue.col row col) then
       message g (transl g.lang "I see no monster there.") false
     else

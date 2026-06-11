@@ -22,7 +22,7 @@ let version = "1.05-exp";;
 let string_make = string__make_string;;
 let string_get = string__nth_char;;
 let string_set = string__set_nth_char;;
-let string_copy = string__copy;;
+let string_copy = string__string_copy;;
 let string_of_bytes (s : string) = s;;
 let string_to_bytes (s : string) = s;;
 

@@ -91,15 +91,15 @@ let cough_up g monster =
     let obj =
       if monster.mn_flags land 0o20000 <> 0 then
         let q = get_rand (g.cur_level * 15) (g.cur_level * 30) in
-        Some (Object.get_gold (Some q))
+        Some (object__get_gold (Some q))
       else if not (rand_percent monster.mn_drop_percent) then None
-      else Some (Object.gr_object g)
+      else Some (object__gr_object g)
     in
     match obj with
       Some obj ->
         let row = monster.mn_row in
         let col = monster.mn_col in
-        let add_in_set x s = if List.mem x s then s else x :: s in
+        let add_in_set x s = if list__mem x s then s else x :: s in
         let rec loop_n n =
           if n <= 4 then
             let list =
@@ -138,9 +138,9 @@ let cough_up g monster =
             in
             if list = [] then loop_n (n + 1)
             else
-              let r = get_rand 0 (List.length list - 1) in
-              let (row, col) = List.nth list r in
-              Level.place_at g obj row col;
+              let r = get_rand 0 (list__list_length list - 1) in
+              let (row, col) = list_nth list r in
+              level__place_at g obj row col;
               if row <> g.rogue.row || col <> g.rogue.col then
                 if g.dungeon.(row).(col) land 0o2 = 0 then
                   curses__mvaddch row col (get_dungeon_char g row col)
@@ -244,7 +244,7 @@ let zap_monster g monster wand =
       if monster.mn_flags land 0o4000 <> 0 then g.rogue.being_held <- false;
       let tc = monster.mn_trail_char in
       take_from_monsters g monster;
-      let monster = Imonster.gr_monster g None in
+      let monster = imonster__gr_monster g None in
       monster.mn_row <- row;
       monster.mn_col <- col;
       g.level_monsters <- g.level_monsters @ [monster];
@@ -461,7 +461,7 @@ let flop_weapon g obj row col =
   in
   if found || i = 0 then
     let new_obj = extract_copy_of_weapon obj in
-    Level.place_at g new_obj row col;
+    level__place_at g new_obj row col;
     (if rogue_can_see g row col && (row <> g.rogue.row || col <> g.rogue.col)
      then
        let mon = g.dungeon.(row).(col) land 0o2 in

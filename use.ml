@@ -19,7 +19,7 @@
 let potion_heal g extra =
   let rogue = g.rogue in
   rogue.hp_current <- rogue.hp_current + rogue.exp;
-  let ratio = float rogue.hp_current /. float rogue.hp_max in
+  let ratio = float_of_int rogue.hp_current /. float_of_int rogue.hp_max in
   if ratio >= 1.00 then
     begin
       rogue.hp_max <- min 800 (rogue.hp_max + (if extra then 2 else 1));
@@ -34,8 +34,8 @@ let potion_heal g extra =
     end
   else
     begin let ratio = if ratio < 0.33 then 0.33 else ratio in
-      let add = ratio *. float (rogue.hp_max - rogue.hp_current) in
-      rogue.hp_current <- rogue.hp_current + int_of_float add;
+      let add = ratio *. float_of_int (rogue.hp_max - rogue.hp_current) in
+      rogue.hp_current <- rogue.hp_current + int_of_float_of_int add;
       rogue.hp_current <- min rogue.hp_current rogue.hp_max
     end;
   if rogue.blind > 0 then move__unblind g;

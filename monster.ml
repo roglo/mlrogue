@@ -94,7 +94,7 @@ let dr_course g monster entering =
     let rn =
       match get_room_number g row col with
         Some rn -> rn
-      | None -> assert false
+      | None -> failwith "assert false"
     in
     if entering then
       let tried = vect__make_vect 9 false in
@@ -139,8 +139,8 @@ let dr_course g monster entering =
               in
               loop_j list g.rooms.(rn).left_col
             else if list <> [] then
-              let r = get_rand 0 (list__length list - 1) in
-              monster.mn_target <- Some (list__nth list r)
+              let r = get_rand 0 (list__list_length list - 1) in
+              monster.mn_target <- Some (list_nth list r)
             else
               let rec loop_i i =
                 if i < 9 then
@@ -177,15 +177,15 @@ let move_mon_to g monster row col =
   let mcol = monster.mn_col in
   g.dungeon.(mrow).(mcol) <- g.dungeon.(mrow).(mcol) land lnot 0o2;
   g.dungeon.(row).(col) <- g.dungeon.(row).(col) lor 0o2;
-  let c = Curses.mvinch mrow mcol in
-  if c >= 'A' && c <= 'Z' then
+  let c = curses__mvinch mrow mcol in
+  if c >= `A` && c <= `Z` then
     begin
       if not g.rogue.detect_monster then ()
       else if rogue_can_see g mrow mcol then ()
-      else if monster.mn_trail_char = '.' then monster.mn_trail_char <- ' ';
-      Curses.mvaddch mrow mcol monster.mn_trail_char
+      else if monster.mn_trail_char = `.` then monster.mn_trail_char <- ` `;
+      curses__mvaddch mrow mcol monster.mn_trail_char
     end;
-  monster.mn_trail_char <- Curses.mvinch row col;
+  monster.mn_trail_char <- curses__mvinch row col;
   if g.rogue.blind = 0 && (g.rogue.detect_monster || rogue_can_see g row col)
   then
     if monster.mn_flags land 0o4 = 0 || g.rogue.detect_monster ||
@@ -198,7 +198,7 @@ let move_mon_to g monster row col =
         if g.cur_room <> Some rn && g.dungeon.(mrow).(mcol) = 0o100 &&
            g.rogue.blind = 0
         then
-          Curses.mvaddch mrow mcol ' '
+          curses__mvaddch mrow mcol ` `
     | None -> ()
     end;
   monster.mn_row <- row;
@@ -240,10 +240,10 @@ let mon_name g monster =
   then
     "something"
   else if g.rogue.halluc > 0 then
-    let ch = get_rand (Char.code 'A') (Char.code 'Z') - Char.code 'A' in
+    let ch = get_rand (char__int_of_char `A`) (char__int_of_char `Z`) - char__int_of_char `A` in
     Imonster.visible_mon_name g ch
   else
-    let ch = Char.code monster.mn_char - Char.code 'A' in
+    let ch = char__int_of_char monster.mn_char - char__int_of_char `A` in
     Imonster.visible_mon_name g ch
 ;;
 
@@ -273,7 +273,7 @@ let rogue_damage g d monster =
     begin
       g.rogue.hp_current <- 0;
       print_stats g 0o4;
-      let i = Char.code monster.mn_char - Char.code 'A' in
+      let i = char__int_of_char monster.mn_char - char__int_of_char `A` in
       Finish.killed_by g (Monster (Imonster.visible_mon_name g i))
     end
   else
@@ -296,7 +296,7 @@ let sting g monster =
     in
     if rand_percent sting_chance then
       let msg =
-        sprintf (ftransl g.lang "The %s's bite has weakened you.")
+        sprintf (ftransl g.lang "The %s`s bite has weakened you.")
           (transl g.lang (mon_name g monster))
       in
       message g (etransl msg) false;
@@ -332,7 +332,7 @@ let disappear g monster =
   let col = monster.mn_col in
   g.dungeon.(row).(col) <- g.dungeon.(row).(col) land lnot 0o2;
   if rogue_can_see g row col then
-    Curses.mvaddch row col (get_dungeon_char g row col);
+    curses__mvaddch row col (get_dungeon_char g row col);
   take_from_monsters g monster;
   g.mon_disappeared <- true
 ;;
@@ -405,7 +405,7 @@ let steal_item g monster =
         begin let objs =
           list__filter (fun (_, obj) -> not (in_use obj)) g.rogue.pack
         in
-          let len = list__length objs in
+          let len = list__list_length objs in
           if len = 0 then ()
           else
             let n = get_rand 0 (len - 1) in
@@ -588,7 +588,7 @@ and mv_monster g monster row col init_pos_opt =
               | 3 -> monster.mn_row - 1, col
               | 4 -> monster.mn_row, col
               | 5 -> monster.mn_row + 1, col
-              | _ -> assert false
+              | _ -> failwith "assert false"
             in
             if mtry g monster row col then ()
             else begin tried.(n) <- true; loop_i (i + 1) end
@@ -779,9 +779,9 @@ and flame_broil g monster =
             let tempo1 () = let (_, _, _) = Unix.select [] [] [] 0.08 in () in
             let tempo2 () = let (_, _, _) = Unix.select [] [] [] 0.02 in () in
             begin let rec loop row col =
-              Curses.mvaddch row col '~';
-              Curses.move g.rogue.row g.rogue.col;
-              Curses.refresh ();
+              curses__mvaddch row col `~`;
+              curses__move g.rogue.row g.rogue.col;
+              curses__refresh ();
               tempo1 ();
               let (row, col) = get_closer row col g.rogue.row g.rogue.col in
               if row <> g.rogue.row || col <> g.rogue.col then loop row col
@@ -792,9 +792,9 @@ and flame_broil g monster =
             let col = monster.mn_col in
             let (row, col) = get_closer row col g.rogue.row g.rogue.col in
             let rec loop row col =
-              Curses.mvaddch row col (get_dungeon_char g row col);
-              Curses.move g.rogue.row g.rogue.col;
-              Curses.refresh ();
+              curses__mvaddch row col (get_dungeon_char g row col);
+              curses__move g.rogue.row g.rogue.col;
+              curses__refresh ();
               tempo2 ();
               let (row, col) = get_closer row col g.rogue.row g.rogue.col in
               if row <> g.rogue.row || col <> g.rogue.col then loop row col
