@@ -71,7 +71,7 @@ let input_dungeon s =
       let ncols = input_int s in
       let buff = string_create ncols in
       let a =
-        Array.init nrows
+        vect__init nrows
           (fun row ->
              let len = single_unix_read s buff 0 ncols in
              if len <> ncols then failwith "bad dungeon line in protocol"
@@ -86,14 +86,14 @@ let rec play_loop info s =
   match input_dungeon s with
     Some tab ->
       home ();
-      let nrow = Array.length tab in
+      let nrow = vect__length tab in
       let ncol = string_length tab.(0) in
       for row = 0 to nrow - 1 do
         printf "%s" (string_of_bytes tab.(row));
         if row <> nrow - 1 then printf "\n"
       done;
       flush stdout;
-      let stab = Array.init nrow (fun i -> string_of_bytes tab.(i)) in
+      let stab = vect__init nrow (fun i -> string_of_bytes tab.(i)) in
       let (ch, info) = Robot.play stab nrow ncol info in
       let _ : int = unix__write s (string_make 1 ch) 0 1 in play_loop info s
   | None -> ()

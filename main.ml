@@ -258,7 +258,7 @@ let discovered_kind g title name id tab =
   let prompt = transl g.lang " -- Press space to continue --" in
   let list =
     let rec loop_i list i =
-      if i = Array.length id then List.rev list
+      if i = vect__length id then List.rev list
       else
         match id.(i) with
           Identified ->
@@ -286,14 +286,14 @@ let discovered_kind g title name id tab =
   let maxlen = List.fold_left max 0 (List.map String.length list) in
   let len = List.length list in
   let col = 80 - (maxlen + 2) in
-  let saved = Array.make (len + 1) (string_to_bytes "") in
+  let saved = vect__make (len + 1) (string_to_bytes "") in
   for i = 0 to len do
     let a = string_make (maxlen + 2) ` ` in
     saved.(i) <- a;
     for j = 0 to maxlen + 1 do string_set a j (curses__mvinch i (j + col)) done
   done;
-  Array.iteri (fun i str -> curses__mvaddstr i col str; curses__clrtoeol ())
-    (Array.of_list list);
+  vect__iteri (fun i str -> curses__mvaddstr i col str; curses__clrtoeol ())
+    (vect__of_list list);
   curses__refresh ();
   let ch =
     let rec loop () =
@@ -587,7 +587,7 @@ let instructions g =
           loop ()
         with End_of_file -> seek_in ic 0
         end;
-      let buffer = Array.init 24 (fun _ -> Array.make 80 ` `) in
+      let buffer = vect__init 24 (fun _ -> vect__make 80 ` `) in
       for row = 0 to 24 - 1 do
         for col = 0 to 80 - 1 do
           buffer.(row).(col) <- curses__mvinch row col

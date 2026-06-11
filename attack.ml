@@ -443,7 +443,7 @@ let extract_copy_of_weapon obj =
     | x -> x
   in
   {ob_kind = copy_object_kind obj.ob_kind; ob_quantity = 1;
-   ob_row = obj.ob_row; ob_col = obj.ob_col}
+   ob_row = obj.ob_row; ob_col = obj.ob_col; ob_picked_up = obj.ob_picked_up}
 ;;
 
 let flop_weapon g obj row col =
