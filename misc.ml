@@ -33,6 +33,13 @@ let rec list_nth l n =
   | x :: l -> if n = 0 then x else list_nth l (n - 1)
 ;;
 
+let string_copy s =
+  let len = string__string_length s in
+  let r = string__create_string len in
+  string__blit_string s 0 r 0 len;
+  r
+;;
+
 let string_create = string__create_string;;
 let string_length = string__string_length;;
 let string_of_bytes (s : string) = s;;
@@ -241,7 +248,7 @@ let add_exp g e promotion =
   else dialogue__print_stats g 0o40
 ;;
 
-type saved = game * char vect vect;;
+type saved == game * char vect vect;;
 let save_magic = "RGSV0005";;
 
 module OLD_GAME =

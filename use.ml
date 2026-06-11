@@ -35,7 +35,7 @@ let potion_heal g extra =
   else
     begin let ratio = if ratio < 0.33 then 0.33 else ratio in
       let add = ratio *. float_of_int (rogue.hp_max - rogue.hp_current) in
-      rogue.hp_current <- rogue.hp_current + int_of_float_of_int add;
+      rogue.hp_current <- rogue.hp_current + int_of_float add;
       rogue.hp_current <- min rogue.hp_current rogue.hp_max
     end;
   if rogue.blind > 0 then move__unblind g;
@@ -51,7 +51,7 @@ let go_blind g =
     message g (transl g.lang "A cloak of darkness falls around you.") false;
   g.rogue.blind <- g.rogue.blind + get_rand 500 800;
   if g.rogue.detect_monster then
-    List.iter
+    list__do_list
       (fun monster ->
          show_monster g monster.mn_row monster.mn_col monster
            monster.mn_trail_char)
@@ -74,7 +74,7 @@ let show_objects g =
   if g.rogue.blind > 0 then ()
   else
     begin
-      List.iter
+      list__do_list
         (fun obj ->
            let row = obj.ob_row in
            let col = obj.ob_col in
@@ -89,7 +89,7 @@ let show_objects g =
            then
              Curses.mvaddch row col rc)
         g.level_objects;
-      List.iter
+      list__do_list
         (fun monster ->
            if monster.mn_flags land 0o20000000 <> 0 then
              Curses.mvaddch monster.mn_row monster.mn_col monster.mn_disguise)
@@ -232,7 +232,7 @@ let idntfy g =
 ;;
 
 let uncurse_all g =
-  List.iter
+  list__do_list
     (fun (_, obj) ->
        match obj.ob_kind with
          Armor a -> a.ar_is_cursed <- false
@@ -332,7 +332,7 @@ let create_monster g =
 
 let aggravate_monster g =
   message g (transl g.lang "You hear a high pitched humming noise.") false;
-  List.iter
+  list__do_list
     (fun monster ->
        wake_up monster;
        monster.mn_flags <- monster.mn_flags land lnot 0o20000000;

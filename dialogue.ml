@@ -350,10 +350,10 @@ let inv_sel g pack mask prompt term =
   if pack = [] then
     begin message g (transl g.lang "Your pack is empty.") true; None end
   else
-    let list = list__filter (fun (_, obj) -> mask obj.ob_kind) pack in
-    let list = list__sort compare list in
+    let list = misc__list_filter (fun (_, obj) -> mask obj.ob_kind) pack in
+    let list = sort__sort (fun x y -> x <= y) list in
     let (list, maxlen) =
-      list__fold_right
+      list__list_it
         (fun (c, obj) (list, maxlen) ->
            let p =
              match obj with
@@ -368,8 +368,8 @@ let inv_sel g pack mask prompt term =
              | _ -> `)`
            in
            let s = sprintf " %c%c %s" c p (etransl (get_desc g obj true)) in
-           let s = Ustring.of_string s in
-           s :: list, max maxlen (Ustring.length s))
+           let s = ustring__of_string s in
+           s :: list, max maxlen (ustring__length s))
         list ([], 0)
     in
     let len = list__list_length list in
@@ -396,7 +396,7 @@ let inv_sel g pack mask prompt term =
       function
         s :: sl ->
           if row > 0 then ();
-          curses__mvaddstr row col (Ustring.to_string s);
+          curses__mvaddstr row col (ustring__to_string s);
           curses__clrtoeol ();
           loop (row + 1) sl
       | [] -> ()
@@ -408,7 +408,7 @@ let inv_sel g pack mask prompt term =
     let retc =
       let rec loop () =
         let retc = rgetchar g in
-        try let _ = string__index term retc in retc with Not_found -> loop ()
+        try let _ = string__index_char term retc in retc with Not_found -> loop ()
       in
       loop ()
     in
@@ -424,7 +424,7 @@ let inv_sel g pack mask prompt term =
 ;;
 
 let inventory g pack mask =
-  let _ : char option =
+  let (_ : char option) =
     inv_sel g pack mask (transl g.lang " -- Press space to continue --")
       " \027"
   in
