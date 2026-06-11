@@ -140,7 +140,7 @@ let tele g =
 
 let take_a_nap g =
   if not (fast g) then unix__sleep 1;
-  for i = 1 to get_rand 2 5 do Monster.mv_mons g done;
+  for i = 1 to get_rand 2 5 do monster__mv_mons g done;
   if not (fast g) then unix__sleep 1;
   message g (transl g.lang "You can move again.") false
 ;;
@@ -178,7 +178,7 @@ let trap_player g row col =
             message g (transl g.lang (level__trap_mess t)) true; take_a_nap g
         | RustTrap ->
             message g (transl g.lang (level__trap_mess t)) true;
-            Monster.rust g None
+            monster__rust g None
 ;;
 
 (*
@@ -298,7 +298,7 @@ let rec check_hunger g messages_only =
           begin
             if rand_percent 40 then rogue.moves_left <- rogue.moves_left + 1;
             message g (transl g.lang "you faint" ^ ".") true;
-            for i = 0 to n - 1 do if coin_toss () then Monster.mv_mons g done;
+            for i = 0 to n - 1 do if coin_toss () then monster__mv_mons g done;
             message g (transl g.lang "You can move again.") true
           end;
         true
@@ -367,7 +367,7 @@ and reg_move_and_check_fainted g =
       check_hunger g false
     else false
   in
-  Monster.mv_mons g;
+  monster__mv_mons g;
   g.m_moves <- g.m_moves + 1;
   if g.m_moves >= 120 then begin g.m_moves <- 0; wanderer g end;
   if g.rogue.halluc > 0 then

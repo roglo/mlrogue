@@ -350,7 +350,7 @@ let inv_sel g pack mask prompt term =
   if pack = [] then
     begin message g (transl g.lang "Your pack is empty.") true; None end
   else
-    let list = imisc__list_filter (fun (_, obj) -> mask obj.ob_kind) pack in
+    let list = misc__list_filter (fun (_, obj) -> mask obj.ob_kind) pack in
     let list = sort__sort (fun x y -> x <= y) list in
     let (list, maxlen) =
       list__list_it

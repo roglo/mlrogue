@@ -366,8 +366,8 @@ let throw_at_monster g monster obj =
       begin match obj.ob_kind with
         Wand {wa_kind = wk} ->
           if rand_percent 75 then zap_monster g monster wk
-          else let _ : bool = mon_damage g monster damage in ()
-      | _ -> let _ : bool = mon_damage g monster damage in ()
+          else let (_ : bool) = mon_damage g monster damage in ()
+      | _ -> let (_ : bool) = mon_damage g monster damage in ()
       end;
       true
     end

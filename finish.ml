@@ -25,7 +25,7 @@ let win_message g =
           let rec loop () =
             let line = input_line ic in
             try
-              let i = string__index_char line ':' in
+              let i = string__index_char line `:` in
               if string_eq g.lang 0 line 0 i then () else raise Not_found
             with Not_found -> loop ()
           in
@@ -36,7 +36,7 @@ let win_message g =
       begin try
         let rec loop i =
           let line = input_line ic in
-          if string__contains line ':' then ()
+          if string__contains line `:` then ()
           else begin f i 11 line; loop (i + 1) end
         in
         loop 7
@@ -53,7 +53,7 @@ let win_message g =
       f 13 11 "  @   @   @  @   @      @  @  @  @   @  @  @@    ";
       f 14 11 "  @    @@@    @@@        @@ @@    @@@   @   @   @";
       f 17 11 "Congratulations,  you have  been admitted  to  the";
-      f 18 11 "Fighters' Guild.   You return home,  sell all your";
+      f 18 11 "Fighters` Guild.   You return home,  sell all your";
       f 19 11 "treasures at great profit and retire into comfort.";
       message g "" false;
       message g "" false
@@ -261,7 +261,7 @@ let put_scores lang score_only g_ending =
            let txt =
              if rank = n then
                let len = 80 - string__length txt - 2 in
-               txt ^ string__make (max 0 len) ' '
+               txt ^ string__make (max 0 len) ` `
              else txt
            in
            curses__move (6 + rank) 0;
@@ -409,11 +409,11 @@ let killed_by g death =
     | None -> ()
     end;
     let retc =
-      inv_sel g (List.map (fun obj -> '.', obj) g.level_objects)
+      inv_sel g (List.map (fun obj -> `.`, obj) g.level_objects)
         (fun _ -> true) prompt2 term2
     in
     match retc with
-      Some ('\b' | '\127') -> loop ()
+      Some (`\b` | `\127`) -> loop ()
     | Some _ | None -> ()
   in
     loop ()

@@ -49,3 +49,6 @@ value show_trap : int -> int -> trap_type -> unit;;
 value display_dungeon : game -> char vect vect -> unit;;
 
 value show_monsters : game -> unit;;
+
+value list_filter : ('a -> bool) -> 'a list -> 'a list;;
+value string_copy : string -> string;;
