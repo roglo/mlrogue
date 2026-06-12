@@ -1110,7 +1110,7 @@ let monster g ch =
     let i = char__int_of_char ch - char__int_of_char `A` in
     let ch2 = (transl g).monsters.[i] in
     if ch2 >= `A` && ch2 <= `Z` then ch2
-    else failwith (sprintf "monster `%c` not yet translated" ch)
+    else failwith (sprintf "monster '%c' not yet translated" ch)
   else ch
 ;;
 

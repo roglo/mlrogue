@@ -56,7 +56,7 @@ let win_message g =
       f 13 11 "  @   @   @  @   @      @  @  @  @   @  @  @@    ";
       f 14 11 "  @    @@@    @@@        @@ @@    @@@   @   @   @";
       f 17 11 "Congratulations,  you have  been admitted  to  the";
-      f 18 11 "Fighters` Guild.   You return home,  sell all your";
+      f 18 11 "Fighters' Guild.   You return home,  sell all your";
       f 19 11 "treasures at great profit and retire into comfort.";
       message g "" false;
       message g "" false

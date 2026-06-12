@@ -327,7 +327,7 @@ let zap g =
               end;
             true
         | Some _ ->
-            message g (transl g.lang "You can`t zap with that" ^ ".") false;
+            message g (transl g.lang "You can't zap with that" ^ ".") false;
             false
       end
 ;;

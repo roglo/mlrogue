@@ -2907,7 +2907,7 @@ let drop_scare_and_kill g t message ds =
                     let na = NAdrop_scare_and_kill ds in
                     let uo = UOread_scroll (ch, RSread_what) in
                     let na = NAuse_object (uo, na) in Coth `r`, na, None
-                | None -> failwith "c`est la merde"
+                | None -> failwith "c'est la merde"
               else
                 let ds = drop_scare ds (DStest_move (ntest, prev_rc)) in
                 let na = NAdrop_scare_and_kill ds in
@@ -5086,7 +5086,7 @@ let apply g t message =
           let (nb, obj) = list__assoc ch g.pack in
           remove_from_pack g ch nb obj;
           let na = NAnone in Coth ch, na, t.t_prev_mov
-      | step -> failwith (sprintf "NAthrow_away `%s`" step)
+      | step -> failwith (sprintf "NAthrow_away '%s'" step)
       end
   | NAthrow_in_the_garbage (ch, gp, prev_a, step) ->
       let pos = rogue_pos g in
