@@ -122,7 +122,7 @@ let speclist =
 let speclist =
   ["-speed", arg__String (fun s -> arg_speed := s)]
 ;;
-let anonfun s = arg_addr := Some s;;
+let anonfun (s : string) = arg_addr := Some s;;
 (*
 let usage = "Usage: " ^ sys__argv.(0) ^ " [option]... <addr>\n\nOptions:";;
 *)
