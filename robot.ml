@@ -19,7 +19,7 @@ type t == rob_def__t;;
 (*
 let char_escaped ch =
   if Char.code ch >= 1 && Char.code ch <= 26 then
-    sprintf "ctrl-%c" (Char.chr (Char.code ch - 1 + Char.code 'a'))
+    sprintf "ctrl-%c" (Char.chr (Char.code ch - 1 + Char.code `a`))
   else Char.escaped ch
 ;;
 
@@ -132,14 +132,14 @@ let rec string_of_next_action g t =
       sprintf "NAgo_to_stairs e (%d,%d) t (%d,%d) %b" gp.epos.row gp.epos.col
         gp.tpos.row gp.tpos.col strict
   | NAlet_come (ch, move) ->
-      let ch = if t.t_no_lang_dep then '.' else ch in
+      let ch = if t.t_no_lang_dep then `.` else ch in
       sprintf "NAlet_come '%c' (%d,%d)" ch move.di move.dj
   | NAfight (mch, answ, na) ->
-      let mch = if t.t_no_lang_dep then '.' else mch in
+      let mch = if t.t_no_lang_dep then `.` else mch in
       sprintf "NAfight '%c' answ %b (%s)" mch answ
         (string_of_next_action g t na)
   | NArun_away (mch, _, na) ->
-      let mch = if t.t_no_lang_dep then '.' else mch in
+      let mch = if t.t_no_lang_dep then `.` else mch in
       sprintf "NArun_away '%c' (%s)" mch (string_of_next_action g t na)
   | NAzap (mov, ch, na, step) ->
       sprintf "NAzap (%d,%d) '%c' (%s) %d" mov.di mov.dj ch
@@ -156,14 +156,14 @@ let rec string_of_next_action g t =
   | NAalone_in_room ar ->
       sprintf "NAalone_in_room %s" (string_of_alone_room_state ar.ar_state)
   | NAwield_bow_test_moving (mpos, mch, s) ->
-      let mch = if t.t_no_lang_dep then '.' else mch in
+      let mch = if t.t_no_lang_dep then `.` else mch in
       sprintf "NAwield_bow_test_moving m (%d,%d) %c %d" mpos.row mpos.col mch
         s
   | NAmove_throw1 (_, mpos, ch) ->
-      let ch = if t.t_no_lang_dep then '.' else ch in
+      let ch = if t.t_no_lang_dep then `.` else ch in
       sprintf "NAmove_throw1 (%d,%d) %c" mpos.row mpos.col ch
   | NAmove_throw2 (mpos, ch, step) ->
-      let ch = if t.t_no_lang_dep then '.' else ch in
+      let ch = if t.t_no_lang_dep then `.` else ch in
       sprintf "NAmove_throw2 (%d,%d) %c \"%s\"" mpos.row mpos.col ch step
   | NAglobal_search1 (gp, around) ->
       let s = if t.t_no_lang_dep then "..." else around.ar in
@@ -411,7 +411,7 @@ let display_trail g =
       let v = try PosMap.find pos g.trail with Not_found -> 0 in
       let v = min v 9 in
       let ch = dung_char g.dung pos in
-      fprintf oc "%c" (if v = 0 then ch else Char.chr (Char.code '0' + v))
+      fprintf oc "%c" (if v = 0 then ch else Char.chr (Char.code `0` + v))
     done;
     if row <> g.dung.nrow - 1 then fprintf oc "\n"
   done;
@@ -519,7 +519,7 @@ let nb_diff g =
         else
           let od = old_g.dung.tab.(row).[col] in
           let nd = g.dung.tab.(row).[col] in
-          if nd = od || nd = '.' || od = '.' then loop n row (col + 1)
+          if nd = od || nd = `.` || od = `.` then loop n row (col + 1)
           else loop (n + 1) row (col + 1)
       in
       loop 0 0 0
@@ -600,10 +600,10 @@ let add_object_in_pack g ch s =
   let transl = transl g in
   let (nb, obj) =
     let n =
-      if s.[0] >= '1' && s.[0] <= '9' then
+      if s.[0] >= `1` && s.[0] <= `9` then
         let len =
           let rec loop i =
-            if s.[i] >= '0' && s.[i] <= '9' then loop (i + 1) else i
+            if s.[i] >= `0` && s.[i] <= `9` then loop (i + 1) else i
           in
           loop 0
         in
@@ -662,16 +662,17 @@ let add_object_in_pack g ch s =
   g.pack <- (ch, (nb, obj)) :: list__remove_assoc ch g.pack
 ;;
 
-let is_low_alpha c = c >= 'a' && c <= 'z';;
-let is_alpha c = c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z';;
+let is_low_alpha c = c >= `a` && c <= `z`;;
+let is_alpha c = c >= `a` && c <= `z` || c >= `A` && c <= `Z`;;
 
 exception Breakpoint of int;;
+*)
 
 let play tab nrow ncol t =
   let message =
     let first_line_len =
       let rec loop i =
-        if i < 0 then 0 else if tab.(0).[i] = ' ' then loop (i - 1) else i + 1
+        if i < 0 then 0 else if tab.(0).[i] = ` ` then loop (i - 1) else i + 1
       in
       loop (String.length tab.(0) - 1)
     in
@@ -696,7 +697,7 @@ let play tab nrow ncol t =
           in
           rogue_pos, trail
         else if col = String.length tab.(row) then loop (row + 1) 0
-        else if tab.(row).[col] = '@' then
+        else if tab.(row).[col] = `@` then
           let pos = {row = row; col = col} in
           let inc =
             match t.t_prev_game with
@@ -767,7 +768,7 @@ let play tab nrow ncol t =
         in
         if level <> prev_level ||
            prev_level = 99 &&
-           (t.t_prev_comm = Some (Coth '>') ||
+           (t.t_prev_comm = Some (Coth `>`) ||
             (transl g).is_fallen_down message)
         then
           begin
@@ -805,11 +806,11 @@ let play tab nrow ncol t =
          rogue_pos = rogue_pos; sure_stairs_pos = None;
          rogue_room_and_door = rogue_room_and_door; on_something_at = None;
          pack =
-           ['a', (1, Pfood); 'b', (1, Parmor ar);
-            'c', (1, Pweapon {we_kind = WKmace; we_value = Some 2});
-            'd', (1, Pweapon {we_kind = WKshort_bow; we_value = Some 1});
-            'e', (15, Pweapon {we_kind = WKarrows; we_value = Some 0})];
-         pack_full = false; worn_armor = Some ('b', ar); main_sword = 'c';
+           [`a`, (1, Pfood); `b`, (1, Parmor ar);
+            `c`, (1, Pweapon {we_kind = WKmace; we_value = Some 2});
+            `d`, (1, Pweapon {we_kind = WKshort_bow; we_value = Some 1});
+            `e`, (15, Pweapon {we_kind = WKarrows; we_value = Some 0})];
+         pack_full = false; worn_armor = Some (`b`, ar); main_sword = `c`;
          armor_cursed = false; weapon_cursed = false;
          ring_of_slow_digestion_on_hand = None; garbage = []; scare_pos = [];
          graph = None; map_showed_since = 0; mon_detected = false;
@@ -856,9 +857,9 @@ let play tab nrow ncol t =
                   match comm with
                     Cmov mov -> basic_command_of_move mov
                   | Cansw_left ->
-                      if t.t_no_lang_dep then '.' else transl.answer_left_hand
+                      if t.t_no_lang_dep then `.` else transl.answer_left_hand
                   | Cansw_yes ->
-                      if t.t_no_lang_dep then '.' else transl.answer_yes
+                      if t.t_no_lang_dep then `.` else transl.answer_yes
                   | Coth ch -> ch
                 in
                 char_escaped ch)
@@ -894,11 +895,11 @@ let play tab nrow ncol t =
     end;
   let s = remove_message_more g message in
   let i = String.length s in
-  if i > 3 && s.[i-3] = '(' && s.[i-1] = ')' && is_low_alpha s.[i-2] then
+  if i > 3 && s.[i-3] = `(` && s.[i-1] = `)` && is_low_alpha s.[i-2] then
     let ch = s.[i-2] in
     let s = String.sub s 0 (i - 4) in
     g.on_something_at <- None; add_object_in_pack g ch s
-  else if i > 3 && is_low_alpha s.[0] && s.[1] = ')' && s.[2] = ' ' then
+  else if i > 3 && is_low_alpha s.[0] && s.[1] = `)` && s.[2] = ` ` then
     begin let ch = s.[0] in
       let s = String.sub s 3 (i - 3) in
       add_object_in_pack g ch s; if t.t_move_trace then trace_pack g t
@@ -1027,13 +1028,13 @@ let play tab nrow ncol t =
     let i = String.length message in
     let s = message in
     match
-      if i > 3 && s.[i-3] <> '(' && s.[i-1] = ')' then
-        let j = String.index s '(' in
+      if i > 3 && s.[i-3] <> `(` && s.[i-1] = `)` then
+        let j = String.index s `(` in
         let lang = String.sub s (j + 1) 2 in
         if is_alpha lang.[0] && is_alpha lang.[1] then Some lang else None
       else None
     with
-      Some lang -> g.lang <- lang; Coth '\n', t.t_next_action, None
+      Some lang -> g.lang <- lang; Coth `\n`, t.t_next_action, None
     | None ->
         if g.dead || transl.is_message_dead message then
           begin
@@ -1042,10 +1043,10 @@ let play tab nrow ncol t =
                 let wait = max 1 (d / 30) in tempo g (float wait)
               end;
             g.dead <- true;
-            Coth ' ', NAnone, None
+            Coth ` `, NAnone, None
           end
         else if transl.is_fallen_down message then
-          begin tempo g 1.0; Coth ' ', NAnone, None end
+          begin tempo g 1.0; Coth ` `, NAnone, None end
         else if transl.is_message_really_pick message then
           Cansw_yes, t.t_next_action, t.t_prev_mov
         else
@@ -1062,7 +1063,7 @@ let play tab nrow ncol t =
             Some (ch, _) ->
               let uo = UOeat_food (ch, "eat what") in
               let na = NAuse_object (uo, t.t_next_action) in
-              Coth 'e', na, t.t_prev_mov
+              Coth `e`, na, t.t_prev_mov
           | None ->
               if message = "" && not g.confused &&
                  (match t.t_prev_comm with
@@ -1082,7 +1083,7 @@ let play tab nrow ncol t =
                       end
                   | Some _ | None -> false)
               then
-                let na = t.t_next_action in Coth 's', na, t.t_prev_mov
+                let na = t.t_next_action in Coth `s`, na, t.t_prev_mov
               else
                 match
                   if message <> "" || non_interruptable_action t.t_next_action
@@ -1093,7 +1094,7 @@ let play tab nrow ncol t =
                 with
                   Some (ch, _) ->
                     let uo = UOquaff_potion (ch, QSquaff_what) in
-                    let na = NAuse_object (uo, NAnone) in Coth 'q', na, None
+                    let na = NAuse_object (uo, NAnone) in Coth `q`, na, None
                 | None ->
                     match
                       if message <> "" ||
@@ -1106,7 +1107,7 @@ let play tab nrow ncol t =
                       Some (ch, _) ->
                         let uo = UOquaff_potion (ch, QSquaff_what) in
                         let na = NAuse_object (uo, t.t_next_action) in
-                        Coth 'q', na, None
+                        Coth `q`, na, None
                     | None ->
                         match
                           if message <> "" ||
@@ -1119,7 +1120,7 @@ let play tab nrow ncol t =
                           Some (ch, _) ->
                             let uo = UOquaff_potion (ch, QSquaff_what) in
                             let na = NAuse_object (uo, t.t_next_action) in
-                            Coth 'q', na, None
+                            Coth `q`, na, None
                         | None ->
                             match
                               if message <> "" ||
@@ -1132,7 +1133,7 @@ let play tab nrow ncol t =
                               Some (ch, _) ->
                                 let uo = UOquaff_potion (ch, QSquaff_what) in
                                 let na = NAuse_object (uo, t.t_next_action) in
-                                Coth 'q', na, None
+                                Coth `q`, na, None
                             | None ->
                                 match
                                   if message <> "" ||
@@ -1154,7 +1155,7 @@ let play tab nrow ncol t =
                                     let na =
                                       NAuse_object (uo, t.t_next_action)
                                     in
-                                    Coth 'q', na, t.t_prev_mov
+                                    Coth `q`, na, t.t_prev_mov
                                 | None ->
                                     match
                                       if message <> "" ||
@@ -1173,7 +1174,7 @@ let play tab nrow ncol t =
                                         let na =
                                           NAuse_object (uo, t.t_next_action)
                                         in
-                                        Coth 'q', na, t.t_prev_mov
+                                        Coth `q`, na, t.t_prev_mov
                                     | None ->
                                         if message = "" &&
                                            not
@@ -1207,7 +1208,7 @@ let play tab nrow ncol t =
                                                 NAuse_object
                                                   (uo, t.t_next_action)
                                               in
-                                              Coth 'q', na, t.t_prev_mov
+                                              Coth `q`, na, t.t_prev_mov
                                           | None -> assert false
                                         else
                                           match
@@ -1229,7 +1230,7 @@ let play tab nrow ncol t =
                                                 NAuse_object
                                                   (uo, t.t_next_action)
                                               in
-                                              Coth 'q', na, t.t_prev_mov
+                                              Coth `q`, na, t.t_prev_mov
                                           | None ->
                                               match
                                                 if message <> "" || g.blind ||
@@ -1250,7 +1251,7 @@ let play tab nrow ncol t =
                                                     NAuse_object
                                                       (uo, t.t_next_action)
                                                   in
-                                                  Coth 'r', na, t.t_prev_mov
+                                                  Coth `r`, na, t.t_prev_mov
                                               | None ->
                                                   if message = "" &&
                                                      not
@@ -1279,12 +1280,12 @@ let play tab nrow ncol t =
                                                           g.worn_armor
                                                         with
                                                           Some _ ->
-                                                            Coth 'T',
+                                                            Coth `T`,
                                                             NAwear
                                                               (ch, 1, na),
                                                             t.t_prev_mov
                                                         | None ->
-                                                            Coth 'W',
+                                                            Coth `W`,
                                                             NAwear
                                                               (ch, 2, na),
                                                             t.t_prev_mov
@@ -1340,7 +1341,7 @@ let play tab nrow ncol t =
                                                       NAuse_object
                                                         (uo, t.t_next_action)
                                                     in
-                                                    Coth 'r', na, None
+                                                    Coth `r`, na, None
                                                   else if
                                                     not
                                                       (non_interruptable_action
@@ -1362,7 +1363,7 @@ let play tab nrow ncol t =
                                                                  na)
                                                           | na -> na
                                                         in
-                                                        Coth ' ', na,
+                                                        Coth ` `, na,
                                                         t.t_prev_mov
                                                       end
                                                     else
@@ -1392,7 +1393,7 @@ let play tab nrow ncol t =
                                                             NAdrop_scare_and_kill
                                                               ds
                                                           in
-                                                          Coth 'd', na, None
+                                                          Coth `d`, na, None
                                                       | None ->
                                                           match
                                                             scroll_of_hold_monsters_in_pack
@@ -1450,7 +1451,7 @@ let play tab nrow ncol t =
                                                                            ch -
                                                                          Char.
                                                                          code
-                                                                           'a' +
+                                                                           `a` +
                                                                          1)
                                                                     in
                                                                     NAstring
@@ -1474,7 +1475,7 @@ let play tab nrow ncol t =
                                                                 NAuse_object
                                                                   (uo, na)
                                                               in
-                                                              Coth 'r', na,
+                                                              Coth `r`, na,
                                                               None
                                                           | None ->
                                                               Rob_action.apply
@@ -1531,7 +1532,7 @@ let play tab nrow ncol t =
                                                             Rob_action.
                                                             slow_down
                                                               g t;
-                                                            Coth ' ', na, None
+                                                            Coth ` `, na, None
                                                         | None ->
                                                             if g.
                                                                map_showed_since =
@@ -1573,7 +1574,7 @@ let play tab nrow ncol t =
                                                           NAuse_object
                                                             (uo, na)
                                                         in
-                                                        Coth 'r', na, None
+                                                        Coth `r`, na, None
                                                     | None -> assert false
                                                   else if
                                                     message = "" &&
@@ -1603,7 +1604,7 @@ let play tab nrow ncol t =
                                                           NAuse_object
                                                             (uo, na)
                                                         in
-                                                        Coth 'q', na, None
+                                                        Coth `q`, na, None
                                                     | None -> assert false
                                                   else
                                                     Rob_action.apply g t
@@ -1613,7 +1614,7 @@ let play tab nrow ncol t =
     match comm with
       Cmov mov ->
         let pos = add_mov (rogue_pos g) mov in
-        in_dung g pos && dung_char g.dung pos = '%'
+        in_dung g pos && dung_char g.dung pos = `%`
     | Cansw_left | Cansw_yes | Coth _ -> false
   in
   (*
@@ -1631,7 +1632,7 @@ let play tab nrow ncol t =
     | Cansw_yes -> transl.answer_yes
     | Coth ch -> ch
   in
-  let neutral_move = [Coth ' '; Coth ''; Coth ''] in
+  let neutral_move = [Coth ` `; Coth ``; Coth ``] in
   let t =
     {t with t_prev_pos =
       if list__mem comm neutral_move then t.t_prev_pos else Some g;
@@ -1641,6 +1642,7 @@ let play tab nrow ncol t =
   ch, t
 ;;
 
+(*
 let start_wizard = NAstring ("\023password\n", false, NAnone);;
 *)
 let start_no_wizard = NAstring ("@Ie", false, NAnone);;
