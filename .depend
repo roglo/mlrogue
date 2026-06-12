@@ -34,7 +34,7 @@ rob_monster.zi: rob_def.zi rob_misc.zi rob_position.zi
 rob_monster.zo: rob_monster.zi rob_def.zi rob_misc.zi rob_object.zi
 rob_object.zi: rob_def.zi rob_position.zi
 rob_object.zo: rob_object.zi rob_def.zi rob_misc.zi rob_object.zi rob_position.zi
-robot.zo: robot.zi
+robot.zo: robot.zi rob_def.zi rob_misc.zi
 rob_path.zi: rob_def.zi rob_position.zi
 rob_path.zo: rob_path.zi rob_def.zi rob_misc.zi rob_object.zi rob_path.zi rob_position.zi
 rob_position.zo: rob_position.zi
