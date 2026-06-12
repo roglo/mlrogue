@@ -105,7 +105,7 @@ let rec play_loop info s =
       flush stdout;
       let stab = vect__init_vect nrow (fun i -> string_of_bytes tab.(i)) in
       let (ch, info) = robot__play stab nrow ncol info in
-      let _ : int = unix__write s (string_make 1 ch) 0 1 in play_loop info s
+      let (_ : int) = unix__write s (string_make 1 ch) 0 1 in play_loop info s
   | None -> ()
 ;;
 

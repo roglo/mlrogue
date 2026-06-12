@@ -11,8 +11,8 @@ open Scanf;;
 (*
 open Rob_object;;
 open Rob_path;;
-open Rob_position;;
 *)
+#open "rob_position";;
 
 type t == rob_def__t;;
 
@@ -674,29 +674,29 @@ let play tab nrow ncol t =
       let rec loop i =
         if i < 0 then 0 else if tab.(0).[i] = ` ` then loop (i - 1) else i + 1
       in
-      loop (String.length tab.(0) - 1)
+      loop (string__string_length tab.(0) - 1)
     in
-    String.sub tab.(0) 0 first_line_len
+    string__sub_string tab.(0) 0 first_line_len
   in
   let g =
     let trail =
       match t.t_prev_game with
         Some g -> g.trail
-      | None -> PosMap.empty
+      | None -> PosMap_empty
     in
     let (rogue_pos, trail) =
       let rec loop row col =
         (*
                 if row = Array.length tab - 1 then (None, trail)
         *)
-        if row = Array.length tab - 1 then
+        if row = vect__vect_length tab - 1 then
           let rogue_pos =
             match t.t_prev_game with
               Some old_g -> old_g.rogue_pos
             | None -> None
           in
           rogue_pos, trail
-        else if col = String.length tab.(row) then loop (row + 1) 0
+        else if col = string__string_length tab.(row) then loop (row + 1) 0
         else if tab.(row).[col] = `@` then
           let pos = {row = row; col = col} in
           let inc =
@@ -704,8 +704,8 @@ let play tab nrow ncol t =
               Some old_g -> if old_g.rogue_pos = Some pos then 0 else 1
             | None -> 1
           in
-          let n = try PosMap.find pos trail + inc with Not_found -> 1 in
-          Some pos, PosMap.add pos n trail
+          let n = try PosMap_find pos trail + inc with Not_found -> 1 in
+          Some pos, PosMap_add pos n trail
         else loop row (col + 1)
       in
       loop 1 0
@@ -751,9 +751,9 @@ let play tab nrow ncol t =
             Some sl -> sl.sl_level
           | None -> g.level
         in
-        let current_dung = Array.sub tab 1 (nrow - 2) in
+        let current_dung = vect__sub tab 1 (nrow - 2) in
         let rogtime =
-          if Array.sub tab 1 (nrow - 1) <> Array.sub g.dung.tab 1 (nrow - 1)
+          if vect__sub tab 1 (nrow - 1) <> vect__sub g.dung.tab 1 (nrow - 1)
           then
             g.rogtime + 1
           else g.rogtime
@@ -820,7 +820,7 @@ let play tab nrow ncol t =
          frozen_monsters = []; regrets = []; blindness_discovered = false;
          hallucination_discovered = false; teleport_discovered = false;
          after_first_pack_full = false;
-         visited = Array.init 3 (fun _ -> Array.make 3 false);
+         visited = vect__init 3 (fun _ -> vect__make 3 false);
          nb_of_reinit_search = 0; traps = Hashtbl.create 1; paradise = false;
          hist_dung = []; dead = false}
   in
@@ -894,14 +894,14 @@ let play tab nrow ncol t =
       | None -> ()
     end;
   let s = remove_message_more g message in
-  let i = String.length s in
+  let i = string__string_length s in
   if i > 3 && s.[i-3] = `(` && s.[i-1] = `)` && is_low_alpha s.[i-2] then
     let ch = s.[i-2] in
-    let s = String.sub s 0 (i - 4) in
+    let s = string__sub_string s 0 (i - 4) in
     g.on_something_at <- None; add_object_in_pack g ch s
   else if i > 3 && is_low_alpha s.[0] && s.[1] = `)` && s.[2] = ` ` then
     begin let ch = s.[0] in
-      let s = String.sub s 3 (i - 3) in
+      let s = string__sub_string s 3 (i - 3) in
       add_object_in_pack g ch s; if t.t_move_trace then trace_pack g t
     end;
   if message <> "" then
@@ -1025,12 +1025,12 @@ let play tab nrow ncol t =
       raise (Breakpoint g.time)
     end;
   let (comm, next_action, mov) =
-    let i = String.length message in
+    let i = string__string_length message in
     let s = message in
     match
       if i > 3 && s.[i-3] <> `(` && s.[i-1] = `)` then
-        let j = String.index s `(` in
-        let lang = String.sub s (j + 1) 2 in
+        let j = string__index s `(` in
+        let lang = string__sub_string s (j + 1) 2 in
         if is_alpha lang.[0] && is_alpha lang.[1] then Some lang else None
       else None
     with
@@ -1455,7 +1455,7 @@ let play tab nrow ncol t =
                                                                          1)
                                                                     in
                                                                     NAstring
-                                                                      (String.
+                                                                      (string__
                                                                        make
                                                                          1 ch,
                                                                        false,
@@ -1663,14 +1663,14 @@ let arg_list_of_string str =
           Some j -> j
         | None -> string__string_length str
       in
-      let arg = string__sub_string str i (j - i) in
+      let arg = string__sub_string_string str i (j - i) in
       let rev_arg_list =
         match arg.[0] with
           `a`..`z` ->
             let arg1 = sprintf "-%c" arg.[0] in
             if string__string_length arg = 1 then arg1 :: rev_arg_list
             else
-              let arg2 = string__sub_string arg 1 (string__string_length arg - 1) in
+              let arg2 = string__sub_string_string arg 1 (string__string_length arg - 1) in
               arg2 :: arg1 :: rev_arg_list
         | _ -> arg :: rev_arg_list
       in
