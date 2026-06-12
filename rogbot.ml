@@ -128,7 +128,6 @@ let usage = "Usage: " ^ sys__argv.(0) ^ " [option]... <addr>\n\nOptions:";;
 *)
 let usage = "Usage: " ^ "mlrobot" ^ " [option]... <addr>\n\nOptions:";;
 
-(*
 let main () =
   arg__parse speclist anonfun usage;
   let addr =
@@ -152,4 +151,3 @@ let main () =
 ;;
 
 main ();;
-*)

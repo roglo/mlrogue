@@ -1693,11 +1693,14 @@ let speclist =
 ;;
 let anon_fun s = arg_speed := float_of_string s;;
 let usage_msg = "";;
+*)
 
 let make str =
-  let args = Array.of_list ("" :: arg_list_of_string str) in
-  Arg.current := 0;
-  Arg.parse_argv args speclist anon_fun usage_msg;
+  let args = vect__vect_of_list ("" :: arg_list_of_string str) in
+(*
+  arg__current := 0;
+*)
+  arg__parse_argv args speclist anon_fun usage_msg;
   if !arg_monpow_fname <> default_monpow_fname &&
      not (Sys.file_exists !arg_monpow_fname)
   then
@@ -1718,6 +1721,7 @@ let make str =
    t_next_action = na}
 ;;
 
+(*
 let reinit after_fail arg_t t =
   let prev_game =
     map_option
