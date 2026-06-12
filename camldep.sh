@@ -3,6 +3,9 @@
 for file in $@; do
   v=$(grep "#open" $file | sed -e 's/#open "//' -e 's/";;//' | sort)
   v=$(echo $v | sed -e "s/\n/ /")
+  w=$(grep __ $file | sed -e 's/__.*$/__/' | rev)
+  w=$(echo $w | sed -e 's/^__\([a-z_]*\).*$/__\1/' | rev)
+echo ==== $file $w
   if test -n "$v"; then
     u=""
     for i in $v; do
