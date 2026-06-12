@@ -1,5 +1,5 @@
 *.bak
-*.cm[iox]
+*.z[iox]
 *.defo
 *.o
 *.old
