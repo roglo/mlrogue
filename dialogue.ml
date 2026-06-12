@@ -346,11 +346,17 @@ let message g msg intrpt =
 
 let remessage g = if g.msg_line <> "" then message g g.msg_line false;;
 
+let rec list_filter f =
+  function
+    [] -> []
+  | x :: l -> if f x then x :: list_filter f l else list_filter f l
+;;
+
 let inv_sel g pack mask prompt term =
   if pack = [] then
     begin message g (transl g.lang "Your pack is empty.") true; None end
   else
-    let list = misc__list_filter (fun (_, obj) -> mask obj.ob_kind) pack in
+    let list = list_filter (fun (_, obj) -> mask obj.ob_kind) pack in
     let list = sort__sort (fun x y -> x <= y) list in
     let (list, maxlen) =
       list__list_it

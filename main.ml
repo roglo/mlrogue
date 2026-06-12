@@ -861,11 +861,12 @@ let main () =
           if no_record_score then g.score_only <- true;
           if g.score_only then
             begin match f_random.efield__get g.env "random" None with
-              Some r -> random__set_state r
+              Some r -> random__init r
             | None -> ()
             end;
           let player_spec =
             match player_spec with
+(*
               PSrobot arg_rob ->
                 let rob =
                   match
@@ -879,6 +880,7 @@ let main () =
                   | PSsocket _ | PShuman -> arg_rob
                 in
                 PSrobot rob
+*)
             | PSsocket _ | PShuman -> player_spec
           in
           f_player_species.efield__set g.env "player_species" player_spec;
@@ -900,12 +902,12 @@ let main () =
           g.msg_cleared <- false;
           ring_stats g;
           game g
-      | Right (Sys_error _ | Failure _) ->
+      | Right (sys__Sys_error _ | Failure _) ->
           finish__clean_up
             (sprintf "%s: %s" rest_file (transl lang "cannot open file"))
       | Right e -> raise e
       end
-  | Init.ScoreOnly -> finish__put_scores lang true None; finish__clean_up ""
+  | init__ScoreOnly -> finish__put_scores lang true None; finish__clean_up ""
 ;;
 
 try main () with e -> curses__endwin (); raise e;;
