@@ -1,7 +1,9 @@
 attack.zi: rogue.zi
 attack.zo: attack.zi curses.zi dialogue.zi imisc.zi imonster.zi level.zi misc.zi monster.zi object.zi rogue.zi translate.zi
+curses.zo: curses.zi
 dialogue.zi: rogue.zi
 dialogue.zo: dialogue.zi curses.zi efield.zi imisc.zi object.zi rfield.zi robot.zi rogbotio.zi rogue.zi translate.zi ustring.zi
+efield.zo: efield.zi
 finish.zi: rogue.zi
 finish.zo: finish.zi curses.zi dialogue.zi efield.zi imisc.zi object.zi rfield.zi rogue.zi translate.zi
 imisc.zi: rogue.zi
@@ -32,6 +34,7 @@ rob_monster.zi: rob_def.zi rob_misc.zi rob_position.zi
 rob_monster.zo: rob_monster.zi rob_def.zi rob_misc.zi rob_object.zi
 rob_object.zi: rob_def.zi rob_position.zi
 rob_object.zo: rob_object.zi rob_def.zi rob_misc.zi rob_object.zi rob_position.zi
+robot.zo: robot.zi
 rob_path.zi: rob_def.zi rob_position.zi
 rob_path.zo: rob_path.zi rob_def.zi rob_misc.zi rob_object.zi rob_path.zi rob_position.zi
 rob_position.zo: rob_position.zi
@@ -39,5 +42,7 @@ rogbotio.zo: rogbotio.zi curses.zi
 rogbot.zo: misc.zi robot.zi
 rogue.zi: rfield.zi
 translate.zi: rogue.zi
+translate.zo: translate.zi
 use.zi: rogue.zi
 use.zo: use.zi curses.zi dialogue.zi imisc.zi imonster.zi misc.zi monster.zi move.zi object.zi rogue.zi translate.zi
+ustring.zo: ustring.zi

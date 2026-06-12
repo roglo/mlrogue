@@ -9,8 +9,6 @@ for file in $@; do
   f=$(basename "$f" ".ml")
   fmli=$(basename "$file" ".mli")
   fml=$(basename "$file" ".ml")
-echo $file
-echo $v
   if test -n "$v"; then
     u=""
     for i in $v; do
@@ -31,6 +29,8 @@ echo $v
         fi
         echo "$v"
       fi
+    elif test "$file" = "$fml.ml" -a -f $fml.mli; then
+      echo "$f.zo: $f.zi"
     fi
   elif test "$file" = "$fml.ml" -a -f $fml.mli; then
     echo "$f.zo: $f.zi"
