@@ -691,7 +691,7 @@ let backup_if_required g =
     Some (fname, time) ->
       if time mod 1000 = 0 then
         begin let fname = sprintf "%s.%d" fname (time / 1000 mod 5) in
-          Misc.save_into_file g fname
+          misc__save_into_file g fname
         end;
       f_backup.efield__set g.env "backup" (Some (fname, time + 1))
   | None -> ()
@@ -742,25 +742,25 @@ let rec play_level g =
             | `H` | `J` | `K` | `L` | `Y` | `U` | `N` | `B` | `\b` | `\n` |
               `\011` | `\012` | `\025` | `\021` | `\014` | `\002` ->
                 move__multiple_move_rogue g ch
-            | `e` -> Use.eat g
-            | `q` -> Use.quaff g
-            | `r` -> Use.read_scroll g
+            | `e` -> use__eat g
+            | `q` -> use__quaff g
+            | `r` -> use__read_scroll g
             | `m` -> move__move_onto g
             | `d` -> drop g
-            | `P` -> Use.put_on_ring g
-            | `R` -> Use.remove_ring g
+            | `P` -> use__put_on_ring g
+            | `R` -> use__remove_ring g
             | `\016` -> remessage g
             | `\023` -> wizardize g
             | `]` -> inv_armor g
             | `)` -> inv_weapon g
-            | `=` -> Use.inv_rings g
+            | `=` -> use__inv_rings g
             | `^` -> move__id_trap g
             | `I` -> single_inv g None
             | `D` -> discovered g
             | `@` -> change_lang g
-            | `T` -> Use.take_off g
-            | `W` -> Use.wear g
-            | `w` -> Use.wield g
+            | `T` -> use__take_off g
+            | `W` -> use__wear g
+            | `w` -> use__wield g
             | `c` -> call_it g
             | `z` -> if attack__zap g then move__reg_move g
             | `t` -> throw g (max 1 count)
@@ -777,12 +777,12 @@ let rec play_level g =
                     (fun _ -> true)
                 else unknown_command g ch
             | `\019` ->
-                if g.wizard then Use.draw_magic_map g true
+                if g.wizard then use__draw_magic_map g true
                 else unknown_command g ch
             | `\020` ->
                 if g.wizard then show_traps g else unknown_command g ch
             | `\015` ->
-                if g.wizard then Use.show_objects g else unknown_command g ch
+                if g.wizard then use__show_objects g else unknown_command g ch
             | `\001` -> show_average_hp g
             | `\127` ->
                 if g.wizard then new_object_for_wizard g
@@ -810,15 +810,15 @@ let rec game_loop g =
 ;;
 
 let handle_game g =
-  Sys.Signal_handle
-    (fun s -> save_into_file g ".rogue.saved"; finish__clean_up "")
+  unix__Signal_handle
+    (fun () -> save_into_file g ".rogue.saved"; finish__clean_up "")
 ;;
 
 let game g =
-  Sys.set_signal Sys.sigterm (handle_game g);
-  Sys.set_signal Sys.sigint (handle_game g);
-  Sys.set_signal Sys.sighup (handle_game g);
-  Sys.set_signal Sys.sigquit (handle_game g);
+  unix__signal unix__SIGTERM (handle_game g);
+  unix__signal unix__SIGINT (handle_game g);
+  unix__signal unix__SIGHUP (handle_game g);
+  unix__signal unix__SIGQUIT (handle_game g);
   game_loop g
 ;;
 
@@ -829,7 +829,7 @@ type ('a, 'b) alternative =
 
 let main () =
   let (lang, init, rob_opt, backup_opt, fast, batch, no_record_score) =
-    Init.f Sys.argv
+    init__f sys__command_line
   in
   let (player_spec, nhr) =
     match rob_opt with
@@ -843,7 +843,7 @@ let main () =
       (sprintf (ftransl lang "Must be played on a %d x %d or better screen")
          24 80);
   match init with
-    Init.NewGame g ->
+    init__NewGame g ->
       f_player_species.efield__set g.env "player_species" player_spec;
       f_backup.efield__set g.env "backup" backup_opt;
       f_bool.efield__set g.env "no handle robot" nhr;
@@ -853,15 +853,15 @@ let main () =
       init_display g;
       if no_record_score then g.score_only <- true;
       game g
-  | Init.RestoreGame rest_file ->
+  | init__RestoreGame rest_file ->
       begin match
-        (try Left (Misc.restore rest_file) with exc -> Right exc)
+        (try Left (misc__restore rest_file) with exc -> Right exc)
       with
         Left g ->
           if no_record_score then g.score_only <- true;
           if g.score_only then
             begin match f_random.efield__get g.env "random" None with
-              Some r -> Random.set_state r
+              Some r -> random__set_state r
             | None -> ()
             end;
           let player_spec =
