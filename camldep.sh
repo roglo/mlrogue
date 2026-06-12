@@ -1,18 +1,28 @@
 #!/bin/sh
 
-for file in "$@"; do
-  v=$(grep "#open" $file | sed -e 's/#open "//' -e 's/";;//')
-#  v=$(echo $v | sed -e "s/\n/aaaaaaaaa/g")
-  f=$(basename "$file" ".mli")
-  f=$(basename "$f" ".ml")
+for file in $@; do
+  v=$(grep "#open" $file | sed -e 's/#open "//' -e 's/";;//' | sort)
+  v=$(echo $v | sed -e "s/\n/ /")
   if test -n "$v"; then
-    v=$(echo $v | sed -e "s/ /.zi /g" -e 's/$/.zi/')
-    fmli=$(basename "$file" ".mli")
-    fml=$(basename "$file" ".ml")
-    if test "$file" = "$fmli.mli"; then
-      echo "$f.zi: $v"
-    elif test "$file" = "$fml.ml"; then
-      echo "$f.zo: $v"
+    u=""
+    for i in $v; do
+      if test -f "$i.mli"; then
+        u="$u $i.zi"
+      elif test -f "$i.ml"; then
+        u="$u $i.zo"
+      fi
+    done
+    v="$u"
+    f=$(basename "$file" ".mli")
+    f=$(basename "$f" ".ml")
+    if test -n "$v"; then
+      fmli=$(basename "$file" ".mli")
+      fml=$(basename "$file" ".ml")
+      if test "$file" = "$fmli.mli"; then
+        echo "$f.zi:$v"
+      elif test "$file" = "$fml.ml"; then
+        echo "$f.zo:$v"
+      fi
     fi
   fi
-done
+done | sort
