@@ -2,9 +2,15 @@
 
 for file in $@; do
   v=$(grep "#open" $file | sed -e 's/#open "//' -e 's/";;//')
-  w=$(grep __ attack.ml | sed -e 's/__.*$/__/' | rev | sed -e 's/__\([a-z_]*\).*$/\1/' | rev)
+  w=$(grep __ $file | sed -e 's/__.*$/__/' | rev | sed -e 's/__\([a-z_]*\).*$/\1/' | rev)
   w=$(echo $v $w | sed -e 's/ /\\n/g')
   v=$(echo $w | sort | uniq)
+  f=$(basename "$file" ".mli")
+  f=$(basename "$f" ".ml")
+  fmli=$(basename "$file" ".mli")
+  fml=$(basename "$file" ".ml")
+echo $file
+echo $v
   if test -n "$v"; then
     u=""
     for i in $v; do
@@ -15,16 +21,18 @@ for file in $@; do
       fi
     done
     v="$u"
-    f=$(basename "$file" ".mli")
-    f=$(basename "$f" ".ml")
     if test -n "$v"; then
-      fmli=$(basename "$file" ".mli")
-      fml=$(basename "$file" ".ml")
       if test "$file" = "$fmli.mli"; then
         echo "$f.zi:$v"
       elif test "$file" = "$fml.ml"; then
-        echo "$f.zo:$v"
+        echo -n "$f.zo:"
+        if test "$file" = "$fml.ml" -a -f $fml.mli; then
+          echo -n " $f.zi"
+        fi
+        echo "$v"
       fi
     fi
+  elif test "$file" = "$fml.ml" -a -f $fml.mli; then
+    echo "$f.zo: $f.zi"
   fi
 done | sort

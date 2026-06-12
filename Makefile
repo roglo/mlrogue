@@ -21,16 +21,8 @@ clean:
 	rm -f *.z[oi]
 	rm -f rogue rogbot *.out
 
-depend: $(EXT)
-	for i in *.mli $(SRCS) $(ROGBOT_SRCS); do \
-	  $(CAMLP5) $(CAMLP5OPTS) pr_depend.zo $$i; \
-	done > .depend.new
-	grep '#use' *.ml | sed -e 's/.ml:/.zo:/' \
-	  -e 's/#use "/ /' -e 's/def";/defo/' >> .depend.new
-	grep '#use' *.ml | sed -e 's/.ml:/.cmx:/' \
-	  -e 's/#use "/ /' -e 's/def";/defo/' >> .depend.new
-	grep '#use' *.def | sed -e 's/.def:/.defo:/' \
-	  -e 's/#use "/ /' -e 's/def";/defo/' >> .depend.new
+depend:
+	./camldep.sh *.mli *.ml > .depend.new
 	mv .depend .depend.old
 	mv .depend.new .depend
 
