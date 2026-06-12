@@ -92,7 +92,6 @@ let input_dungeon s =
   else None
 ;;
 
-(*
 let rec play_loop info s =
   match input_dungeon s with
     Some tab ->
@@ -109,7 +108,6 @@ let rec play_loop info s =
       let _ : int = unix__write s (string_make 1 ch) 0 1 in play_loop info s
   | None -> ()
 ;;
-*)
 
 let arg_addr = ref None;;
 let arg_speed = ref "";;
@@ -129,7 +127,9 @@ let usage = "Usage: " ^ sys__argv.(0) ^ " [option]... <addr>\n\nOptions:";;
 let usage = "Usage: " ^ "mlrobot" ^ " [option]... <addr>\n\nOptions:";;
 
 let main () =
-  arg__parse speclist anonfun usage;
+  begin try arg__parse speclist anonfun with
+    arg__Bad s -> eprintf "%s\n" s; exit 2
+  end;
   let addr =
     match !arg_addr with
       Some str -> unix__ADDR_UNIX str

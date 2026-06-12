@@ -2,17 +2,21 @@
 
 (* #load "pa_if_match.cmo" *)
 
+#open "printf";;
 (*
-open Printf;;
 open Scanf;;
-open Rob_def;;
-open Rob_misc;;
+*)
+#open "rob_def";;
+#open "rob_misc";;
+(*
 open Rob_object;;
 open Rob_path;;
 open Rob_position;;
+*)
 
-type t = Rob_def.t;;
+type t == rob_def__t;;
 
+(*
 let char_escaped ch =
   if Char.code ch >= 1 && Char.code ch <= 26 then
     sprintf "ctrl-%c" (Char.chr (Char.code ch - 1 + Char.code 'a'))
@@ -77,7 +81,7 @@ let rec string_of_next_action g t =
         gp.epos.col gp.tpos.row gp.tpos.col (string_of_next_action g t na)
   | NAtest_monster (tml, na) ->
       let tmsl =
-        List.map
+        list__map
           (fun (tm, mpos, mch) ->
              sprintf "(%s,(%d,%d),%c)" (string_of_test_monster tm) mpos.row
                mpos.col mch)
@@ -416,7 +420,7 @@ let display_trail g =
 
 let trace_pack g t =
   eprintf "pack:\n";
-  List.iter
+  list__iter
     (fun (ref, (nb, obj)) ->
        eprintf "-%c: %s%s%s\n" ref (string_of_pack_obj t obj)
          (if nb = 1 then "" else sprintf " (%d items)" nb)
@@ -430,7 +434,7 @@ let trace_pack g t =
                   " being worn" ^ (if g.armor_cursed then " (cursed)" else "")
                 else ""
             | None -> ""))
-    (List.sort compare g.pack);
+    (list__sort compare g.pack);
   flush stderr
 ;;
 
@@ -444,9 +448,9 @@ value trace_graph_global_search g graph pos path tpos = do {
 let oc = stderr in
 *)
   fprintf oc "  pos (%d,%d) target (%d,%d) %d: " pos.row pos.col tpos.row
-    tpos.col (List.length path);
+    tpos.col (list__length path);
   flush oc;
-  List.iter (fun mov -> fprintf oc "%c" (basic_command_of_move mov)) path;
+  list__iter (fun mov -> fprintf oc "%c" (basic_command_of_move mov)) path;
   fprintf oc "   \n";
   for row = 1 to g.dung.nrow - 1 do {
     for col = 0 to g.dung.ncol - 1 do {
@@ -455,7 +459,7 @@ let oc = stderr in
       else if node.search = SearchFailed then fprintf oc "\027[31m"
       else ();
       let n =
-        List.fold_left
+        list__fold_left
           (fun cnt connected -> if connected then cnt + 1 else cnt)
           0 (Array.to_list node.connection)
       in
@@ -503,7 +507,7 @@ let is_entering_a_monsters_room g t =
 ;;
 
 let trace_path t path =
-  List.iter (fun pos -> trace t (sprintf "(%d,%d)" pos.row pos.col)) path
+  list__iter (fun pos -> trace t (sprintf "(%d,%d)" pos.row pos.col)) path
 ;;
 
 let nb_diff g =
@@ -565,12 +569,12 @@ let all_visited g =
 ;;
 
 let trace_trail t trail =
-  let trail = List.rev trail in
+  let trail = list__rev trail in
   trace t "*** trail: ";
-  List.iter (fun pos -> trace t (sprintf "(%d,%d)" pos.row pos.col)) trail;
+  list__iter (fun pos -> trace t (sprintf "(%d,%d)" pos.row pos.col)) trail;
   trace t "\n";
   let room_trail =
-    List.map
+    list__map
       (fun pos ->
          let r = pos.row, pos.col, pos.row, pos.col in
          match gen_room_row r, gen_room_col r with
@@ -580,7 +584,7 @@ let trace_trail t trail =
   in
   let room_trail = list_uniq_c (=) room_trail in
   trace t "*** room trail:";
-  List.iter
+  list__iter
     (fun (rt, c) ->
        trace t " ";
        begin match rt with
@@ -655,7 +659,7 @@ let add_object_in_pack g ch s =
     else if is_amulet s then 1, Pamulet
     else failwith (sprintf "what: '%s'" (String.escaped s))
   in
-  g.pack <- (ch, (nb, obj)) :: List.remove_assoc ch g.pack
+  g.pack <- (ch, (nb, obj)) :: list__remove_assoc ch g.pack
 ;;
 
 let is_low_alpha c = c >= 'a' && c <= 'z';;
@@ -820,11 +824,11 @@ let play tab nrow ncol t =
          hist_dung = []; dead = false}
   in
   let frozen_monsters =
-    List.filter (fun (pos, ch) -> dung_char g.dung pos = ch) g.frozen_monsters
+    list__filter (fun (pos, ch) -> dung_char g.dung pos = ch) g.frozen_monsters
   in
   g.frozen_monsters <- frozen_monsters;
   begin match g.rogue_pos with
-    Some pos -> g.regrets <- List.filter (fun pos1 -> pos <> pos1) g.regrets
+    Some pos -> g.regrets <- list__filter (fun pos1 -> pos <> pos1) g.regrets
   | None -> ()
   end;
   begin match t.t_slow_at_level with
@@ -1502,9 +1506,9 @@ let play tab nrow ncol t =
                                                           rogue_pos g
                                                         in
                                                         let spos =
-                                                          List.nth sp
+                                                          list__nth sp
                                                             (random_int g
-                                                               (List.length
+                                                               (list__length
                                                                   sp))
                                                         in
                                                         Rob_action.
@@ -1630,7 +1634,7 @@ let play tab nrow ncol t =
   let neutral_move = [Coth ' '; Coth ''; Coth ''] in
   let t =
     {t with t_prev_pos =
-      if List.mem comm neutral_move then t.t_prev_pos else Some g;
+      if list__mem comm neutral_move then t.t_prev_pos else Some g;
      t_prev_game = Some g; t_prev_comm = Some comm; t_prev_mov = mov;
      t_on_stairs = on_stairs; t_next_action = next_action}
   in
@@ -1638,30 +1642,33 @@ let play tab nrow ncol t =
 ;;
 
 let start_wizard = NAstring ("\023password\n", false, NAnone);;
+*)
 let start_no_wizard = NAstring ("@Ie", false, NAnone);;
+(*
 let start_nothing_special = NAnone;;
+*)
 
 let start_action = start_no_wizard;;
 
 let arg_list_of_string str =
   let rec loop rev_arg_list i =
-    if i >= String.length str then List.rev rev_arg_list
+    if i >= string__string_length str then list__rev rev_arg_list
     else
       let j =
         match
-          try Some (String.index_from str i ',') with Not_found -> None
+          try Some (string__index_char_from str i `,`) with Not_found -> None
         with
           Some j -> j
-        | None -> String.length str
+        | None -> string__string_length str
       in
-      let arg = String.sub str i (j - i) in
+      let arg = string__sub_string str i (j - i) in
       let rev_arg_list =
         match arg.[0] with
-          'a'..'z' ->
+          `a`..`z` ->
             let arg1 = sprintf "-%c" arg.[0] in
-            if String.length arg = 1 then arg1 :: rev_arg_list
+            if string__string_length arg = 1 then arg1 :: rev_arg_list
             else
-              let arg2 = String.sub arg 1 (String.length arg - 1) in
+              let arg2 = string__sub_string arg 1 (string__string_length arg - 1) in
               arg2 :: arg1 :: rev_arg_list
         | _ -> arg :: rev_arg_list
       in
@@ -1682,28 +1689,36 @@ let arg_stop_at_paradise = ref false;;
 let arg_speed = ref 1.0;;
 
 let speclist =
+(*
   Arg.align
-    ["-b", Arg.Set_int arg_breakpoint, " breakpoint at time";
-     "-l", Arg.Set_int arg_slow_at_time, "<int> slow at time";
-     "-m", Arg.Set_string arg_monpow_fname, "<file> use that monpow file";
-     "-n", Arg.Set arg_no_lang_dep, " no lang dependent in traces";
-     "-p", Arg.Set arg_stop_at_paradise, " stop at paradise";
-     "-s", Arg.Set_int arg_slow_at_level, "<int> slow at level";
-     "-t", Arg.Set arg_move_trace, " move trace"]
+*)
+    ["-b", arg__Int (fun x -> arg_breakpoint := x), " breakpoint at time";
+     "-l", arg__Int (fun x -> arg_slow_at_time := x), "<int> slow at time";
+     "-m", arg__String (fun x -> arg_monpow_fname := x),
+     "<file> use that monpow file";
+     "-n", arg__Unit (fun () -> arg_no_lang_dep := true),
+     " no lang dependent in traces";
+     "-p", arg__Unit (fun () -> arg_stop_at_paradise := true),
+     " stop at paradise";
+     "-s", arg__Int (fun x -> arg_slow_at_level := x), "<int> slow at level";
+     "-t", arg__Unit (fun () -> arg_move_trace := true), " move trace"]
 ;;
 let anon_fun s = arg_speed := float_of_string s;;
+(*
 let usage_msg = "";;
 *)
 
-(*
 let make str =
-  let args = vect__vect_of_list ("" :: arg_list_of_string str) in
 (*
+  let args = vect__vect_of_list ("" :: arg_list_of_string str) in
   arg__current := 0;
 *)
-  arg__parse_argv args speclist anon_fun usage_msg;
+  let speclist = list__map (fun (x, y, z) -> (x, y)) speclist in
+  begin try arg__parse speclist anon_fun with
+    arg__Bad s -> begin eprintf "robot %s" s; sys__exit 2; end;
+  end;
   if !arg_monpow_fname <> default_monpow_fname &&
-     not (Sys.file_exists !arg_monpow_fname)
+     not (sys_file_exists !arg_monpow_fname)
   then
     failwith (sprintf "File '%s' does not exist" !arg_monpow_fname);
   let na = start_action in
@@ -1721,7 +1736,6 @@ let make str =
    t_prev_comm = None; t_prev_mov = None; t_on_stairs = false;
    t_next_action = na}
 ;;
-*)
 
 (*
 let reinit after_fail arg_t t =
