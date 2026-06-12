@@ -1695,6 +1695,7 @@ let anon_fun s = arg_speed := float_of_string s;;
 let usage_msg = "";;
 *)
 
+(*
 let make str =
   let args = vect__vect_of_list ("" :: arg_list_of_string str) in
 (*
@@ -1720,6 +1721,7 @@ let make str =
    t_prev_comm = None; t_prev_mov = None; t_on_stairs = false;
    t_next_action = na}
 ;;
+*)
 
 (*
 let reinit after_fail arg_t t =
