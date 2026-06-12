@@ -521,8 +521,22 @@ let whatisit g =
 
 let instructions_file = "rogue.instr";;
 
+let buffer_create len = ref (string__create_string len, 0);;
+let buffer_add_char b c =
+  let (s, i) = !b in
+  let s =
+    if i < string__string_length s then s
+    else s ^ string__create_string (string__string_length s)
+  in
+  s.[i] <- c; b := (s, i + 1)
+;;
+let buffer_contents b =
+  let (s, i) = !b in
+  string__sub_string s 0 i
+;;
+
 let conv_instr s =
-  let b = Buffer.create 80 in
+  let b = buffer_create 80 in
   let rec loop i =
     if i < string__string_length s then
       if i + 1 < string__string_length s && s.[i] = `%` then
@@ -572,29 +586,29 @@ let conv_instr s =
           | `X` -> `X`
           | x -> `?`
         in
-        Buffer.add_char b c; Buffer.add_char b ` `; loop (i + 2)
-      else begin Buffer.add_char b s.[i]; loop (i + 1) end
-    else Buffer.contents b
+        buffer_add_char b c; buffer_add_char b ` `; loop (i + 2)
+      else begin buffer_add_char b s.[i]; loop (i + 1) end
+    else buffer_contents b
   in
   loop 0
 ;;
 
 let instructions g =
-  match try Some (open_in instructions_file) with Sys_error _ -> None with
+  match try Some (open_in instructions_file) with sys__Sys_error _ -> None with
     Some ic ->
       if g.lang <> "" then
         begin try
           let rec loop () =
             let line = input_line ic in
             try
-              let i = string__index line `:` in
+              let i = string__index_char line `:` in
               if string_eq g.lang 0 line 0 i then () else raise Not_found
             with Not_found -> loop ()
           in
           loop ()
         with End_of_file -> seek_in ic 0
         end;
-      let buffer = vect__init 24 (fun _ -> vect__make_vect 80 ` `) in
+      let buffer = vect__init_vect 24 (fun _ -> vect__make_vect 80 ` `) in
       for row = 0 to 24 - 1 do
         for col = 0 to 80 - 1 do
           buffer.(row).(col) <- curses__mvinch row col
@@ -612,7 +626,7 @@ let instructions g =
       end;
       close_in ic;
       curses__refresh ();
-      let _ : char = rgetchar g in display_dungeon g buffer
+      let (_ : char) = rgetchar g in display_dungeon g buffer
   | None -> message g (transl g.lang "Help file not on line.") false
 ;;
 
@@ -625,7 +639,7 @@ let change_lang g =
       g.lang <- new_lang;
       clear_lexicon g.lang;
       print_stats g 0o377;
-      list__iter
+      list__do_list
         (fun mon ->
            if mon.mn_flags land 0o20000000 <> 0 then ()
            else if
@@ -673,13 +687,13 @@ let show_average_hp g =
 ;;
 
 let backup_if_required g =
-  match f_backup.Efield.get g.env "backup" None with
+  match f_backup.efield__get g.env "backup" None with
     Some (fname, time) ->
       if time mod 1000 = 0 then
         begin let fname = sprintf "%s.%d" fname (time / 1000 mod 5) in
           Misc.save_into_file g fname
         end;
-      f_backup.Efield.set g.env "backup" (Some (fname, time + 1))
+      f_backup.efield__set g.env "backup" (Some (fname, time + 1))
   | None -> ()
 ;;
 
@@ -830,11 +844,11 @@ let main () =
          24 80);
   match init with
     Init.NewGame g ->
-      f_player_species.Efield.set g.env "player_species" player_spec;
-      f_backup.Efield.set g.env "backup" backup_opt;
-      f_bool.Efield.set g.env "no handle robot" nhr;
-      f_bool.Efield.set g.env "fast" fast;
-      f_bool.Efield.set g.env "batch" batch;
+      f_player_species.efield__set g.env "player_species" player_spec;
+      f_backup.efield__set g.env "backup" backup_opt;
+      f_bool.efield__set g.env "no handle robot" nhr;
+      f_bool.efield__set g.env "fast" fast;
+      f_bool.efield__set g.env "batch" batch;
       level__create g;
       init_display g;
       if no_record_score then g.score_only <- true;
@@ -846,7 +860,7 @@ let main () =
         Left g ->
           if no_record_score then g.score_only <- true;
           if g.score_only then
-            begin match f_random.Efield.get g.env "random" None with
+            begin match f_random.efield__get g.env "random" None with
               Some r -> Random.set_state r
             | None -> ()
             end;
@@ -855,11 +869,11 @@ let main () =
               PSrobot arg_rob ->
                 let rob =
                   match
-                    f_player_species.Efield.get g.env "player_species" PShuman
+                    f_player_species.efield__get g.env "player_species" PShuman
                   with
                     PSrobot rob ->
                       let after_fail =
-                        f_bool.Efield.get g.env "failed" false
+                        f_bool.efield__get g.env "failed" false
                       in
                       Robot.reinit after_fail arg_rob rob
                   | PSsocket _ | PShuman -> arg_rob
@@ -867,22 +881,22 @@ let main () =
                 PSrobot rob
             | PSsocket _ | PShuman -> player_spec
           in
-          f_player_species.Efield.set g.env "player_species" player_spec;
+          f_player_species.efield__set g.env "player_species" player_spec;
           begin match backup_opt with
             Some (arg_back, _) ->
               let time =
-                match f_backup.Efield.get g.env "backup" None with
+                match f_backup.efield__get g.env "backup" None with
                   Some (_, time) -> time
                 | None -> 0
               in
-              f_backup.Efield.set g.env "backup" (Some (arg_back, time))
-          | None -> f_backup.Efield.set g.env "backup" None
+              f_backup.efield__set g.env "backup" (Some (arg_back, time))
+          | None -> f_backup.efield__set g.env "backup" None
           end;
-          f_bool.Efield.set g.env "fast" fast;
-          f_bool.Efield.set g.env "no handle robot" nhr;
-          f_bool.Efield.set g.env "batch" batch;
-          f_bool.Efield.set g.env "break" false;
-          f_bool.Efield.set g.env "failed" false;
+          f_bool.efield__set g.env "fast" fast;
+          f_bool.efield__set g.env "no handle robot" nhr;
+          f_bool.efield__set g.env "batch" batch;
+          f_bool.efield__set g.env "break" false;
+          f_bool.efield__set g.env "failed" false;
           g.msg_cleared <- false;
           ring_stats g;
           game g
