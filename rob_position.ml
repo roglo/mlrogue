@@ -1,11 +1,5 @@
 (* $Id: rob_position.ml,v 1.1 2010/05/08 20:12:31 deraugla Exp $ *)
 
-(*
-type ComparePos = struct type t = position let compare = compare end
-module PosMap = Map.Make (ComparePos)
-module PosSet = Set.Make (ComparePos)
-*)
-
 type 'a PosMap_t == (position * 'a) list;;
 
 let PosMap_empty = [];;
