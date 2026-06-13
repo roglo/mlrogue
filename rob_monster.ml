@@ -60,6 +60,68 @@ let parse_mon_pow_line line =
 ;;
 *)
 
+let rec parse_ident_cont =
+  function
+    [< '`a`..`z` | `A`..`Z` | `_` | `0`..`9` as c; parse_ident_cont s >] ->
+      string__make_string 1 c ^ s
+;;
+
+let parse_uident =
+  function
+    | [< '`A`..`Z` as c; parse_ident_cont s >] ->
+      string__make_string 1 c ^ s
+;;
+
+let int_of_digit c = char__int_of_char c - char__int_of_char `0`;;
+
+let rec parse_int_loop n =
+  function
+  | [< '`0`..`9` as c; (parse_int_loop (10 * n + int_of_digit c)) m >] -> m
+  | [< >] -> n
+;;
+
+let parse_int =
+  function
+  | [< '`0`..`9` as c; (parse_int_loop (int_of_digit c)) m >] -> m
+;;
+
+let rec parse_spaces =
+  function
+  | [< '` `; parse_spaces () >] -> ()
+  | [< >] -> ()
+;;
+
+let parse_armv_pow =
+  function
+  | [< parse_int i >] -> i
+  | [< '`-`; parse_int i >] -> -i
+;;
+
+let rec parse_armv_pow_sep_slash_cont =
+  function
+  | [< '`/`; parse_armv_pow i; parse_armv_pow_sep_slash_cont il >] -> i :: il
+  | [< >] -> []
+;;
+
+let parse_armv_pow_sep_slash =
+  function
+  | [< parse_armv_pow v; parse_armv_pow_sep_slash_cont vl >] -> v :: vl
+;;
+
+let plexing_eval_char s = s.[0];;
+
+let parse_mon_pow =
+  function
+  | [< parse_uident s; parse_spaces (); parse_int lev; parse_spaces ();
+       parse_armv_pow_sep_slash v; end_of_stream () >] ->
+      let ch = plexing_eval_char s in
+      ((ch, lev), v)
+;;
+
+let parse_mon_pow_line line =
+  parse_mon_pow (stream__stream_of_string line)
+;;
+
 let read_monster_power_list t =
   let monpow_fname = t.t_monpow_fname in
   let mpt = vect__make_vect 26 [] in
@@ -75,10 +137,10 @@ let read_monster_power_list t =
             let r = parse_mon_pow_line line in Some r
           with
             End_of_file -> None
-          | Ploc.Exc (loc, _) -> None
+          | stream__Parse_failure | stream__Parse_error -> None
         with
           Some ((ch, lev), v) ->
-            let i = Char.code ch - Char.code 'A' in
+            let i = char__int_of_char ch - char__int_of_char `A` in
             mpt.(i) <- (lev, v) :: mpt.(i); loop ()
         | None -> ()
       in
@@ -90,7 +152,6 @@ let read_monster_power_list t =
   for i = 0 to 25 do mpt.(i) <- list__rev mpt.(i) done;
   mpt
 ;;
-*)
 
 (*
 let write_monster_power_list_fname mpt fname =
@@ -143,6 +204,7 @@ let write_monster_power_list_fname mpt fname =
 let write_monster_power_list t mpt =
   write_monster_power_list_fname mpt t.t_monpow_fname
 ;;
+*)
 
 let get_monster_power_list t =
   match !monster_power_list with
@@ -271,7 +333,7 @@ let basic_monster_power g t mch default =
   let v = try list__assoc g.level mpt.(i) with Not_found -> default mpt.(i) in
   let rec loop =
     function
-      [_, pow] -> pow
+    | [_, pow] -> pow
     | (armv1, pow) :: rest -> if armv <= armv1 then pow else loop rest
     | [] -> 0
   in
