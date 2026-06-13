@@ -245,7 +245,6 @@ let set_regrets g =
   | None -> ()
 ;;
 
-(*
 let stop_paradise t =
   let mpt = get_monster_power_list t in
   let fname =
@@ -257,7 +256,6 @@ let stop_paradise t =
   in
   write_monster_power_list_fname mpt fname; failwith "paradise on earth"
 ;;
-*)
 
 let drop_scare_with base state =
   {ds_base = base; ds_state = state; ds_last_corridor_kill_time = 0;

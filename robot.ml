@@ -1029,7 +1029,7 @@ let play tab nrow ncol t =
     let s = message in
     match
       if i > 3 && s.[i-3] <> `(` && s.[i-1] = `)` then
-        let j = string__index s `(` in
+        let j = string__index_char s `(` in
         let lang = string__sub_string s (j + 1) 2 in
         if is_alpha lang.[0] && is_alpha lang.[1] then Some lang else None
       else None
@@ -1381,12 +1381,10 @@ let play tab nrow ncol t =
                                                              ring_of_slow_digestion_on_hand <>
                                                                None
                                                           then
-                                                            Rob_action.
-                                                            stop_paradise
+                                                            rob_action__stop_paradise
                                                               t;
                                                           let ds =
-                                                            Rob_action.
-                                                            start_drop_scare
+                                                            rob_action__start_drop_scare
                                                               pos ch
                                                           in
                                                           let na =
@@ -1426,8 +1424,7 @@ let play tab nrow ncol t =
                                                                     in
                                                                     let mov =
                                                                       match
-                                                                        Rob_action.
-                                                                        run_away_if_possible
+                                                                        rob_action__run_away_if_possible
                                                                           g
                                                                           false
                                                                           movl
@@ -1445,18 +1442,15 @@ let play tab nrow ncol t =
                                                                         mov
                                                                     in
                                                                     let ch =
-                                                                      Char.chr
-                                                                        (Char.
-                                                                         code
+                                                                      char__char_of_int
+                                                                        (char__int_of_char
                                                                            ch -
-                                                                         Char.
-                                                                         code
+                                                                         char__int_of_char
                                                                            `a` +
                                                                          1)
                                                                     in
                                                                     NAstring
-                                                                      (string__
-                                                                       make
+                                                                      (string__make_string
                                                                          1 ch,
                                                                        false,
                                                                        NAnone)

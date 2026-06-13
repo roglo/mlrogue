@@ -7,6 +7,12 @@
 #open "rob_def";;
 #open "rob_misc";;
 
+let rec list_remove_assoc a l =
+  match l with
+    [] -> []
+  | (b, c) :: l -> if a = b then l else (b, c) :: list_remove_assoc a l
+;;
+
 let monster_power_list = ref None;;
 
 (*
@@ -252,7 +258,7 @@ let set_monster_power g t mch new_power =
     loop new_v
   in
   let mpti = list_remove_assoc g.level mpt.(i) in
-  let mpti = sort__sort compare ((g.level, new_v) :: mpti) in
+  let mpti = sort__sort (fun x y -> x <= y) ((g.level, new_v) :: mpti) in
   (*
   trace (sprintf "*** set monster power (lev %d arm %d pow %d)\n" g.level armv new_power);
   trace "*** before:\n";
