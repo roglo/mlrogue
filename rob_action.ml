@@ -4425,6 +4425,7 @@ let find_something_to_do g t =
                   if g.blind then random_move g pos NAnone
                   else start_move_in_corridor g t pos
 ;;
+*)
 
 let rec choose_dir g pos =
   function
@@ -4454,7 +4455,6 @@ let turn_right g pos =
          {di = 1; dj = 0}]
   | mov -> failwith (sprintf "turn_right %d %d" mov.di mov.dj)
 ;;
-*)
 
 let apply g t message =
   let transl = transl g in
@@ -4472,7 +4472,10 @@ let apply g t message =
           else if pos = fa.fa_gp.tpos then
             begin
               tempo g 0.1;
-              let fa = {(*fa with*) fa_state = "at door"} in
+              let fa =
+                {fa_state = "at door"; fa_gp = fa.fa_gp;
+                 fa_doors = fa.fa_doors; fa_base = fa.fa_base}
+              in
               let na = NAfind_another_room_and_return fa in
               Coth ` `, na, t.t_prev_mov
             end
@@ -4481,8 +4484,13 @@ let apply g t message =
               tempo g 0.1;
               match fa.fa_gp.path with
                 epos :: path ->
-                  let gp = {(*fa.fa_gp with*) epos = epos; path = path} in
-                  let fa = {(*fa with*) fa_gp = gp} in
+                  let gp =
+                    {epos = epos; path = path; tpos = fa.fa_gp.tpos}
+                  in
+                  let fa =
+                    {fa_gp = gp; fa_state = fa.fa_state;
+                     fa_doors = fa.fa_doors; fa_base = fa.fa_base}
+                  in
                   let na = NAfind_another_room_and_return fa in
                   move_command3 g pos epos na
               | [] -> failwith "assert false"
@@ -4503,7 +4511,10 @@ let apply g t message =
                   Some mov -> mov
                 | None -> failwith "assert false"
               in
-              let fa = {(*fa with*) fa_state = "in corridor"} in
+              let fa =
+                {fa_state = "in corridor"; fa_gp = fa.fa_gp;
+                 fa_doors = fa.fa_doors; fa_base = fa.fa_base}
+              in
               let na = NAfind_another_room_and_return fa in
               move_command3 g pos (add_mov pos mov) na
             end
