@@ -58,10 +58,30 @@ let contains_yn has has_not s =
   not (list__exists (contains s) has_not)
 ;;
 
+let parse_id_char =
+  function [< '`a`..`z` | `A`..`Z` as c >] -> c
+;;
+
+let rec parse_id_cont =
+  function
+    [< parse_id_char c; parse_id_cont s >] ->
+      string__make_string 1 c ^ s
+  | [< >] -> ""
+;;
+
+let parse_id =
+  function [< parse_id_char c; parse_id_cont s >] -> string__make_string 1 c ^ s
+;;
+
+let parse_status_line_en =
+  function
+    [< parse_id "Level" >] -> ()
+;;
+
 let lang_en =
   {scan_status_line =
     (fun line ->
-failwith "scan_status_line not implemented"
+       parse_status_line_en (stream__stream_of_string line)
 (*
        sscanf line
          "Level: %d Gold: %d Hp: %d(%d) Str: %d(%d) Arm: %d  Exp: %d/%d %s"
