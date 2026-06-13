@@ -19,8 +19,10 @@ value write_monster_power_list_fname : monster_power vect -> string -> unit;;
 (*
 value get_monster_power_list : t -> monster_power vect;;
 value set_monster_power : game -> t -> char -> int -> unit;;
+*)
 value basic_monster_power :
   game -> t -> char -> (monster_power -> (int * int) list) -> int;;
+(*
 value monster_power_at_level : game -> t -> char -> int;;
 *)
 

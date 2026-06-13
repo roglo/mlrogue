@@ -60,7 +60,6 @@ let parse_mon_pow_line line =
 ;;
 *)
 
-(*
 let read_monster_power_list t =
   let monpow_fname = t.t_monpow_fname in
   let mpt = vect__make_vect 26 [] in
@@ -93,6 +92,7 @@ let read_monster_power_list t =
 ;;
 *)
 
+(*
 let write_monster_power_list_fname mpt fname =
   let list =
     let rec loop rev_list i =
@@ -144,7 +144,6 @@ let write_monster_power_list t mpt =
   write_monster_power_list_fname mpt t.t_monpow_fname
 ;;
 
-(*
 let get_monster_power_list t =
   match !monster_power_list with
     Some list -> list
@@ -153,7 +152,8 @@ let get_monster_power_list t =
       monster_power_list := Some list; list
 ;;
 
-let set_monster_power g t mch new_power =
+(*
+clet set_monster_power g t mch new_power =
   let mch = monster g mch in
   let mpt = get_monster_power_list t in
   let i = char__int_of_char mch - char__int_of_char `A` in
@@ -261,6 +261,7 @@ let set_monster_power g t mch new_power =
   monster_power_list := Some mpt;
   write_monster_power_list t mpt
 ;;
+*)
 
 let basic_monster_power g t mch default =
   let mch = monster g mch in
@@ -277,6 +278,7 @@ let basic_monster_power g t mch default =
   loop v
 ;;
 
+(*
 let monster_power g t mch =
   let default list =
     match list__rev list with

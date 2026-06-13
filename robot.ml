@@ -668,7 +668,6 @@ let is_alpha c = c >= `a` && c <= `z` || c >= `A` && c <= `Z`;;
 exception Breakpoint of int;;
 *)
 
-(*
 let play tab nrow ncol t =
   let message =
     let first_line_len =
@@ -745,22 +744,22 @@ let play tab nrow ncol t =
         let prev_level = g.level in
         let status_line_opt =
           try Some ((transl g).scan_status_line tab.(g.dung.nrow - 1)) with
-            Scan_failure _ -> None
+            stream__Parse_failure | stream__Parse_error -> None
         in
         let level =
           match status_line_opt with
             Some sl -> sl.sl_level
           | None -> g.level
         in
-        let current_dung = vect__sub tab 1 (nrow - 2) in
+        let current_dung = vect_sub_vect tab 1 (nrow - 2) in
         let rogtime =
-          if vect__sub tab 1 (nrow - 1) <> vect__sub g.dung.tab 1 (nrow - 1)
+          if vect_sub_vect tab 1 (nrow - 1) <> vect_sub_vect g.dung.tab 1 (nrow - 1)
           then
             g.rogtime + 1
           else g.rogtime
         in
         let g =
-          {g with dung = dung; level = level; rogtime = rogtime;
+          {(*g with*) dung = dung; level = level; rogtime = rogtime;
            time = g.time + 1; status_line = status_line_opt;
            time_in_level = g.time_in_level + 1;
            is_message_more = is_message_more; trail = trail;
@@ -778,7 +777,7 @@ let play tab nrow ncol t =
             done;
             g.speed <- t.t_speed;
             g.time_in_level <- 0;
-            g.trail <- PosMap.empty;
+            g.trail <- PosMap_empty;
             g.sure_stairs_pos <- None;
             g.garbage <- [];
             g.scare_pos <- [];
@@ -792,7 +791,7 @@ let play tab nrow ncol t =
             g.frozen_monsters <- [];
             g.regrets <- [];
             g.nb_of_reinit_search <- 0;
-            Hashtbl.clear g.traps;
+            hashtbl__clear g.traps;
             g.hist_dung <- [];
             g.paradise <- false;
             if t.t_move_trace then trace_pack g t
@@ -802,7 +801,7 @@ let play tab nrow ncol t =
         let ar = {ar_value = Some 4; ar_protected = false} in
         {dung = dung; rogtime = 0; time = 0; status_line = None;
          is_message_more = is_message_more; move_result = move_result;
-         random_state = Random.get_state (); level = 1; lang = "en";
+         random_state = random_self_init (); level = 1; lang = "en";
          speed = t.t_speed; time_in_level = 0; trail = trail;
          rogue_pos = rogue_pos; sure_stairs_pos = None;
          rogue_room_and_door = rogue_room_and_door; on_something_at = None;
@@ -821,16 +820,16 @@ let play tab nrow ncol t =
          frozen_monsters = []; regrets = []; blindness_discovered = false;
          hallucination_discovered = false; teleport_discovered = false;
          after_first_pack_full = false;
-         visited = vect__init 3 (fun _ -> vect__make 3 false);
-         nb_of_reinit_search = 0; traps = Hashtbl.create 1; paradise = false;
+         visited = vect__init_vect 3 (fun _ -> vect__make_vect 3 false);
+         nb_of_reinit_search = 0; traps = hashtbl__new 1; paradise = false;
          hist_dung = []; dead = false}
   in
   let frozen_monsters =
-    list__filter (fun (pos, ch) -> dung_char g.dung pos = ch) g.frozen_monsters
+    list_filter (fun (pos, ch) -> dung_char g.dung pos = ch) g.frozen_monsters
   in
   g.frozen_monsters <- frozen_monsters;
   begin match g.rogue_pos with
-    Some pos -> g.regrets <- list__filter (fun pos1 -> pos <> pos1) g.regrets
+    Some pos -> g.regrets <- list_filter (fun pos1 -> pos <> pos1) g.regrets
   | None -> ()
   end;
   begin match t.t_slow_at_level with
@@ -922,7 +921,7 @@ let play tab nrow ncol t =
                     Some v -> Some (v - 1)
                   | None -> None
                 in
-                let ar = {ar with ar_value = v} in
+                let ar = {(*ar with*) ar_value = v} in
                 g.worn_armor <- Some (ch, ar);
                 redefine_in_pack g ch (Parmor ar)
             | None -> assert false
@@ -1000,19 +999,19 @@ let play tab nrow ncol t =
       let wound = old_hp - new_hp in
       if wound > 0 then
         let pos = rogue_pos g in
-        let monl = Rob_monster.monsters_around g pos in
+        let monl = rob_monster__monsters_around g pos in
         match monl with
           [mov] ->
             let mch = dung_char g.dung (add_mov pos mov) in
             if transl.is_message_about_fliting_monster message &&
-               not (Rob_monster.is_fliting_monster g mch)
+               not (rob_monster__is_fliting_monster g mch)
             then
               ()
             else
               let mp =
-                Rob_monster.basic_monster_power g t mch (fun _ -> [])
+                rob_monster__basic_monster_power g t mch (fun _ -> [])
               in
-              if wound > mp then Rob_monster.set_monster_power g t mch wound
+              if wound > mp then rob_monster__set_monster_power g t mch wound
         | [] | _ :: _ -> ()
     end;
   if t.t_move_trace && g.attacked > 0 then
@@ -1268,7 +1267,7 @@ let play tab nrow ncol t =
                                                         wearing_best_armor
                                                           g) &&
                                                      not
-                                                       (Rob_monster.
+                                                       (rob_monster__
                                                         aquator_around
                                                           g)
                                                   then
@@ -1642,7 +1641,6 @@ let play tab nrow ncol t =
   in
   ch, t
 ;;
-*)
 
 (*
 let start_wizard = NAstring ("\023password\n", false, NAnone);;
