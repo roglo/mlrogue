@@ -347,7 +347,6 @@ let basic_monster_power g t mch default =
   loop v
 ;;
 
-(*
 let monster_power g t mch =
   let default list =
     match list__rev list with
@@ -361,7 +360,6 @@ let monster_power_at_level g t mch =
   let mp = monster_power g t mch in
   if g.level >= level_of_faster_monsters then mp * 2 else mp
 ;;
-*)
 
 (* *)
 

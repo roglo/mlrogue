@@ -20,9 +20,7 @@ value get_monster_power_list : t -> monster_power vect;;
 value set_monster_power : game -> t -> char -> int -> unit;;
 value basic_monster_power :
   game -> t -> char -> (monster_power -> (int * int) list) -> int;;
-(*
 value monster_power_at_level : game -> t -> char -> int;;
-*)
 
 value monsters_and_moves_around : game -> move list * move list;;
 value monsters_around : game -> position -> move list;;
@@ -32,3 +30,5 @@ value flaming_monster_around : game -> position -> move option;;
 value aquator_around : game -> bool;;
 value flaming_monster_dir : game -> position -> (move * int * position) option;;
 value monster_moving_to : game -> t -> position -> bool;;
+
+value list_remove_assoc : 'a -> ('a * 'b) list -> ('a * 'b) list;;

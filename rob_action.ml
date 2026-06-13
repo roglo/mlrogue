@@ -320,7 +320,6 @@ let drop_scare_or_drop_scare_and_kill g ch na =
       let ds = start_drop_scare (rogue_pos g) ch in NAdrop_scare_and_kill ds
 ;;
 
-(*
 let treat_critical_situation g t na =
   (*
   if True then None else
@@ -445,7 +444,6 @@ let treat_critical_situation g t na =
             failwith "blibop"
           end
 ;;
-*)
 
 let on_something g =
   let pos = rogue_pos g in
@@ -467,7 +465,6 @@ let attacked_by_flamer g pos monl =
     monl
 ;;
 
-(*
 let attack_monsters g t movl monl prev_a =
   let pos = rogue_pos g in
   let in_room = g.rogue_room_and_door <> None in
@@ -606,7 +603,6 @@ let attack_monsters g t movl monl prev_a =
                               comm, na, Some mmov
                             end
 ;;
-*)
 
 (* *)
 
@@ -820,7 +816,6 @@ let conditions_for_dropping_scare g =
   (g.map_showed_since > 0 || connected_with_another_room g)
 ;;
 
-(*
 let ok_for_dropping_scare g t =
   let pos = rogue_pos g in
   match trap_at_entrance g with
@@ -838,7 +833,6 @@ let ok_for_dropping_scare g t =
       let na = NAcheck_no_trap (pos, pos1) in move_command3 g pos pos1 na
   | TE_error -> failwith "trap_at_entrance"
 ;;
-*)
 
 let conditions_for_exit_level g =
   g.ring_of_slow_digestion_on_hand <> None && g.map_showed_since > 0 &&
@@ -1086,7 +1080,6 @@ let continue_move_in_corridor g t ipos pos trail =
       | [] -> failwith "not impl NAmove_in_corridor 11"
 ;;
 
-(*
 let attacked_or_held g t na =
   let pos = rogue_pos g in
   let (monl, movl) = monsters_and_moves_around g in
@@ -1109,7 +1102,6 @@ let attacked_or_held g t na =
             let na = NAuse_object (uo, na) in Coth `r`, na, None
         | None -> random_move g pos na
 ;;
-*)
 
 let move_in_corridor_starting_with_move g pos mov =
   let ipos = pos in
@@ -1453,7 +1445,7 @@ let step_go_in_corridor_and_hit g t message base gp step =
               let paths = paths_in_corridors_from g pos pos in
               let paths = paths_with_monsters g paths in
               if paths <> [] then
-                let paths = sort__sort compare paths in
+                let paths = sort__sort (fun x y -> x <= y) paths in
                 let (min_len, _) = list__hd paths in
                 if min_len < 9 then SGCchar (`9`, "4") else SGCpick_and_return
               else
