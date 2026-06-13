@@ -668,6 +668,7 @@ let is_alpha c = c >= `a` && c <= `z` || c >= `A` && c <= `Z`;;
 exception Breakpoint of int;;
 *)
 
+(*
 let play tab nrow ncol t =
   let message =
     let first_line_len =
@@ -1641,6 +1642,7 @@ let play tab nrow ncol t =
   in
   ch, t
 ;;
+*)
 
 (*
 let start_wizard = NAstring ("\023password\n", false, NAnone);;
@@ -1663,14 +1665,14 @@ let arg_list_of_string str =
           Some j -> j
         | None -> string__string_length str
       in
-      let arg = string__sub_string_string str i (j - i) in
+      let arg = string__sub_string str i (j - i) in
       let rev_arg_list =
         match arg.[0] with
           `a`..`z` ->
             let arg1 = sprintf "-%c" arg.[0] in
             if string__string_length arg = 1 then arg1 :: rev_arg_list
             else
-              let arg2 = string__sub_string_string arg 1 (string__string_length arg - 1) in
+              let arg2 = string__sub_string arg 1 (string__string_length arg - 1) in
               arg2 :: arg1 :: rev_arg_list
         | _ -> arg :: rev_arg_list
       in
