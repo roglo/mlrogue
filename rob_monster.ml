@@ -91,10 +91,15 @@ let rec parse_spaces =
   | [< >] -> ()
 ;;
 
-let parse_armv_pow =
+let parse_signed_int =
   function
   | [< parse_int i >] -> i
   | [< '`-`; parse_int i >] -> -i
+;;
+
+let parse_armv_pow =
+  function
+  | [< parse_signed_int armv; '`,`; parse_int pow >] -> (armv, pow)
 ;;
 
 let rec parse_armv_pow_sep_slash_cont =
@@ -113,7 +118,7 @@ let plexing_eval_char s = s.[0];;
 let parse_mon_pow =
   function
   | [< parse_uident s; parse_spaces (); parse_int lev; parse_spaces ();
-       parse_armv_pow_sep_slash v; end_of_stream () >] ->
+      parse_armv_pow_sep_slash v; end_of_stream () >] ->
       let ch = plexing_eval_char s in
       ((ch, lev), v)
 ;;
@@ -153,7 +158,6 @@ let read_monster_power_list t =
   mpt
 ;;
 
-(*
 let write_monster_power_list_fname mpt fname =
   let list =
     let rec loop rev_list i =
@@ -204,7 +208,6 @@ let write_monster_power_list_fname mpt fname =
 let write_monster_power_list t mpt =
   write_monster_power_list_fname mpt t.t_monpow_fname
 ;;
-*)
 
 let get_monster_power_list t =
   match !monster_power_list with
@@ -214,8 +217,7 @@ let get_monster_power_list t =
       monster_power_list := Some list; list
 ;;
 
-(*
-clet set_monster_power g t mch new_power =
+let set_monster_power g t mch new_power =
   let mch = monster g mch in
   let mpt = get_monster_power_list t in
   let i = char__int_of_char mch - char__int_of_char `A` in
@@ -323,7 +325,6 @@ clet set_monster_power g t mch new_power =
   monster_power_list := Some mpt;
   write_monster_power_list t mpt
 ;;
-*)
 
 let basic_monster_power g t mch default =
   let mch = monster g mch in
