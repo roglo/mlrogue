@@ -10,7 +10,6 @@
 #open "rob_path";;
 #open "rob_position";;
 
-(*
 let test_jeopardized g t monl =
   let pos = rogue_pos g in
   let hp = health_points g in
@@ -29,6 +28,7 @@ let test_jeopardized g t monl =
       g.attacked > 0 && hp <= nb_hp
 ;;
 
+(*
 let flame_risk g t =
   let transl = transl g in
   match g.rogue_room_and_door with
@@ -59,7 +59,6 @@ let flame_risk g t =
 ;;
 *)
 
-(*
 let test_monsters_risk g t monl =
   let pos = rogue_pos g in
   let jeopardized = test_jeopardized g t monl in
@@ -80,7 +79,6 @@ let test_monsters_risk g t monl =
       let mov = list_nth monl (random_int g (list__list_length monl)) in
       let mch = dung_char g.dung (add_mov pos mov) in mov, mch, jeopardized
 ;;
-*)
 
 let close_to_a_free_door g =
   match g.rogue_room_and_door with
@@ -1399,7 +1397,6 @@ type step_go_corr =
   | SGChome
 ;;
 
-(*
 let step_go_in_corridor_and_hit g t message base gp step =
   let pos = rogue_pos g in
   match step with
@@ -1492,7 +1489,6 @@ let step_go_in_corridor_and_hit g t message base gp step =
   | "7" -> SGCchar (`.`, "on the way")
   | step -> failwith (sprintf "step_go_in_corridor_and_hit step `%s`" step)
 ;;
-*)
 
 let monster_perhaps_blocked_in_corridor_by_scroll g ipos pos =
   match g.rogue_room_and_door with
@@ -4658,7 +4654,10 @@ let apply g t message =
       | SGCack_mess ->
           let na = NAgo_in_corridor_and_hit ce in Coth ` `, na, None
       | SGCmove_way_there (gp, step) ->
-          let ce = {(*ce with*) ce_gp = gp; ce_state = step} in
+          let ce =
+            {ce_gp = gp; ce_state = step; ce_base = ce.ce_base;
+             ce_kont = ce.ce_kont}
+          in
           let na = NAgo_in_corridor_and_hit ce in Coth `m`, na, None
       | SGCattack (mov, step) ->
           let gp =
@@ -4671,7 +4670,10 @@ let apply g t message =
           let na = return_to_base g gp ce.ce_kont in
           move_command3 g pos (add_mov pos mov) na
       | SGCchar (ch, step) ->
-          let ce = {(*ce with*) ce_gp = gp; ce_state = step} in
+          let ce =
+            {ce_gp = gp; ce_state = step; ce_base = ce.ce_base;
+             ce_kont = ce.ce_kont}
+          in
           let na = NAgo_in_corridor_and_hit ce in Coth ch, na, None
       | SGCpick_and_return ->
           let (monl, movl) = monsters_and_moves_around g in
