@@ -1472,7 +1472,7 @@ let play tab nrow ncol t =
                                                               Coth `r`, na,
                                                               None
                                                           | None ->
-                                                              Rob_action.apply
+                                                              rob_action__apply
                                                                 g t message
                                                   else if
                                                     not

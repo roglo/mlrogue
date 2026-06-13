@@ -20,6 +20,4 @@ value random_move : game -> position -> next_action -> result;;
 
 value slow_down : game -> t -> unit;;
 
-(*
 value apply : game -> t -> string -> result;;
-*)

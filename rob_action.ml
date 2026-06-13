@@ -4454,6 +4454,7 @@ let turn_right g pos =
          {di = 1; dj = 0}]
   | mov -> failwith (sprintf "turn_right %d %d" mov.di mov.dj)
 ;;
+*)
 
 let apply g t message =
   let transl = transl g in
@@ -4471,7 +4472,7 @@ let apply g t message =
           else if pos = fa.fa_gp.tpos then
             begin
               tempo g 0.1;
-              let fa = {fa with fa_state = "at door"} in
+              let fa = {(*fa with*) fa_state = "at door"} in
               let na = NAfind_another_room_and_return fa in
               Coth ` `, na, t.t_prev_mov
             end
@@ -4480,8 +4481,8 @@ let apply g t message =
               tempo g 0.1;
               match fa.fa_gp.path with
                 epos :: path ->
-                  let gp = {fa.fa_gp with epos = epos; path = path} in
-                  let fa = {fa with fa_gp = gp} in
+                  let gp = {(*fa.fa_gp with*) epos = epos; path = path} in
+                  let fa = {(*fa with*) fa_gp = gp} in
                   let na = NAfind_another_room_and_return fa in
                   move_command3 g pos epos na
               | [] -> failwith "assert false"
@@ -4502,7 +4503,7 @@ let apply g t message =
                   Some mov -> mov
                 | None -> failwith "assert false"
               in
-              let fa = {fa with fa_state = "in corridor"} in
+              let fa = {(*fa with*) fa_state = "in corridor"} in
               let na = NAfind_another_room_and_return fa in
               move_command3 g pos (add_mov pos mov) na
             end
@@ -4529,7 +4530,7 @@ let apply g t message =
                   Coth ` `, na, t.t_prev_mov
             else
               let gp = old_path_excl_from_to g [] pos fa.fa_base 48 in
-              let fa = {fa with fa_state = "returning"; fa_gp = gp} in
+              let fa = {(*fa with*) fa_state = "returning"; fa_gp = gp} in
               let na = NAfind_another_room_and_return fa in
               Coth ` `, na, t.t_prev_mov
           else
@@ -4549,8 +4550,8 @@ let apply g t message =
           else if pos = fa.fa_gp.epos then
             match fa.fa_gp.path with
               epos :: path ->
-                let gp = {fa.fa_gp with epos = epos; path = path} in
-                let fa = {fa with fa_gp = gp} in
+                let gp = {(*fa.fa_gp with*) epos = epos; path = path} in
+                let fa = {(*fa with*) fa_gp = gp} in
                 let na = NAfind_another_room_and_return fa in
                 move_command3 g pos epos na
             | [] -> failwith "assert false"
@@ -4600,7 +4601,7 @@ let apply g t message =
                   | [_] ->
                       let mov = move_between pos gp.tpos in
                       let ch = basic_command_of_move mov in
-                      let str = string__make 1 ch in
+                      let str = string__make_string 1 ch in
                       let na = NAgo_identify_trap (gp, "ask", na) in
                       let na = NAstring (str, false, na) in
                       Coth `^`, na, t.t_prev_mov
@@ -4620,7 +4621,8 @@ let apply g t message =
           let tk =
             if transl.is_trap_door message then TKtrap_door else TKother
           in
-          hashtbl__replace g.traps gp.tpos (Some (Some tk));
+          hashtbl__remove g.traps gp.tpos;
+          hashtbl__add g.traps gp.tpos (Some (Some tk));
           Coth ` `, na, t.t_prev_mov
       | step -> failwith (sprintf "NAgo_identify_trap `%s`" step)
       end
@@ -4631,16 +4633,16 @@ let apply g t message =
       let step = ce.ce_state in
       begin match step_go_in_corridor_and_hit g t message base gp step with
         SGCway_there (mov, step) ->
-          let ce = {ce with ce_state = step} in
+          let ce = {(*ce with*) ce_state = step} in
           let na = NAgo_in_corridor_and_hit ce in Cmov mov, na, Some mov
       | SGCack_mess ->
           let na = NAgo_in_corridor_and_hit ce in Coth ` `, na, None
       | SGCmove_way_there (gp, step) ->
-          let ce = {ce with ce_gp = gp; ce_state = step} in
+          let ce = {(*ce with*) ce_gp = gp; ce_state = step} in
           let na = NAgo_in_corridor_and_hit ce in Coth `m`, na, None
       | SGCattack (mov, step) ->
           let gp =
-            let pred _ = (=) base in
+            let pred _ x = base = x in
             let excl = [add_mov pos mov] in
             match direct_path_excl g excl pos pred with
               Some (path, _) -> {epos = pos; tpos = base; path = path}
@@ -4649,7 +4651,7 @@ let apply g t message =
           let na = return_to_base g gp ce.ce_kont in
           move_command3 g pos (add_mov pos mov) na
       | SGCchar (ch, step) ->
-          let ce = {ce with ce_gp = gp; ce_state = step} in
+          let ce = {(*ce with*) ce_gp = gp; ce_state = step} in
           let na = NAgo_in_corridor_and_hit ce in Coth ch, na, None
       | SGCpick_and_return ->
           let (monl, movl) = monsters_and_moves_around g in
@@ -4667,7 +4669,7 @@ let apply g t message =
           | None ->
               if common_room_with g ce.ce_base <> None then
                 let gp =
-                  let pred _ = (=) base in
+                  let pred _ x = base = x in
                   match direct_path_excl g [] pos pred with
                     Some (path, _) -> {epos = pos; tpos = base; path = path}
                   | None -> failwith "SGCpick_and_return 1"
@@ -4683,7 +4685,7 @@ let apply g t message =
                         [add_mov pos mov]
                     | Some (_, None) | None -> []
                   in
-                  let pred _ = (=) base in
+                  let pred _ x = base = x in
                   match direct_path_excl g excl pos pred with
                     Some (path, _) -> {epos = pos; tpos = base; path = path}
                   | None -> failwith "SGCpick_and_return 2"
@@ -4950,7 +4952,7 @@ let apply g t message =
                   let na = NAreturn_to_base (gp, akont) in
                   attacked_or_held g t na
                 else
-                  let pred _ = (=) gp.tpos in
+                  let pred _ x = gp.tpos = x in
                   match direct_path_excl g [] pos pred with
                     Some (path, _) ->
                       let gp = {epos = pos; tpos = gp.tpos; path = path} in
@@ -5190,7 +5192,7 @@ let apply g t message =
           if transl.is_message_there_is_no message then
             begin
               (* probably stolen by a nymph *)
-              g.pack <- list__remove_assoc ch g.pack;
+              g.pack <- list_remove_assoc ch g.pack;
               match good_armor g with
                 Some (ch, _) -> Coth `W`, NAwear (ch, 2, na), t.t_prev_mov
               | None -> Coth `s`, na, t.t_prev_mov
@@ -5201,7 +5203,7 @@ let apply g t message =
                 Parmor ar -> ar
               | _ -> failwith "assert false"
             in
-            let ar = {ar with ar_value = armor_value message} in
+            let ar = {(*ar with*) ar_value = armor_value message} in
             g.worn_armor <- Some (ch, ar);
             redefine_in_pack g ch (Parmor ar);
             Coth ` `, na, t.t_prev_mov
@@ -5267,7 +5269,7 @@ let apply g t message =
         begin
           tempo g 0.2;
           if pos <> ipos then
-            list__iter
+            list__do_list
               (fun pos ->
                  let r = pos.row, pos.col, pos.row, pos.col in
                  match gen_room_row r, gen_room_col r with
@@ -5530,21 +5532,21 @@ let apply g t message =
           let na =
             match um.um_kont with
               NAdrop_scare_and_kill ds ->
-                let ds = {ds with ds_monster_perhaps_blocked = None} in
+                let ds = {(*ds with*) ds_monster_perhaps_blocked = None} in
                 NAdrop_scare_and_kill ds
             | NAalone_in_room ar ->
                 let dl =
                   list__map
                     (fun ard ->
                        if ard.ard_pos = base then
-                         {ard with ard_monster_perhaps_blocked = None}
+                         {(*ard with*) ard_monster_perhaps_blocked = None}
                        else ard)
                     ar.ar_doors
                 in
-                let ar = {ar with ar_doors = dl} in NAalone_in_room ar
+                let ar = {(*ar with*) ar_doors = dl} in NAalone_in_room ar
             | _ -> failwith "assert false"
           in
-          let um = {um with um_kont = na} in
+          let um = {(*um with*) um_kont = na} in
           let na = NAgo_unblock_monster um in move_command2 g pos mpos na
         else
           let gp = old_path_excl_from_to g [] pos base 15 in
@@ -5561,11 +5563,11 @@ let apply g t message =
                   let (block, mpb) =
                     unblocking_monster g ipos perhaps_blocked
                   in
-                  let ds = {ds with ds_monster_perhaps_blocked = mpb} in
+                  let ds = {(*ds with*) ds_monster_perhaps_blocked = mpb} in
                   let na = NAdrop_scare_and_kill ds in block, na
               | NAalone_in_room ar ->
                   let (block, dl) =
-                    list__fold_right
+                    list__list_it
                       (fun ard (block, dl) ->
                          if base = ard.ard_pos then
                            let ipos = ard.ard_pos in
@@ -5576,20 +5578,20 @@ let apply g t message =
                              unblocking_monster g ipos perhaps_blocked
                            in
                            let ard =
-                             {ard with ard_monster_perhaps_blocked = mpb}
+                             {(*ard with*) ard_monster_perhaps_blocked = mpb}
                            in
                            block, ard :: dl
                          else block, ard :: dl)
                       ar.ar_doors (None, [])
                   in
-                  let ar = {ar with ar_doors = dl} in
+                  let ar = {(*ar with*) ar_doors = dl} in
                   let na = NAalone_in_room ar in block, na
               | _ -> failwith "assert false"
             in
-            let um = {um with um_kont = na} in
+            let um = {(*um with*) um_kont = na} in
             match block with
               Some (gp, mpos) ->
-                let um = {um with um_gp = gp; um_mpos = mpos} in
+                let um = {(*um with*) um_gp = gp; um_mpos = mpos} in
                 let na = NAgo_unblock_monster um in Coth ` `, na, t.t_prev_mov
             | None ->
                 let na = NAgo_unblock_monster um in Coth `.`, na, t.t_prev_mov
@@ -5598,14 +5600,14 @@ let apply g t message =
           epos :: path ->
             tempo g 0.1;
             let gp = {epos = epos; tpos = gp.tpos; path = path} in
-            let um = {um with um_gp = gp} in
+            let um = {(*um with*) um_gp = gp} in
             let na = NAgo_unblock_monster um in
             let mov = move_between pos epos in
             let na = NAmove (mov, na) in Coth `m`, na, t.t_prev_mov
         | [] -> failwith "assert false"
       else
         let gp = old_path_excl_from_to g [] pos gp.tpos 25 in
-        let um = {um with um_gp = gp} in
+        let um = {(*um with*) um_gp = gp} in
         let na = NAgo_unblock_monster um in Coth ` `, na, None
   | NAlet_come (mch, move) ->
       tempo g 1.0;
@@ -5958,7 +5960,7 @@ let apply g t message =
               tempo g 1.0;
               if transl.is_message_there_is_no message then
                 begin match short_bow_in_pack g.pack with
-                  Some (ch, _) -> g.pack <- list__remove_assoc ch g.pack
+                  Some (ch, _) -> g.pack <- list_remove_assoc ch g.pack
                 | None -> ()
                 end;
               let na = NAmove_throw2 (mpos, mch, step) in Coth ` `, na, None
@@ -6232,7 +6234,7 @@ let apply g t message =
                 let na = NAmove_in_corridor (pos, gp, []) in
                 move_command3 g pos tpos na
               else
-                let pred _ = (=) tpos in
+                let pred _ x = tpos = x in
                 begin match direct_path_excl g [] pos pred with
                   Some (pos1 :: path, tpos) ->
                     let gp = {epos = pos1; tpos = tpos; path = path} in
@@ -6412,4 +6414,3 @@ let apply g t message =
                                       find_something_to_do g t
                                     end
 ;;
-*)
