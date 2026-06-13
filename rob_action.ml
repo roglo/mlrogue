@@ -4541,7 +4541,10 @@ let apply g t message =
                   Coth ` `, na, t.t_prev_mov
             else
               let gp = old_path_excl_from_to g [] pos fa.fa_base 48 in
-              let fa = {(*fa with*) fa_state = "returning"; fa_gp = gp} in
+              let fa =
+                {fa_state = "returning"; fa_gp = gp; fa_doors = fa.fa_doors;
+                 fa_base = fa.fa_base}
+              in
               let na = NAfind_another_room_and_return fa in
               Coth ` `, na, t.t_prev_mov
           else
@@ -4561,8 +4564,11 @@ let apply g t message =
           else if pos = fa.fa_gp.epos then
             match fa.fa_gp.path with
               epos :: path ->
-                let gp = {(*fa.fa_gp with*) epos = epos; path = path} in
-                let fa = {(*fa with*) fa_gp = gp} in
+                let gp = {epos = epos; path = path; tpos = fa.fa_gp.tpos} in
+                let fa =
+                  {fa_gp = gp; fa_state = fa.fa_state; fa_doors = fa.fa_doors;
+                   fa_base = fa.fa_base}
+                in
                 let na = NAfind_another_room_and_return fa in
                 move_command3 g pos epos na
             | [] -> failwith "assert false"
@@ -4644,7 +4650,10 @@ let apply g t message =
       let step = ce.ce_state in
       begin match step_go_in_corridor_and_hit g t message base gp step with
         SGCway_there (mov, step) ->
-          let ce = {(*ce with*) ce_state = step} in
+          let ce =
+            {ce_state = step; ce_base = ce.ce_base; ce_gp = ce.ce_gp;
+             ce_kont = ce.ce_kont}
+          in
           let na = NAgo_in_corridor_and_hit ce in Cmov mov, na, Some mov
       | SGCack_mess ->
           let na = NAgo_in_corridor_and_hit ce in Coth ` `, na, None
