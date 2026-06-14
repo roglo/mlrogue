@@ -769,7 +769,16 @@ let play tab nrow ncol t =
            sure_stairs_pos = g.sure_stairs_pos;
            on_something_at = g.on_something_at; pack = g.pack;
            pack_full = g.pack_full; worn_armor = g.worn_armor;
-           main_sword = g.main_sword}
+           main_sword = g.main_sword; armor_cursed = g.armor_cursed;
+           weapon_cursed = g.weapon_cursed;
+           ring_of_slow_digestion_on_hand = g.ring_of_slow_digestion_on_hand;
+           garbage = g.garbage; scare_pos = g.scare_pos; graph = g.graph;
+           visited = g.visited; map_showed_since = g.map_showed_since;
+           mon_detected = g.mon_detected; confused = g.confused;
+           hallucinated = g.hallucinated;
+           was_hallucinated = g.was_hallucinated; blind = g.blind;
+           held = g.held; attacked = g.attacked;
+           attacked_by_invisible = g.attacked_by_invisible}
         in
         if level <> prev_level ||
            prev_level = 99 &&

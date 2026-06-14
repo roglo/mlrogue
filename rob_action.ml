@@ -2670,7 +2670,14 @@ let drop_scare_and_kill g t message ds =
                               in
                               let ds =
                                 {ds_outside_tested = false;
-                                 ds_base = ds.ds_base}
+                                 ds_base = ds.ds_base; ds_state = ds.ds_state;
+                                 ds_last_corridor_kill_time =
+                                   ds.ds_last_corridor_kill_time;
+                                 ds_nb_attempt = ds.ds_nb_attempt;
+                                 ds_monster_perhaps_blocked =
+                                   ds.ds_monster_perhaps_blocked;
+                                 ds_nb_killed_in_corr =
+                                   ds.ds_nb_killed_in_corr}
                               in
                               let na = NAdrop_scare_and_kill ds in
                               Coth `F`, na, None
@@ -3135,13 +3142,30 @@ let drop_scare_and_kill g t message ds =
                                             perhaps_blocked
                                         in
                                         let ds =
-                                          {(*ds with*) ds_monster_perhaps_blocked =
-                                            mpb}
+                                          {ds_monster_perhaps_blocked = mpb;
+                                           ds_outside_tested = false;
+                                           ds_base = ds.ds_base;
+                                           ds_state = ds.ds_state;
+                                           ds_last_corridor_kill_time =
+                                           ds.ds_last_corridor_kill_time;
+                                           ds_nb_attempt = ds.ds_nb_attempt;
+                                           ds_nb_killed_in_corr =
+                                           ds.ds_nb_killed_in_corr}
                                         in
                                         match block with
                                           Some (gp, mpos) ->
                                             let ds =
-                                              {(*ds with*) ds_state = DSdropped 0}
+                                              {ds_state = DSdropped 0;
+                                               ds_outside_tested = false;
+                                               ds_base = ds.ds_base;
+                                               ds_last_corridor_kill_time =
+                                               ds.ds_last_corridor_kill_time;
+                                               ds_nb_attempt =
+                                                 ds.ds_nb_attempt;
+                                               ds_monster_perhaps_blocked =
+                                                 ds.ds_monster_perhaps_blocked;
+                                               ds_nb_killed_in_corr =
+                                                 ds.ds_nb_killed_in_corr}
                                             in
                                             let na =
                                               NAdrop_scare_and_kill ds
