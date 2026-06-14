@@ -5615,7 +5615,9 @@ let apply g t message =
                              unblocking_monster g ipos perhaps_blocked
                            in
                            let ard =
-                             {(*ard with*) ard_monster_perhaps_blocked = mpb}
+                             {ard_monster_perhaps_blocked = mpb;
+                              ard_pos = ard.ard_pos; ard_dir = ard.ard_dir;
+                              ard_trip_cnt = ard.ard_trip_cnt}
                            in
                            block, ard :: dl
                          else block, ard :: dl)
