@@ -28,7 +28,6 @@ let test_jeopardized g t monl =
       g.attacked > 0 && hp <= nb_hp
 ;;
 
-(*
 let flame_risk g t =
   let transl = transl g in
   match g.rogue_room_and_door with
@@ -57,7 +56,6 @@ let flame_risk g t =
       loop 0 1 run_around_list
   | None -> 0
 ;;
-*)
 
 let test_monsters_risk g t monl =
   let pos = rogue_pos g in
@@ -263,7 +261,6 @@ let drop_scare_with base state =
 
 let start_drop_scare base ch = drop_scare_with base (DSdrop ch);;
 
-(*
 let glup g t s =
   let pos = rogue_pos g in
   let on_scare = list__mem pos g.scare_pos in
@@ -288,7 +285,6 @@ let glup g t s =
        (scroll_of_hold_monsters_in_pack g.pack <> None));
   failwith s
 ;;
-*)
 
 let random_move g pos na =
   let len = list__list_length run_around_list in
@@ -1837,7 +1833,6 @@ let is_safe_to_go_to_stairs_room g t base =
   | [] | _ :: _ -> false
 ;;
 
-(*
 let drop_scare_and_kill g t message ds =
   let transl = transl g in
   let pos = rogue_pos g in
@@ -1967,7 +1962,13 @@ let drop_scare_and_kill g t message ds =
                     match g.rogue_room_and_door with
                       Some (_, Some dir) ->
                         if mov = one_step_to_exit_room dir then
-                          {(*ds with*) ds_monster_perhaps_blocked = None}
+                          {ds_monster_perhaps_blocked = None;
+                           ds_base = ds.ds_base; ds_state = ds.ds_state;
+                           ds_last_corridor_kill_time =
+                             ds.ds_last_corridor_kill_time;
+                           ds_nb_killed_in_corr = ds.ds_nb_killed_in_corr;
+                           ds_nb_attempt = ds.ds_nb_attempt;
+                           ds_outside_tested = ds.ds_outside_tested}
                         else ds
                     | Some (_, None) | None -> ds
                   in
@@ -1981,7 +1982,14 @@ let drop_scare_and_kill g t message ds =
                     with
                       Some dir ->
                         if mov = one_step_to_exit_room dir then
-                          Some {(*ds with*) ds_last_corridor_kill_time = g.time}
+                          Some
+                            {ds_last_corridor_kill_time = g.time;
+                             ds_monster_perhaps_blocked =
+                               ds.ds_monster_perhaps_blocked;
+                             ds_base = ds.ds_base; ds_state = ds.ds_state;
+                             ds_nb_killed_in_corr = ds.ds_nb_killed_in_corr;
+                             ds_nb_attempt = ds.ds_nb_attempt;
+                             ds_outside_tested = ds.ds_outside_tested}
                         else if
                           len = 1 && ds.ds_last_corridor_kill_time > 0 &&
                           g.time > ds.ds_last_corridor_kill_time + 100
@@ -3160,7 +3168,6 @@ let drop_scare_and_kill g t message ds =
             comm, na, None
         | _ -> failwith (sprintf "not impl DStest_out_in step %d" step)
 ;;
-*)
 
 (*
 let set_ar_door_trip_cnt pos ar =
@@ -5636,7 +5643,10 @@ let apply g t message =
             in
             match block with
               Some (gp, mpos) ->
-                let um = {(*um with*) um_gp = gp; um_mpos = mpos} in
+                let um =
+                  {um_gp = gp; um_mpos = mpos; um_base = um.um_base;
+                   um_kont = um.um_kont}
+                in
                 let na = NAgo_unblock_monster um in Coth ` `, na, t.t_prev_mov
             | None ->
                 let na = NAgo_unblock_monster um in Coth `.`, na, t.t_prev_mov
@@ -5645,14 +5655,20 @@ let apply g t message =
           epos :: path ->
             tempo g 0.1;
             let gp = {epos = epos; tpos = gp.tpos; path = path} in
-            let um = {(*um with*) um_gp = gp} in
+            let um =
+              {um_gp = gp; um_base = um.um_base; um_mpos = um.um_mpos;
+               um_kont = um.um_kont}
+            in
             let na = NAgo_unblock_monster um in
             let mov = move_between pos epos in
             let na = NAmove (mov, na) in Coth `m`, na, t.t_prev_mov
         | [] -> failwith "assert false"
       else
         let gp = old_path_excl_from_to g [] pos gp.tpos 25 in
-        let um = {(*um with*) um_gp = gp} in
+        let um =
+          {um_gp = gp; um_base = um.um_base; um_mpos = um.um_mpos;
+           um_kont = um.um_kont}
+        in
         let na = NAgo_unblock_monster um in Coth ` `, na, None
   | NAlet_come (mch, move) ->
       tempo g 1.0;
