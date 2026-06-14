@@ -685,7 +685,6 @@ let go_to_stairs = go_to_stairs_rec false;;
 
 (* *)
 
-(*
 let continue_test_scrolls g t ch_arm prev_a =
   let (monl, movl) = monsters_and_moves_around g in
   match monl with
@@ -721,7 +720,6 @@ let continue_test_scrolls g t ch_arm prev_a =
         let na = NAwear (` `, 1, prev_a) in Coth `T`, na, None
       else attack_monsters g t movl monl prev_a
 ;;
-*)
 
 let close_to_stairs g =
   match g.rogue_room_and_door with
@@ -5217,7 +5215,9 @@ let apply g t message =
                 Parmor ar -> ar
               | _ -> failwith "assert false"
             in
-            let ar = {(*ar with*) ar_value = armor_value message} in
+            let ar =
+              {ar_value = armor_value message; ar_protected = ar.ar_protected}
+            in
             g.worn_armor <- Some (ch, ar);
             redefine_in_pack g ch (Parmor ar);
             Coth ` `, na, t.t_prev_mov
@@ -5546,7 +5546,14 @@ let apply g t message =
           let na =
             match um.um_kont with
               NAdrop_scare_and_kill ds ->
-                let ds = {(*ds with*) ds_monster_perhaps_blocked = None} in
+                let ds =
+                  {ds_monster_perhaps_blocked = None; ds_base = ds.ds_base;
+                   ds_state = ds.ds_state;
+                   ds_last_corridor_kill_time = ds.ds_last_corridor_kill_time;
+                   ds_nb_killed_in_corr = ds.ds_nb_killed_in_corr;
+                   ds_nb_attempt = ds.ds_nb_attempt;
+                   ds_outside_tested = ds.ds_outside_tested}
+                in
                 NAdrop_scare_and_kill ds
             | NAalone_in_room ar ->
                 let dl =
