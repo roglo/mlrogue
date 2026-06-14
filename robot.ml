@@ -751,9 +751,9 @@ let play tab nrow ncol t =
             Some sl -> sl.sl_level
           | None -> g.level
         in
-        let current_dung = vect_sub_vect tab 1 (nrow - 2) in
+        let current_dung = vect__sub_vect tab 1 (nrow - 2) in
         let rogtime =
-          if vect_sub_vect tab 1 (nrow - 1) <> vect_sub_vect g.dung.tab 1 (nrow - 1)
+          if vect__sub_vect tab 1 (nrow - 1) <> vect__sub_vect g.dung.tab 1 (nrow - 1)
           then
             g.rogtime + 1
           else g.rogtime
@@ -1501,13 +1501,12 @@ let play tab nrow ncol t =
                                                           rogue_pos g
                                                         in
                                                         let spos =
-                                                          list__nth sp
+                                                          list_nth sp
                                                             (random_int g
-                                                               (list__length
+                                                               (list__list_length
                                                                   sp))
                                                         in
-                                                        Rob_action.
-                                                        go_to_stairs
+                                                        rob_action__go_to_stairs
                                                           g t graph pos spos
                                                           false
                                                       else
@@ -1523,8 +1522,7 @@ let play tab nrow ncol t =
                                                               NAseek_gold_or_monster
                                                                 (gp, false)
                                                             in
-                                                            Rob_action.
-                                                            slow_down
+                                                            rob_action__slow_down
                                                               g t;
                                                             Coth ` `, na, None
                                                         | None ->
@@ -1532,11 +1530,11 @@ let play tab nrow ncol t =
                                                                map_showed_since =
                                                                  0
                                                             then
-                                                              Rob_action.
+                                                              rob_action__
                                                               start_search
                                                                 g t graph
                                                             else
-                                                              Rob_action.
+                                                              rob_action__
                                                               random_move
                                                                 g pos NAnone
                                                     end
@@ -1601,7 +1599,7 @@ let play tab nrow ncol t =
                                                         Coth `q`, na, None
                                                     | None -> assert false
                                                   else
-                                                    Rob_action.apply g t
+                                                    rob_action__apply g t
                                                       message
   in
   let on_stairs =
@@ -1628,7 +1626,7 @@ let play tab nrow ncol t =
   in
   let neutral_move = [Coth ` `; Coth ``; Coth ``] in
   let t =
-    {t with t_prev_pos =
+    {(*t with*) t_prev_pos =
       if list__mem comm neutral_move then t.t_prev_pos else Some g;
      t_prev_game = Some g; t_prev_comm = Some comm; t_prev_mov = mov;
      t_on_stairs = on_stairs; t_next_action = next_action}
