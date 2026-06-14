@@ -3131,7 +3131,7 @@ let drop_scare_and_kill g t message ds =
                         else
                           let dss = DSdropped (ntest + 1) in
                           let ds = drop_scare ds dss in
-                          let ds = {(*ds with*) ds_outside_tested = true} in
+                          let ds = {(*ds with*) ds_outside_tested = true}in
                           let na = NAdrop_scare_and_kill ds in
                           Coth `.`, na, t.t_prev_mov
                     end
@@ -5560,11 +5560,17 @@ let apply g t message =
                   list__map
                     (fun ard ->
                        if ard.ard_pos = base then
-                         {(*ard with*) ard_monster_perhaps_blocked = None}
+                         {ard_monster_perhaps_blocked = None;
+                          ard_pos = ard.ard_pos; ard_dir = ard.ard_dir;
+                          ard_trip_cnt = ard.ard_trip_cnt}
                        else ard)
                     ar.ar_doors
                 in
-                let ar = {(*ar with*) ar_doors = dl} in NAalone_in_room ar
+                let ar =
+                  {ar_doors = dl; ar_state = ar.ar_state; ar_room = ar.ar_room;
+                   ar_trip_cnt = ar.ar_trip_cnt}
+                in
+                NAalone_in_room ar
             | _ -> failwith "assert false"
           in
           let um = {(*um with*) um_kont = na} in
