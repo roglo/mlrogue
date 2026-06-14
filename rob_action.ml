@@ -5573,7 +5573,10 @@ let apply g t message =
                 NAalone_in_room ar
             | _ -> failwith "assert false"
           in
-          let um = {(*um with*) um_kont = na} in
+          let um =
+            {um_kont = na; um_base = um.um_base; um_mpos = um.um_mpos;
+             um_gp = um.um_gp}
+          in
           let na = NAgo_unblock_monster um in move_command2 g pos mpos na
         else
           let gp = old_path_excl_from_to g [] pos base 15 in
@@ -5590,7 +5593,14 @@ let apply g t message =
                   let (block, mpb) =
                     unblocking_monster g ipos perhaps_blocked
                   in
-                  let ds = {(*ds with*) ds_monster_perhaps_blocked = mpb} in
+                  let ds =
+                    {ds_monster_perhaps_blocked = mpb; ds_base = ds.ds_base;
+                     ds_state = ds.ds_state;
+                     ds_last_corridor_kill_time = ds.ds_last_corridor_kill_time;
+                     ds_nb_killed_in_corr = ds.ds_nb_killed_in_corr;
+                     ds_nb_attempt = ds.ds_nb_attempt;
+                     ds_outside_tested = ds.ds_outside_tested}
+                  in
                   let na = NAdrop_scare_and_kill ds in block, na
               | NAalone_in_room ar ->
                   let (block, dl) =
