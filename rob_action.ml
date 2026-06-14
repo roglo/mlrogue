@@ -5623,11 +5623,17 @@ let apply g t message =
                          else block, ard :: dl)
                       ar.ar_doors (None, [])
                   in
-                  let ar = {(*ar with*) ar_doors = dl} in
+                  let ar =
+                    {ar_doors = dl; ar_state = ar.ar_state;
+                     ar_room = ar.ar_room; ar_trip_cnt = ar.ar_trip_cnt}
+                  in
                   let na = NAalone_in_room ar in block, na
               | _ -> failwith "assert false"
             in
-            let um = {(*um with*) um_kont = na} in
+            let um =
+              {um_kont = na; um_base = um.um_base; um_mpos = um.um_mpos;
+               um_gp = um.um_gp}
+            in
             match block with
               Some (gp, mpos) ->
                 let um = {(*um with*) um_gp = gp; um_mpos = mpos} in
