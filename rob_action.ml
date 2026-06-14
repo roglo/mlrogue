@@ -2645,17 +2645,33 @@ let drop_scare_and_kill g t message ds =
                               let mov = list__hd monl in
                               let ch = basic_command_of_move mov in
                               let ds =
-                                {(*ds with*) ds_monster_perhaps_blocked = None}
+                                {ds_monster_perhaps_blocked = None;
+                                 ds_base = ds.ds_base; ds_state = ds.ds_state;
+                                 ds_last_corridor_kill_time =
+                                   ds.ds_last_corridor_kill_time;
+                                 ds_nb_killed_in_corr =
+                                   ds.ds_nb_killed_in_corr;
+                                 ds_nb_attempt = ds.ds_nb_attempt;
+                                 ds_outside_tested = ds.ds_outside_tested}
                               in
                               let ds = drop_scare ds (DSforce_kill ch) in
                               let nb_killed_in_corr =
                                 ds.ds_nb_killed_in_corr + 1
                               in
                               let ds =
-                                {(*ds with*) ds_nb_killed_in_corr =
-                                  nb_killed_in_corr}
+                                {ds_nb_killed_in_corr = nb_killed_in_corr;
+                                 ds_base = ds.ds_base; ds_state = ds.ds_state;
+                                 ds_last_corridor_kill_time =
+                                   ds.ds_last_corridor_kill_time;
+                                 ds_nb_attempt = ds.ds_nb_attempt;
+                                 ds_outside_tested = ds.ds_outside_tested;
+                                 ds_monster_perhaps_blocked =
+                                   ds.ds_monster_perhaps_blocked}
                               in
-                              let ds = {(*ds with*) ds_outside_tested = false} in
+                              let ds =
+                                {ds_outside_tested = false;
+                                 ds_base = ds.ds_base}
+                              in
                               let na = NAdrop_scare_and_kill ds in
                               Coth `F`, na, None
                             else

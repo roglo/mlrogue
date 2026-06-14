@@ -759,12 +759,17 @@ let play tab nrow ncol t =
           else g.rogtime
         in
         let g =
-          {(*g with*) dung = dung; level = level; rogtime = rogtime;
+          {dung = dung; level = level; rogtime = rogtime;
            time = g.time + 1; status_line = status_line_opt;
            time_in_level = g.time_in_level + 1;
            is_message_more = is_message_more; trail = trail;
            rogue_pos = rogue_pos; rogue_room_and_door = rogue_room_and_door;
-           move_result = move_result; hist_dung = current_dung :: g.hist_dung}
+           move_result = move_result; hist_dung = current_dung :: g.hist_dung;
+           random_state = g.random_state; lang = g.lang; speed = g.speed;
+           sure_stairs_pos = g.sure_stairs_pos;
+           on_something_at = g.on_something_at; pack = g.pack;
+           pack_full = g.pack_full; worn_armor = g.worn_armor;
+           main_sword = g.main_sword}
         in
         if level <> prev_level ||
            prev_level = 99 &&
