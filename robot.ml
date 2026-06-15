@@ -778,7 +778,11 @@ let play tab nrow ncol t =
            hallucinated = g.hallucinated;
            was_hallucinated = g.was_hallucinated; blind = g.blind;
            held = g.held; attacked = g.attacked;
-           attacked_by_invisible = g.attacked_by_invisible}
+           attacked_by_invisible = g.attacked_by_invisible;
+           attacked_by_flame = g.attacked_by_flame;
+           frozen_monsters = g.frozen_monsters; regrets = g.regrets;
+           blindness_discovered = g.blindness_discovered;
+           hallucination_discovered = g.hallucination_discovered}
         in
         if level <> prev_level ||
            prev_level = 99 &&

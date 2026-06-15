@@ -3289,9 +3289,11 @@ let test_possible_obstruction_in_next_room g pos =
     | [] -> failwith "assert false"
     | _ :: _ -> None
 ;;
+*)
 
 let ard_of_pos ar pos = list__find (fun ard -> ard.ard_pos = pos) ar.ar_doors;;
 
+(*
 let ar_with_ard ar ard =
   let ar_doors =
     list__map (fun ard1 -> if ard.ard_pos = ard1.ard_pos then ard else ard1)
@@ -3480,7 +3482,9 @@ let alone_in_room g t message ar =
                             let na = NAalone_in_room ar in Coth ` `, na, None
                           else
                             let ar =
-                              {(*ar with*) ar_trip_cnt = ar.ar_trip_cnt + 1}
+                              {ar_trip_cnt = ar.ar_trip_cnt + 1;
+                               ar_state = ar.ar_state; ar_room = ar.ar_room;
+                               ar_doors = ar.ar_doors}
                             in
                             let gp =
                               path_in_room_excl_mon g ar.ar_room pos
@@ -3675,7 +3679,10 @@ let alone_in_room g t message ar =
                 match monl with
                   mov :: _ ->
                     let ard = ard_of_pos ar pos in
-                    let ard = {(*ard with*) ard_monster_perhaps_blocked = None} in
+                    let ard =
+                      {ard_monster_perhaps_blocked = None;
+                       ard_pos = ard.ard_pos}
+                    in
                     let ar = ar_with_ard ar ard in
                     let ar = set_ar_door_trip_cnt pos ar in
                     let ars = ARcommand "kill_monsters" in
