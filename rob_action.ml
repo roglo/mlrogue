@@ -3203,7 +3203,16 @@ let drop_scare_and_kill g t message ds =
                         else
                           let dss = DSdropped (ntest + 1) in
                           let ds = drop_scare ds dss in
-                          let ds = {(*ds with*) ds_outside_tested = true}in
+                          let ds =
+                            {ds_outside_tested = true; ds_base = ds.ds_base;
+                             ds_state = ds.ds_state;
+                             ds_last_corridor_kill_time =
+                               ds.ds_last_corridor_kill_time;
+                             ds_nb_killed_in_corr = ds.ds_nb_killed_in_corr;
+                             ds_nb_attempt = ds.ds_nb_attempt;
+                             ds_monster_perhaps_blocked =
+                               ds.ds_monster_perhaps_blocked}
+                          in
                           let na = NAdrop_scare_and_kill ds in
                           Coth `.`, na, t.t_prev_mov
                     end
@@ -3223,7 +3232,14 @@ let drop_scare_and_kill g t message ds =
             let ds = drop_scare ds (DStest_out_in (move, rc, 2)) in
             let na = NAdrop_scare_and_kill ds in Coth `m`, na, None
         | 2 ->
-            let ds = {(*ds with*) ds_outside_tested = true} in
+            let ds =
+              {ds_outside_tested = true; ds_base = ds.ds_base;
+               ds_state = ds.ds_state;
+               ds_last_corridor_kill_time = ds.ds_last_corridor_kill_time;
+               ds_nb_killed_in_corr = ds.ds_nb_killed_in_corr;
+               ds_nb_attempt = ds.ds_nb_attempt;
+               ds_monster_perhaps_blocked = ds.ds_monster_perhaps_blocked}
+            in
             let ds = drop_scare ds (DStest_move (0, rc)) in
             let na = NAdrop_scare_and_kill ds in
             let (comm, na) =
@@ -3283,6 +3299,7 @@ let ar_with_ard ar ard =
   in
   {ar with ar_doors = ar_doors}
 ;;
+*)
 
 let alone_in_room g t message ar =
   let transl = transl g in
@@ -3463,7 +3480,7 @@ let alone_in_room g t message ar =
                             let na = NAalone_in_room ar in Coth ` `, na, None
                           else
                             let ar =
-                              {ar with ar_trip_cnt = ar.ar_trip_cnt + 1}
+                              {(*ar with*) ar_trip_cnt = ar.ar_trip_cnt + 1}
                             in
                             let gp =
                               path_in_room_excl_mon g ar.ar_room pos
@@ -3658,7 +3675,7 @@ let alone_in_room g t message ar =
                 match monl with
                   mov :: _ ->
                     let ard = ard_of_pos ar pos in
-                    let ard = {ard with ard_monster_perhaps_blocked = None} in
+                    let ard = {(*ard with*) ard_monster_perhaps_blocked = None} in
                     let ar = ar_with_ard ar ard in
                     let ar = set_ar_door_trip_cnt pos ar in
                     let ars = ARcommand "kill_monsters" in
@@ -3687,7 +3704,7 @@ let alone_in_room g t message ar =
                             unblocking_monster g pos perhaps_blocked
                           in
                           let ard =
-                            {ard with ard_monster_perhaps_blocked = mpb}
+                            {(*ard with*) ard_monster_perhaps_blocked = mpb}
                           in
                           let ar = ar_with_ard ar ard in
                           let blocked =
@@ -3886,7 +3903,7 @@ let alone_in_room g t message ar =
               match monl with
                 mov :: _ ->
                   let ard = ard_of_pos ar pos in
-                  let ard = {ard with ard_monster_perhaps_blocked = None} in
+                  let ard = {(*ard with*) ard_monster_perhaps_blocked = None} in
                   let ar = ar_with_ard ar ard in
                   let ar = set_ar_door_trip_cnt pos ar in
                   let ars = ARcommand "kill_monsters" in
@@ -3940,6 +3957,7 @@ let alone_in_room g t message ar =
   | ARcommand s -> failwith (sprintf "not impl ARcommand `%s`" s)
 ;;
 
+(*
 let no_monster_in_line_of_sight g mpos cand_dir pos_dir =
   let rec loop pos =
     if pos = cand_dir then pos
