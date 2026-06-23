@@ -3249,16 +3249,19 @@ let drop_scare_and_kill g t message ds =
         | _ -> failwith (sprintf "not impl DStest_out_in step %d" step)
 ;;
 
-(*
 let set_ar_door_trip_cnt pos ar =
   let dl =
     list__map
       (fun ard ->
-         if ard.ard_pos = pos then {(*ard with*) ard_trip_cnt = ar.ar_trip_cnt}
+         if ard.ard_pos = pos then
+           {ard_trip_cnt = ar.ar_trip_cnt; ard_pos = ard.ard_pos;
+            ard_dir = ard.ard_dir;
+            ard_monster_perhaps_blocked = ard.ard_monster_perhaps_blocked}
          else ard)
       ar.ar_doors
   in
-  {(*ar with*) ar_doors = dl}
+  {ar_doors = dl; ar_state = ar.ar_state; ar_room = ar.ar_room;
+   ar_trip_cnt = ar.ar_trip_cnt}
 ;;
 
 let get_ar_door_trip_cnt pos ar =
@@ -3289,19 +3292,17 @@ let test_possible_obstruction_in_next_room g pos =
     | [] -> failwith "assert false"
     | _ :: _ -> None
 ;;
-*)
 
 let ard_of_pos ar pos = list__find (fun ard -> ard.ard_pos = pos) ar.ar_doors;;
 
-(*
 let ar_with_ard ar ard =
   let ar_doors =
     list__map (fun ard1 -> if ard.ard_pos = ard1.ard_pos then ard else ard1)
       ar.ar_doors
   in
-  {ar with ar_doors = ar_doors}
+  {ar_doors = ar_doors; ar_state = ar.ar_state; ar_room = ar.ar_room;
+   ar_trip_cnt = ar.ar_trip_cnt}
 ;;
-*)
 
 let alone_in_room g t message ar =
   let transl = transl g in
@@ -3681,7 +3682,8 @@ let alone_in_room g t message ar =
                     let ard = ard_of_pos ar pos in
                     let ard =
                       {ard_monster_perhaps_blocked = None;
-                       ard_pos = ard.ard_pos}
+                       ard_pos = ard.ard_pos; ard_dir = ard.ard_dir;
+                       ard_trip_cnt = ard.ard_trip_cnt}
                     in
                     let ar = ar_with_ard ar ard in
                     let ar = set_ar_door_trip_cnt pos ar in
@@ -3711,7 +3713,9 @@ let alone_in_room g t message ar =
                             unblocking_monster g pos perhaps_blocked
                           in
                           let ard =
-                            {(*ard with*) ard_monster_perhaps_blocked = mpb}
+                            {ard_monster_perhaps_blocked = mpb;
+                             ard_pos = ard.ard_pos; ard_dir = ard.ard_dir;
+                             ard_trip_cnt = ard.ard_trip_cnt}
                           in
                           let ar = ar_with_ard ar ard in
                           let blocked =
