@@ -28,6 +28,7 @@ let map_option f =
     Some x -> Some (f x)
   | None -> None
 ;;
+*)
 
 let string_of_option f =
   function
@@ -35,6 +36,7 @@ let string_of_option f =
   | None -> "None"
 ;;
 
+(*
 let rec list_uniq_c eq =
   function
     x :: l ->
@@ -301,6 +303,7 @@ let repetition_old_state g =
       loop 0 hist_dung
   | [] -> false
 ;;
+*)
 
 let rec string_of_pack_obj t =
   function
@@ -390,6 +393,7 @@ and string_of_wand_kind =
   | AKother -> "AKother"
 ;;
 
+(*
 let string_of_door_dir =
   function
     DoorUp -> "DoorUp"
@@ -417,27 +421,29 @@ let display_trail g =
   done;
   let pos = rogue_pos g in move oc (pos.row + 1) (pos.col + 1); flush oc
 ;;
+*)
 
 let trace_pack g t =
   eprintf "pack:\n";
-  list__iter
-    (fun (ref, (nb, obj)) ->
-       eprintf "-%c: %s%s%s\n" ref (string_of_pack_obj t obj)
+  list__do_list
+    (fun (r, (nb, obj)) ->
+       eprintf "-%c: %s%s%s\n" r (string_of_pack_obj t obj)
          (if nb = 1 then "" else sprintf " (%d items)" nb)
-         (if ref = g.main_sword then
+         (if r = g.main_sword then
             " in hand" ^ (if g.weapon_cursed then " (cursed)" else "")
-          else if Some ref = g.ring_of_slow_digestion_on_hand then " on hand"
+          else if Some r = g.ring_of_slow_digestion_on_hand then " on hand"
           else
             match g.worn_armor with
               Some (ch, _) ->
-                if ref = ch then
+                if r = ch then
                   " being worn" ^ (if g.armor_cursed then " (cursed)" else "")
                 else ""
             | None -> ""))
-    (list__sort compare g.pack);
+    (sort__sort (fun x y -> x <= y) g.pack);
   flush stderr
 ;;
 
+(*
 (*
 value trace_graph_global_search g graph pos path tpos = do {
 (**)
@@ -450,7 +456,7 @@ let oc = stderr in
   fprintf oc "  pos (%d,%d) target (%d,%d) %d: " pos.row pos.col tpos.row
     tpos.col (list__length path);
   flush oc;
-  list__iter (fun mov -> fprintf oc "%c" (basic_command_of_move mov)) path;
+  list__do_list (fun mov -> fprintf oc "%c" (basic_command_of_move mov)) path;
   fprintf oc "   \n";
   for row = 1 to g.dung.nrow - 1 do {
     for col = 0 to g.dung.ncol - 1 do {
@@ -507,7 +513,7 @@ let is_entering_a_monsters_room g t =
 ;;
 
 let trace_path t path =
-  list__iter (fun pos -> trace t (sprintf "(%d,%d)" pos.row pos.col)) path
+  list__do_list (fun pos -> trace t (sprintf "(%d,%d)" pos.row pos.col)) path
 ;;
 
 let nb_diff g =
@@ -571,7 +577,7 @@ let all_visited g =
 let trace_trail t trail =
   let trail = list__rev trail in
   trace t "*** trail: ";
-  list__iter (fun pos -> trace t (sprintf "(%d,%d)" pos.row pos.col)) trail;
+  list__do_list (fun pos -> trace t (sprintf "(%d,%d)" pos.row pos.col)) trail;
   trace t "\n";
   let room_trail =
     list__map
@@ -584,7 +590,7 @@ let trace_trail t trail =
   in
   let room_trail = list_uniq_c (=) room_trail in
   trace t "*** room trail:";
-  list__iter
+  list__do_list
     (fun (rt, c) ->
        trace t " ";
        begin match rt with
@@ -782,7 +788,11 @@ let play tab nrow ncol t =
            attacked_by_flame = g.attacked_by_flame;
            frozen_monsters = g.frozen_monsters; regrets = g.regrets;
            blindness_discovered = g.blindness_discovered;
-           hallucination_discovered = g.hallucination_discovered}
+           hallucination_discovered = g.hallucination_discovered;
+           teleport_discovered = g.teleport_discovered;
+           after_first_pack_full = g.after_first_pack_full;
+           nb_of_reinit_search = g.nb_of_reinit_search; traps = g.traps;
+           paradise = g.paradise; dead = g.dead}
         in
         if level <> prev_level ||
            prev_level = 99 &&
