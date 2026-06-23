@@ -3914,7 +3914,11 @@ let alone_in_room g t message ar =
               match monl with
                 mov :: _ ->
                   let ard = ard_of_pos ar pos in
-                  let ard = {(*ard with*) ard_monster_perhaps_blocked = None} in
+                  let ard =
+                    {ard_monster_perhaps_blocked = None;
+                     ard_pos = ard.ard_pos; ard_dir = ard.ard_dir;
+                     ard_trip_cnt = ard.ard_trip_cnt}
+                  in
                   let ar = ar_with_ard ar ard in
                   let ar = set_ar_door_trip_cnt pos ar in
                   let ars = ARcommand "kill_monsters" in
@@ -3978,6 +3982,7 @@ let no_monster_in_line_of_sight g mpos cand_dir pos_dir =
   in
   loop mpos
 ;;
+*)
 
 let furthest_pos_in_room_to g (rmin, cmin, rmax, cmax) mpos =
   let (rmin, cmin, rmax, cmax) =
@@ -4010,24 +4015,24 @@ let furthest_pos_in_room_to g (rmin, cmin, rmax, cmax) mpos =
     loop cmax
   in
   let cand_left =
-    let pos_door = {mpos with col = cmin - 1} in
+    let pos_door = {(*mpos with*) col = cmin - 1} in
     if dung_char g.dung pos_door = `+` then pos_door
-    else {mpos with col = cmin}
+    else {(*mpos with*) col = cmin}
   in
   let cand_right =
-    let pos_door = {mpos with col = cmax + 1} in
+    let pos_door = {(*mpos with*) col = cmax + 1} in
     if dung_char g.dung pos_door = `+` then pos_door
-    else {mpos with col = cmax}
+    else {(*mpos with*) col = cmax}
   in
   let cand_up =
-    let pos_door = {mpos with row = rmin - 1} in
+    let pos_door = {(*mpos with*) row = rmin - 1} in
     if dung_char g.dung pos_door = `+` then pos_door
-    else {mpos with row = rmin}
+    else {(*mpos with*) row = rmin}
   in
   let cand_down =
-    let pos_door = {mpos with row = rmax + 1} in
+    let pos_door = {(*mpos with*) row = rmax + 1} in
     if dung_char g.dung pos_door = `+` then pos_door
-    else {mpos with row = rmax}
+    else {(*mpos with*) row = rmax}
   in
   let cand_left = no_monster_in_line_of_sight g mpos cand_left pos_left in
   let cand_right = no_monster_in_line_of_sight g mpos cand_right pos_right in
@@ -4061,7 +4066,7 @@ let attack_at_distance g t room mov =
             else pos :: excl
           else excl
         in
-        loop excl {pos with col = pos.col + 1}
+        loop excl {col = pos.col + 1; row = pos.row}
     in
     loop [] {row = rmin; col = cmin}
   in
@@ -4107,6 +4112,7 @@ let attack_at_distance g t room mov =
   loop tpos_list
 ;;
 
+(*
 let dist_between pos1 pos2 =
   {di = pos2.row - pos1.row; dj = pos2.col - pos1.col}
 ;;
