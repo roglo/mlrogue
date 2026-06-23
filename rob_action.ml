@@ -3972,7 +3972,6 @@ let alone_in_room g t message ar =
   | ARcommand s -> failwith (sprintf "not impl ARcommand `%s`" s)
 ;;
 
-(*
 let no_monster_in_line_of_sight g mpos cand_dir pos_dir =
   let rec loop pos =
     if pos = cand_dir then pos
@@ -3982,7 +3981,6 @@ let no_monster_in_line_of_sight g mpos cand_dir pos_dir =
   in
   loop mpos
 ;;
-*)
 
 let furthest_pos_in_room_to g (rmin, cmin, rmax, cmax) mpos =
   let (rmin, cmin, rmax, cmax) =
@@ -4015,31 +4013,31 @@ let furthest_pos_in_room_to g (rmin, cmin, rmax, cmax) mpos =
     loop cmax
   in
   let cand_left =
-    let pos_door = {(*mpos with*) col = cmin - 1} in
+    let pos_door = {col = cmin - 1; row = mpos.row} in
     if dung_char g.dung pos_door = `+` then pos_door
-    else {(*mpos with*) col = cmin}
+    else {col = cmin; row = mpos.row}
   in
   let cand_right =
-    let pos_door = {(*mpos with*) col = cmax + 1} in
+    let pos_door = {col = cmax + 1; row = mpos.row} in
     if dung_char g.dung pos_door = `+` then pos_door
-    else {(*mpos with*) col = cmax}
+    else {col = cmax; row = mpos.row}
   in
   let cand_up =
-    let pos_door = {(*mpos with*) row = rmin - 1} in
+    let pos_door = {row = rmin - 1; col = mpos.col} in
     if dung_char g.dung pos_door = `+` then pos_door
-    else {(*mpos with*) row = rmin}
+    else {row = rmin; col = mpos.col}
   in
   let cand_down =
-    let pos_door = {(*mpos with*) row = rmax + 1} in
+    let pos_door = {row = rmax + 1; col = mpos.col} in
     if dung_char g.dung pos_door = `+` then pos_door
-    else {(*mpos with*) row = rmax}
+    else {row = rmax; col = mpos.col}
   in
   let cand_left = no_monster_in_line_of_sight g mpos cand_left pos_left in
   let cand_right = no_monster_in_line_of_sight g mpos cand_right pos_right in
   let cand_up = no_monster_in_line_of_sight g mpos cand_up pos_up in
   let cand_down = no_monster_in_line_of_sight g mpos cand_down pos_down in
   sort__sort
-    (fun pos1 pos2 -> compare (distance pos2 mpos) (distance pos1 mpos))
+    (fun pos1 pos2 -> (distance pos2 mpos) <= (distance pos1 mpos))
     [cand_left; cand_right; cand_up; cand_down]
 ;;
 
@@ -4112,7 +4110,6 @@ let attack_at_distance g t room mov =
   loop tpos_list
 ;;
 
-(*
 let dist_between pos1 pos2 =
   {di = pos2.row - pos1.row; dj = pos2.col - pos1.col}
 ;;
@@ -4162,6 +4159,7 @@ let close_to_room g pos =
   loop [pos_up; pos_down; pos_left; pos_right]
 ;;
 
+(*
 let count_accessible_things_around g pos in_room =
   let (row, col) = pos.row, pos.col in
   let rec loop nmov nmon1 nmon2 nobj di dj =
@@ -4200,6 +4198,7 @@ let access_blocked_by_other_monster g room pos mov =
 ;;
 
 let sign x = if x >= 0 then 1 else -1;;
+*)
 
 let find_something_to_do g t =
   let prev_mov = t.t_prev_mov in
@@ -4517,7 +4516,6 @@ let find_something_to_do g t =
                   if g.blind then random_move g pos NAnone
                   else start_move_in_corridor g t pos
 ;;
-*)
 
 let rec choose_dir g pos =
   function
