@@ -4159,7 +4159,6 @@ let close_to_room g pos =
   loop [pos_up; pos_down; pos_left; pos_right]
 ;;
 
-(*
 let count_accessible_things_around g pos in_room =
   let (row, col) = pos.row, pos.col in
   let rec loop nmov nmon1 nmon2 nobj di dj =
@@ -4198,7 +4197,6 @@ let access_blocked_by_other_monster g room pos mov =
 ;;
 
 let sign x = if x >= 0 then 1 else -1;;
-*)
 
 let find_something_to_do g t =
   let prev_mov = t.t_prev_mov in
@@ -4499,7 +4497,7 @@ let find_something_to_do g t =
                           | _ ->
                               let nmov_without_from =
                                 let from = opposite_move mov in
-                                list_filter ((<>) from) nmov
+                                list_filter ((fun x y -> x <> y) from) nmov
                               in
                               let nmov =
                                 if nmov_without_from = [] then nmov
