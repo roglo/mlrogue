@@ -11,7 +11,7 @@ imisc.zo: imisc.zi efield.zi rfield.zi rogue.zi
 imonster.zi: rogue.zi
 imonster.zo: imonster.zi imisc.zi rogue.zi
 init.zi: rfield.zi rogue.zi
-init.zo: init.zi efield.zi imisc.zi object.zi rfield.zi robot.zi rogue.zi translate.zi
+init.zo: init.zi efield.zi imisc.zi object.zi rfield.zi robot.zi rogue.zi translate.zi util.zi
 level.zi: rogue.zi
 level.zo: level.zi efield.zi imisc.zi imonster.zi object.zi rfield.zi rogue.zi
 main.zo: attack.zi curses.zi dialogue.zi efield.zi finish.zi imisc.zi imonster.zi init.zi level.zi misc.zi monster.zi move.zi object.zi rfield.zi rogue.zi translate.zi use.zi ustring.zi

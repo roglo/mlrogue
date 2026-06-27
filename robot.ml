@@ -830,7 +830,7 @@ let play tab nrow ncol t =
         let ar = {ar_value = Some 4; ar_protected = false} in
         {dung = dung; rogtime = 0; time = 0; status_line = None;
          is_message_more = is_message_more; move_result = move_result;
-         random_state = random_self_init (); level = 1; lang = "en";
+         random_state = random_get_state (); level = 1; lang = "en";
          speed = t.t_speed; time_in_level = 0; trail = trail;
          rogue_pos = rogue_pos; sure_stairs_pos = None;
          rogue_room_and_door = rogue_room_and_door; on_something_at = None;

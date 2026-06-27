@@ -2,8 +2,7 @@
 
 (* #use "rogue.def" *)(* $Id: init.ml,v 1.64 2013/01/29 14:00:23 deraugla Exp $ *)
 
-
-
+#open "util";;
 #open "rfield";;
 #open "rogue";;
 #open "printf";;
