@@ -2,7 +2,7 @@
 
 CAMLC=camlc
 OCOPTS=
-ROBOBJS=rob_position.zo rob_misc.zo rob_object.zo rob_monster.zo rob_path.zo rob_action.zo robot.zo
+ROBOBJS=util.zo rob_position.zo rob_misc.zo rob_object.zo rob_monster.zo rob_path.zo rob_action.zo robot.zo
 OBJS=$(ROBOBJS) ustring.zo efield.zo rfield.zo imisc.zo imonster.zo object.zo level.zo translate.zo curses.zo rogbotio.zo init.zo dialogue.zo misc.zo finish.zo monster.zo attack.zo move.zo use.zo main.zo 
 LIBS=-custom unix.zo -lunix
 ROGBOT_OBJS=$(ROBOBJS) rogbot.zo

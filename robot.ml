@@ -2,6 +2,8 @@
 
 (* #load "pa_if_match.cmo" *)
 
+(*
+
 #open "printf";;
 (*
 open Scanf;;
@@ -17,13 +19,24 @@ open Rob_path;;
 
 type t == rob_def__t;;
 
-(*
-let char_escaped ch =
-  if Char.code ch >= 1 && Char.code ch <= 26 then
-    sprintf "ctrl-%c" (Char.chr (Char.code ch - 1 + Char.code `a`))
-  else Char.escaped ch
+let char_escaped1 = function
+  | `'` -> "\\'"
+  | `\\` -> "\\\\"
+  | `\n` -> "\\n"
+  | `\t` -> "\\t"
+  | `\r` -> "\\r"
+  | `\b` -> "\\b"
+  | c -> string__make_string 1 c
 ;;
 
+let char_escaped ch =
+  if char_code ch >= 1 && char_code ch <= 26 then
+    sprintf "ctrl-%c" (char_chr (char_code ch - 1 + char_code `a`))
+  else
+    char_escaped1 ch
+;;
+
+(*
 let map_option f =
   function
     Some x -> Some (f x)
@@ -48,6 +61,7 @@ let rec list_uniq_c eq =
       end
   | [] -> []
 ;;
+*)
 
 let rec string_of_next_action g t =
   function
@@ -249,6 +263,7 @@ and string_of_alone_room_state =
 
 (* language dependent *)
 
+(*
 let is_amulet s = contains s "amulet";;
 let score_txt = "Roguist";;
 
@@ -1775,4 +1790,6 @@ let reinit after_fail arg_t t =
    t_stop_at_paradise = arg_t.t_stop_at_paradise;
    t_breakpoint = arg_t.t_breakpoint}
 ;;
+*)
+
 *)
