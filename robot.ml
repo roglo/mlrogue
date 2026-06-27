@@ -6,6 +6,7 @@
 (*
 open Scanf;;
 *)
+#open "util";;
 #open "rob_def";;
 #open "rob_misc";;
 (*

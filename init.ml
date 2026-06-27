@@ -9,8 +9,6 @@
 #open "printf";;
 #open "translate";;
 
-let random_self_init () = random__init (unix__time ());;
-
 let syllabes =
   [| "blech"; "foo"; "barf"; "rech"; "bar"; "quo"; "bloto"; "woh"; "caca";
      "blorp"; "erp"; "festr"; "rot"; "slie"; "snorf"; "iky"; "yuky"; "ooze";
