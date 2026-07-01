@@ -537,6 +537,7 @@ let nb_diff g =
       loop 0 0 0
   | None -> 0
 ;;
+*)
 
 let is_score_display g =
   let rec loop_row row =
@@ -554,6 +555,7 @@ let is_score_display g =
   loop_row 0
 ;;
 
+(*
 let can_be_called_while_going_to_stairs =
   function
     NAfight (_, _, _) | NAglobal_search1 (_, _) | NAglobal_search2 (_, _, _) |
@@ -678,9 +680,7 @@ let add_object_in_pack g ch s =
 let is_low_alpha c = c >= `a` && c <= `z`;;
 let is_alpha c = c >= `a` && c <= `z` || c >= `A` && c <= `Z`;;
 
-(*
 exception Breakpoint of int;;
-*)
 
 let play tab nrow ncol t =
   let message =
@@ -960,7 +960,7 @@ let play tab nrow ncol t =
                 let ar = {ar_value = v; ar_protected = ar.ar_protected} in
                 g.worn_armor <- Some (ch, ar);
                 redefine_in_pack g ch (Parmor ar)
-            | None -> assert false
+            | None -> failwith "assert false"
           else if transl.is_message_has_been_confused message then
             g.confused <- true
           else if transl.is_message_less_confused message then
@@ -1029,7 +1029,7 @@ let play tab nrow ncol t =
     begin let old_hp =
       match t.t_prev_game with
         Some old_g -> health_points old_g
-      | None -> assert false
+      | None -> failwith "assert false"
     in
       let new_hp = health_points g in
       let wound = old_hp - new_hp in
@@ -1245,7 +1245,7 @@ let play tab nrow ncol t =
                                                   (uo, t.t_next_action)
                                               in
                                               Coth `q`, na, t.t_prev_mov
-                                          | None -> assert false
+                                          | None -> failwith "assert false"
                                         else
                                           match
                                             if message <> "" ||
@@ -1367,7 +1367,7 @@ let play tab nrow ncol t =
                                                                   (ch, _) ->
                                                                   ch
                                                               | None ->
-                                                                  assert false
+                                                                  failwith "assert false"
                                                     in
                                                     let uo =
                                                       UOread_scroll
@@ -1603,7 +1603,7 @@ let play tab nrow ncol t =
                                                             (uo, na)
                                                         in
                                                         Coth `r`, na, None
-                                                    | None -> assert false
+                                                    | None -> failwith "assert false"
                                                   else if
                                                     message = "" &&
                                                     not
@@ -1633,7 +1633,7 @@ let play tab nrow ncol t =
                                                             (uo, na)
                                                         in
                                                         Coth `q`, na, None
-                                                    | None -> assert false
+                                                    | None -> failwith "assert false"
                                                   else
                                                     rob_action__apply g t
                                                       message
