@@ -9,8 +9,8 @@ open Scanf;;
 #open "util";;
 #open "rob_def";;
 #open "rob_misc";;
+#open "rob_object";;
 (*
-open Rob_object;;
 open Rob_path;;
 *)
 #open "rob_position";;
@@ -251,8 +251,8 @@ and string_of_alone_room_state =
 
 (* language dependent *)
 
-(*
 let is_amulet s = contains s "amulet";;
+(*
 let score_txt = "Roguist";;
 
 (* end (language dependent) *)
@@ -267,14 +267,14 @@ let is_very_hungry g =
     Some sl -> (transl g).is_very_hungry sl.sl_hunger
   | None -> false
 ;;
+*)
 
 let is_identified_wand s = contains s "[";;
-*)
 
 let remove_message_more g mess =
   let transl = transl g in
   let m = transl.message_more mess in
-  if m <> "" then string__sub mess 0 (string__length mess - string__length m)
+  if m <> "" then string__sub_string mess 0 (string__string_length mess - string__string_length m)
   else mess
 ;;
 
@@ -284,7 +284,7 @@ let remove_message_more g mess =
 let eq_dung g dung1 dung2 =
   let rec loop row col =
     if row = Array.length dung1 then true
-    else if col = string__length dung1.(0) then loop (row + 1) 0
+    else if col = string__string_length dung1.(0) then loop (row + 1) 0
     else
       let ch1 = dung1.(row).[col] in
       let ch2 = dung2.(row).[col] in
@@ -543,7 +543,7 @@ let is_score_display g =
     if row = g.dung.nrow then false
     else
       let rec loop col i =
-        if i = string__length score_txt then true
+        if i = string__string_length score_txt then true
         else if col = g.dung.ncol then loop_row (row + 1)
         else if g.dung.tab.(row).[col] = score_txt.[i] then
           loop (col + 1) (i + 1)
@@ -607,6 +607,7 @@ let trace_trail t trail =
     room_trail;
   trace t "\n"
 ;;
+*)
 
 let add_object_in_pack g ch s =
   let transl = transl g in
@@ -619,7 +620,7 @@ let add_object_in_pack g ch s =
           in
           loop 0
         in
-        int_of_string (string__sub s 0 len)
+        int_of_string (string__sub_string s 0 len)
       else 1
     in
     if transl.is_armor s then
@@ -669,14 +670,15 @@ let add_object_in_pack g ch s =
       1, Pwand aw
     else if transl.is_food s then n, Pfood
     else if is_amulet s then 1, Pamulet
-    else failwith (sprintf "what: '%s'" (string__escaped s))
+    else failwith (sprintf "what: '%s'" (string_escaped s))
   in
-  g.pack <- (ch, (nb, obj)) :: list__remove_assoc ch g.pack
+  g.pack <- (ch, (nb, obj)) :: list_remove_assoc ch g.pack
 ;;
 
 let is_low_alpha c = c >= `a` && c <= `z`;;
 let is_alpha c = c >= `a` && c <= `z` || c >= `A` && c <= `Z`;;
 
+(*
 exception Breakpoint of int;;
 *)
 
@@ -955,7 +957,7 @@ let play tab nrow ncol t =
                     Some v -> Some (v - 1)
                   | None -> None
                 in
-                let ar = {(*ar with*) ar_value = v} in
+                let ar = {ar_value = v; ar_protected = ar.ar_protected} in
                 g.worn_armor <- Some (ch, ar);
                 redefine_in_pack g ch (Parmor ar)
             | None -> assert false

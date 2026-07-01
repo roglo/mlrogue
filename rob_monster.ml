@@ -6,12 +6,7 @@
 #open "printf";;
 #open "rob_def";;
 #open "rob_misc";;
-
-let rec list_remove_assoc a l =
-  match l with
-    [] -> []
-  | (b, c) :: l -> if a = b then l else (b, c) :: list_remove_assoc a l
-;;
+#open "util";;
 
 let monster_power_list = ref None;;
 

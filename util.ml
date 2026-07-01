@@ -13,3 +13,9 @@ let rec string_concat sep sl =
   | [s] -> s
   | s :: sl -> s ^ sep ^ string_concat sep sl
 ;;
+
+let rec list_remove_assoc a l =
+  match l with
+    [] -> []
+  | (b, c) :: l -> if a = b then l else (b, c) :: list_remove_assoc a l
+;;

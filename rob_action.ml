@@ -9,6 +9,7 @@
 #open "rob_object";;
 #open "rob_path";;
 #open "rob_position";;
+#open "util";;
 
 let test_jeopardized g t monl =
   let pos = rogue_pos g in

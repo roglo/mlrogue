@@ -30,5 +30,3 @@ value flaming_monster_around : game -> position -> move option;;
 value aquator_around : game -> bool;;
 value flaming_monster_dir : game -> position -> (move * int * position) option;;
 value monster_moving_to : game -> t -> position -> bool;;
-
-value list_remove_assoc : 'a -> ('a * 'b) list -> ('a * 'b) list;;
