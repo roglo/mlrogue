@@ -3,3 +3,7 @@ value random_self_init : unit -> unit;;
 
 value char_code : char -> int;;
 value char_chr : int -> char;;
+value char_escaped : char -> string;;
+
+value string_escaped : string -> string;;
+value string_concat : string -> string list -> string;;

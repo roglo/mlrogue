@@ -2,8 +2,6 @@
 
 (* #load "pa_if_match.cmo" *)
 
-(*
-
 #open "printf";;
 (*
 open Scanf;;
@@ -19,21 +17,11 @@ open Rob_path;;
 
 type t == rob_def__t;;
 
-let char_escaped1 = function
-  | `'` -> "\\'"
-  | `\\` -> "\\\\"
-  | `\n` -> "\\n"
-  | `\t` -> "\\t"
-  | `\r` -> "\\r"
-  | `\b` -> "\\b"
-  | c -> string__make_string 1 c
-;;
-
-let char_escaped ch =
+let char_escaped1 ch =
   if char_code ch >= 1 && char_code ch <= 26 then
     sprintf "ctrl-%c" (char_chr (char_code ch - 1 + char_code `a`))
   else
-    char_escaped1 ch
+    char_escaped ch
 ;;
 
 (*
@@ -104,7 +92,7 @@ let rec string_of_next_action g t =
                mpos.col mch)
           tml
       in
-      let tmls = String.concat ";" tmsl in
+      let tmls = string_concat ";" tmsl in
       sprintf "NAtest_monster [%s] <%s>" tmls (string_of_next_action g t na)
   | NAtest_potions (ch, step) -> sprintf "NAtest_potions %c %d" ch step
   | NAuse_object (uo, na) ->
@@ -122,7 +110,7 @@ let rec string_of_next_action g t =
         gp.tpos.col (string_of_next_action g t na) step
   | NAthrow_away (ch, step) -> sprintf "NAthrow_away '%c' \"%s\"" ch step
   | NAstring (s, skip_mess, na) ->
-      sprintf "(NAstring \"%s\" %b <%s>)" (String.escaped s) skip_mess
+      sprintf "(NAstring \"%s\" %b <%s>)" (string_escaped s) skip_mess
         (string_of_next_action g t na)
   | NAmove (mov, na) ->
       sprintf "NAmove (%d,%d)' (%s)" mov.di mov.dj
@@ -165,7 +153,7 @@ let rec string_of_next_action g t =
       sprintf "NAcheck_no_trap pos (%d,%d) pos1 (%d,%d)" pos.row pos.col
         pos1.row pos1.col
   | NAdrop_scare (chopt, na) ->
-      sprintf "NAdrop_scare %s (%s)" (string_of_option (String.make 1) chopt)
+      sprintf "NAdrop_scare %s (%s)" (string_of_option (string__make_string 1) chopt)
         (string_of_next_action g t na)
   | NAdrop_scare_and_kill ds ->
       sprintf "NAdrop_scare_and_kill (%d,%d) %s" ds.ds_base.row ds.ds_base.col
@@ -281,20 +269,22 @@ let is_very_hungry g =
 ;;
 
 let is_identified_wand s = contains s "[";;
+*)
 
 let remove_message_more g mess =
   let transl = transl g in
   let m = transl.message_more mess in
-  if m <> "" then String.sub mess 0 (String.length mess - String.length m)
+  if m <> "" then string__sub mess 0 (string__length mess - string__length m)
   else mess
 ;;
 
 (* *)
 
+(*
 let eq_dung g dung1 dung2 =
   let rec loop row col =
     if row = Array.length dung1 then true
-    else if col = String.length dung1.(0) then loop (row + 1) 0
+    else if col = string__length dung1.(0) then loop (row + 1) 0
     else
       let ch1 = dung1.(row).[col] in
       let ch2 = dung2.(row).[col] in
@@ -553,7 +543,7 @@ let is_score_display g =
     if row = g.dung.nrow then false
     else
       let rec loop col i =
-        if i = String.length score_txt then true
+        if i = string__length score_txt then true
         else if col = g.dung.ncol then loop_row (row + 1)
         else if g.dung.tab.(row).[col] = score_txt.[i] then
           loop (col + 1) (i + 1)
@@ -629,7 +619,7 @@ let add_object_in_pack g ch s =
           in
           loop 0
         in
-        int_of_string (String.sub s 0 len)
+        int_of_string (string__sub s 0 len)
       else 1
     in
     if transl.is_armor s then
@@ -679,7 +669,7 @@ let add_object_in_pack g ch s =
       1, Pwand aw
     else if transl.is_food s then n, Pfood
     else if is_amulet s then 1, Pamulet
-    else failwith (sprintf "what: '%s'" (String.escaped s))
+    else failwith (sprintf "what: '%s'" (string__escaped s))
   in
   g.pack <- (ch, (nb, obj)) :: list__remove_assoc ch g.pack
 ;;
@@ -906,7 +896,7 @@ let play tab nrow ncol t =
                       if t.t_no_lang_dep then `.` else transl.answer_yes
                   | Coth ch -> ch
                 in
-                char_escaped ch)
+                char_escaped1 ch)
                (match g.move_result with
                   MRcaught -> " (caught)"
                 | MRteleported -> " (teleported)"
@@ -1792,4 +1782,3 @@ let reinit after_fail arg_t t =
 ;;
 *)
 
-*)
