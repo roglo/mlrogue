@@ -34,12 +34,12 @@ rob_monster.zi: rob_def.zi rob_misc.zi rob_position.zi
 rob_monster.zo: rob_monster.zi rob_def.zi rob_misc.zi rob_object.zi util.zi
 rob_object.zi: rob_def.zi rob_position.zi
 rob_object.zo: rob_object.zi rob_def.zi rob_misc.zi rob_object.zi rob_position.zi
-robot.zo: robot.zi rob_action.zi rob_def.zi rob_misc.zi rob_monster.zi rob_object.zi rob_position.zi util.zi
+robot.zo: robot.zi rob_action.zi rob_def.zi rob_misc.zi rob_monster.zi rob_object.zi rob_path.zi rob_position.zi util.zi
 rob_path.zi: rob_def.zi rob_position.zi
 rob_path.zo: rob_path.zi rob_def.zi rob_misc.zi rob_object.zi rob_path.zi rob_position.zi
 rob_position.zo: rob_position.zi
 rogbotio.zo: rogbotio.zi curses.zi
-rogbot.zo: misc.zi robot.zi
+rogbot.zo: robot.zi
 rogue.zi: rfield.zi
 translate.zi: rogue.zi
 translate.zo: translate.zi

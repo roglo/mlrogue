@@ -6,7 +6,12 @@ let string_make = string__make_string;;
 let string_create = string__create_string;;
 let string_get = string__nth_char;;
 let string_length = string__string_length;;
-let string_copy = misc__string_copy;;
+let string_copy s =
+  let len = string__string_length s in
+  let r = string__create_string len in
+  string__blit_string s 0 r 0 len;
+  r
+;;
 let string_of_bytes (s : string) = s;;
 let string_to_bytes (s : string) = s;;
 

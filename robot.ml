@@ -10,9 +10,7 @@ open Scanf;;
 #open "rob_def";;
 #open "rob_misc";;
 #open "rob_object";;
-(*
-open Rob_path;;
-*)
+#open "rob_path";;
 #open "rob_position";;
 
 type t == rob_def__t;;
@@ -256,7 +254,6 @@ let score_txt = "Roguist";;
 
 (* end (language dependent) *)
 
-(*
 let is_hungry g =
   match g.status_line with
     Some sl -> sl.sl_hunger <> ""
@@ -267,7 +264,6 @@ let is_very_hungry g =
     Some sl -> (transl g).is_very_hungry sl.sl_hunger
   | None -> false
 ;;
-*)
 
 let is_identified_wand s = contains s "[";;
 
@@ -282,7 +278,7 @@ let remove_message_more g mess =
 
 let eq_dung g dung1 dung2 =
   let rec loop row col =
-    if row = Array.length dung1 then true
+    if row = vect__vect_length dung1 then true
     else if col = string__string_length dung1.(0) then loop (row + 1) 0
     else
       let ch1 = dung1.(row).[col] in
@@ -471,7 +467,7 @@ let oc = stderr in
       let n =
         list__fold_left
           (fun cnt connected -> if connected then cnt + 1 else cnt)
-          0 (Array.to_list node.connection)
+          0 (vect__to_list node.connection)
       in
       if n > 0 && (pos.row <> row || pos.col <> col) then fprintf oc "%d" n
       else fprintf oc "%c" g.dung.tab.(row).[col];
@@ -576,12 +572,12 @@ let non_interruptable_action =
   | _ -> false
 ;;
 
-(*
 let all_visited g =
   let n = number_of_visited_rooms g in
   n = 9 && g.regrets = [] && nothing_interesting_in_current_room g
 ;;
 
+(*
 let trace_trail t trail =
   let trail = list__rev trail in
   trace t "*** trail: ";
@@ -701,7 +697,7 @@ let play tab nrow ncol t =
     let (rogue_pos, trail) =
       let rec loop row col =
         (*
-                if row = Array.length tab - 1 then (None, trail)
+                if row = vect__vect_length tab - 1 then (None, trail)
         *)
         if row = vect__vect_length tab - 1 then
           let rogue_pos =
@@ -1663,10 +1659,14 @@ let play tab nrow ncol t =
   in
   let neutral_move = [Coth ` `; Coth ``; Coth ``] in
   let t =
-    {(*t with*) t_prev_pos =
+    {t_prev_pos =
       if list__mem comm neutral_move then t.t_prev_pos else Some g;
      t_prev_game = Some g; t_prev_comm = Some comm; t_prev_mov = mov;
-     t_on_stairs = on_stairs; t_next_action = next_action}
+     t_on_stairs = on_stairs; t_next_action = next_action;
+     t_speed = t.t_speed; t_monpow_fname = t.t_monpow_fname;
+     t_move_trace = t.t_move_trace; t_no_lang_dep = t.t_no_lang_dep;
+     t_slow_at_level = t.t_slow_at_level; t_slow_at_time = t.t_slow_at_time;
+     t_stop_at_paradise = t.t_stop_at_paradise; t_breakpoint = t.t_breakpoint}
   in
   ch, t
 ;;

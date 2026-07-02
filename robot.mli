@@ -2,8 +2,8 @@
 
 type t;;
 
+value make : string -> t;;
 (*
-cvalue make : string -> t;;
 value reinit : bool -> t -> t -> t;;
 *)
 value play : string vect -> int -> int -> t -> char * t;;
