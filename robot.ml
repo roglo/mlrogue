@@ -252,11 +252,11 @@ and string_of_alone_room_state =
 (* language dependent *)
 
 let is_amulet s = contains s "amulet";;
-(*
 let score_txt = "Roguist";;
 
 (* end (language dependent) *)
 
+(*
 let is_hungry g =
   match g.status_line with
     Some sl -> sl.sl_hunger <> ""
@@ -521,6 +521,7 @@ let is_entering_a_monsters_room g t =
 let trace_path t path =
   list__do_list (fun pos -> trace t (sprintf "(%d,%d)" pos.row pos.col)) path
 ;;
+*)
 
 let nb_diff g =
   function
@@ -537,7 +538,6 @@ let nb_diff g =
       loop 0 0 0
   | None -> 0
 ;;
-*)
 
 let is_score_display g =
   let rec loop_row row =
@@ -564,6 +564,7 @@ let can_be_called_while_going_to_stairs =
       true
   | _ -> false
 ;;
+*)
 
 let non_interruptable_action =
   function
@@ -577,6 +578,7 @@ let non_interruptable_action =
   | _ -> false
 ;;
 
+(*
 let all_visited g =
   let n = number_of_visited_rooms g in
   n = 9 && g.regrets = [] && nothing_interesting_in_current_room g
@@ -1076,7 +1078,7 @@ let play tab nrow ncol t =
           begin
             if not (is_score_display g) then
               begin let d = nb_diff g t.t_prev_game in
-                let wait = max 1 (d / 30) in tempo g (float wait)
+                let wait = max 1 (d / 30) in tempo g (float_of_int wait)
               end;
             g.dead <- true;
             Coth ` `, NAnone, None
@@ -1108,7 +1110,8 @@ let play tab nrow ncol t =
                         Some old_g ->
                           let old_pos = rogue_pos old_g in
                           let supposed_pos = add_mov old_pos mov in
-                          assert (in_dung g supposed_pos);
+                          if (in_dung g supposed_pos) then ()
+                          else failwith "assert (in_dung g supposed_pos)";
                           let ch = dung_char g.dung supposed_pos in
                           if rogue_pos g = old_pos &&
                              (is_monster ch || is_object ch)
