@@ -280,7 +280,6 @@ let remove_message_more g mess =
 
 (* *)
 
-(*
 let eq_dung g dung1 dung2 =
   let rec loop row col =
     if row = Array.length dung1 then true
@@ -309,7 +308,6 @@ let repetition_old_state g =
       loop 0 hist_dung
   | [] -> false
 ;;
-*)
 
 let rec string_of_pack_obj t =
   function
@@ -484,6 +482,7 @@ let oc = stderr in
   flush oc;
 };
 *)
+*)
 
 let is_entering_a_monsters_room g t =
   match t.t_next_action with
@@ -518,6 +517,7 @@ let is_entering_a_monsters_room g t =
       | None -> false
 ;;
 
+(*
 let trace_path t path =
   list__do_list (fun pos -> trace t (sprintf "(%d,%d)" pos.row pos.col)) path
 ;;
@@ -555,7 +555,6 @@ let is_score_display g =
   loop_row 0
 ;;
 
-(*
 let can_be_called_while_going_to_stairs =
   function
     NAfight (_, _, _) | NAglobal_search1 (_, _) | NAglobal_search2 (_, _, _) |
@@ -564,7 +563,6 @@ let can_be_called_while_going_to_stairs =
       true
   | _ -> false
 ;;
-*)
 
 let non_interruptable_action =
   function
