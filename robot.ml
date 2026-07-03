@@ -1738,6 +1738,10 @@ let usage_msg = "";;
 *)
 
 let make str =
+  begin match try Some (int_of_string str) with Failure _ -> None with
+    Some sp -> arg_speed := float_of_int sp
+  | None -> ()
+  end;
 (*
   let args = vect__vect_of_list ("" :: arg_list_of_string str) in
   arg__current := 0;

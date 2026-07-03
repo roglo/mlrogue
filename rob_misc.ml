@@ -989,7 +989,7 @@ let is_trap g pos =
             true
           end
         else if ch = `.` || ch = ` ` then
-          let v = failwith "try PosMap.find pos g.trail with Not_found -> 0" in
+          let v = try PosMap_find pos g.trail with Not_found -> 0 in
           if g.map_showed_since > 0 || v > 0 then begin
             hashtbl__remove g.traps pos;
             hashtbl__add g.traps pos None;

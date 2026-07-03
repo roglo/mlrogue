@@ -387,9 +387,7 @@ let f argv =
       end
   in
   let no_handle_robot = args.arg_no_handle_robot || args.arg_batch in
-printf "1"; flush stdout;
   let robenv = robot_env no_handle_robot args.arg_robot_player in
-printf "2"; flush stdout;
   let backupenv = backup_env args.arg_backup in
   let fast = opts.opt_fast || args.arg_batch in
   let batch = args.arg_batch in
