@@ -71,6 +71,7 @@ let parse_status_line_en =
        parse_id "Arm"; '`:`; '` `; parse_int arm; parse_spaces ();
        parse_id "Exp"; '`:`; '` `; parse_int exp; '`/`; parse_int max_exp;
        parse_spaces (); parse_non_spaces hunger;
+       parse_spaces ();
        stream__end_of_stream ()
     >] ->
       {sl_level = lev; sl_gold = gold; sl_hp = hp; sl_max_hp = max_hp;
