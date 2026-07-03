@@ -81,8 +81,12 @@ let parse_status_line_en =
 let lang_en =
   {scan_status_line =
     (fun line ->
-       failwith "parse_status_line_en (stream__stream_of_string line)"
+let _ =
+       parse_status_line_en (stream__stream_of_string line)
+in
+failwith "parse_status_line_en not yet completely implemented"
 (*
+       failwith "parse_status_line_en (stream__stream_of_string line)"
        sscanf line
          "Level: %d Gold: %d Hp: %d(%d) Str: %d(%d) Arm: %d  Exp: %d/%d %s"
          (fun lev gold hp max_hp stren max_stren arm exp max_exp hunger ->
