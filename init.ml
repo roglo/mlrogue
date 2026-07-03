@@ -82,7 +82,10 @@ let do_args argv =
       else if argv.(i) = "-backup" && i + 1 < vect__vect_length argv then
         begin args.arg_backup <- Some argv.(i+1); loop_i (i + 2) end
       else if argv.(i) = "-r" && i + 1 < vect__vect_length argv then
-        begin args.arg_robot_player <- Some argv.(i+1); loop_i (i + 2) end
+        begin
+          args.arg_lang <- Some "en";
+          args.arg_robot_player <- Some argv.(i+1); loop_i (i + 2)
+        end
       else if argv.(i) = "-nhr" then
         begin args.arg_no_handle_robot <- true; loop_i (i + 1) end
       else if argv.(i) = "-b" then
