@@ -3,6 +3,7 @@
 (* #load "pa_if_match.cmo" *)
 
 #open "printf";;
+#open "sparse";;
 (*
 #open "scanf";;
 *)
@@ -75,14 +76,19 @@ let parse_id =
 
 let parse_status_line_en =
   function
-    [< parse_id "Level"; '`:`; '`a` >] -> ()
+    [< parse_id "Level"; '`:`; '` `; parse_int lev >] -> lev
 ;;
 
 let lang_en =
   {scan_status_line =
     (fun line ->
-let _ =
+let (_ : int) =
+  try
        parse_status_line_en (stream__stream_of_string line)
+  with
+    stream__Parse_failure -> failwith "parse_status_line failure"
+  | stream__Parse_error -> failwith "parse_status_line error"
+  | e -> failwith "eeeee"
 in
 failwith "parse_status_line_en not yet completely implemented"
 (*

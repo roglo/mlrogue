@@ -1,6 +1,7 @@
 (* $Id: curses.ml,v 1.60 2018/04/26 09:52:36 deraugla Exp $ *)
 
 #open "printf";;
+#open "sparse";;
 
 type utf8 = { utf8_v : string };;
 
@@ -441,14 +442,6 @@ and unset_edit () =
 ;;
 
 let int_of_digit c = char__int_of_char c - char__int_of_char `0`;;
-
-let rec parse_int_loop n =
-  function
-    [< '`0`..`9` as c; (parse_int_loop (10 * n + int_of_digit c)) m >] -> m
-  | [< >] -> n
-;;
-
-let parse_int = parse_int_loop 0;;
 
 let parse_screen_size =
   function

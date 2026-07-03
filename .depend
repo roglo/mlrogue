@@ -1,6 +1,6 @@
 attack.zi: rogue.zi
 attack.zo: attack.zi curses.zi dialogue.zi imisc.zi imonster.zi level.zi misc.zi monster.zi object.zi rogue.zi translate.zi
-curses.zo: curses.zi
+curses.zo: curses.zi sparse.zi
 dialogue.zi: rogue.zi
 dialogue.zo: dialogue.zi curses.zi efield.zi imisc.zi object.zi rfield.zi robot.zi rogbotio.zi rogue.zi translate.zi ustring.zi
 efield.zo: efield.zi
@@ -14,7 +14,7 @@ init.zi: rfield.zi rogue.zi
 init.zo: init.zi efield.zi imisc.zi object.zi rfield.zi robot.zi rogue.zi translate.zi util.zi
 level.zi: rogue.zi
 level.zo: level.zi efield.zi imisc.zi imonster.zi object.zi rfield.zi rogue.zi
-main.zo: attack.zi curses.zi dialogue.zi efield.zi finish.zi imisc.zi imonster.zi init.zi level.zi misc.zi monster.zi move.zi object.zi rfield.zi rogue.zi translate.zi use.zi ustring.zi
+main.zo: attack.zi curses.zi dialogue.zi efield.zi finish.zi imisc.zi imonster.zi init.zi level.zi misc.zi monster.zi move.zi object.zi rfield.zi robot.zi rogue.zi translate.zi use.zi ustring.zi
 misc.zi: rogue.zi
 misc.zo: misc.zi curses.zi dialogue.zi efield.zi imonster.zi rfield.zi rogue.zi translate.zi
 monster.zi: rogue.zi
@@ -29,9 +29,9 @@ rob_action.zi: rob_def.zi rob_misc.zi rob_position.zi
 rob_action.zo: rob_action.zi rob_def.zi rob_misc.zi rob_monster.zi rob_object.zi rob_path.zi rob_position.zi util.zi
 rob_def.zi: rob_position.zi
 rob_misc.zi: rob_def.zi rob_position.zi
-rob_misc.zo: rob_misc.zi rob_def.zi rob_misc.zi rob_position.zi
+rob_misc.zo: rob_misc.zi rob_def.zi rob_misc.zi rob_position.zi sparse.zi
 rob_monster.zi: rob_def.zi rob_misc.zi rob_position.zi
-rob_monster.zo: rob_monster.zi rob_def.zi rob_misc.zi rob_object.zi util.zi
+rob_monster.zo: rob_monster.zi rob_def.zi rob_misc.zi rob_object.zi sparse.zi util.zi
 rob_object.zi: rob_def.zi rob_position.zi
 rob_object.zo: rob_object.zi rob_def.zi rob_misc.zi rob_object.zi rob_position.zi
 robot.zo: robot.zi rob_action.zi rob_def.zi rob_misc.zi rob_monster.zi rob_object.zi rob_path.zi rob_position.zi util.zi
@@ -41,6 +41,7 @@ rob_position.zo: rob_position.zi
 rogbotio.zo: rogbotio.zi curses.zi
 rogbot.zo: robot.zi
 rogue.zi: rfield.zi
+sparse.zo: sparse.zi
 translate.zi: rogue.zi
 translate.zo: translate.zi
 use.zi: rogue.zi
