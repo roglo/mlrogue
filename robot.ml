@@ -1771,22 +1771,66 @@ let make str =
 ;;
 
 let reinit after_fail arg_t t =
-(*
   let prev_game =
     map_option
       (fun g ->
          {speed = arg_t.t_speed;
           time = if after_fail then g.time - 1 else g.time;
           dung = g.dung; rogtime = g.rogtime; status_line = g.status_line;
-          message_more = g.message_more})
+          is_message_more = g.is_message_more;
+          move_result = g.move_result;
+          random_state = g.random_state;
+          level = g.level;
+          lang = g.lang;
+          time_in_level = g.time_in_level;
+          trail = g.trail;
+          rogue_pos = g.rogue_pos;
+          sure_stairs_pos = g.sure_stairs_pos;
+          rogue_room_and_door = g.rogue_room_and_door;
+          on_something_at = g.on_something_at;
+          pack = g.pack;
+          pack_full = g.pack_full;
+          worn_armor = g.worn_armor;
+          main_sword = g.main_sword;
+          armor_cursed = g.armor_cursed;
+          weapon_cursed = g.weapon_cursed;
+          ring_of_slow_digestion_on_hand = g.ring_of_slow_digestion_on_hand;
+          garbage = g.garbage;
+          scare_pos = g.scare_pos;
+          graph = g.graph;
+          visited = g.visited;
+          map_showed_since = g.map_showed_since;
+          mon_detected = g.mon_detected;
+          confused = g.confused;
+          hallucinated = g.hallucinated;
+          was_hallucinated = g.was_hallucinated;
+          blind = g.blind;
+          held = g.held;
+          attacked = g.attacked;
+          attacked_by_invisible = g.attacked_by_invisible;
+          attacked_by_flame = g.attacked_by_flame;
+          frozen_monsters = g.frozen_monsters;
+          regrets = g.regrets;
+          blindness_discovered = g.blindness_discovered;
+          hallucination_discovered = g.hallucination_discovered;
+          teleport_discovered = g.teleport_discovered;
+          after_first_pack_full = g.after_first_pack_full;
+          nb_of_reinit_search = g.nb_of_reinit_search;
+          traps = g.traps;
+          paradise = g.paradise;
+          hist_dung = g.hist_dung;
+          dead = g.dead
+        })
       t.t_prev_game
   in
-  {(*t with*) t_prev_game = prev_game; t_speed = arg_t.t_speed;
+  {t_prev_game = prev_game; t_speed = arg_t.t_speed;
    t_move_trace = arg_t.t_move_trace; t_slow_at_level = arg_t.t_slow_at_level;
    t_slow_at_time = arg_t.t_slow_at_time;
    t_stop_at_paradise = arg_t.t_stop_at_paradise;
-   t_breakpoint = arg_t.t_breakpoint}
-*)
-  t
+   t_breakpoint = arg_t.t_breakpoint;
+   t_prev_pos = t.t_prev_pos; t_monpow_fname = t.t_monpow_fname;
+   t_no_lang_dep = t.t_no_lang_dep; t_prev_comm = t.t_prev_comm;
+   t_prev_mov = t.t_prev_mov; t_on_stairs = t.t_on_stairs;
+   t_next_action = t.t_next_action}
 ;;
 

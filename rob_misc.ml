@@ -7,6 +7,7 @@
 (*
 #open "scanf";;
 *)
+#open "util";;
 #open "rob_def";;
 #open "rob_position";;
 #open "string";;
@@ -79,13 +80,7 @@ let parse_status_line_en =
 
 let lang_en =
   {scan_status_line =
-    (fun line ->
-       try
-         parse_status_line_en (stream__stream_of_string line)
-       with
-         stream__Parse_failure -> failwith "parse_status_line failure"
-       | stream__Parse_error -> failwith "parse_status_line error"
-       | e -> failwith "parse_status_line exception");
+     (fun line -> parse_status_line_en (stream__stream_of_string line));
    answer_left_hand = `l`; answer_yes = `y`; flaming_monster = `D`;
    is_armor =
      contains_yn [" armor"; " mail"] ["ring of"; "scroll of"; "scrolls of"];
