@@ -36,3 +36,14 @@ let rec parse_spaces =
   | [< '` `; parse_spaces () >] -> ()
   | [< >] -> ()
 ;;
+
+let rec parse_non_spaces =
+  function
+    [< stream__end_of_stream () >] -> ""
+  | [< stream__stream_get (c, _); strm >] ->
+      if c = ` ` then ""
+      else begin
+        let (_ : char) = stream__stream_next strm in
+        string__make_string 1 c ^ parse_non_spaces strm
+      end
+;;

@@ -67,29 +67,25 @@ let parse_status_line_en =
        '`)`; parse_spaces ();
        parse_id "Str"; '`:`; '` `; parse_int stren; '`(`; parse_int max_stren;
        '`)`; parse_spaces ();
-    >] -> (lev, gold, hp, stren, max_stren)
+       parse_id "Arm"; '`:`; '` `; parse_int arm; parse_spaces ();
+       parse_id "Exp"; '`:`; '` `; parse_int exp; '`/`; parse_int max_exp;
+       parse_spaces (); parse_non_spaces hunger;
+       stream__end_of_stream ()
+    >] ->
+      {sl_level = lev; sl_gold = gold; sl_hp = hp; sl_max_hp = max_hp;
+       sl_stren = stren; sl_max_stren = max_stren; sl_exp = exp;
+       sl_max_exp = max_exp; sl_hunger = hunger}
 ;;
 
 let lang_en =
   {scan_status_line =
     (fun line ->
-let (_ : int * int * int * int * int) =
-  try
-       parse_status_line_en (stream__stream_of_string line)
-  with
-    stream__Parse_failure -> failwith "parse_status_line failure"
-  | stream__Parse_error -> failwith "parse_status_line error"
-  | e -> failwith "eeeee"
-in
-failwith "parse_status_line_en not yet completely implemented"
-(*
-       failwith "parse_status_line_en (stream__stream_of_string line)"
-       sscanf line
-         "Level: %d Gold: %d Hp: %d(%d) Str: %d(%d) Arm: %d  Exp: %d/%d %s"
-         (fun lev gold hp max_hp stren max_stren arm exp max_exp hunger ->
-            {sl_level = lev; sl_gold = gold; sl_hp = hp; sl_max_hp = max_hp;
-             sl_stren = stren; sl_max_stren = max_stren; sl_exp = exp;
-             sl_max_exp = max_exp; sl_hunger = hunger})*));
+       try
+         parse_status_line_en (stream__stream_of_string line)
+       with
+         stream__Parse_failure -> failwith "parse_status_line failure"
+       | stream__Parse_error -> failwith "parse_status_line error"
+       | e -> failwith "parse_status_line exception");
    answer_left_hand = `l`; answer_yes = `y`; flaming_monster = `D`;
    is_armor =
      contains_yn [" armor"; " mail"] ["ring of"; "scroll of"; "scrolls of"];
