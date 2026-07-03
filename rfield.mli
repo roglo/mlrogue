@@ -4,9 +4,7 @@ type env;;
 
 type player_species =
     PSsocket of unix__file_descr
-(*
   | PSrobot of robot__t
-*)
   | PShuman
 ;;
 

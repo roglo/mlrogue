@@ -320,7 +320,6 @@ let create_g saved_uid true_uid login_name args opts lang =
    dungeon = vect__make_matrix 24 80 0; env = env}
 ;;
 
-(*
 let robot_env nhr =
   function
     Some str ->
@@ -333,11 +332,10 @@ let robot_env nhr =
       in
       begin match locrob with
         Some str -> Some (PSrobot (robot__make str), nhr)
-      | None -> Some (PSsocket (Rogbotio.socket str), nhr)
+      | None -> failwith "Some (PSsocket (Rogbotio.socket str), nhr)"
       end
   | None -> None
 ;;
-*)
 
 let backup_env =
   function
@@ -386,11 +384,9 @@ let f argv =
       end
   in
   let no_handle_robot = args.arg_no_handle_robot || args.arg_batch in
-(*
+printf "1"; flush stdout;
   let robenv = robot_env no_handle_robot args.arg_robot_player in
-*)
-  let robenv = None in
-(**)
+printf "2"; flush stdout;
   let backupenv = backup_env args.arg_backup in
   let fast = opts.opt_fast || args.arg_batch in
   let batch = args.arg_batch in
