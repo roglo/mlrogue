@@ -75,7 +75,7 @@ let parse_id =
 
 let parse_status_line_en =
   function
-    [< parse_id "Level" >] -> ()
+    [< parse_id "Level"; '`:`; '`a` >] -> ()
 ;;
 
 let lang_en =
