@@ -228,7 +228,8 @@ let display_pause line =
 
 let pause_char = `\003`;;
 
-(*
+let printexc_to_string (exc : exn) = "***some exception***";;
+
 let rgetchar_local_robot g rob =
   let (row, col) = curses__pos_get () in
   let dung = dungeon_string g in
@@ -274,7 +275,7 @@ let rgetchar_local_robot g rob =
               begin
                 curses__home ();
                 printf "\n";
-                printf "%s" (Printexc.to_string exc);
+                printf "%s" (printexc_to_string exc);
                 curses__home ();
                 flush stdout;
                 flush stderr;
@@ -288,16 +289,13 @@ let rgetchar_local_robot g rob =
           f_player_species.efield__set g.env "player_species" (PSrobot rob);
           rgetchar_human ()
 ;;
-*)
 
 let rgetchar g =
   if f_bool.efield__get g.env "failed" false then rgetchar_human ()
   else
     match f_player_species.efield__get g.env "player_species" PShuman with
       PSsocket s -> rogbotio__getchar 24 80 s
-(*
     | PSrobot rob -> rgetchar_local_robot g rob
-*)
     | PShuman -> rgetchar_human ()
 ;;
 

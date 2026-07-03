@@ -866,7 +866,6 @@ let main () =
             end;
           let player_spec =
             match player_spec with
-(*
               PSrobot arg_rob ->
                 let rob =
                   match
@@ -876,11 +875,10 @@ let main () =
                       let after_fail =
                         f_bool.efield__get g.env "failed" false
                       in
-                      Robot.reinit after_fail arg_rob rob
+                      robot__reinit after_fail arg_rob rob
                   | PSsocket _ | PShuman -> arg_rob
                 in
                 PSrobot rob
-*)
             | PSsocket _ | PShuman -> player_spec
           in
           f_player_species.efield__set g.env "player_species" player_spec;

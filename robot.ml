@@ -22,13 +22,11 @@ let char_escaped1 ch =
     char_escaped ch
 ;;
 
-(*
 let map_option f =
   function
     Some x -> Some (f x)
   | None -> None
 ;;
-*)
 
 let string_of_option f =
   function
@@ -1745,9 +1743,11 @@ let make str =
   arg__current := 0;
 *)
   let speclist = list__map (fun (x, y, z) -> (x, y)) speclist in
+(*
   begin try arg__parse speclist anon_fun with
     arg__Bad s -> begin eprintf "robot %s" s; sys__exit 2; end;
   end;
+*)
   if !arg_monpow_fname <> default_monpow_fname &&
      not (sys_file_exists !arg_monpow_fname)
   then
@@ -1768,20 +1768,23 @@ let make str =
    t_next_action = na}
 ;;
 
-(*
 let reinit after_fail arg_t t =
+(*
   let prev_game =
     map_option
       (fun g ->
-         {g with speed = arg_t.t_speed;
-          time = if after_fail then g.time - 1 else g.time})
+         {speed = arg_t.t_speed;
+          time = if after_fail then g.time - 1 else g.time;
+          dung = g.dung; rogtime = g.rogtime; status_line = g.status_line;
+          message_more = g.message_more})
       t.t_prev_game
   in
-  {t with t_prev_game = prev_game; t_speed = arg_t.t_speed;
+  {(*t with*) t_prev_game = prev_game; t_speed = arg_t.t_speed;
    t_move_trace = arg_t.t_move_trace; t_slow_at_level = arg_t.t_slow_at_level;
    t_slow_at_time = arg_t.t_slow_at_time;
    t_stop_at_paradise = arg_t.t_stop_at_paradise;
    t_breakpoint = arg_t.t_breakpoint}
-;;
 *)
+  t
+;;
 
