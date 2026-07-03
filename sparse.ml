@@ -10,3 +10,29 @@ let parse_int =
   function
   | [< '`0`..`9` as c; (parse_int_loop (int_of_digit c)) m >] -> m
 ;;
+
+let parse_id_char =
+  function [< '`a`..`z` | `A`..`Z` as c >] -> c
+;;
+
+let rec parse_id_cont =
+  function
+    [< '`a`..`z` | `A`..`Z` | `_` | `0`..`9` as c; parse_id_cont s >] ->
+      string__make_string 1 c ^ s
+  | [< >] -> ""
+;;
+
+let parse_id =
+  function [< parse_id_char c; parse_id_cont s >] -> string__make_string 1 c ^ s
+;;
+
+let parse_uid =
+  function
+    | [< '`A`..`Z` as c; parse_id_cont s >] -> string__make_string 1 c ^ s
+;;
+
+let rec parse_spaces =
+  function
+  | [< '` `; parse_spaces () >] -> ()
+  | [< >] -> ()
+;;

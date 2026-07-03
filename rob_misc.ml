@@ -59,24 +59,10 @@ let contains_yn has has_not s =
   not (list__exists (contains s) has_not)
 ;;
 
-let parse_id_char =
-  function [< '`a`..`z` | `A`..`Z` as c >] -> c
-;;
-
-let rec parse_id_cont =
-  function
-    [< parse_id_char c; parse_id_cont s >] ->
-      string__make_string 1 c ^ s
-  | [< >] -> ""
-;;
-
-let parse_id =
-  function [< parse_id_char c; parse_id_cont s >] -> string__make_string 1 c ^ s
-;;
-
 let parse_status_line_en =
   function
-    [< parse_id "Level"; '`:`; '` `; parse_int lev >] -> lev
+    [< parse_id "Level"; '`:`; '` `; parse_int lev; parse_spaces ();
+       parse_id "Gold" >] -> lev
 ;;
 
 let lang_en =

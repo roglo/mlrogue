@@ -62,24 +62,6 @@ let parse_mon_pow_line line =
 ;;
 *)
 
-let rec parse_ident_cont =
-  function
-    [< '`a`..`z` | `A`..`Z` | `_` | `0`..`9` as c; parse_ident_cont s >] ->
-      string__make_string 1 c ^ s
-;;
-
-let parse_uident =
-  function
-    | [< '`A`..`Z` as c; parse_ident_cont s >] ->
-      string__make_string 1 c ^ s
-;;
-
-let rec parse_spaces =
-  function
-  | [< '` `; parse_spaces () >] -> ()
-  | [< >] -> ()
-;;
-
 let parse_signed_int =
   function
   | [< parse_int i >] -> i
@@ -106,7 +88,7 @@ let plexing_eval_char s = s.[0];;
 
 let parse_mon_pow =
   function
-  | [< parse_uident s; parse_spaces (); parse_int lev; parse_spaces ();
+  | [< parse_uid s; parse_spaces (); parse_int lev; parse_spaces ();
       parse_armv_pow_sep_slash v; end_of_stream () >] ->
       let ch = plexing_eval_char s in
       ((ch, lev), v)
