@@ -62,13 +62,18 @@ let contains_yn has has_not s =
 let parse_status_line_en =
   function
     [< parse_id "Level"; '`:`; '` `; parse_int lev; parse_spaces ();
-       parse_id "Gold" >] -> lev
+       parse_id "Gold"; '`:`; '` `; parse_int gold; parse_spaces ();
+       parse_id "Hp"; '`:`; '` `; parse_int hp; '`(`; parse_int max_hp;
+       '`)`; parse_spaces ();
+       parse_id "Str"; '`:`; '` `; parse_int stren; '`(`; parse_int max_stren;
+       '`)`; parse_spaces ();
+    >] -> (lev, gold, hp, stren, max_stren)
 ;;
 
 let lang_en =
   {scan_status_line =
     (fun line ->
-let (_ : int) =
+let (_ : int * int * int * int * int) =
   try
        parse_status_line_en (stream__stream_of_string line)
   with
