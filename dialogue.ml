@@ -228,7 +228,11 @@ let display_pause line =
 
 let pause_char = `\003`;;
 
-let printexc_to_string (exc : exn) = "***some exception***";;
+let printexc_to_string (exc : exn) =
+  match exc with
+    Failure s -> sprintf "Failure \"%s\"" s
+  | _ -> "***some exception***"
+;;
 
 let rgetchar_local_robot g rob =
   let (row, col) = curses__pos_get () in
