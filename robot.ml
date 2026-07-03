@@ -1718,19 +1718,17 @@ let arg_stop_at_paradise = ref false;;
 let arg_speed = ref 1.0;;
 
 let speclist =
-(*
-  Arg.align
-*)
-    ["-b", arg__Int (fun x -> arg_breakpoint := x), " breakpoint at time";
-     "-l", arg__Int (fun x -> arg_slow_at_time := x), "<int> slow at time";
-     "-m", arg__String (fun x -> arg_monpow_fname := x),
+  ocarg__align
+    ["-b", ocarg__Int (fun x -> arg_breakpoint := x), " breakpoint at time";
+     "-l", ocarg__Int (fun x -> arg_slow_at_time := x), "<int> slow at time";
+     "-m", ocarg__String (fun x -> arg_monpow_fname := x),
      "<file> use that monpow file";
-     "-n", arg__Unit (fun () -> arg_no_lang_dep := true),
+     "-n", ocarg__Unit (fun () -> arg_no_lang_dep := true),
      " no lang dependent in traces";
-     "-p", arg__Unit (fun () -> arg_stop_at_paradise := true),
+     "-p", ocarg__Unit (fun () -> arg_stop_at_paradise := true),
      " stop at paradise";
-     "-s", arg__Int (fun x -> arg_slow_at_level := x), "<int> slow at level";
-     "-t", arg__Unit (fun () -> arg_move_trace := true), " move trace"]
+     "-s", ocarg__Int (fun x -> arg_slow_at_level := x), "<int> slow at level";
+     "-t", ocarg__Unit (fun () -> arg_move_trace := true), " move trace"]
 ;;
 let anon_fun s = arg_speed := float_of_string s;;
 (*
