@@ -335,7 +335,7 @@ let robot_env nhr =
       in
       begin match locrob with
         Some str -> Some (PSrobot (robot__make str), nhr)
-      | None -> failwith "Some (PSsocket (Rogbotio.socket str), nhr)"
+      | None -> Some (PSsocket (rogbotio__socket str), nhr)
       end
   | None -> None
 ;;
