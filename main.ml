@@ -895,4 +895,4 @@ let main () =
   | init__ScoreOnly -> finish__put_scores lang true None; finish__clean_up ""
 ;;
 
-try main () with e -> curses__endwin (); raise e;;
+printexc__f (fun () -> try main () with e -> curses__endwin (); raise e) ();;
