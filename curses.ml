@@ -92,7 +92,13 @@ let utf8_of_substring s i =
   else if Char.code s.[i] land 0x10 = 0 then
     if i + 2 >= String.length s then failwith "utf8_of_substring error"
     else {utf8_v = String.sub s i 3}, i + 3
-  else failwith "utf8_of_substring case not impl"
+  else if Char.code s.[i] land 0x08 = 0 then
+    if i + 3 >= String.length s then failwith "utf8_of_substring error"
+    else {utf8_v = String.sub s i 4}, i + 4
+  else
+    failwith
+      (Printf.sprintf "utf8_of_substring case not impl 0x%0x"
+         (Char.code s.[i]))
 
 let print_encode_char c =
   if d.no_output then () else print_string (utf8_to_string c)
