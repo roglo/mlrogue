@@ -1731,25 +1731,12 @@ let speclist =
      "-t", ocarg__Unit (fun () -> arg_move_trace := true), " move trace"]
 ;;
 let anon_fun s = arg_speed := float_of_string s;;
-(*
 let usage_msg = "";;
-*)
 
 let make str =
-  begin match try Some (int_of_string str) with Failure _ -> None with
-    Some sp -> arg_speed := float_of_int sp
-  | None -> ()
-  end;
-(*
   let args = vect__vect_of_list ("" :: arg_list_of_string str) in
-  arg__current := 0;
-*)
-  let speclist = list__map (fun (x, y, z) -> (x, y)) speclist in
-(*
-  begin try arg__parse speclist anon_fun with
-    arg__Bad s -> begin eprintf "robot %s" s; sys__exit 2; end;
-  end;
-*)
+  ocarg__current := 0;
+  ocarg__parse_argv args speclist anon_fun usage_msg;
   if !arg_monpow_fname <> default_monpow_fname &&
      not (sys_file_exists !arg_monpow_fname)
   then

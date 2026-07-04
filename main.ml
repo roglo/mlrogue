@@ -7,6 +7,7 @@
 
 (* #use "keyboard.def" *)
 
+#open "util";;
 #open "rogue";;
 #open "rfield";;
 #open "dialogue";;
@@ -520,20 +521,6 @@ let whatisit g =
 ;;
 
 let instructions_file = "rogue.instr";;
-
-let buffer_create len = ref (string__create_string len, 0);;
-let buffer_add_char b c =
-  let (s, i) = !b in
-  let s =
-    if i < string__string_length s then s
-    else s ^ string__create_string (string__string_length s)
-  in
-  s.[i] <- c; b := (s, i + 1)
-;;
-let buffer_contents b =
-  let (s, i) = !b in
-  string__sub_string s 0 i
-;;
 
 let conv_instr s =
   let b = buffer_create 80 in
