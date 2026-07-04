@@ -58,8 +58,8 @@ value getchar nrow ncol s = do {
     let _ : int = Unix.write s (string_to_bytes txt) 0 (String.length txt) in
     ()
   };
-  let b = " " in
-  let _ : int = Unix.read s (string_to_bytes b) 0 1 in
-  b.[0]
+  let b = Bytes.create 1 in
+  let _ : int = Unix.read s b 0 1 in
+  Bytes.get b 0
 };
 
