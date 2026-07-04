@@ -50,5 +50,4 @@ let getchar nrow ncol s =
     in
     ()
   done;
-  let b = " " in let _ = (Unix.read s (string_to_bytes b) 0 1 : int) in b.[0]
-
+  let b = Bytes.create 1 in let _ = (Unix.read s b 0 1 : int) in Bytes.get b 0
