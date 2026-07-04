@@ -367,16 +367,6 @@ let f argv =
     else if args.arg_rest_file <> "" then RestoreGame args.arg_rest_file
     else
       begin
-        if not opts.opt_fast then
-          begin
-            printf
-              (ftransl lang
-                 "Hello %s, just a moment while I dig the dungeon...")
-              (if opts.opt_nick_name <> "" then opts.opt_nick_name
-               else login_name);
-            flush stdout;
-            unix__sleep 2
-          end;
         let g = create_g saved_uid true_uid login_name args opts lang in
         mix_colours g;
         get_wand_and_ring_materials g;
