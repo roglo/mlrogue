@@ -386,16 +386,6 @@ value f argv = do {
     if args.arg_score_only then ScoreOnly
     else if args.arg_rest_file <> "" then RestoreGame args.arg_rest_file
     else do {
-      if not opts.opt_fast then do {
-        printf
-          (ftransl lang
-             "Hello %s, just a moment while I dig the dungeon...")
-          (if opts.opt_nick_name <> "" then opts.opt_nick_name
-           else login_name);
-        flush stdout;
-        Unix.sleep 2;
-      }
-      else ();
       let g = create_g saved_uid true_uid login_name args opts lang in
       mix_colours g;
       get_wand_and_ring_materials g;
