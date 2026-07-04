@@ -74,4 +74,3 @@ let getchar nrow ncol s =
   done;
   let b = " " in let _ = unix__read s (string_to_bytes b) 0 1 in b.[0]
 ;;
-
