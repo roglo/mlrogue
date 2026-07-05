@@ -354,7 +354,7 @@ let f argv =
   let args = do_args argv in
   begin match args.arg_seed with
     Some seed -> random__init seed
-  | None -> random_self_init ()
+  | None -> random__init (unix__time ())
   end;
   let opts = do_opts () in
   let lang =
