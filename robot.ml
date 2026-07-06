@@ -674,8 +674,6 @@ let add_object_in_pack g ch s =
 let is_low_alpha c = c >= `a` && c <= `z`;;
 let is_alpha c = c >= `a` && c <= `z` || c >= `A` && c <= `Z`;;
 
-exception Breakpoint of int;;
-
 let play tab nrow ncol t =
   let message =
     let first_line_len =

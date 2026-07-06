@@ -231,7 +231,8 @@ let pause_char = `\003`;;
 let printexc_to_string (exc : exn) =
   match exc with
     Failure s -> sprintf "Failure \"%s\"" s
-  | _ -> "***some exception***"
+  | robot__Breakpoint i -> sprintf "Breakpoint %d" i
+  | _ -> "some exception raised"
 ;;
 
 let rgetchar_local_robot g rob =
