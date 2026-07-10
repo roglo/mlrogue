@@ -381,6 +381,9 @@ let f argv =
   let backupenv = backup_env args.arg_backup in
   let fast = opts.opt_fast || args.arg_batch in
   let batch = args.arg_batch in
-  let no_record_score = args.arg_seed <> None || args.arg_backup <> None in
+  let no_record_score =
+    true &&
+    (args.arg_seed <> None || args.arg_backup <> None)
+  in
   lang, r, robenv, backupenv, fast, batch, no_record_score
 ;;

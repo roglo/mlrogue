@@ -4258,8 +4258,9 @@ let find_something_to_do g t =
                         then
                           attack_at_distance g t room mov
                         else if
-                          is_mean_monster g thing &&
-                          max (abs mov.di) (abs mov.dj) > 4 &&
+                          (is_mean_monster g thing ||
+                           is_not_attackable_monster g thing) &&
+                          max (abs mov.di) (abs mov.dj) > 2 &&
                           arrows_in_pack g.pack <> None
                         then
                           let mch = thing in
