@@ -665,6 +665,161 @@ value is_alpha c = c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z';
 
 exception Breakpoint of int;
 
+value rob_game tab nrow ncol t =
+  let message =
+    let first_line_len =
+      loop (String.length tab.(0) - 1) where rec loop i =
+        if i < 0 then 0
+        else if tab.(0).[i] = ' ' then loop (i - 1)
+        else i + 1
+    in
+    String.sub tab.(0) 0 first_line_len
+  in
+  let trail =
+    match t.t_prev_game with
+    [ Some g -> g.trail
+    | None -> PosMap.empty ]
+  in
+  let (rogue_pos, trail) =
+    loop 1 0 where rec loop row col =
+      if row = Array.length tab - 1 then do {
+        let rogue_pos =
+          match t.t_prev_game with
+          [ Some old_g -> old_g.rogue_pos
+          | None -> None ]
+        in
+        (rogue_pos, trail)
+      }
+      else if col = String.length tab.(row) then loop (row + 1) 0
+      else if tab.(row).[col] = '@' then do {
+        let pos = {row = row; col = col} in
+        let inc =
+          match t.t_prev_game with
+          [ Some old_g -> if old_g.rogue_pos = Some pos then 0 else 1
+          | None -> 1 ]
+        in
+        let n = try PosMap.find pos trail + inc with [ Not_found -> 1 ] in
+        (Some pos, PosMap.add pos n trail)
+      }
+      else loop row (col + 1)
+  in
+  let rogue_pos =
+    match t.t_prev_game with
+    [ Some g -> if g.dead then None else rogue_pos
+    | None -> rogue_pos ]
+  in
+  let dung = {tab = tab; nrow = nrow; ncol = ncol} in
+  let rogue_room_and_door =
+    match rogue_pos with
+    [ Some pos -> pos_room_and_door dung pos
+    | None -> None ]
+  in
+  let move_result =
+    match t.t_prev_pos with
+    [ Some old_g ->
+        match (old_g.rogue_pos, t.t_prev_comm, rogue_pos) with
+        [ (Some prev_pos, Some (Cmov {di = di; dj = dj}), Some pos) ->
+            if pos = {row = prev_pos.row + di; col = prev_pos.col + dj} then
+              MRok
+            else if pos = prev_pos then MRcaught
+            else MRteleported
+        | _ -> MRok ]
+    | None -> MRok ]
+  in
+  let is_message_more =
+    match t.t_prev_game with
+    [ Some g -> (transl g).message_more message <> ""
+    | None -> False ]
+  in
+  match t.t_prev_game with
+  [ Some g -> do {
+      let prev_level = g.level in
+      let status_line_opt =
+        try Some ((transl g).scan_status_line tab.(g.dung.nrow-1)) with
+        [ Scan_failure _ -> None ]
+      in
+      let level =
+        match status_line_opt with
+        [ Some sl -> sl.sl_level
+        | None -> g.level ]
+      in
+      let current_dung = Array.sub tab 1 (nrow - 2) in
+      let rogtime =
+        if Array.sub tab 1 (nrow - 1) <> Array.sub g.dung.tab 1 (nrow - 1)
+        then g.rogtime + 1
+        else g.rogtime
+      in
+      let g =
+        {(g) with dung = dung; level = level; rogtime = rogtime;
+         time = g.time + 1; status_line = status_line_opt;
+         time_in_level = g.time_in_level + 1;
+         is_message_more = is_message_more; trail = trail;
+         rogue_pos = rogue_pos; rogue_room_and_door = rogue_room_and_door;
+         move_result = move_result;
+         hist_dung = [current_dung :: g.hist_dung]}
+      in
+      if level <> prev_level ||
+         prev_level = 99 &&
+            (t.t_prev_comm = Some (Coth '>') ||
+             (transl g).is_fallen_down message)
+      then do {
+        for i = 0 to 2 do {
+          for j = 0 to 2 do {
+            g.visited.(i).(j) := False;
+          }
+        };
+        g.speed := t.t_speed;
+        g.time_in_level := 0;
+        g.trail := PosMap.empty;
+        g.sure_stairs_pos := None;
+        g.garbage := [];
+        g.scare_pos := [];
+        g.graph := None;
+        g.map_showed_since := 0;
+        g.mon_detected := False;
+        g.was_hallucinated := g.hallucinated;
+        g.attacked := 0;
+        g.attacked_by_invisible := False;
+        g.attacked_by_flame := 0;
+        g.frozen_monsters := [];
+        g.regrets := [];
+        g.nb_of_reinit_search := 0;
+        Hashtbl.clear g.traps;
+        g.hist_dung := [];
+        g.paradise := False;
+        if t.t_move_trace then trace_pack g t else ();
+      }
+      else ();
+      g
+    }
+  | None ->
+      let ar = {ar_value = Some 4; ar_protected = False} in
+      {dung = dung; rogtime = 0; time = 0; status_line = None;
+       is_message_more = is_message_more; move_result = move_result;
+       random_state = Random.get_state (); level = 1; lang = "en";
+       speed = t.t_speed; time_in_level = 0; trail = trail;
+       rogue_pos = rogue_pos; sure_stairs_pos = None;
+       rogue_room_and_door = rogue_room_and_door; on_something_at = None;
+       pack =
+         [('a', (1, Pfood)); ('b', (1, Parmor ar));
+          ('c', (1, Pweapon {we_kind = WKmace; we_value = Some 2}));
+          ('d', (1, Pweapon {we_kind = WKshort_bow; we_value = Some 1}));
+          ('e', (15, Pweapon {we_kind = WKarrows; we_value = Some 0}))];
+       pack_full = False; worn_armor = Some ('b', ar); main_sword = 'c';
+       armor_cursed = False; weapon_cursed = False;
+       ring_of_slow_digestion_on_hand = None; garbage = []; scare_pos = [];
+       graph = None; map_showed_since = 0; mon_detected = False;
+       confused = False; hallucinated = False; was_hallucinated = False;
+       blind = False; held = False; attacked = 0;
+       attacked_by_invisible = False; attacked_by_flame = 0;
+       frozen_monsters = []; regrets = []; blindness_discovered = False;
+       hallucination_discovered = False; teleport_discovered = False;
+       after_first_pack_full = False;
+       visited = Array.init 3 (fun _ -> Array.make 3 False);
+       nb_of_reinit_search = 0; traps = Hashtbl.create 1;
+       paradise = False; hist_dung = []; dead = False} ]
+;
+
 value play tab nrow ncol t = do {
   let message =
     let first_line_len =
@@ -675,156 +830,7 @@ value play tab nrow ncol t = do {
     in
     String.sub tab.(0) 0 first_line_len
   in
-  let g =
-    let trail =
-      match t.t_prev_game with
-      [ Some g -> g.trail
-      | None -> PosMap.empty ]
-    in
-    let (rogue_pos, trail) =
-      loop 1 0 where rec loop row col =
-(*
-        if row = Array.length tab - 1 then (None, trail)
-*)
-        if row = Array.length tab - 1 then do {
-          let rogue_pos =
-            match t.t_prev_game with
-            [ Some old_g -> old_g.rogue_pos
-            | None -> None ]
-          in
-          (rogue_pos, trail)
-        }
-(**)
-        else if col = String.length tab.(row) then loop (row + 1) 0
-        else if tab.(row).[col] = '@' then do {
-          let pos = {row = row; col = col} in
-          let inc =
-            match t.t_prev_game with
-            [ Some old_g -> if old_g.rogue_pos = Some pos then 0 else 1
-            | None -> 1 ]
-          in
-          let n = try PosMap.find pos trail + inc with [ Not_found -> 1 ] in
-          (Some pos, PosMap.add pos n trail)
-        }
-        else loop row (col + 1)
-    in
-    let rogue_pos =
-      match t.t_prev_game with
-      [ Some g -> if g.dead then None else rogue_pos
-      | None -> rogue_pos ]
-    in
-    let dung = {tab = tab; nrow = nrow; ncol = ncol} in
-    let rogue_room_and_door =
-      match rogue_pos with
-      [ Some pos -> pos_room_and_door dung pos
-      | None -> None ]
-    in
-    let move_result =
-      match t.t_prev_pos with
-      [ Some old_g ->
-          match (old_g.rogue_pos, t.t_prev_comm, rogue_pos) with
-          [ (Some prev_pos, Some (Cmov {di = di; dj = dj}), Some pos) ->
-              if pos = {row = prev_pos.row + di; col = prev_pos.col + dj} then
-                MRok
-              else if pos = prev_pos then MRcaught
-              else MRteleported
-          | _ -> MRok ]
-      | None -> MRok ]
-    in
-    let is_message_more =
-      match t.t_prev_game with
-      [ Some g -> (transl g).message_more message <> ""
-      | None -> False ]
-    in
-    match t.t_prev_game with
-    [ Some g -> do {
-        let prev_level = g.level in
-        let status_line_opt =
-          try Some ((transl g).scan_status_line tab.(g.dung.nrow-1)) with
-          [ Scan_failure _ -> None ]
-        in
-        let level =
-          match status_line_opt with
-          [ Some sl -> sl.sl_level
-          | None -> g.level ]
-        in
-        let current_dung = Array.sub tab 1 (nrow - 2) in
-        let rogtime =
-          if Array.sub tab 1 (nrow - 1) <> Array.sub g.dung.tab 1 (nrow - 1)
-          then g.rogtime + 1
-          else g.rogtime
-        in
-        let g =
-          {(g) with dung = dung; level = level; rogtime = rogtime;
-           time = g.time + 1; status_line = status_line_opt;
-           time_in_level = g.time_in_level + 1;
-           is_message_more = is_message_more; trail = trail;
-           rogue_pos = rogue_pos; rogue_room_and_door = rogue_room_and_door;
-           move_result = move_result;
-           hist_dung = [current_dung :: g.hist_dung]}
-        in
-        if level <> prev_level ||
-           prev_level = 99 &&
-              (t.t_prev_comm = Some (Coth '>') ||
-               (transl g).is_fallen_down message)
-        then do {
-          for i = 0 to 2 do {
-            for j = 0 to 2 do {
-              g.visited.(i).(j) := False;
-            }
-          };
-          g.speed := t.t_speed;
-          g.time_in_level := 0;
-          g.trail := PosMap.empty;
-          g.sure_stairs_pos := None;
-          g.garbage := [];
-          g.scare_pos := [];
-          g.graph := None;
-          g.map_showed_since := 0;
-          g.mon_detected := False;
-          g.was_hallucinated := g.hallucinated;
-          g.attacked := 0;
-          g.attacked_by_invisible := False;
-          g.attacked_by_flame := 0;
-          g.frozen_monsters := [];
-          g.regrets := [];
-          g.nb_of_reinit_search := 0;
-          Hashtbl.clear g.traps;
-          g.hist_dung := [];
-          g.paradise := False;
-          if t.t_move_trace then trace_pack g t else ();
-        }
-        else ();
-        g
-      }
-    | None ->
-        let ar = {ar_value = Some 4; ar_protected = False} in
-        {dung = dung; rogtime = 0; time = 0; status_line = None;
-         is_message_more = is_message_more; move_result = move_result;
-         random_state = Random.get_state (); level = 1; lang = "en";
-         speed = t.t_speed; time_in_level = 0; trail = trail;
-         rogue_pos = rogue_pos; sure_stairs_pos = None;
-         rogue_room_and_door = rogue_room_and_door; on_something_at = None;
-         pack =
-           [('a', (1, Pfood)); ('b', (1, Parmor ar));
-            ('c', (1, Pweapon {we_kind = WKmace; we_value = Some 2}));
-            ('d', (1, Pweapon {we_kind = WKshort_bow; we_value = Some 1}));
-            ('e', (15, Pweapon {we_kind = WKarrows; we_value = Some 0}))];
-         pack_full = False; worn_armor = Some ('b', ar); main_sword = 'c';
-         armor_cursed = False; weapon_cursed = False;
-         ring_of_slow_digestion_on_hand = None; garbage = []; scare_pos = [];
-         graph = None; map_showed_since = 0; mon_detected = False;
-         confused = False; hallucinated = False; was_hallucinated = False;
-         blind = False; held = False; attacked = 0;
-         attacked_by_invisible = False; attacked_by_flame = 0;
-         frozen_monsters = []; regrets = []; blindness_discovered = False;
-         hallucination_discovered = False; teleport_discovered = False;
-         after_first_pack_full = False;
-         visited = Array.init 3 (fun _ -> Array.make 3 False);
-         nb_of_reinit_search = 0; traps = Hashtbl.create 1;
-         paradise = False; hist_dung = []; dead = False} ]
-  in
-
+  let g = rob_game tab nrow ncol t in
   let frozen_monsters =
     List.filter (fun (pos, ch) -> dung_char g.dung pos = ch) g.frozen_monsters
   in
