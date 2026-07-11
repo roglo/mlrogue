@@ -1349,12 +1349,12 @@ value get_rid_of_objects g =
         Some ('e', UOeat_food ch "eat what")
     | obj ->
         failwith (sprintf "use %s" (not_impl "pack_obj" obj)) ]
-  else if_match unuseful_object_in_pack_when_scaring g with_some (ch, _) ->
-    Some ('t', UOthrow_unuseful_objects ch 1)
+  else if_match useless_object_in_pack_when_scaring g with_some (ch, _) ->
+    Some ('t', UOthrow_useless_objects ch 1)
   else if_match
     if g.pack_full then unidentified_object_not_used_in_pack g else None
   with_some (ch, _) ->
-    Some ('t', UOthrow_unuseful_objects ch 1)
+    Some ('t', UOthrow_useless_objects ch 1)
   else
     None
 ;
@@ -1797,7 +1797,7 @@ value manage_full_pack g t =
     | _ ->
         failwith (sprintf "pack full; propose %c to use" ch) ]
   }
-  else if_match find_unuseful_object_when_full_pack g
+  else if_match find_useless_object_when_full_pack g
   with_some (ch, (nb, obj)) ->
     let pos = rogue_pos g in
     throw_in_the_garbage g t pos ch
@@ -5415,7 +5415,7 @@ let _ = failwith "6" in
               let na = NAthrow_in_the_garbage ch gp prev_a "dropped" in
               attack_monsters g t movl monl na
             }
-            else if_match find_unuseful_object_when_full_pack g
+            else if_match find_useless_object_when_full_pack g
             with_some (ch, (nb, obj)) ->
               throw_in_the_garbage g t pos ch
             else do {

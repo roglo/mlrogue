@@ -694,7 +694,7 @@ value find_object_to_be_used_when_full_pack g =
     g.pack
 ;
 
-value find_unuseful_object_when_full_pack g =
+value find_useless_object_when_full_pack g =
   list_find
     (fun (ch, (nb, obj)) ->
        if is_wearing_armor g ch || ch = g.main_sword ||
@@ -804,7 +804,7 @@ value object_to_be_used_in_pack_when_scaring g =
     g.pack
 ;
 
-value unuseful_object_in_pack_when_scaring g =
+value useless_object_in_pack_when_scaring g =
   loop 0 g.pack where rec loop n_mm =
     fun
     [ [item :: rest] ->
@@ -928,7 +928,7 @@ value use_object g t message na uo =
           None
         } ]
     }
-  | UOthrow_unuseful_objects ch_junk step ->
+  | UOthrow_useless_objects ch_junk step ->
       match step with
       [ 1 ->
           let move =
@@ -971,29 +971,29 @@ value use_object g t message na uo =
             | None -> {di = 1; dj = 0} ]
           in
           let ch_dir = basic_command_of_move move in
-          let uo = UOthrow_unuseful_objects ch_junk 2 in
+          let uo = UOthrow_useless_objects ch_junk 2 in
           let na = NAuse_object uo na in
           Some (ch_dir, na)
       | 2 -> do {
           let (nb, obj) = List.assoc ch_junk g.pack in
           remove_from_pack g ch_junk nb obj;
-          let uo = UOthrow_unuseful_objects ch_junk 3 in
+          let uo = UOthrow_useless_objects ch_junk 3 in
           let na = NAuse_object uo na in
           Some (ch_junk, na)
         }
       | 3 ->
           if message <> "" then do {
             tempo g 0.5;
-            let uo = UOthrow_unuseful_objects ch_junk 3 in
+            let uo = UOthrow_useless_objects ch_junk 3 in
             let na = NAuse_object uo na in
             Some (' ', na)
           }
           else if g.attacked > 0 then None
           else do {
             tempo g 0.1;
-            match unuseful_object_in_pack_when_scaring g with
+            match useless_object_in_pack_when_scaring g with
             [ Some (ch, _) ->
-                let uo = UOthrow_unuseful_objects ch 1 in
+                let uo = UOthrow_useless_objects ch 1 in
                 let na = NAuse_object uo na in
                 Some ('t', na)
             | None ->
@@ -1001,7 +1001,7 @@ value use_object g t message na uo =
           }
       | _ ->
           failwith
-            (sprintf "UOthrow_unuseful_objects %c %d" ch_junk step) ]
+            (sprintf "UOthrow_useless_objects %c %d" ch_junk step) ]
   | UOwield_sword ch step -> do {
       match step with
       [ "wield what" -> do {

@@ -223,8 +223,8 @@ and string_of_use_object =
       sprintf "(UOquaff_potion '%c' \"%s\")" ch (string_of_quaff_state qs)
   | UOread_scroll ch rs ->
       sprintf "(UOread_scroll '%c' %s)" ch (string_of_read_state rs)
-  | UOthrow_unuseful_objects ch step ->
-      sprintf "(UOthrow_unuseful_objects '%c' %d)" ch step
+  | UOthrow_useless_objects ch step ->
+      sprintf "(UOthrow_useless_objects '%c' %d)" ch step
   | UOwield_sword ch step ->
       sprintf "(UOwield_sword '%c' \"%s\")" ch step ]
 and string_of_alone_room_state =

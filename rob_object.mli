@@ -65,9 +65,9 @@ value move_command3 :
   game -> position -> position ->
     next_action -> (command * next_action * option move);
 
-value find_unuseful_object_when_full_pack : game -> option pack_item;
+value find_useless_object_when_full_pack : game -> option pack_item;
 value object_to_be_used_in_pack_when_scaring : game -> option pack_item;
-value unuseful_object_in_pack_when_scaring : game -> option pack_item;
+value useless_object_in_pack_when_scaring : game -> option pack_item;
 
 value use_object :
   game -> t -> string -> next_action -> use_object ->

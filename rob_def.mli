@@ -268,7 +268,7 @@ and use_object =
   [ UOeat_food of char and string
   | UOquaff_potion of char and quaff_state
   | UOread_scroll of char and read_state
-  | UOthrow_unuseful_objects of char and int
+  | UOthrow_useless_objects of char and int
   | UOwield_sword of char and string ]
 and read_state =
   [ RSread_what
