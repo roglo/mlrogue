@@ -820,7 +820,7 @@ value rob_game tab nrow ncol t =
        paradise = False; hist_dung = []; dead = False} ]
 ;
 
-value play tab nrow ncol t = do {
+value rob_action g tab t = do {
   let message =
     let first_line_len =
       loop (String.length tab.(0) - 1) where rec loop i =
@@ -830,7 +830,6 @@ value play tab nrow ncol t = do {
     in
     String.sub tab.(0) 0 first_line_len
   in
-  let g = rob_game tab nrow ncol t in
   let frozen_monsters =
     List.filter (fun (pos, ch) -> dung_char g.dung pos = ch) g.frozen_monsters
   in
@@ -1438,6 +1437,11 @@ if not (try let _ = String.index "BCDEFIJKLMOPQRSTUVWXYZ" mch in True with _ -> 
   in
   (ch, t)
 };
+
+value play tab nrow ncol t =
+  let g = rob_game tab nrow ncol t in
+  rob_action g tab t
+;
 
 value start_wizard = NAstring "\023password\n" False NAnone;
 value start_no_wizard = NAstring "@Ie" False NAnone;
