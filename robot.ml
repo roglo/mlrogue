@@ -11,6 +11,7 @@ open Rob_path;
 open Rob_position;
 
 type t = Rob_def.t;
+exception TimedExc of int and exn;
 
 value char_escaped ch =
   if Char.code ch >= 1 && Char.code ch <= 26 then
@@ -1440,7 +1441,7 @@ if not (try let _ = String.index "BCDEFIJKLMOPQRSTUVWXYZ" mch in True with _ -> 
 
 value play tab nrow ncol t =
   let g = rob_game tab nrow ncol t in
-  rob_action g tab t
+  try rob_action g tab t with exn → raise (TimedExc g.time exn)
 ;
 
 value start_wizard = NAstring "\023password\n" False NAnone;

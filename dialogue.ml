@@ -276,18 +276,19 @@ value rgetchar_local_robot g rob = do {
       let ncol = string_length dung.(0) in
       match
         let sdung = Array.init nrow (fun i -> string_of_bytes dung.(i)) in
-        try Some (Robot.play sdung nrow ncol rob) with exc -> do {
-          if f_bool.Efield.get g.env "no handle robot" False then raise exc
-          else do {
-            Curses.home ();
-            printf "\n";
-            printf "%s" (Printexc.to_string exc);
-            Curses.home ();
-            flush stdout;
-            flush stderr;
-            None
+        try Some (Robot.play sdung nrow ncol rob) with
+          Robot.TimedExc tm exc -> do {
+            if f_bool.Efield.get g.env "no handle robot" False then raise exc
+            else do {
+              Curses.home ();
+              printf "\n";
+              printf "%d %s" tm (Printexc.to_string exc);
+              Curses.home ();
+              flush stdout;
+              flush stderr;
+              None
+            }
           }
-        }
       with
       [ Some (ch, rob) -> do {
           f_player_species.Efield.set g.env "player_species" (PSrobot rob);
