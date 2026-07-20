@@ -155,6 +155,7 @@ fr: @(s?:de )balsa@(2-)
     banded mail
 en: banded mail
 fr: une armure à bandes
+zh: 带甲
 
     bat
 de: Fledermaus@(f)
@@ -173,6 +174,7 @@ fr: beige@(p?s:)@(1-)
 en: being worn
 fr: sur vous
 fr-tt: sur toi
+zh: 穿着
 
     birch
 en: birch
@@ -251,6 +253,7 @@ fr: kroston@(m)
     chain mail
 en: chain mail
 fr: une cotte de mailles
+zh: 锁子甲
 
     cherry
 en: cherry
@@ -524,6 +527,7 @@ fr: @(s?:avec un )lapi-lazuli@(3-)
     leather armor
 en: leather armor
 fr: une armure de cuir
+zh: 皮甲
 
     Left or right hand?
 en: Left or right hand?
@@ -892,6 +896,7 @@ fr: écossais@(m?:e)@(p?s:)@(1-)
     plate mail
 en: plate mail
 fr: une armure de plates
+zh: 板甲
 
     platinum
 en: platinum
@@ -994,6 +999,7 @@ fr: bague
     ring mail
 en: ring mail
 fr: une armure à anneaux
+zh: 环甲
 
     rings
 en: rings
@@ -1014,6 +1020,7 @@ fr: @(s?:avec un )saphir@(3-)
     scale mail
 en: scale mail
 fr: une armure d'écailles
+zh: 鳞甲
 
     scroll
 de: Pergament@(m)
@@ -1093,6 +1100,7 @@ fr: Désolé
     splint mail
 en: splint mail
 fr: une armure à lamelles
+zh: 板条甲
 
     staff
 de: @(k?s:S)tock@(m)
