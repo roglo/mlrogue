@@ -3585,7 +3585,8 @@ let _ = failwith "9" in
         let na = NAalone_in_room ar in
         (Coth ' ', na, None)
       }
-      else if g.attacked > 0 && not (List.mem pos g.scare_pos) then do {
+      else if False && g.attacked > 0 && not (List.mem pos g.scare_pos) then do {
+let _ = assert False in
         let (monl, movl) = monsters_and_moves_around g in
         if monl <> [] then do {
           let na = NAalone_in_room ar in
