@@ -455,11 +455,20 @@ value utf8_cont_char c =
 ;
 
 value utf8_index_from s i c =
-  loop i 0 where rec loop i j =
-    if i = String.length s then raise Not_found
-    else if utf8_cont_char s.[i] then loop (i + 1) j
-    else if s.[i] = c then j
-    else loop (i + 1) (j + 1)
+  loop 0 0 where rec loop j k =
+    if j = String.length s then raise Not_found
+    else if utf8_cont_char s.[j] then loop (j + 1) k
+    else if j < i then loop (j + 1) (k + 1)
+    else if s.[j] = c then k
+    else loop (j + 1) (k + 1)
+;
+
+value utf8_index_of_index s i =
+  loop 0 0 where rec loop j k =
+    if j = String.length s then failwith "utf8_index_of_index"
+    else if utf8_cont_char s.[j] then loop (j + 1) k
+    else if k = i then j
+    else loop (j + 1) (k + 1)
 ;
 
 value rec scanbrd brd i n =
