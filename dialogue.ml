@@ -467,7 +467,7 @@ value utf8_index_of_index s i =
   loop 0 0 where rec loop j k =
     if j = String.length s then failwith "utf8_index_of_index"
     else if utf8_cont_char s.[j] then loop (j + 1) k
-    else if k = i then j
+    else if j = i then k
     else loop (j + 1) (k + 1)
 ;
 
@@ -501,8 +501,12 @@ value print_stats g stat_mask = do {
     if stat_mask land mask1 <> 0 then
       match scanbrd brd 0 start1 with
       [ Some (p1, p2) -> do {
-          if label then Curses.mvaddnstr row p1 brd p1 (p2 - p1) else ();
-          Curses.mvaddstr row p2 b1;
+          if label then
+            let col = utf8_index_of_index brd p1 in
+            Curses.mvaddnstr row col brd p1 (p2 - p1)
+          else ();
+          let col = utf8_index_of_index brd p2 in
+          Curses.mvaddstr row col b1;
           pad b1 pad1
         }
       | None -> () ]

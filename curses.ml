@@ -91,7 +91,9 @@ value utf8_of_substring s i =
     failwith (Printf.sprintf "utf8_of_substring \"%s\" %d" s i)
   else if Char.code s.[i] land 0x80 = 0 then (utf8_of_char s.[i], i + 1)
   else if Char.code s.[i] land 0x40 = 0 then
-    failwith (Printf.sprintf "utf8_of_substring \"%s\" %d, bad utf8" s i)
+    failwith
+      (Printf.sprintf "utf8_of_substring \"%s\" %d, bad utf8 0x%0x \\%d" s i
+         (Char.code s.[i]) (Char.code s.[i]))
   else if Char.code s.[i] land 0x20 = 0 then
     if i + 1 >= String.length s then failwith "utf8_of_substring error"
     else ({utf8_v = String.sub s i 2}, i + 2)
@@ -325,14 +327,14 @@ value mvaddch i j c = do {
 value mvaddnstr row col s i len = do {
   d.nrow := row;
   d.ncol := col;
-  loop 0 where rec loop j =
-    if j = len then ()
+  loop 0 0 where rec loop j n =
+    if n = len then ()
     else do {
       let (uc, k) = utf8_of_substring s (i + j) in
       string_set d.bnew.(d.nrow) d.ncol uc;
       d.anew.(d.nrow).(d.ncol) := d.attr_set;
       d.ncol := d.ncol + 1;
-      loop (k - i)
+      loop (k - i) (n + 1)
     }
 };
 
