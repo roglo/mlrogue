@@ -9,6 +9,7 @@
 de:  -- Noch --
 en:  -- More --
 fr:  -- Suite --
+zh:  -- 继续 --
 
      -- Press space or backspace --
 en:  -- Press space or backspace --
@@ -26,6 +27,7 @@ de:  -- Tippen Sie Raum um zu weitermachen --
 en:  -- Press space to continue --
 fr:  -- Tapez espace pour continuer --
 fr-tt:  -- Tape espace pour continuer --
+zh:  -- 按空格继续 --
 
     %d pieces of gold.
 de: %d Goldstücke.
