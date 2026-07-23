@@ -119,7 +119,8 @@ value get_desc g obj cap =
         else if cap then transl g.lang "Some"
         else transl g.lang "some"
       in
-      s ^ " " ^ transl g.lang "food"
+      if s = "" then transl g.lang "food"
+      else s ^ " " ^ transl g.lang "food"
   | Potion p ->
       let i = int_of_potion p in
       let name =

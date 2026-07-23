@@ -148,11 +148,13 @@ fr: armure@(e)
 de: Pfeil@(m)
 en: arrow
 fr: flèche
+zh: 箭
 
     arrows
 de: Pfeile@(m)
 en: arrows
 fr: flèches@(p)
+zh: 箭
 
     balsa
 en: balsa
@@ -398,6 +400,7 @@ fr: flamme
 de: Nahrung@(f)
 en: food
 fr: nourriture
+zh: 食物
 
     Game not saved.
 en: Game not saved.
@@ -473,6 +476,7 @@ fr: monstre de glace@(m)
 de: in Hand
 en: in hand
 fr: en main
+zh: (手持)
 
     In use
 de: Still in Hand
@@ -560,6 +564,7 @@ fr: longue épée
 de: Keule@(f)
 en: mace
 fr: massue
+zh: 钉头锤
 
     magnesium
 en: magnesium
@@ -1089,6 +1094,7 @@ fr: serpent@(m)
 de:
 en: Some
 fr: D@(m?u:e la)
+zh:
 
     some
 en: some
