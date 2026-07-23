@@ -175,8 +175,6 @@ value cflush () = do {
   for i = 0 to Array.length d.bcur - 1 do {
     Array.fill d.bcur.(i) 0 (string_length d.bcur.(i)) utf8_sp
   };
-  d.crow := 0;
-  d.ccol := 0;
 *)
   for i = 0 to Array.length d.bcur - 1 do {
     let c = d.bcur.(i) in
