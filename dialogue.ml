@@ -88,9 +88,13 @@ value weapon_desc g obj w cap =
   let t = weapon_tab.(i).o_title in
   let t =
     if obj.ob_quantity = 1 then
-      sprintf "%s %s%s"
-        (if cap then transl g.lang "A@(n?n)" else transl g.lang "a@(n?n)") id
-        (transl g.lang (Imisc.nth_field t 0))
+      let transl_a =
+        if cap then transl g.lang "A@(n?n)" else transl g.lang "a@(n?n)"
+      in
+      if transl_a = "" then
+        sprintf "%s%s" id (transl g.lang (Imisc.nth_field t 0))
+      else
+        sprintf "%s %s%s" transl_a id (transl g.lang (Imisc.nth_field t 0))
     else
       sprintf "%d %s%s" obj.ob_quantity id
         (transl g.lang (Imisc.nth_field t 1))

@@ -31,6 +31,7 @@ fr-tt:  -- Tape espace pour continuer --
 de: %d Goldstücke.
 en: %d pieces of gold.
 fr: %d pièces d'or.
+zh: %d枚金币。
 
     %d rations of
 de: %d rationen@(1-)@(&)
@@ -104,6 +105,7 @@ fr: une arme
 de: Ein@(f?e)
 en: A@(n?n)
 fr: Un@(m?:e)
+zh:
 
     a@(n?n)
 de: ein@(f?e:A?m?en)
@@ -161,6 +163,7 @@ zh: 带甲
 de: Fledermaus@(f)
 en: bat
 fr: wombat@(m)
+zh: 蝙蝠
 
     Bear trap.
 en: Bear trap.
@@ -308,6 +311,7 @@ de: Sie haben d@(m?en:f?ie:as) %s besiegt.
 en: Defeated the %s.
 fr: Vous avez vaincu @(n?:le?':m?e :a )%s.
 fr-tt: Tu as vaincu👍@(n?:le?':m?e :a )%s.
+zh: 你击败了%s
 
     diamond
 en: diamond
@@ -1042,6 +1046,7 @@ fr: Elle vole
 de: kurz@(A?en:er) Bogen@(m)
 en: short bow
 fr: arc court@(me)
+zh: 短弓
 
     shuriken
 en: shuriken
@@ -1156,6 +1161,7 @@ fr: @(n?:Le?':m?e :a )%s
 de: D@(m?er:f?ie:as) %s trifft.
 en: The %s hit.
 fr: @(n?:Le?':m?e :a )%s touche.@(M)
+zh: %s击中了你。
 
     The %s misses.
 de: D@(m?er:f?ie:as) %s blitzt ab.
