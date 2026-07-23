@@ -15,6 +15,7 @@ zh:  -- 继续 --
 en:  -- Press space or backspace --
 fr:  -- Tapez espace ou efface --
 fr-tt:  -- Tape espace ou efface --
+zh:  -- 按空格或退格 --
 
      -- Press space or letter --
 de:  -- Tippen Sie Raum oder Letter : .
@@ -86,6 +87,7 @@ fr: une armure complète
 de: ein total Gewinner
 en: a total winner
 fr: un gagnant total
+zh: 真正的赢家
 
     a trap
 en: a trap
@@ -954,6 +956,7 @@ zh: 退出@(&)
 de: verlassen@(1--)
 en: quit
 fr: parti
+zh: 退出@(&)
 
     r
 en: r
@@ -967,6 +970,7 @@ fr: PV-R: %.2d, PV-E: %.2d (!: %d, V: %d)
 de: Rang   Pktstnd Name
 en: Rank   Score   Name
 fr: Rang   Score   Nom
+zh: 排名    分数   名字
 
     rattlesnake
 de: Klapperschange@(f)
@@ -1263,6 +1267,7 @@ fr: @(s?:de )titane@(2-)
     Top  Rogueists
 en: Top  Rogueists
 fr: Meilleurs  Roguistes
+zh: Rogue高手
 
     Trap door.
 en: Trap door.
