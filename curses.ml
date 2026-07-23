@@ -168,7 +168,8 @@ value rec gap_equal k c n j =
 ;
 
 value cflush () = do {
-(*
+(* uncomment to hide bug of displaying in chinese (zh), probably due
+   to utf8 bug problem in my code
   cprint_string "\027[H";
   cprint_string vt_erase_in_display;
   for i = 0 to Array.length d.bcur - 1 do {
@@ -224,9 +225,6 @@ value cflush () = do {
     d.ccol := d.ncol
   }
   else ();
-(*
-  flush stdout;
-*)
 };
 
 (* *)
