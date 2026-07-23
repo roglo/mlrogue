@@ -946,6 +946,7 @@ fr: @(s?:avec un )quartz@(3-)
     Quit
 en: Quit
 fr: Parti
+zh: 退出@(&)
 
     quit
 de: verlassen@(1--)
@@ -1384,6 +1385,7 @@ fr-tt: Tu brandis
 de: mit %d Goldstücke
 en: with %d gold
 fr: avec %d pièces d'or
+zh: ，携带%d枚金币
 
     with amulet
 de: mit Amulett
