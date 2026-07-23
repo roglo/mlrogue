@@ -40,6 +40,12 @@ value string_contains = Bytes.contains;
 value string_of_bytes = Bytes.to_string;
 value string_to_bytes = Bytes.of_string;
 
+value vt_device_status_report = "\027[6n";
+value vt_erase_in_display = "\027[J";
+value vt_erase_line_from_cursor = "\027[K";
+
+value utf8_sp = utf8_of_char ' ';
+
 value no_attr =
   {a_standout = False; a_bold = False; a_back_col = -1; a_fore_col = -1}
 ;
@@ -162,6 +168,15 @@ value rec gap_equal k c n j =
 ;
 
 value cflush () = do {
+(*
+  cprint_string "\027[H";
+  cprint_string vt_erase_in_display;
+  for i = 0 to Array.length d.bcur - 1 do {
+    Array.fill d.bcur.(i) 0 (string_length d.bcur.(i)) utf8_sp
+  };
+  d.crow := 0;
+  d.ccol := 0;
+*)
   for i = 0 to Array.length d.bcur - 1 do {
     let c = d.bcur.(i) in
     let n = d.bnew.(i) in
@@ -208,7 +223,10 @@ value cflush () = do {
     d.crow := d.nrow;
     d.ccol := d.ncol
   }
-  else ()
+  else ();
+(*
+  flush stdout;
+*)
 };
 
 (* *)
@@ -249,12 +267,6 @@ value attron al =
      | A_bold → d.attr_set := {(d.attr_set) with a_bold = True} ])
     al
 ;
-
-value vt_device_status_report = "\027[6n";
-value vt_erase_in_display = "\027[J";
-value vt_erase_line_from_cursor = "\027[K";
-
-value utf8_sp = utf8_of_char ' ';
 
 value clear () = do {
   cprint_string "\027[H";
