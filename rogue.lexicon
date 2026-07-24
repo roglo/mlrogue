@@ -115,6 +115,7 @@ zh:
 de: ein@(f?e:A?m?en)
 en: a@(n?n)
 fr: un@(m?:e)
+zh:
 
     ABCDEFGHIJKLMNOPQRSTUVWXYZ
 de: AFZDEBPHIJTLQNOGMKSRUVWXYC
@@ -1387,12 +1388,14 @@ fr: blanc@(m?:he)@(p?s:)@(1-)
 de: Zücken was?
 en: Wield what?
 fr: Brandir quoi ?
+zh: 装备什么？
 
     Wielding
 de: Sie zücken@(A)
 en: Wielding
 fr: Vous brandissez
 fr-tt: Tu brandis
+zh: 装备着
 
     with %d gold
 de: mit %d Goldstücke
