@@ -123,13 +123,15 @@ value cprint_string s = if d.no_output then () else print_string s;
 
 value move_to_pos n row col = do {
 (* doesn't work if the beginning of the line hold caracters which
-   take more than 1 column
+   take more than 1 column *)
     printf "\027[%d;%dH" (row + 1) (col + 1);
-*)
+(* but this solution creates a bug e.g. when displaying in green after
+   being confused
   printf "\027[%d;1H" (row + 1);
   for k = 0 to col - 1 do {
     print_encode_char (string_get n k);
   }
+*)
 };
 
 value update (c : array _) (n : array _) ac an i jbeg j = do {
