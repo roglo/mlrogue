@@ -179,14 +179,6 @@ value rec gap_equal k c n j =
 ;
 
 value cflush () = do {
-(* uncomment to hide bug of displaying in chinese (zh), probably due
-   to utf8 bug problem in my code
-  cprint_string "\027[H";
-  cprint_string vt_erase_in_display;
-  for i = 0 to Array.length d.bcur - 1 do {
-    Array.fill d.bcur.(i) 0 (string_length d.bcur.(i)) utf8_sp
-  };
-*)
   for i = 0 to Array.length d.bcur - 1 do {
     let c = d.bcur.(i) in
     let n = d.bnew.(i) in
