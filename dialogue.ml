@@ -439,6 +439,7 @@ value inv_sel g pack mask prompt term =
         Curses.color_set fg bg;
         Curses.mvaddch i (j + col) (string_get saved.(i) j)
       };
+      Curses.clrtoeol ();
     };
     Curses.color_set (-1) (-1);
     Some retc
