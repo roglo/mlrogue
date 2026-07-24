@@ -375,6 +375,7 @@ fr: @(s?:avec une )émeraude@(3-)
 de: Emu@(n)
 en: emu@(n)
 fr: émeu@(me)
+zh: 鸸鹋
 
     entitled:
 de: betitelt:
@@ -437,6 +438,7 @@ fr: Fichier d'aide non accessible.
 de: trifft.
 en: hit.
 fr: touche.
+zh: 中了你。
 
     Hmm ... this potion tastes like %sjuice.
 en: Hmm ... this potion tastes like %sjuice.
@@ -446,6 +448,7 @@ fr: Hmm... cette potion a un goût d@(e?':e )%s.
 de: streunend@(A?en:er) Kobold@(m)
 en: hobgoblin
 fr: lutin vagabond@(m)
+zh: 大地精
 
     hungry
 de: hunger
@@ -1171,6 +1174,7 @@ fr: Ce n'est pas une bague !
 de: D@(m?er:f?ie:as) %s
 en: The %s
 fr: @(n?:Le?':m?e :a )%s
+zh: %s
 
     The %s hit.
 de: D@(m?er:f?ie:as) %s trifft.
@@ -1182,6 +1186,7 @@ zh: %s击中了你。
 de: D@(m?er:f?ie:as) %s blitzt ab.
 en: The %s misses.
 fr: @(n?:Le?':m?e :a )%s rate.@(M)
+zh: %s未命中。
 
     The %s vanishes as it hits the ground.
 en: The %s vanishes as it hits the ground.
@@ -1626,12 +1631,14 @@ de: Sie treffen.
 en: You hit.
 fr: Vous touchez.
 fr-tt: Tu touches.
+zh: 你命中了。
 
     You miss.
 de: Sie blizten ab.
 en: You miss.
 fr: Vous ratez.
 fr-tt: Tu rates.
+zh: 你未命中。
 
     You start to float in the air.
 en: You start to float in the air.
