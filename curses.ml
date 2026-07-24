@@ -121,6 +121,17 @@ value print_encode_char c =
 
 value cprint_string s = if d.no_output then () else print_string s;
 
+value move_to_pos n row col = do {
+(* doesn't work if the beginning of the line hold caracters which
+   take more than 1 column
+    printf "\027[%d;%dH" (row + 1) (col + 1);
+*)
+  printf "\027[%d;1H" (row + 1);
+  for k = 0 to col - 1 do {
+    print_encode_char (string_get n k);
+  }
+};
+
 value update (c : array _) (n : array _) ac an i jbeg j = do {
   if i = d.crow && jbeg = d.ccol then ()
   else if i = d.crow && jbeg = d.ccol - 1 then cprint_string "\b"
@@ -129,17 +140,7 @@ value update (c : array _) (n : array _) ac an i jbeg j = do {
     print_encode_char (string_get n d.ccol)
   }
   else if d.no_output then ()
-  else do {
-(* doesn't work if the beginning of the line hold caracters which
-   take more than 1 column
-    printf "\027[%d;%dH" (i + 1) (jbeg + 1);
-*)
-    printf "\027[%d;1H" (i + 1);
-    for k = 0 to jbeg - 1 do {
-      print_encode_char (string_get n k);
-    }
-(**)
-  };
+  else move_to_pos n i jbeg;
   if jbeg = j - 1 then do {
     set_attr an.(jbeg);
     print_encode_char (string_get n jbeg);
