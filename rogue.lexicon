@@ -478,6 +478,7 @@ fr: Je ne vois pas de chemin vers le haut.
 de: Eisungeheuer
 en: ice monster@(n)
 fr: monstre de glace@(m)
+zh: 冰怪
 
     in hand
 de: in Hand
@@ -516,11 +517,13 @@ zh: 红隼
 de: Durch@(A) getötet@(1--)
 en: Killed by
 fr: Tué par
+zh: 杀死@(1--)
 
     killed by
 de: durch@(A) getötet@(1--)
 en: killed by
 fr: tué par
+zh: 杀死@(1--)
 
     Killed by a dart
 en: Killed by a dart
@@ -1492,6 +1495,7 @@ de: Sie können sich wieder rühren.
 en: You can move again.
 fr: Vous pouvez bouger de nouveau.
 fr-tt: Tu peux bouger de nouveau.
+zh: 你又可以行动了。
 
     You can't drink that!
 de: Sie konnen das nich trinken!
