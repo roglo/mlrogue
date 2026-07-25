@@ -328,10 +328,12 @@ fr: @(s?:avec un )diamant@(3-)
     Died of hypothermia
 en: Died of hypothermia
 fr: Mort d'hypothermie
+zh: 冻死
 
     died of hypothermia
 en: died of hypothermia
 fr: mort d'hypothermie
+zh: 冻死
 
     Died of starvation
 en: Died of starvation
@@ -1304,6 +1306,7 @@ fr: @(s?:avec une )turquoise@(3-)
     two-handed sword
 en: two-handed sword
 fr: épée à deux mains@(ef)
+zh: 双手剑
 
     Unknown command
 en: Unknown command
@@ -1467,6 +1470,7 @@ de: Sie sind in Eis verwandeln.
 en: You are frozen.
 fr: Vous êtes gelé.
 fr-tt: Tu es gelé.
+zh: 你被冻住了。
 
     You are still stuck in the bear trap.
 en: You are still stuck in the bear trap.
