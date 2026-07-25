@@ -179,6 +179,7 @@ fr: Piège à loup.
     beige
 en: beige
 fr: beige@(p?s:)@(1-)
+zh: 米色
 
     being worn
 en: being worn
@@ -507,6 +508,7 @@ fr: jaguar@(m)
 de: Turmfalke@(m)@(A?n)
 en: kestrel
 fr: xénique@(m)
+zh: 红隼
 
     Killed by
 de: Durch@(A) getötet@(1--)
@@ -928,6 +930,7 @@ fr: Piège à dard empoisonné.
 de: Trank@(m)
 en: potion
 fr: potion
+zh: 药水
 
     potions
 de: Tränke@(mp)
@@ -1263,6 +1266,7 @@ fr-tt: C'est délicieux, tu te sens tout chaud.
 de: Schießen was?
 en: Throw what?
 fr: Lancer quoi ?
+zh: 投掷什么？
 
     tiger-eye
 en: tiger-eye
@@ -1361,6 +1365,7 @@ fr-tt: Tu portes déjà deux bagues.
 de: Wilkommen in Erfahrungniveau %d!
 en: Welcome to experience level %d!
 fr: Bienvenue au niveau d'expérience %d !
+zh: 达到经验等级%d！
 
     Welcome, mighty wizard!
 en: Welcome, mighty wizard!

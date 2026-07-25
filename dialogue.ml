@@ -127,10 +127,12 @@ value get_desc g obj cap =
         if obj.ob_quantity = 1 then transl g.lang "potion"
         else transl g.lang "potions"
       in
-      (if obj.ob_quantity = 1 then
-         if cap then transl g.lang "A@(n?n)" else transl g.lang "a@(n?n)"
-       else string_of_int obj.ob_quantity) ^
-      " " ^
+      let na =
+        if obj.ob_quantity = 1 then
+          if cap then transl g.lang "A@(n?n)" else transl g.lang "a@(n?n)"
+         else string_of_int obj.ob_quantity
+      in
+      (if na = "" then "" else na ^ " ") ^
       (match (g.id_potions.(i), g.wizard) with
        [ (Unidentified s, False) -> transl g.lang s ^ " " ^ name
        | (Called s, False) -> name ^ " " ^ transl g.lang "called" ^ " " ^ s
