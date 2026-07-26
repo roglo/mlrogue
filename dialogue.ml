@@ -153,7 +153,7 @@ value get_desc g obj cap =
       (if na = "" then "" else na ^ " ") ^
       (match (g.id_scrolls.(i), g.wizard) with
        [ (Unidentified s, False) ->
-           sprintf (ftransl g.lang "scroll entitled: %s") s ^
+           sprintf (ftransl g.lang "scroll@(p?s:) entitled: %s") s ^
            (if obj.ob_quantity = 1 then "" else "@(p)")
        | (Called s, False) ->
             name ^ " " ^ transl g.lang "called" ^ " " ^ s
