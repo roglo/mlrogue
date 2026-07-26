@@ -953,7 +953,7 @@ fr: Piège à dard empoisonné.
 de: Trank@(m)
 en: potion
 fr: potion
-zh: 药水
+zh: 药水@(&)
 
     potions
 de: Tränke@(mp)

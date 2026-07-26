@@ -76,30 +76,6 @@ value read_lexicon () = do {
   close_in ic;
 };
 
-value gen_transl glang str = do {
-  if Sys.file_exists lex then
-    let stbuf = Unix.stat lex in
-    if stbuf.Unix.st_mtime > lexicon_mtime.val then do {
-      lang.val := glang;
-      Hashtbl.clear lexicon;
-      lexicon_mtime.val := stbuf.Unix.st_mtime;
-      read_lexicon ();
-    }
-    else ()
-  else ();
-  Hashtbl.find lexicon str
-};
-
-value transl glang str =
-  try gen_transl glang str with
-  [ Not_found -> if lang.val = "" then str else "[" ^ str ^ "]" ]
-;
-
-value fast_transl glang str =
-  try Hashtbl.find lexicon str with
-  [ Not_found -> transl glang str ]
-;
-
 value check_format ini_fmt (r : string) =
   let s : string = string_of_format (ini_fmt : format 'a 'b 'c) in
   let rec loop i j =
@@ -127,15 +103,6 @@ value valid_format ini_fmt r =
   | Some fmt -> fmt
   | None -> Scanf.format_from_string (tnf (string_of_format ini_fmt)) ini_fmt
   end
-;
-
-value ftransl glang (fmt : format 'a 'b 'c) =
-  let sfmt : string = string_of_format fmt in
-  try valid_format fmt (gen_transl glang sfmt) with
-  [ Not_found ->
-      if lang.val = "" then fmt
-      else
-        (Scanf.format_from_string ("[" ^ sfmt ^ "]") fmt : format 'a 'b 'c) ]
 ;
 
 value erase str i j =
@@ -375,12 +342,45 @@ value etransl str =
   eval_shift str
 ;
 
-value translc lang c =
-  let s = transl lang (String.make 1 c) in
-  if String.length s = 1 then s.[0] else c
-;
-
 value clear_lexicon lang = do {
   Hashtbl.clear lexicon;
   lexicon_mtime.val := 0.0;
 };
+
+value gen_transl glang str = do {
+  if Sys.file_exists lex then
+    let stbuf = Unix.stat lex in
+    if stbuf.Unix.st_mtime > lexicon_mtime.val then do {
+      lang.val := glang;
+      Hashtbl.clear lexicon;
+      lexicon_mtime.val := stbuf.Unix.st_mtime;
+      read_lexicon ();
+    }
+    else ()
+  else ();
+  Hashtbl.find lexicon str
+};
+
+value transl glang str =
+  try gen_transl glang str with
+  [ Not_found -> if lang.val = "" then str else "[" ^ str ^ "]" ]
+;
+
+value fast_transl glang str =
+  try Hashtbl.find lexicon str with
+  [ Not_found -> transl glang str ]
+;
+
+value ftransl glang (fmt : format 'a 'b 'c) =
+  let sfmt : string = string_of_format fmt in
+  try valid_format fmt (gen_transl glang sfmt) with
+  [ Not_found ->
+      if lang.val = "" then fmt
+      else
+        (Scanf.format_from_string ("[" ^ sfmt ^ "]") fmt : format 'a 'b 'c) ]
+;
+
+value translc lang c =
+  let s = transl lang (String.make 1 c) in
+  if String.length s = 1 then s.[0] else c
+;
