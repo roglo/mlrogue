@@ -206,6 +206,7 @@ fr: noir@(m?:e)@(p?s:)@(1-)
     black unicorn
 en: black unicorn
 fr: unicorne noir@(me)
+zh: 黑独角兽
 
     blue
 de: blau@(p?e:m?A?en:er:f?e:n?es)
@@ -352,6 +353,7 @@ fr: Direction ?
 de: Drache@(m)
 en: dragon
 fr: dragon@(m)
+zh: 龙
 
     Drop what?
 de: Werfen was?
@@ -385,6 +387,7 @@ zh: 鸸鹋
 de: betitelt:
 en: entitled:
 fr: intitulé@(p?s:) :
+zh: 题为
 
     Everything looks so boring now.
 en: Everything looks so boring now.
@@ -424,6 +427,7 @@ fr: @(s?:d')or@(1-)
 de: grün@(p?e:m?A?en:er:f?e:n?es)
 en: green
 fr: vert@(m?:e)@(p?s:)@(1-)
+zh: 绿色
 
     grey
 de: grau@(p?e:m?A?en:er:f?e:n?es)
@@ -507,6 +511,7 @@ fr: @(s?:d')ivoire@(1-)
     jabberwock
 en: jabberwock
 fr: jaguar@(m)
+zh: 炸脖龙
 
     kestrel
 de: Turmfalke@(m)@(A?n)
@@ -1061,11 +1066,13 @@ zh: 鳞甲
 de: Pergament@(m)
 en: scroll
 fr: parchemin@(m)
+zh: 卷轴
 
     scrolls
 de: Pergamente@(m)
 en: scrolls
 fr: parchemins@(mp)
+zh: 卷轴
 
     She stole
 de: Sie hat gestohlen@(A)@(1--)
@@ -1101,6 +1108,7 @@ fr: Piège à gaz soporifique.
     slime-mold
 en: slime-mold
 fr: champignon@(m)
+zh: 黏菌
 
     snake
 de: Schlange@(f)

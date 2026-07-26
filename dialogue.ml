@@ -111,7 +111,7 @@ value get_desc g obj cap =
       let art =
         if cap then transl g.lang "A@(n?n)" else transl g.lang "a@(n?n)"
       in
-      art ^ " " ^ name_of g obj
+      (if art = "" then "" else art ^ " ") ^ name_of g obj
   | Food Ration ->
       let s =
         if obj.ob_quantity > 1 then
@@ -145,10 +145,13 @@ value get_desc g obj cap =
         if obj.ob_quantity = 1 then transl g.lang "scroll"
         else transl g.lang "scrolls"
       in
-      (if obj.ob_quantity = 1 then
-         if cap then transl g.lang "A@(n?n)" else transl g.lang "a@(n?n)"
-       else string_of_int obj.ob_quantity) ^
-      " " ^ name ^ " " ^
+      let na =
+        if obj.ob_quantity = 1 then
+           if cap then transl g.lang "A@(n?n)" else transl g.lang "a@(n?n)"
+         else string_of_int obj.ob_quantity
+      in
+      (if na = "" then "" else na ^ " ") ^
+      name ^ " " ^
       (match (g.id_scrolls.(i), g.wizard) with
        [ (Unidentified s, False) -> transl g.lang "entitled:" ^ " " ^ s
        | (Called s, False) -> transl g.lang "called" ^ " " ^ s
