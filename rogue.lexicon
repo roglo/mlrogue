@@ -226,6 +226,7 @@ fr: brune@(p?s:)@(1-)
 de: weinrot@(p?e:m?A?en:er:f?e:n?es)
 en: burgundy
 fr: bordeaux@(1-)
+zh: 酒红
 
     Call it:
 de: Nennen es:
@@ -285,6 +286,7 @@ fr: @(s?:de )chrome@(2-)
 de: durchsichtig@(p?e:m?A?en:er:f?e:n?es)
 en: clear
 fr: transparent@(m?:e)@(p?s:)@(1-)
+zh: 无色
 
     cobalt
 en: cobalt
@@ -606,6 +608,7 @@ zh: 美杜莎
 de: blitzt ab.
 en: misses.
 fr: rate.
+zh: 未命中
 
     moved onto
 de: Auf@(A) gegangen@(1--)
@@ -925,6 +928,7 @@ fr: rose@(p?s:)@(1-)
 de: scottisch@(p?e:m?A?en:er:f?e:n?es)
 en: plaid
 fr: écossais@(m?:e)@(p?s:)@(1-)
+zh: 格子
 
     plate mail
 en: plate mail
