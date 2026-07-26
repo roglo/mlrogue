@@ -135,6 +135,7 @@ fr: @(s?:avec une )améthyste@(3-)
 de: Amulett
 en: amulet
 fr: amulette@(e)
+zh: 护身符
 
     aquator@(n)
 en: aquator@(n)
@@ -870,6 +871,7 @@ fr: à la main gauche
 de: im Niveau %d
 en: on level %d
 fr: au niveau %d
+zh: 在第%d层
 
     on right hand
 en: on right hand
@@ -1424,6 +1426,7 @@ zh: ，携带%d枚金币
 de: mit Amulett
 en: with amulet
 fr: avec amulette
+zh: ，持有护身符
 
     Wizard's password:
 en: Wizard's password:
