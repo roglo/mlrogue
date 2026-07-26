@@ -754,6 +754,7 @@ fr: d'enchantement d'arme
     of extra healing
 en: of extra healing
 fr: de guérison supplémentaire
+zh: @(2-)强效治疗
 
     of hallucination
 en: of hallucination
@@ -770,6 +771,7 @@ fr: d'accélération
     of healing
 en: of healing
 fr: de guérison
+zh: @(2-)治疗
 
     of hold monster
 en: of hold monster
