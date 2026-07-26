@@ -513,17 +513,17 @@ en: kestrel
 fr: xénique@(m)
 zh: 红隼
 
-    Killed by
-de: Durch@(A) getötet@(1--)
-en: Killed by
-fr: Tué par
-zh: 杀死@(1--)
+    Killed by %s
+de: Durch@(A) %s getötet
+en: Killed by %s
+fr: Tué par %s
+zh: 被%s杀死
 
-    killed by
-de: durch@(A) getötet@(1--)
-en: killed by
-fr: tué par
-zh: 杀死@(1--)
+    killed by %s
+de: durch@(A) %s getötet
+en: killed by %s
+fr: tué par %s
+zh: 被%s杀死
 
     Killed by a dart
 en: Killed by a dart

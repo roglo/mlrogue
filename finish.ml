@@ -202,7 +202,8 @@ value text_of_ending lang =
   fun
   [ Monster name ->
       let art = transl lang "a@(n?n)" in
-      transl lang "killed by" ^ " " ^ art ^ " " ^ transl lang name
+      let s = if art = "" then "" else art ^ " " in
+      sprintf (ftransl lang "killed by %s") (s ^ transl lang name)
   | Hypothermia -> transl lang "died of hypothermia"
   | Starvation -> transl lang "died of starvation"
   | PoisonDart -> transl lang "killed by a dart"
@@ -359,7 +360,8 @@ value killed_by g death = do {
     match death with
     [ Monster mon_name ->
         let art = transl g.lang "a@(n?n)" in
-        transl g.lang "Killed by" ^ " " ^ art ^ " " ^ transl g.lang mon_name
+        let s = if art = "" then "" else art ^ " " in
+        sprintf (ftransl g.lang "Killed by %s") (s ^ transl g.lang mon_name)
     | Hypothermia -> transl g.lang "Died of hypothermia"
     | Starvation -> transl g.lang "Died of starvation"
     | PoisonDart -> transl g.lang "Killed by a dart"
