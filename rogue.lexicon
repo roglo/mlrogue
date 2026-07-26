@@ -304,10 +304,12 @@ fr: @(s?:de )cuivre@(2-)
     dagger
 en: dagger
 fr: poignard@(m)
+zh: 匕首
 
     daggers
 en: daggers
 fr: poignards@(mp)
+zh: 匕首
 
     dart
 de: Stachel@(m)
