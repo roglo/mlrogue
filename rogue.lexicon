@@ -221,6 +221,7 @@ fr: @(s?:de )bronze@(2-)
 de: braun@(p?e:m?A?en:er:f?e:n?es)
 en: brown
 fr: brune@(p?s:)@(1-)
+zh: 棕色
 
     burgundy
 de: weinrot@(p?e:m?A?en:er:f?e:n?es)
@@ -681,6 +682,7 @@ fr: Rien ne se passe
     Nothing here.
 en: Nothing here.
 fr: Il n'y a rien ici.
+zh: 这里什么也没有。
 
     nymph
 de: Nymphe@(f)
