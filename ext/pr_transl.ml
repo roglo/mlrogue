@@ -102,4 +102,4 @@ and str_item =
 
 value f (ast, loc) = do { str_item ast; flush stdout; () };
 
-Pcaml.print_implem.val := List.iter f;
+Pcaml.print_implem.val := fun (ast, loc) → List.iter f ast;
