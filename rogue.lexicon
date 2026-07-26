@@ -1078,6 +1078,7 @@ zh: 卷轴
 de: betitelt Pergament@(m)@(p?e:): %s
 en: scroll@(p?s:) entitled: %s
 fr: parchemin@(m)@(p?s:) intitulé@(p?s:) : %s
+zh: 题为%s的卷轴
 
     She stole
 de: Sie hat gestohlen@(A)@(1--)
