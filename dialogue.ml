@@ -151,11 +151,14 @@ value get_desc g obj cap =
          else string_of_int obj.ob_quantity
       in
       (if na = "" then "" else na ^ " ") ^
-      name ^ " " ^
       (match (g.id_scrolls.(i), g.wizard) with
-       [ (Unidentified s, False) -> transl g.lang "entitled:" ^ " " ^ s
-       | (Called s, False) -> transl g.lang "called" ^ " " ^ s
+       [ (Unidentified s, False) ->
+           sprintf (ftransl g.lang "scroll entitled: %s") s ^
+           (if obj.ob_quantity = 1 then "" else "@(p)")
+       | (Called s, False) ->
+            name ^ " " ^ transl g.lang "called" ^ " " ^ s
        | (Identified, False) | (_, True) ->
+           name ^ " " ^
            sprintf "%s" (transl g.lang scroll_tab.(i).o_title) ])
   | Wand w ->
       let i = int_of_wand w.wa_kind in

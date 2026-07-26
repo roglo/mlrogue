@@ -1075,14 +1075,9 @@ fr: parchemins@(mp)
 zh: 卷轴
 
     scroll entitled: %s
-de: betitelt Pergament@(m): %s
-en: scroll entitled: %s
-fr: parchemin@(m) intitulé : %s
-
-    scrolls entitled: %s
-de: betitelt Pergamente: %s
-en: scrolls entitled: %s
-fr: parchemins@(m) intitulés : %s
+de: betitelt Pergament@(p?e:): %s
+en: scroll@(m)@(p?s:) entitled: %s
+fr: parchemin@(m)@(p?s:) intitulé@(p?s:) : %s
 
     She stole
 de: Sie hat gestohlen@(A)@(1--)
