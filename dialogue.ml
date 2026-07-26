@@ -57,8 +57,8 @@ value name_of g obj =
 value ring_desc g r cap =
   let i = int_of_ring r.rg_kind in
   let name = transl g.lang "ring" in
-  sprintf "%s %s%s"
-    (if cap then transl g.lang "A@(n?n)" else transl g.lang "a@(n?n)")
+  let na = if cap then transl g.lang "A@(n?n)" else transl g.lang "a@(n?n)" in
+  (if na = "" then "" else na ^ " ") ^
     (match (g.id_rings.(i), g.wizard) with
      [ (Unidentified s, False) -> transl g.lang s ^ " " ^ name
      | (Called s, False) -> name ^ " " ^ transl g.lang "called" ^ " " ^ s
@@ -69,7 +69,7 @@ value ring_desc g r cap =
                 sprintf "%s%d " (if r.rg_class > 0 then "+" else "")
                   r.rg_class
             | _ -> "" ])
-           name (transl g.lang ring_tab.(i).o_title) ])
+           name (transl g.lang ring_tab.(i).o_title) ]) ^
     (match r.rg_in_use with
      [ Some LeftHand -> " " ^ transl g.lang "on left hand"
      | Some RightHand -> " " ^ transl g.lang "on right hand"

@@ -966,6 +966,7 @@ fr: quartanier@(m)
     quartz
 en: quartz
 fr: @(s?:avec un )quartz@(3-)
+zh: 石英@(&)
 
     Quit
 en: Quit
@@ -1028,6 +1029,7 @@ fr: Enlevé
 de: @(k?r:R)ing@(m)
 en: ring
 fr: bague
+zh: 戒指
 
     ring mail
 en: ring mail
@@ -1104,6 +1106,7 @@ fr: champignon@(m)
 de: Schlange@(f)
 en: snake
 fr: serpent@(m)
+zh: 蛇
 
     Some
 de:
