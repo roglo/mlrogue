@@ -143,7 +143,7 @@ value get_desc g obj cap =
       let i = int_of_scroll s in
       let name =
         (if obj.ob_quantity > 1 then "@(p)" else "") ^
-        transl g.lang "scroll@(p:s:)"
+        transl g.lang "scroll@(p?s:)"
       in
       let na =
         if obj.ob_quantity = 1 then
