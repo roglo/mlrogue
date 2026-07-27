@@ -34,7 +34,7 @@ value name_of g obj =
   match obj.ob_kind with
   [ Scroll _ ->
       (if obj.ob_quantity > 1 then "@(p)" else "") ^
-      transl g.lang "scroll@(p:s:)"
+      transl g.lang "scroll@(p?s:)"
   | Potion _ ->
       (if obj.ob_quantity > 1 then "@(p)" else "") ^
       transl g.lang "potion@(p?s:)"
