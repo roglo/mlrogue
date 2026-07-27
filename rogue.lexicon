@@ -949,16 +949,11 @@ fr: @(s?:de )platine@(2-)
 en: Poison dart trap.
 fr: Piège à dard empoisonné.
 
-    potion
-de: Trank@(m)
-en: potion
-fr: potion
+    potion@(p?s:)
+de: Tr@(p?ä:a)nk@(p?e:)@(m)
+en: potions@(p?s:)
+fr: potions@(p?s:)
 zh: 药水@(&)
-
-    potions
-de: Tränke@(mp)
-en: potions
-fr: potions@(p)
 
     purple
 de: purpurrot@(p?e:m?A?en:er:f?e:n?es)
@@ -1418,6 +1413,7 @@ fr-tt: Que veux-tu identifier ?
     Which object kind
 en: Which object kind
 fr: Quel type d'objet
+zh: 物品种类
 
     white
 de: weiss@(p?e:m?A?en:er:f?e:n?es)

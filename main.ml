@@ -329,9 +329,9 @@ value discovered g =
         let ch =
           match ch with
           [ '!' ->
-              let name _ = "potion" in
-              discovered_kind g (transl g.lang "potions") name g.id_potions
-                potion_tab
+              let name _ = "potion@(p?s:)" in
+              discovered_kind g ("@(p)" ^ transl g.lang "potion@(p?s:)") name
+                g.id_potions potion_tab
           | '?' ->
               let name _ = "scroll@(p?s:)" in
               discovered_kind g ("@(p)" ^ transl g.lang "scroll@(p?s:)") name
@@ -490,7 +490,9 @@ value whatisit g = do {
   | '#' -> msg_is g ch (transl g.lang "a tunnel")
   | '.' -> msg_is g ch (transl g.lang "a floor tile")
   | '!' ->
-      msg_is g ch (transl g.lang "a@(n?n)" ^ " " ^ transl g.lang "potion")
+      let an = transl g.lang "a@(n?n)" in
+      msg_is g ch
+        ((if an = "" then "" else an ^ " ") ^ transl g.lang "potion@(p?s:)")
   | '?' ->
       msg_is g ch
         (transl g.lang "a@(n?n)" ^ " " ^ transl g.lang "scroll@(p?s:)")

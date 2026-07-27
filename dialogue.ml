@@ -36,8 +36,8 @@ value name_of g obj =
       (if obj.ob_quantity > 1 then "@(p)" else "") ^
       transl g.lang "scroll@(p:s:)"
   | Potion _ ->
-      if obj.ob_quantity > 1 then transl g.lang "potions"
-      else transl g.lang "potion"
+      (if obj.ob_quantity > 1 then "@(p)" else "") ^
+      transl g.lang "potion@(p?s:)"
   | Food Ration -> transl g.lang "food"
   | Food Fruit ->
       if g.fruit <> default_fruit then g.fruit else transl g.lang g.fruit
@@ -124,8 +124,8 @@ value get_desc g obj cap =
   | Potion p ->
       let i = int_of_potion p in
       let name =
-        if obj.ob_quantity = 1 then transl g.lang "potion"
-        else transl g.lang "potions"
+        (if obj.ob_quantity = 1 then "" else "@(p)") ^
+        transl g.lang "potion@(p?s:)"
       in
       let na =
         if obj.ob_quantity = 1 then
