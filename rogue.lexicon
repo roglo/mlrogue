@@ -811,6 +811,7 @@ fr: de protection d'armure
     of poison
 en: of poison
 fr: de poison
+zh: @(1-)毒
 
     of polymorph
 en: of polymorph
@@ -1618,6 +1619,7 @@ zh: 你感觉更强壮了，多么结实的肌肉啊！
 en: You feel very sick now.
 fr: Vous vous sentez vraiment malade, maintenant.
 fr-tt: Tu te sens vraiment malade, maintenant.
+zh: 你现在感觉很不舒服。
 
     You feel weaker.
 en: You feel weaker.
