@@ -333,9 +333,9 @@ value discovered g =
               discovered_kind g (transl g.lang "potions") name g.id_potions
                 potion_tab
           | '?' ->
-              let name _ = "scroll" in
-              discovered_kind g (transl g.lang "scrolls") name g.id_scrolls
-                scroll_tab
+              let name _ = "scroll@(p?s:)" in
+              discovered_kind g ("@(p)" ^ transl g.lang "scroll@(p?s:)") name
+                g.id_scrolls scroll_tab
           | '=' ->
               let name _ = "ring" in
               discovered_kind g (transl g.lang "rings") name g.id_rings
@@ -492,7 +492,8 @@ value whatisit g = do {
   | '!' ->
       msg_is g ch (transl g.lang "a@(n?n)" ^ " " ^ transl g.lang "potion")
   | '?' ->
-      msg_is g ch (transl g.lang "a@(n?n)" ^ " " ^ transl g.lang "scroll")
+      msg_is g ch
+        (transl g.lang "a@(n?n)" ^ " " ^ transl g.lang "scroll@(p?s:)")
   | ')' -> msg_is g ch (transl g.lang "a weapon")
   | ']' -> msg_is g ch (transl g.lang "a suit of armour")
   | '*' -> msg_is g ch (transl g.lang "some gold")

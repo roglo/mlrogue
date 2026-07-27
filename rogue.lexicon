@@ -1072,16 +1072,10 @@ en: scale mail
 fr: une armure d'écailles
 zh: 鳞甲
 
-    scroll
-de: Pergament@(m)
-en: scroll
-fr: parchemin@(m)
-zh: 卷轴
-
-    scrolls
-de: Pergamente@(m)
-en: scrolls
-fr: parchemins@(mp)
+    scroll@(p?s:)
+de: Pergament@(p?e:)@(m)
+en: scroll@(p?s:)
+fr: parchemin@(p?s:)@(m)
 zh: 卷轴
 
     scroll@(p?s:) entitled: %s

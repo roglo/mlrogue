@@ -33,8 +33,8 @@ value armor_desc g a =
 value name_of g obj =
   match obj.ob_kind with
   [ Scroll _ ->
-      if obj.ob_quantity > 1 then transl g.lang "scrolls"
-      else transl g.lang "scroll"
+      (if obj.ob_quantity > 1 then "@(p)" else "") ^
+      transl g.lang "scroll@(p:s:)"
   | Potion _ ->
       if obj.ob_quantity > 1 then transl g.lang "potions"
       else transl g.lang "potion"
@@ -142,8 +142,8 @@ value get_desc g obj cap =
   | Scroll s ->
       let i = int_of_scroll s in
       let name =
-        if obj.ob_quantity = 1 then transl g.lang "scroll"
-        else transl g.lang "scrolls"
+        (if obj.ob_quantity > 1 then "@(p)" else "") ^
+        transl g.lang "scroll@(p:s:)"
       in
       let na =
         if obj.ob_quantity = 1 then
