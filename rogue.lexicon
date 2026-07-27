@@ -783,7 +783,8 @@ fr: d'identification
 
     of increase strength
 en: of increase strength
-fr: de renforcement
+fr: d'augmentation de force
+zh: @(2-)增加力量
 
     of invisibility
 en: of invisibility
@@ -929,6 +930,7 @@ fr: @(s?:de )pin@(2-)
 de: rosarot@(p?e:m?A?en:er:f?e:n?es)
 en: pink
 fr: rose@(p?s:)@(1-)
+zh: 粉红色药水
 
     plaid
 de: scottisch@(p?e:m?A?en:er:f?e:n?es)
@@ -1606,6 +1608,7 @@ fr-tt: Tu te sens moins %s maintenant.
 en: You feel stronger now, what bulging muscles!
 fr: Vous vous sentez fort, quels gros muscles !
 fr-tt: Tu te sens fort, quels gros muscles !
+zh: 你感觉更强壮了，多么结实的肌肉啊！
 
     You feel very sick now.
 en: You feel very sick now.
