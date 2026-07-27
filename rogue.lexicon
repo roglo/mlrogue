@@ -40,6 +40,7 @@ zh: %d枚金币。
 de: %d rationen@(1-)@(&)
 en: %d rations of
 fr: %d rations de
+zh: %d份
 
     %d times
 en: %d times
@@ -373,6 +374,7 @@ fr: Jeté
     Eat what?
 en: Eat what?
 fr: Manger quoi ?
+zh: 吃什么？
 
     elm
 en: elm
@@ -953,8 +955,8 @@ fr: Piège à dard empoisonné.
 
     potion@(p?s:)
 de: Tr@(p?ä:a)nk@(p?e:)@(m)
-en: potions@(p?s:)
-fr: potions@(p?s:)
+en: potion@(p?s:)
+fr: potion@(p?s:)
 zh: 药水@(&)
 
     purple
@@ -1752,6 +1754,7 @@ fr: Berk, cette bouffe avait un sale goût.
     Yum, that tasted good.
 en: Yum, that tasted good.
 fr: Miam miam, c'était bon.
+zh: 嗯，真香！
 
     Zap with what?
 en: Zap with what?
