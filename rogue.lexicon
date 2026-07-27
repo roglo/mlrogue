@@ -851,6 +851,7 @@ fr: de vision de l'invisible
     of sleep
 en: of sleep
 fr: de sommeil
+zh: @(2-)睡眠
 
     of slow digestion
 en: of slow digestion
@@ -1573,8 +1574,9 @@ fr-tt: Tu t'écroules
 
     You fall asleep.
 en: You fall asleep.
-fr: Vous tombez endormi.
-fr-tt: Tu tombes endormi.
+fr: Vous vous endormez.
+fr-tt: Tu t'endors.
+zh: 你睡着了。
 
     You feel a strange sense of loss.
 en: You feel a strange sense of loss.
