@@ -297,10 +297,7 @@ value discovered_kind g title name id tab = do {
     for j = 0 to maxlen + 1 do { string_set a j (Curses.mvinch i (j + col)) };
   };
   Array.iteri
-    (fun i str -> do {
-       Curses.mvaddstr i col str;
-       Curses.clrtoeol ()
-     })
+    (fun i str -> do { Curses.mvaddstr i col str; Curses.clrtoeol () })
     (Array.of_list list);
   Curses.refresh ();
   let ch =
