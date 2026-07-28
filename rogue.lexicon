@@ -172,6 +172,7 @@ zh: 带甲
 de: Fledermaus@(f)
 en: bat
 fr: wombat@(m)
+fr-cr: wonbat@(m)
 zh: 蝙蝠
 zh-py: 蝙蝠 (biān fú)
 
@@ -271,6 +272,7 @@ fr: kroston@(m)
     chain mail
 en: chain mail
 fr: une cotte de mailles
+fr-cr: yon rad may
 zh: 锁子甲
 zh-py: 锁子甲(suǒ zǐ jiǎ)
 
@@ -1221,6 +1223,7 @@ zh: %s
 de: D@(m?er:f?ie:as) %s trifft.
 en: The %s hit.
 fr: @(n?:Le?':m?e :a )%s touche.@(M)
+fr-cr: %s la touche.
 zh: %s击中了你。
 zh: %s 击中了 (jī zhòng le) 你 (nǐ)。
 
