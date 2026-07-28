@@ -1709,6 +1709,7 @@ fr-tt: Tu flottes dans l'air !
 en: Your %s glow%s %s for a moment.
 fr: Vo@(p?s:tre) %s devien@(p?nen:)t@(_?%s:)@(1-) %s l'espace d'un instant.
 fr-tt: T@(p?es:e?on:m?on:a) %s devien@(p?nen:)t@(_?%s:)@(1-) %s l'espace d'un instant.
+zh: 你的%s@(_?%s:)一瞬间变成%s。
 
     Your acne seems to have disappeared.
 en: Your acne seems to have disappeared.
