@@ -223,9 +223,6 @@ value cflush () = do {
       set_attr d.anew.(d.nrow).(d.ncol);
       if d.no_output then ()
       else
-(*
-        printf "\027[%d;%dH" (d.nrow + 1) (d.ncol + 1)
-*)
         let n = d.bnew.(d.nrow) in
         let an = d.anew.(d.nrow) in
         move_to_pos n an d.nrow d.ncol
