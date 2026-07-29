@@ -40,7 +40,7 @@ value read_lexicon () = do {
       if len >= 4 && String.sub s 0 4 = "    " then
         let s = String.sub s 4 (len - 4) in
         if lang.val <> "" then
-          loop "" where rec loop default =
+          loop None where rec loop default =
             let t = try Some (input_line ic) with [ End_of_file -> None ] in
             let ti =
               match t with
@@ -64,10 +64,10 @@ value read_lexicon () = do {
                   in
                   let t = cut_trail_dot t in
                   if line_lang = lang.val then add_lexicon s (Some t)
-                  else loop t
+                  else loop (Some t)
                 else loop default
             | None ->
-                add_lexicon s (if default = "" then None else Some default) ]
+                add_lexicon s default ]
         else add_lexicon s (Some s)
       else ();
     }
