@@ -92,25 +92,34 @@ value set_attr a =
 
 value utf8_to_string u = u.utf8_v;
 
+value utf8_of_substring_error s msg = do {
+  Printf.eprintf "%s\n%!" msg;
+  ({utf8_v = "####"}, String.length s)
+};
+
 value utf8_of_substring s i =
   if i >= String.length s then
-    failwith (Printf.sprintf "utf8_of_substring \"%s\" %d" s i)
+    utf8_of_substring_error s
+      (Printf.sprintf "utf8_of_substring \"%s\" %d" s i)
   else if Char.code s.[i] land 0x80 = 0 then (utf8_of_char s.[i], i + 1)
   else if Char.code s.[i] land 0x40 = 0 then
-    failwith
+    utf8_of_substring_error s
       (Printf.sprintf "utf8_of_substring \"%s\" %d, bad utf8 0x%0x \\%d" s i
          (Char.code s.[i]) (Char.code s.[i]))
   else if Char.code s.[i] land 0x20 = 0 then
-    if i + 1 >= String.length s then failwith "utf8_of_substring error"
+    if i + 1 >= String.length s then
+      utf8_of_substring_error s "utf8_of_substring error"
     else ({utf8_v = String.sub s i 2}, i + 2)
   else if Char.code s.[i] land 0x10 = 0 then
-    if i + 2 >= String.length s then failwith "utf8_of_substring error"
+    if i + 2 >= String.length s then
+      utf8_of_substring_error s "utf8_of_substring error"
     else ({utf8_v = String.sub s i 3}, i + 3)
   else if Char.code s.[i] land 0x08 = 0 then
-    if i + 3 >= String.length s then failwith "utf8_of_substring error"
+    if i + 3 >= String.length s then
+      utf8_of_substring_error s "utf8_of_substring error"
     else ({utf8_v = String.sub s i 4}, i + 4)
   else
-    failwith
+    utf8_of_substring_error s
       (Printf.sprintf "utf8_of_substring case not impl 0x%0x"
          (Char.code s.[i]))
 ;

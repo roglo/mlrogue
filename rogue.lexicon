@@ -885,6 +885,8 @@ fr: de téléportation de monstre
     of teleportation
 en: of teleportation
 fr: de téléportation
+zh: @(2--)传送
+zh-py: @(2--)传送 (chuán sòng)
 
     Oh wow, everything seems so cosmic.
 en: Oh wow, everything seems so cosmic.
@@ -1109,10 +1111,14 @@ zh: 短弓
     shuriken
 en: shuriken
 fr: churikène
+zh: 手里剑
+zh-py: 手里剑 (shǒu lǐ jiàn)
 
     shurikens
 en: shurikens
 fr: churikènes@(p)
+zh: 手里剑
+zh-py: 手里剑 (shǒu lǐ jiàn)
 
     silicon
 en: silicon
