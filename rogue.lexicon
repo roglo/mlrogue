@@ -239,16 +239,22 @@ zh: 酒红
 de: Nennen es:
 en: Call it:
 fr: L'appeler :
+zh: 给它起名：
+zh-py: 给它起名 (gěi tā qǐ míng)：
 
     Call what?
 de: Nennen was?
 en: Call what?
 fr: Appeler quoi ?
+zh: 给什么起名？
+zh-py: 给什么起名 (gěi shénme qǐ míng)？
 
     called
 de: gennant
 en: called
 fr: appelé@(m?:e)@(p?s)
+zh: 叫做
+zh-py: 叫做 (jiào zuò)
 
     cannot open file
 en: cannot open file
@@ -361,6 +367,8 @@ fr: mort de faim
     Direction?
 en: Direction?
 fr: Direction ?
+zh: 方向？
+zh-py: 方向 (fāng xiàng)？
 
     dragon
 de: Drache@(m)
@@ -414,6 +422,8 @@ fr: épuisé
     File name?
 en: File name?
 fr: Nom du fichier ?
+zh: 文件名？
+zh-py: 文件名 (wén jiàn míng)？
 
     flame
 en: flame
@@ -1163,6 +1173,8 @@ fr: d@(m?u:e la)
     some food
 en: some food
 fr: de la nourriture
+zh: 食物
+zh-py: 食物 (shíwù)
 
     some gold
 en: some gold
@@ -1216,6 +1228,8 @@ fr: @(s?:de )tek@(2-)
     Teleport trap.
 en: Teleport trap.
 fr: Piège à téléportation.
+zh: 传送陷阱。
+zh-py: 传送陷阱 (huán sòng xiàn jǐng)。
 
     That ring is already being worn.
 en: That ring is already being worn.
