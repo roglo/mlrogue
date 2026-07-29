@@ -152,12 +152,14 @@ de: Pfeil@(m)
 en: arrow
 fr: flèche
 zh: 箭
+zh-py: 箭 (jiàn)
 
     arrows
 de: Pfeile@(m)
 en: arrows
 fr: flèches@(p)
 zh: 箭
+zh-py: 箭 (jiàn)
 
     balsa
 en: balsa
@@ -422,6 +424,7 @@ de: Nahrung@(f)
 en: food
 fr: nourriture
 zh: 食物
+zh-py: 食物 (shíwù)
 
     Game not saved.
 en: Game not saved.
@@ -503,6 +506,7 @@ de: in Hand
 en: in hand
 fr: en main
 zh: (手持)
+zh: (手持) (shǒuchí)
 
     In use
 de: Still in Hand
@@ -595,6 +599,7 @@ de: Keule@(f)
 en: mace
 fr: massue
 zh: 钉头锤
+zh-py: 钉头锤 (dīngtóu chuí)
 
     magnesium
 en: magnesium
