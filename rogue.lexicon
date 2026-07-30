@@ -857,6 +857,8 @@ fr: de régénération
     of remove curse
 en: of remove curse
 fr: de désenvoûtement
+zh: 解除诅咒卷轴
+zh-py: 解除诅咒卷轴 (jiě chú zǔ zhòu juàn zhóu)
 
     of restore strength
 en: of restore strength
@@ -1042,6 +1044,8 @@ zh: 排名    分数   名字
 de: Klapperschange@(f)
 en: rattlesnake
 fr: renard@(m)
+zh: 响尾蛇
+zh-py: 响尾蛇 (xiǎng wěi shé)
 
     Read what?
 de: Lesen was?
@@ -1269,6 +1273,8 @@ de: Der Biss @(f?der:des) %s@(f?:s) hat Sie geschwächt.
 en: The %s's bite has weakened you.
 fr: La morsure d@(e?e l':m?u :e la )%s vous affaiblit.
 fr-tt: La morsure d@(e?e l':m?u :e la )%s t'affaiblit.
+zh: %s的咬击让你变弱了。
+zh-py: %s的咬击让你变弱了 (de yǎo jī ràng nǐ biàn ruò le)。
 
     The Amulet of Yendor
 en: The Amulet of Yendor
@@ -1632,6 +1638,8 @@ fr-tt: Tu as une sensation d'arrachement dans le ventre.
 en: You feel as though someone is watching over you.
 fr: Vous avez l'impression que quelqu'un veille sur vous.
 fr-tt: Tu as l'impression que quelqu'un veille sur toi.
+zh: 你感觉好像有人在守护你。
+zh-py: 你感觉好像有人在守护你 (nǐ gǎn jué hǎo xiàng yǒu rén zài shǒu hù nǐ)。
 
     You feel confused.
 en: You feel confused.
