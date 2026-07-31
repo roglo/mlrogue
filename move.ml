@@ -634,14 +634,18 @@ value one_move g dirch pickup =
             else
               let obj = object_at g row col in
               let msg =
-                transl g.lang "moved onto" ^ " " ^ get_desc g obj False
+                sprintf (ftransl g.lang "moved onto %s")
+                  (get_desc g obj False)
               in
               message g (etransl msg) True ];
         reg_move g
       }
       else do {
         let obj = object_at g row col in
-        let msg = transl g.lang "moved onto" ^ " " ^ get_desc g obj False in
+        let msg =
+          sprintf (ftransl g.lang "moved onto %s")
+            (get_desc g obj False)
+        in
         message g (etransl msg) True;
         reg_move g
       };

@@ -638,11 +638,13 @@ en: misses.
 fr: rate.
 zh: 未命中
 
-    moved onto
-de: Auf@(A) gegangen@(1--)
-en: Moved onto
-fr: Vous passez sur
-fr-tt: Tu passes sur
+    moved onto %s
+de: Auf@(A) %s gegangen
+en: Moved onto %s
+fr: Vous passez sur %s
+fr-tt: Tu passes sur %s
+zh: 你走到了%s上
+zh-py: 你走到了 (nǐ zǒu dào le) %s 上 (shàng)
 
     Must be played on a %d x %d or better screen
 en: Must be played on a %d x %d or better screen
@@ -1117,6 +1119,7 @@ de: betitelt Pergament@(m)@(p?e:): %s
 en: scroll@(p?s:) entitled: %s
 fr: parchemin@(m)@(p?s:) intitulé@(p?s:) : %s
 zh: 题为%s的卷轴
+zh-py: 题为 (tí wéi) %s 的卷轴 (de juàn zhóu)
 
     She stole
 de: Sie hat gestohlen@(A)@(1--)
