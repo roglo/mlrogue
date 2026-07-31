@@ -323,7 +323,7 @@ value create_g saved_uid true_uid login_name args opts lang = do {
    login_name = login_name; fruit = fruit; ask_quit = opts.opt_ask_quit;
    show_skull = opts.opt_show_skull; jump = opts.opt_jump; party_counter = 0;
    party_room = None; foods = 0; r_de = None; trap_door = False;
-   interrupted = False; can_int = False; reg_search = False;
+   interrupted = False; reg_search = False;
    level_objects = []; level_monsters = []; new_level_message = "";
    monsters_count = 0; mon_disappeared = False; hunger_str = "";
    hit_message = ""; msg_line = ""; msg_col = 0; msg_cleared = True;

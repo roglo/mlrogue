@@ -231,7 +231,7 @@ value add_exp g e promotion = do {
 };
 
 type saved = (game * array (array char));
-value save_magic = "RGSV0005";
+value save_magic = "RGSV0006";
 
 module OLD_GAME =
   struct
@@ -256,7 +256,6 @@ module OLD_GAME =
         r_de : mutable option int;
         trap_door : mutable bool;
         interrupted : mutable bool;
-        can_int : mutable bool;
         reg_search : mutable bool;
         monsters_count : mutable int;
         mon_disappeared : mutable bool;
@@ -307,7 +306,6 @@ value g_of_old_g g =
    r_de = g.OLD_GAME.r_de;
    trap_door = g.OLD_GAME.trap_door;
    interrupted = g.OLD_GAME.interrupted;
-   can_int = g.OLD_GAME.can_int;
    reg_search = g.OLD_GAME.reg_search;
    monsters_count = g.OLD_GAME.monsters_count;
    mon_disappeared = g.OLD_GAME.mon_disappeared;

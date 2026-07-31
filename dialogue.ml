@@ -343,7 +343,6 @@ value check_message g =
 
 value message g msg intrpt = do {
   if intrpt then g.interrupted := True else ();
-  g.can_int := True;
   if not g.msg_cleared then do {
     Curses.mvaddstr (MIN_ROW - 1) g.msg_col (transl g.lang " -- More --");
     Curses.refresh ();
@@ -364,7 +363,6 @@ value message g msg intrpt = do {
   Curses.refresh ();
   g.msg_cleared := False;
   g.msg_col := g.msg_col + String.length msg;
-  g.can_int := False
 };
 
 value remessage g =

@@ -250,7 +250,6 @@ type game =
     r_de : mutable option int;
     trap_door : mutable bool;
     interrupted : mutable bool;
-    can_int : mutable bool;
     reg_search : mutable bool;
     monsters_count : mutable int;
     mon_disappeared : mutable bool;
