@@ -371,10 +371,8 @@ value remessage g =
   if g.msg_line g.lang <> "" then do {
     let lang = g.lang in
     g.lang := "en";
-    clear_lexicon ();
     message g g.msg_line False;
     g.lang := lang;
-    clear_lexicon ();
   }
   else ()
 ;
