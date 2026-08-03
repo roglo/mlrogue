@@ -19,11 +19,13 @@ value check_imitator g monster =
       Curses.mvaddch monster.mn_row monster.mn_col
         (get_dungeon_char g monster.mn_row monster.mn_col);
       check_message g;
-      let mess =
-        sprintf (ftransl g.lang "Wait, that's a %s!")
-          (transl g.lang (Monster.mon_name g monster))
-      in
-      message g (etransl mess) True
+      message g
+        (fun lang →
+           let mess =
+             sprintf (ftransl lang "Wait, that's a %s!")
+               (transl lang (Monster.mon_name g monster))
+           in
+           etransl mess) True
     }
     else ();
     True
@@ -160,11 +162,10 @@ value mon_damage g monster damage = do {
     g.rogue.fight_monster := None;
     cough_up g monster;
     let mn = transl g.lang (Monster.mon_name g monster) in
-    let msg = sprintf (ftransl g.lang "Defeated the %s.") mn in
-    (*
-    let msg = msg ^ sprintf " (%d-%d<=0)." (monster.mn_hp_to_kill + damage) damage in
-    *)
-    message g (g.hit_message ^ etransl msg) True;
+    message g
+      (fun lang →
+         let msg = sprintf (ftransl lang "Defeated the %s.") mn in
+         g.hit_message ^ etransl msg) True;
     g.hit_message := "";
     add_exp g monster.mn_kill_exp hp_raise;
     take_from_monsters g monster;
@@ -282,7 +283,8 @@ value zap_monster g monster wand =
           (FLIES lor FLITS lor SPECIAL_HIT lor INVISIBLE lor FLAMES lor
            IMITATES lor CONFUSES lor SEEKS_GOLD lor HOLDS)
     }
-  | DoNothing -> message g (transl g.lang "Nothing happens" ^ ".") False ]
+  | DoNothing ->
+      message g (fun lang → transl lang "Nothing happens" ^ ".") False ]
 ;
 
 value get_zapped_monster g dir =
@@ -305,7 +307,7 @@ value zap g = do {
       let ch = rgetchar g in
       if not (is_direction ch) then do {
         sound_bell ();
-        if first_miss then message g (transl g.lang "Direction?") False
+        if first_miss then message g (fun lang → transl lang "Direction?") False
         else ();
         loop False
       }
@@ -327,7 +329,7 @@ value zap g = do {
       [ None -> False
       | Some {ob_kind = Wand w} -> do {
           if w.wa_hits = 0 then
-            message g (transl g.lang "Nothing happens" ^ ".") False
+            message g (fun lang → transl lang "Nothing happens" ^ ".") False
           else do {
             w.wa_hits --;
             match get_zapped_monster g dir with
@@ -341,7 +343,7 @@ value zap g = do {
           True
         }
       | Some _ -> do {
-          message g (transl g.lang "You can't zap with that" ^ ".") False;
+          message g (fun lang → transl lang "You can't zap with that" ^ ".") False;
           False
         } ]
     }
@@ -499,12 +501,14 @@ value flop_weapon g obj row col =
   else do {
     let t = obj.ob_quantity in
     obj.ob_quantity := 1;
-    let msg =
-      sprintf (ftransl g.lang "The %s vanishes as it hits the ground.")
-        (name_of g obj)
-    in
     obj.ob_quantity := t;
-    message g (etransl msg) False
+    message g
+      (fun lang →
+         let msg =
+           sprintf (ftransl lang "The %s vanishes as it hits the ground.")
+             (name_of g obj)
+         in
+         etransl msg) False
   }
 ;
 

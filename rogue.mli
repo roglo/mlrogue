@@ -259,7 +259,7 @@ type game =
     hunger_str : mutable string;
     hit_message : mutable string;
     msg_cleared : mutable bool;
-    msg_line : mutable string;
+    msg_line : mutable string → string;
     msg_col : mutable int;
     same_msg : mutable int;
     m_moves : mutable int;

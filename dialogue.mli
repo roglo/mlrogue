@@ -6,12 +6,12 @@ value name_of : game -> objet -> string;
 
 value armor_desc : game -> armor -> string;
 value ring_desc : game -> ring -> bool -> string;
-value get_desc : game -> objet -> bool -> string;
+value get_desc : game -> string -> objet -> bool -> string;
 
 value rgetchar : game -> char;
 value sound_bell : unit -> unit;
 
-value message : game -> string -> bool -> unit;
+value message : game → (string -> string) -> bool -> unit;
 value remessage : game -> unit;
 value check_message : game -> unit;
 

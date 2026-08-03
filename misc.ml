@@ -215,10 +215,10 @@ value add_exp g e promotion = do {
     if rogue.exp_points > MAX_EXP then rogue.exp_points := MAX_EXP + 1
     else ();
     for i = rogue.exp + 1 to new_exp do {
-      let mbuf =
-        sprintf (ftransl g.lang "Welcome to experience level %d!") i
-      in
-      Dialogue.message g mbuf False;
+      Dialogue.message g
+        (fun lang →
+           sprintf (ftransl lang "Welcome to experience level %d!") i)
+        False;
       let hp = promotion g in
       rogue.hp_current add_eq hp;
       rogue.hp_max add_eq hp;
@@ -265,7 +265,7 @@ module OLD_GAME =
         hunger_str : mutable string;
         hit_message : mutable string;
         msg_cleared : mutable bool;
-        msg_line : mutable string;
+        msg_line : mutable string → string;
         msg_col : mutable int;
         same_msg : mutable int;
         m_moves : mutable int;
@@ -588,8 +588,9 @@ value get_letter_object g ch mess_try_again =
   try Some (List.assoc ch g.rogue.pack) with
   [ Not_found -> do {
       Dialogue.message g
-        (if mess_try_again then transl g.lang "No such item. Try again."
-         else transl g.lang "No such item.")
+        (fun lang →
+           if mess_try_again then transl lang "No such item. Try again."
+           else transl lang "No such item.")
         False;
       None
     } ]
