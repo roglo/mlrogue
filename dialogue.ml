@@ -368,7 +368,13 @@ value message g msg_fun intrpt = do {
 };
 
 value remessage g =
-  if g.msg_line g.lang <> "" then message g g.msg_line False else ()
+  let g = {(g) with lang = "en"} in
+  if g.msg_line g.lang <> "" then do {
+    clear_lexicon ();
+    message g g.msg_line False;
+    clear_lexicon ();
+  }
+  else ()
 ;
 
 value inv_sel g pack mask prompt term =

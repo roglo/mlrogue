@@ -805,7 +805,8 @@ value move_onto g =
   loop True (rgetchar g) where rec loop first_miss ch =
     if not (is_direction ch) then do {
       if ch = ROGUE_KEY_MOVE then () else sound_bell ();
-      if first_miss then message g (fun lang → transl lang "Direction?") False else ();
+      if first_miss then message g (fun lang → transl lang "Direction?") False
+      else ();
       loop False (rgetchar g)
     }
     else do {

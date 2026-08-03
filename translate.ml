@@ -342,7 +342,7 @@ value etransl str =
   eval_shift str
 ;
 
-value clear_lexicon lang = do {
+value clear_lexicon () = do {
   Hashtbl.clear lexicon;
   lexicon_mtime.val := 0.0;
 };

@@ -630,7 +630,7 @@ value change_lang g =
   let new_lang = get_input_line g q "" "" True in
   if new_lang <> "" && new_lang <> g.lang then do {
     g.lang := new_lang;
-    clear_lexicon g.lang;
+    clear_lexicon ();
     print_stats g STAT_ALL;
     List.iter
       (fun mon ->
