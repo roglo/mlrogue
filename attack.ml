@@ -372,16 +372,19 @@ value throw_at_monster g monster obj = do {
   in
   let t = obj.ob_quantity in
   obj.ob_quantity := 1;
-  let mess = sprintf (ftransl g.lang "The %s") (name_of g obj) in
   obj.ob_quantity := t;
   if not (rand_percent hit_chance) then do {
     g.hit_message :=
-      fun lang → etransl (mess ^ " " ^ transl lang "misses." ^ " ");
+      fun lang →
+        let mess = sprintf (ftransl lang "The %s") (name_of g obj) in
+        etransl (mess ^ " " ^ transl lang "misses." ^ " ");
     False
   }
   else do {
     g.hit_message :=
-      fun lang → etransl (mess ^ " " ^ transl lang "hit." ^ " ");
+      fun lang →
+        let mess = sprintf (ftransl lang "The %s") (name_of g obj) in
+        etransl (mess ^ " " ^ transl lang "hit." ^ " ");
     match obj.ob_kind with
     [ Wand {wa_kind = wk} ->
         if rand_percent 75 then zap_monster g monster wk
