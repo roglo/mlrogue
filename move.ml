@@ -571,7 +571,9 @@ value one_move g dirch pickup =
     if g.rogue.being_held then
       message g (fun lang → transl lang "You are being held.") True
     else do {
-      message g (fun lang → transl lang "You are still stuck in the bear trap.") False;
+      message g
+        (fun lang → transl lang "You are still stuck in the bear trap.")
+        False;
       reg_move g
     };
     MoveFailed

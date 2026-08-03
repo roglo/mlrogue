@@ -653,7 +653,6 @@ and mon_hit g monster other flame = do {
   in
   let hit_chance = if g.wizard then hit_chance / 2 else hit_chance in
   if rogue.fight_monster = None then g.interrupted := True else ();
-  let mn = transl g.lang (mon_name g monster) in
   let hit_chance =
     if other <> "" then
       hit_chance - (rogue.exp + rogue.ring_exp - rogue.r_rings)
@@ -663,11 +662,12 @@ and mon_hit g monster other flame = do {
     if g.rogue.fight_monster = None then do {
       message g
         (fun lang →
-          let msg =
-            sprintf (ftransl lang "The %s misses.")
-              (if other <> "" then other else mn)
-          in
-          g.hit_message ^ etransl msg)
+           let mn = transl lang (mon_name g monster) in
+           let msg =
+             sprintf (ftransl lang "The %s misses.")
+               (if other <> "" then other else mn)
+           in
+           g.hit_message ^ etransl msg)
         True;
       g.hit_message := ""
     }
@@ -676,6 +676,7 @@ and mon_hit g monster other flame = do {
     if rogue.fight_monster = None then do {
       message g
         (fun lang →
+           let mn = transl lang (mon_name g monster) in
            let msg =
              sprintf (ftransl lang "The %s hit.")
                (if other <> "" then other else mn)
