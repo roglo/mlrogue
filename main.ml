@@ -248,8 +248,10 @@ value single_inv g ichar =
               '|'
           | _ -> ')' ]
         in
-        let s = sprintf "%c%c %s" ch p (etransl (get_desc g obj True)) in
-        message g s False ]
+        message g
+          (fun lang →
+             sprintf "%c%c %s" ch p (etransl (get_desc g lang obj True)))
+          False ]
 ;
 
 value inv_armor g =
@@ -445,14 +447,15 @@ value quit g from_intrpt =
 ;
 
 value unknown_command g ch =
-  message g
-    (sprintf "%s '%s'" (transl g.lang "Unknown command")
-       (if Char.code ch <= 26 then
-          sprintf "ctrl-%c" (Char.chr (Char.code ch + Char.code 'a' - 1))
-        else if ch = '\027' then "esc"
-        else if ch = '\127' then "del"
-        else if ch = '\\' then "\\"
-        else Char.escaped ch))
+  let s =
+    if Char.code ch <= 26 then
+      sprintf "ctrl-%c" (Char.chr (Char.code ch + Char.code 'a' - 1))
+    else if ch = '\027' then "esc"
+    else if ch = '\127' then "del"
+    else if ch = '\\' then "\\"
+    else Char.escaped ch
+  in
+  message g (fun lang → sprintf "%s '%s'" (transl lang "Unknown command") s)
     False
 ;
 
@@ -474,8 +477,9 @@ value wizardize g =
 ;
 
 value msg_is g ch s =
-  let msg = sprintf (ftransl g.lang "<%c> is %s") ch s in
-  message g (etransl msg ^ ".") False
+  message g
+    (fun lang → etransl (sprintf (ftransl lang "<%c> is %s") ch s) ^ ".")
+    False
 ;
 
 value whatisit g = do {
@@ -513,7 +517,8 @@ value whatisit g = do {
   | '@' -> msg_is g ch (transl g.lang "you")
   | _ ->
       message g
-        (sprintf (ftransl g.lang "I don't know what <%c> is either") ch ^ ".")
+        (fun lang →
+           sprintf (ftransl lang "I don't know what <%c> is either") ch ^ ".")
         False ]
 };
 
@@ -648,7 +653,7 @@ value save_game g =
   in
   if fname <> "" then do {
     check_message g;
-    message g fname False;
+    message g (fun _ → fname) False;
     save_into_file g fname;
     Finish.clean_up ""
   }
@@ -671,11 +676,11 @@ value show_average_hp g =
       let num = rogue.exp - 1 in
       (2 * den + num) / (2 * num)
   in
-  let mbuf =
-    sprintf (ftransl g.lang "R-Hp: %.2d, E-Hp: %.2d (!: %d, V: %d)")
-      real_average effective_average rogue.extra_hp rogue.less_hp
-  in
-  message g mbuf False
+  message g
+    (fun lang →
+       sprintf (ftransl lang "R-Hp: %.2d, E-Hp: %.2d (!: %d, V: %d)")
+         real_average effective_average rogue.extra_hp rogue.less_hp)
+    False
 ;
 
 value backup_if_required g =
@@ -694,7 +699,7 @@ value backup_if_required g =
 value rec play_level g = do {
   g.interrupted := False;
   if g.hit_message <> "" then do {
-    message g g.hit_message True;
+    message g (fun _ → g.hit_message) True;
     g.hit_message := ""
   }
   else ();
@@ -769,8 +774,9 @@ value rec play_level g = do {
           | ROGUE_KEY_THROW -> throw g (max 1 count)
           | ROGUE_KEY_VERSION ->
               message g
-                (sprintf "mlrogue %s (%s %s)" version g.nick_name
-                   g.login_name)
+                (fun _ →
+                   sprintf "mlrogue %s (%s %s)" version g.nick_name
+                     g.login_name)
                 False
           | ROGUE_KEY_QUIT -> quit g False
           | ROGUE_KEY_NOP | ROGUE_KEY_CANCEL -> ()
