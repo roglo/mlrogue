@@ -326,7 +326,7 @@ value create_g saved_uid true_uid login_name args opts lang = do {
    interrupted = False; reg_search = False;
    level_objects = []; level_monsters = []; new_level_message = "";
    monsters_count = 0; mon_disappeared = False; hunger_str = "";
-   hit_message = ""; msg_line _ = ""; msg_col = 0; msg_cleared = True;
+   hit_message _ = ""; msg_line _ = ""; msg_col = 0; msg_cleared = True;
    same_msg = 0; m_moves = 0; wizard = False;
    experimented_pick_up_scare_monster = False; rogue = rogue;
    random_rooms = [| 3; 7; 5; 2; 0; 6; 1; 4; 8 |];

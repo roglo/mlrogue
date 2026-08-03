@@ -667,9 +667,9 @@ and mon_hit g monster other flame = do {
              sprintf (ftransl lang "The %s misses.")
                (if other <> "" then other else mn)
            in
-           g.hit_message ^ etransl msg)
+           g.hit_message lang ^ etransl msg)
         True;
-      g.hit_message := ""
+      g.hit_message := fun _ → ""
     }
     else ()
   else do {
@@ -681,10 +681,10 @@ and mon_hit g monster other flame = do {
              sprintf (ftransl lang "The %s hit.")
                (if other <> "" then other else mn)
            in
-           g.hit_message ^ etransl msg)
+           g.hit_message lang ^ etransl msg)
         True;
       show_rogue g;
-      g.hit_message := ""
+      g.hit_message := fun _ → ""
     }
     else ();
     let damage =

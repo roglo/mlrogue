@@ -698,9 +698,9 @@ value backup_if_required g =
 
 value rec play_level g = do {
   g.interrupted := False;
-  if g.hit_message <> "" then do {
-    message g (fun _ → g.hit_message) True;
-    g.hit_message := ""
+  if g.hit_message g.lang <> "" then do {
+    message g g.hit_message True;
+    g.hit_message := fun _ → ""
   }
   else ();
   if g.trap_door then g.trap_door := False

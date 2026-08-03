@@ -165,8 +165,8 @@ value mon_damage g monster damage = do {
       (fun lang →
          let mn = transl lang (Monster.mon_name g monster) in
          let msg = sprintf (ftransl lang "Defeated the %s.") mn in
-         g.hit_message ^ etransl msg) True;
-    g.hit_message := "";
+         g.hit_message lang ^ etransl msg) True;
+    g.hit_message := fun _ → "";
     add_exp g monster.mn_kill_exp hp_raise;
     take_from_monsters g monster;
     if monster.mn_flags land HOLDS <> 0 then g.rogue.being_held := False
@@ -187,14 +187,14 @@ value rogue_hit g monster force_hit =
     let hit_chance = if g.wizard then hit_chance * 2 else hit_chance in
     if not (rand_percent hit_chance) then
       if g.rogue.fight_monster = None then
-        g.hit_message := etransl (transl g.lang "You miss.") ^ " "
+        g.hit_message := fun lang → etransl (transl lang "You miss.") ^ " "
       else ()
     else
       let damage = get_weapon_damage g g.rogue.weapon in
       let damage = if g.wizard then damage * 3 else damage in
       if mon_damage g monster damage then
         if g.rogue.fight_monster = None then do {
-          g.hit_message := etransl (transl g.lang "You hit.") ^ " ";
+          g.hit_message := fun lang → etransl (transl lang "You hit.") ^ " ";
           let row = monster.mn_row in
           let col = monster.mn_col in
           show_monster g row col monster (gmc g monster);
@@ -375,11 +375,13 @@ value throw_at_monster g monster obj = do {
   let mess = sprintf (ftransl g.lang "The %s") (name_of g obj) in
   obj.ob_quantity := t;
   if not (rand_percent hit_chance) then do {
-    g.hit_message := etransl (mess ^ " " ^ transl g.lang "misses." ^ " ");
+    g.hit_message :=
+      fun lang → etransl (mess ^ " " ^ transl lang "misses." ^ " ");
     False
   }
   else do {
-    g.hit_message := etransl (mess ^ " " ^ transl g.lang "hit." ^ " ");
+    g.hit_message :=
+      fun lang → etransl (mess ^ " " ^ transl lang "hit." ^ " ");
     match obj.ob_kind with
     [ Wand {wa_kind = wk} ->
         if rand_percent 75 then zap_monster g monster wk

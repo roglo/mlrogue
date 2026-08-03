@@ -263,7 +263,7 @@ module OLD_GAME =
         level_monsters : mutable list monster;
         new_level_message : mutable string;
         hunger_str : mutable string;
-        hit_message : mutable string;
+        hit_message : mutable string → string;
         msg_cleared : mutable bool;
         msg_line : mutable string → string;
         msg_col : mutable int;
