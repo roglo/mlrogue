@@ -660,6 +660,7 @@ and mon_hit g monster other flame = do {
   in
   if not (rand_percent hit_chance) then
     if g.rogue.fight_monster = None then do {
+      let hit_mess = g.hit_message in
       message g
         (fun lang →
            let mn = transl lang (mon_name g monster) in
@@ -667,13 +668,14 @@ and mon_hit g monster other flame = do {
              sprintf (ftransl lang "The %s misses.")
                (if other <> "" then other else mn)
            in
-           g.hit_message lang ^ etransl msg)
+           hit_mess lang ^ etransl msg)
         True;
       g.hit_message := fun _ → ""
     }
     else ()
   else do {
     if rogue.fight_monster = None then do {
+      let hit_mess = g.hit_message in
       message g
         (fun lang →
            let mn = transl lang (mon_name g monster) in
@@ -681,7 +683,7 @@ and mon_hit g monster other flame = do {
              sprintf (ftransl lang "The %s hit.")
                (if other <> "" then other else mn)
            in
-           g.hit_message lang ^ etransl msg)
+           hit_mess lang ^ etransl msg)
         True;
       show_rogue g;
       g.hit_message := fun _ → ""
