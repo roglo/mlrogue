@@ -1727,6 +1727,7 @@ en: You hit.
 fr: Vous touchez.
 fr-tt: Tu touches.
 zh: 你命中了。
+zh-py: 你命中了 (nǐ mìng zhòng le)。
 
     You miss.
 de: Sie blizten ab.
@@ -1734,6 +1735,7 @@ en: You miss.
 fr: Vous ratez.
 fr-tt: Tu rates.
 zh: 你未命中。
+zh: 你未命中 (nǐ wèi mìng zhòng)。
 
     You start to float in the air.
 en: You start to float in the air.
