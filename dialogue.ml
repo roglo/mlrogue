@@ -351,6 +351,15 @@ value utf8_width s =
     else loop (r + 1) (i + 1)
 ;
 
+value utf8_string_length s =
+  loop 0 0 where rec loop i len =
+    if i = String.length s then len
+    else
+      let c = Char.code s.[i] in
+      if c < 0x80 || c >= 0b1100_0000 then loop (i + 1) (len + 1)
+      else loop (i + 1) len
+;
+
 value message g msg_fun intrpt = do {
   let msg = msg_fun g.lang in
   if intrpt then g.interrupted := True else ();
@@ -374,7 +383,7 @@ value message g msg_fun intrpt = do {
   Curses.addch ' ';
   Curses.refresh ();
   g.msg_cleared := False;
-  g.msg_col := g.msg_col + utf8_width msg;
+  g.msg_col := g.msg_col + utf8_string_length msg;
 };
 
 value remessage g =
