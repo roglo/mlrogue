@@ -341,23 +341,15 @@ value check_message g =
   }
 ;
 
-value utf8_width s =
-  loop 0 0 where rec loop r i =
-    if i = String.length s then r
-    else if Char.code s.[i] land 0x80 = 0 then loop (r + 1) (i + 1)
-    else if Char.code s.[i] land 0x40 = 0 then loop r (i + 1)
-    else if Char.code s.[i] land 0x20 = 0 then loop (r + 1) (i + 1)
-    else if Char.code s.[i] land 0x10 = 0 then loop (r + 2) (i + 1)
-    else loop (r + 1) (i + 1)
+value utf8_cont_char c =
+  Char.code c land 0x80 <> 0 && Char.code c land 0x40 = 0
 ;
 
 value utf8_string_length s =
   loop 0 0 where rec loop i len =
     if i = String.length s then len
-    else
-      let c = Char.code s.[i] in
-      if c < 0x80 || c >= 0b1100_0000 then loop (i + 1) (len + 1)
-      else loop (i + 1) len
+    else if utf8_cont_char s.[i] then loop (i + 1) len
+    else loop (i + 1) (len + 1)
 ;
 
 value message g msg_fun intrpt = do {
@@ -490,10 +482,6 @@ value inventory g pack mask =
 ;
 
 (* statistics *)
-
-value utf8_cont_char c =
-  Char.code c land 0x80 <> 0 && Char.code c land 0x40 = 0
-;
 
 value utf8_index_from s i c =
   loop 0 0 where rec loop j k =
