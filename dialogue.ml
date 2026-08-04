@@ -341,6 +341,16 @@ value check_message g =
   }
 ;
 
+value utf8_width s =
+  loop 0 0 where rec loop r i =
+    if i = String.length s then r
+    else if Char.code s.[i] land 0x80 = 0 then loop (r + 1) (i + 1)
+    else if Char.code s.[i] land 0x40 = 0 then loop r (i + 1)
+    else if Char.code s.[i] land 0x20 = 0 then loop (r + 1) (i + 1)
+    else if Char.code s.[i] land 0x10 = 0 then loop (r + 2) (i + 1)
+    else loop (r + 1) (i + 1)
+;
+
 value message g msg_fun intrpt = do {
   let msg = msg_fun g.lang in
   if intrpt then g.interrupted := True else ();
@@ -364,7 +374,7 @@ value message g msg_fun intrpt = do {
   Curses.addch ' ';
   Curses.refresh ();
   g.msg_cleared := False;
-  g.msg_col := g.msg_col + String.length msg;
+  g.msg_col := g.msg_col + utf8_width msg;
 };
 
 value remessage g =
