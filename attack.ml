@@ -370,21 +370,26 @@ value throw_at_monster g monster obj = do {
         (damage, hit_chance)
     | _ -> (damage, hit_chance) ]
   in
-  let t = obj.ob_quantity in
-  obj.ob_quantity := 1;
-  obj.ob_quantity := t;
   if not (rand_percent hit_chance) then do {
     g.hit_message :=
-      fun lang →
+      fun lang → do {
+        let t = obj.ob_quantity in
+        obj.ob_quantity := 1;
         let mess = sprintf (ftransl lang "The %s") (name_of g obj) in
-        etransl (mess ^ " " ^ transl lang "misses." ^ " ");
+        obj.ob_quantity := t;
+        etransl (mess ^ " " ^ transl lang "misses." ^ " ")
+      };
     False
   }
   else do {
     g.hit_message :=
-      fun lang →
+      fun lang → do {
+        let t = obj.ob_quantity in
+        obj.ob_quantity := 1;
         let mess = sprintf (ftransl lang "The %s") (name_of g obj) in
-        etransl (mess ^ " " ^ transl lang "hit." ^ " ");
+        obj.ob_quantity := t;
+        etransl (mess ^ " " ^ transl lang "hit." ^ " ")
+      };
     match obj.ob_kind with
     [ Wand {wa_kind = wk} ->
         if rand_percent 75 then zap_monster g monster wk
@@ -504,16 +509,17 @@ value flop_weapon g obj row col =
     else ()
   }
   else do {
-    let t = obj.ob_quantity in
-    obj.ob_quantity := 1;
-    obj.ob_quantity := t;
     message g
-      (fun lang →
+      (fun lang → do {
+         let t = obj.ob_quantity in
+         obj.ob_quantity := 1;
          let msg =
            sprintf (ftransl lang "The %s vanishes as it hits the ground.")
              (name_of g obj)
          in
-         etransl msg) False
+         obj.ob_quantity := t;
+         etransl msg
+       }) False
   }
 ;
 
