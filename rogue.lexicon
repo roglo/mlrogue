@@ -35,6 +35,7 @@ de: %d Goldstücke.
 en: %d pieces of gold.
 fr: %d pièces d'or.
 zh: %d枚金币。
+zh-py: %d枚金币 (méi jīn bì)。
 
     %d rations of
 de: %d rationen@(1-)@(&)
@@ -475,6 +476,7 @@ de: trifft.
 en: hit.
 fr: touche.
 zh: 中了你。
+zh-py: 中了你 (zhōng le nǐ)。
 
     Hmm ... this potion tastes like %sjuice.
 en: Hmm ... this potion tastes like %sjuice.
@@ -1131,6 +1133,7 @@ de: kurz@(A?en:er) Bogen@(m)
 en: short bow
 fr: arc court@(me)
 zh: 短弓
+zh-py: 短弓 (duǎn gōng)
 
     shuriken
 en: shuriken
