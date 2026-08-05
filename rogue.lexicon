@@ -985,6 +985,7 @@ zh: 格子
 en: plate mail
 fr: une armure de plates
 zh: 板甲
+zh-py: bǎn jiǎ
 
     platinum
 en: platinum
@@ -1391,6 +1392,7 @@ fr: @(s?:avec une )turquoise@(3-)
 en: two-handed sword
 fr: épée à deux mains@(ef)
 zh: 双手剑
+zh-py: shuāng shǒu jiàn
 
     Unknown command
 en: Unknown command
