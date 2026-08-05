@@ -553,6 +553,7 @@ de: Turmfalke@(m)@(A?n)
 en: kestrel
 fr: xénique@(m)
 zh: 红隼
+zh-py: hóng sǔn
 
     Killed by %s
 de: Durch@(A) %s getötet
@@ -1061,6 +1062,8 @@ zh-py: xiǎng wěi shé
 de: Lesen was?
 en: Read what?
 fr: Lire quoi ?
+zh: 读什么？
+zh-py: dú shén me?
 
     Really pick up scroll? (y/n)
 en: Really pick up scroll? (y/n)
@@ -1175,6 +1178,7 @@ de: Schlange@(f)
 en: snake
 fr: serpent@(m)
 zh: 蛇
+zh-py: shé
 
     Some
 de:
@@ -1455,6 +1459,7 @@ de: Wilkommen in Erfahrungniveau %d!
 en: Welcome to experience level %d!
 fr: Bienvenue au niveau d'expérience %d !
 zh: 达到经验等级%d！
+zh-py: dá dào jīng yàn děng jí %d!
 
     Welcome, mighty wizard!
 en: Welcome, mighty wizard!
