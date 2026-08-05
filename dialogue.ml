@@ -381,9 +381,17 @@ value message g msg_fun intrpt = do {
 value remessage g =
   if g.msg_line g.lang <> "" then do {
     let lang = g.lang in
-    g.lang := if String.length lang > 1 then String.sub lang 0 2 else "en";
+    g.lang :=
+      if String.length lang > 1 then
+        match try Some (String.index lang ',') with [ Not_found → None ] with
+        | Some i → String.sub lang (i + 1) (String.length lang - i - 1)
+        | None → String.sub lang 0 2 ^ "," ^ lang
+        end
+      else "en";
     message g g.msg_line False;
+(*
     g.lang := lang;
+*)
   }
   else ()
 ;

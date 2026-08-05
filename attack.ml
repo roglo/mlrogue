@@ -161,11 +161,12 @@ value mon_damage g monster damage = do {
     Curses.mvaddch row col (get_dungeon_char g row col);
     g.rogue.fight_monster := None;
     cough_up g monster;
+    let hit_mess = g.hit_message in
     message g
       (fun lang →
          let mn = transl lang (Monster.mon_name g monster) in
          let msg = sprintf (ftransl lang "Defeated the %s.") mn in
-         g.hit_message lang ^ etransl msg) True;
+         hit_mess lang ^ etransl msg) True;
     g.hit_message := fun _ → "";
     add_exp g monster.mn_kill_exp hp_raise;
     take_from_monsters g monster;
