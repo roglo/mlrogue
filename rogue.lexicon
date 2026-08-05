@@ -518,7 +518,7 @@ de: in Hand
 en: in hand
 fr: en main
 zh: (手持)
-zh: (手持) (shǒuchí)
+zh-py: (手持) (shǒuchí)
 
     In use
 de: Still in Hand
@@ -1259,7 +1259,7 @@ en: The %s hit.
 fr: @(n?:Le?':m?e :a )%s touche.@(M)
 fr-cr: %s la touche.
 zh: %s击中了你。
-zh: %s 击中了 (jī zhòng le) 你 (nǐ)。
+zh-py: %s 击中了 (jī zhòng le) 你 (nǐ)。
 
     The %s misses.
 de: D@(m?er:f?ie:as) %s blitzt ab.
@@ -1735,7 +1735,7 @@ en: You miss.
 fr: Vous ratez.
 fr-tt: Tu rates.
 zh: 你未命中。
-zh: 你未命中 (nǐ wèi mìng zhòng)。
+zh-py: 你未命中 (nǐ wèi mìng zhòng)。
 
     You start to float in the air.
 en: You start to float in the air.
