@@ -22,6 +22,8 @@ de:  -- Tippen Sie Raum oder Letter : .
 en:  -- Press space or letter --
 fr:  -- Tapez espace ou lettre : .
 fr-tt:  -- Tape espace ou lettre : .
+zh: -- 按空格或字母: .
+zh-py: -- àn kōng gé huò zì mǔ: .
 
      -- Press space to continue --
 de:  -- Tippen Sie Raum um zu weitermachen --
@@ -1485,6 +1487,7 @@ de: Zücken was?
 en: Wield what?
 fr: Brandir quoi ?
 zh: 装备什么？
+zh-py: zhuāng bèi shén me?
 
     Wielding
 de: Sie zücken@(A)
