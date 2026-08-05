@@ -638,7 +638,8 @@ zh: 美杜莎
 de: blitzt ab.
 en: misses.
 fr: rate.
-zh: 未命中
+zh: 未命中。
+zh-py: 未命中 (wèi mìng zhòng)。
 
     moved onto %s
 de: Auf@(A) %s gegangen
@@ -1489,6 +1490,7 @@ en: Wielding
 fr: Vous brandissez
 fr-tt: Tu brandis
 zh: 装备着
+zh-py: 装备着 (huāng bèi zhe)
 
     with %d gold
 de: mit %d Goldstücke
