@@ -45,9 +45,7 @@ value potion_heal g extra = do {
 
 value go_blind g = do {
   if g.rogue.blind = 0 then
-    message g
-      (fun lang → transl lang "A cloak of darkness falls around you.") False
-      True
+    message g (fun lang → transl lang "A cloak of darkness falls around you.") False
   else ();
   g.rogue.blind add_eq get_rand 500 800;
   if g.rogue.detect_monster then
@@ -103,9 +101,8 @@ value show_objects g =
 value apply_potion g =
   fun
   [ IncreaseStrength -> do {
-      message g
-        (fun lang → transl lang "You feel stronger now, what bulging muscles!")
-        False True;
+      message g (fun lang → transl lang "You feel stronger now, what bulging muscles!")
+        False;
       g.rogue.str_current ++;
       if g.rogue.str_current > g.rogue.str_max then
         g.rogue.str_max := g.rogue.str_current
@@ -118,25 +115,22 @@ value apply_potion g =
     }
   | RestoreStrength -> do {
       g.rogue.str_current := g.rogue.str_max;
-      message g
-        (fun lang → transl lang "This tastes great, you feel warm all over.")
-        False True;
+      message g (fun lang → transl lang "This tastes great, you feel warm all over.")
+        False
     }
   | Healing -> do {
-      message g (fun lang → transl lang "You begin to feel better.") False
-        True;
+      message g (fun lang → transl lang "You begin to feel better.") False;
       potion_heal g False
     }
   | ExtraHealing -> do {
-      message g (fun lang → transl lang "You begin to feel much better.")
-        False True;
+      message g (fun lang → transl lang "You begin to feel much better.") False;
       potion_heal g True
     }
   | Poison -> do {
       if not g.rogue.sustain_strength then
         g.rogue.str_current := max 1 (g.rogue.str_current - get_rand 1 3)
       else ();
-      message g (fun lang → transl lang "You feel very sick now.") False True;
+      message g (fun lang → transl lang "You feel very sick now.") False;
       if g.rogue.halluc > 0 then Move.unhallucinate g else ()
     }
   | Blindness -> go_blind g
@@ -147,9 +141,7 @@ value apply_potion g =
       add_exp g 1 hp_raise
     }
   | Hallucination -> do {
-      message g
-        (fun lang → transl lang "Oh wow, everything seems so cosmic.") False
-        True;
+      message g (fun lang → transl lang "Oh wow, everything seems so cosmic.") False;
       g.rogue.halluc add_eq get_rand 500 800
     }
   | DetectMonsters -> do {
@@ -159,7 +151,7 @@ value apply_potion g =
           (fun lang →
               transl lang
                 "You have a strange feeling for a moment, then it passes.")
-          False True
+          False
       else ()
     }
   | DetectObjects -> do {
@@ -169,26 +161,23 @@ value apply_potion g =
           (fun lang →
              transl lang
                "You have a strange feeling for a moment, then it passes.")
-          False True
+          False
       else ()
     }
   | Confusion -> do {
       if g.rogue.halluc > 0 then
-        message g (fun lang → transl lang "What a trippy feeling.") False True
-      else message g (fun lang → transl lang "You feel confused.") False True;
+        message g (fun lang → transl lang "What a trippy feeling.") False
+      else message g (fun lang → transl lang "You feel confused.") False;
       Monster.confuse g
     }
   | Levitation -> do {
-      message g (fun lang → transl lang "You start to float in the air.")
-        False True;
+      message g (fun lang → transl lang "You start to float in the air.") False;
       g.rogue.levitate add_eq get_rand 15 30;
       g.rogue.being_held := False;
       g.rogue.bear_trap := 0
     }
   | HasteSelf -> do {
-      message g
-        (fun lang → transl lang "You feel yourself moving much faster.")
-        False True;
+      message g (fun lang → transl lang "You feel yourself moving much faster.") False;
       g.rogue.haste_self add_eq get_rand 11 21;
       if g.rogue.haste_self mod 2 = 0 then g.rogue.haste_self ++ else ()
     }
@@ -201,7 +190,7 @@ value apply_potion g =
                else transl lang g.fruit ^ " ")
            in
            etransl buf)
-        False True;
+        False;
       if g.rogue.blind > 0 then Move.unblind g else ();
       g.rogue.see_invisible := True;
       relight g
@@ -228,9 +217,7 @@ value quaff g =
             vanish g ch obj;
             Move.reg_move g
           }
-        | _ ->
-            message g (fun lang → transl lang "You can't drink that!")
-              False True ] ]
+        | _ -> message g (fun lang → transl lang "You can't drink that!") False ] ]
 ;
 
 value get_ench_color g =
@@ -248,11 +235,7 @@ value idntfy g =
     if ch = ROGUE_KEY_CANCEL then ()
     else
       match get_letter_object g ch True with
-      [ None -> do {
-          message g (fun _ → "") False False;
-          check_message g;
-          loop ()
-        }
+      [ None -> do { message g (fun _ → "") False; check_message g; loop () }
       | Some obj -> do {
           match obj.ob_kind with
           [ Scroll s -> g.id_scrolls.(int_of_scroll s) := Identified
@@ -268,7 +251,7 @@ value idntfy g =
               r.rg_identified := True
             }
           | _ -> () ];
-          message g (fun lang → etransl (get_desc g lang obj True)) False True
+          message g (fun lang → etransl (get_desc g lang obj True)) False
         } ]
 ;
 
@@ -381,15 +364,12 @@ value create_monster g =
     }
   | None ->
       message g
-        (fun lang →
-           transl lang "You hear a faint cry of anguish in the distance.")
-        False True ]
+        (fun lang → transl lang "You hear a faint cry of anguish in the distance.")
+        False ]
 ;
 
 value aggravate_monster g = do {
-  message g
-    (fun lang → transl lang "You hear a high pitched humming noise.") False
-    True;
+  message g (fun lang → transl lang "You hear a high pitched humming noise.") False;
   List.iter
     (fun monster -> do {
        wake_up monster;
@@ -425,23 +405,16 @@ value hold_monster g =
       else mcount
   in
   match mcount with
-  [ 0 ->
-      message g (fun lang → transl lang "You feel a strange sense of loss.")
-        False True
-  | 1 ->
-      message g (fun lang → transl lang "The monster freezes.") False True
-  | _ ->
-      message g (fun lang → transl lang "The monsters around you freeze.")
-        False True ]
+  [ 0 -> message g (fun lang → transl lang "You feel a strange sense of loss.") False
+  | 1 -> message g (fun lang → transl lang "The monster freezes.") False
+  | _ -> message g (fun lang → transl lang "The monsters around you freeze.") False ]
 ;
 
 value apply_scroll g =
   fun
   [ ScareMonster ->
       message g
-        (fun lang →
-           transl lang "You hear a maniacal laughter in the distance.")
-        False True
+        (fun lang → transl lang "You hear a maniacal laughter in the distance.") False
   | HoldMonster -> hold_monster g
   | EnchantWeapon ->
       match g.rogue.weapon with
@@ -457,12 +430,11 @@ value apply_scroll g =
                    (if n <= 1 then "s" else "") (get_ench_color g)
                in
                etransl msg)
-            False True;
+            False;
           if coin_toss () then w.we_hit_enchant ++ else w.we_d_enchant ++;
           w.we_is_cursed := False
         }
-      | None ->
-          message g (fun lang → transl lang "Your hands tingle.") False True ]
+      | None -> message g (fun lang → transl lang "Your hands tingle.") False ]
   | ProtectArmor ->
       match g.rogue.armor with
       [ Some (_, a) -> do {
@@ -470,14 +442,13 @@ value apply_scroll g =
             (fun lang →
                transl lang
                  "Your armor is covered by a shimmering gold shield.")
-            False True;
+            False;
           a.ar_is_protected := True;
           a.ar_is_cursed := False
         }
       | None ->
-          message g
-            (fun lang → transl lang "Your acne seems to have disappeared.")
-            False True ]
+          message g (fun lang → transl lang "Your acne seems to have disappeared.")
+            False ]
   | EnchantArmor ->
       match g.rogue.armor with
       [ Some (_, a) -> do {
@@ -487,52 +458,46 @@ value apply_scroll g =
                  sprintf (ftransl lang "Your armor glows %sfor a moment.")
                    (get_ench_color g ^ " ")
                in
-               etransl msg) False True;
+               etransl msg) False;
           a.ar_enchant ++;
           a.ar_enchant := min a.ar_enchant (MAX_ARMOR - a.ar_class);
           a.ar_is_cursed := False;
           print_stats g STAT_ARMOR
         }
-      | None ->
-          message g (fun lang → transl lang "Your skin crawls.") False True ]
+      | None -> message g (fun lang → transl lang "Your skin crawls.") False ]
   | Identify -> do {
-      message g (fun lang → transl lang "This is a scroll of identify.") False
-        False;
+      message g (fun lang → transl lang "This is a scroll of identify.") False;
       g.id_scrolls.(int_of_scroll Identify) := Identified;
       idntfy g
     }
   | Teleport -> Move.tele g
   | Sleep -> do {
-      message g (fun lang → transl lang "You fall asleep.") False True;
+      message g (fun lang → transl lang "You fall asleep.") False;
       Move.take_a_nap g
     }
   | RemoveCurse -> do {
       if g.rogue.halluc > 0 then
         message g
-          (fun lang →
-             transl lang "You feel in touch with the universal oneness.")
-          False True
+          (fun lang → transl lang "You feel in touch with the universal oneness.")
+          False
       else
         message g
-          (fun lang →
-             transl lang "You feel as though someone is watching over you.")
-          False True;
+          (fun lang → transl lang "You feel as though someone is watching over you.")
+          False;
       uncurse_all g
     }
   | CreateMonster -> create_monster g
   | AggravateMonster -> aggravate_monster g
   | MagicMapping -> do {
-      message g
-        (fun lang → transl lang "This scroll seems to have a map on it.")
-        False True;
+      message g (fun lang → transl lang "This scroll seems to have a map on it.")
+        False;
       draw_magic_map g False
     } ]
 ;
 
 value read_scroll g =
   if g.rogue.blind > 0 then
-    message g (fun lang → transl lang "You can't see to read the scroll.")
-      False True
+    message g (fun lang → transl lang "You can't see to read the scroll.") False
   else
     let ch =
       pack_letter g (transl g.lang "Read what?")
@@ -552,9 +517,7 @@ value read_scroll g =
               vanish g ch obj;
               if s <> Sleep then Move.reg_move g else ()
             }
-          | _ ->
-              message g (fun lang → transl lang "You can't read that!") False
-                True ] ]
+          | _ -> message g (fun lang → transl lang "You can't read that!") False ] ]
 ;
 
 value eat g =
@@ -574,8 +537,7 @@ value eat g =
             let moves =
               if fk = Fruit || rand_percent 60 then do {
                 if fk = Ration then
-                  message g (fun lang → transl lang "Yum, that tasted good.")
-                    False True
+                  message g (fun lang → transl lang "Yum, that tasted good.") False
                 else
                   message g
                     (fun lang →
@@ -584,13 +546,12 @@ value eat g =
                            (if g.fruit <> default_fruit then g.fruit
                            else transl lang g.fruit)
                        in
-                       etransl buf) False True;
+                       etransl buf) False;
                 get_rand 900 1100
               }
               else do {
-                message g
-                  (fun lang → transl lang "Yuk, that food tasted awful.")
-                  False True;
+                message g (fun lang → transl lang "Yuk, that food tasted awful.")
+                  False;
                 add_exp g 2 hp_raise;
                 get_rand 700 900
               }
@@ -602,16 +563,12 @@ value eat g =
             vanish g ch obj;
             Move.reg_move g
           }
-        | _ ->
-            message g (fun lang → transl lang "You can't eat that!") False
-              True ] ]
+        | _ -> message g (fun lang → transl lang "You can't eat that!") False ] ]
 ;
 
 value wear g =
   match g.rogue.armor with
-  [ Some _ ->
-      message g (fun lang → transl lang "You're already wearing some.") False
-        True
+  [ Some _ -> message g (fun lang → transl lang "You're already wearing some.") False
   | None ->
       let mask =
         fun
@@ -633,13 +590,13 @@ value wear g =
                      let d = get_desc g lang obj False in
                      let msg = transl lang "Wearing" ^ " " ^ d in
                      etransl msg ^ ".")
-                  False True;
+                  False;
                 print_stats g STAT_ARMOR;
                 Move.reg_move g
               }
             | _ ->
                 message g (fun lang → transl lang "You can't wear that" ^ ".")
-                  False True ] ] ]
+                  False ] ] ]
 ;
 
 value wield g =
@@ -649,8 +606,7 @@ value wield g =
     | None -> False ]
   in
   if cursed then
-    message g (fun lang → transl lang "You can't, it appears to be cursed.")
-      False True
+    message g (fun lang → transl lang "You can't, it appears to be cursed.") False
   else
     let ch =
       pack_letter g (transl g.lang "Wield what?")
@@ -666,7 +622,7 @@ value wield g =
           match obj.ob_kind with
           [ Weapon w ->
               if w.we_in_use then
-                message g (fun lang → transl lang "In use" ^ ".") False True
+                message g (fun lang → transl lang "In use" ^ ".") False
               else do {
                 unwield g;
                 message g
@@ -675,7 +631,7 @@ value wield g =
                        transl lang "Wielding" ^ " " ^
                        get_desc g lang obj False
                      in
-                     etransl msg) False True;
+                     etransl msg) False;
                 do_wield g ch w;
                 Move.reg_move g
               }
@@ -685,16 +641,14 @@ value wield g =
                    let msg =
                      sprintf (ftransl lang "You can't wield %s") (name_of g obj)
                    in
-                   etransl msg) False True ] ]
+                   etransl msg) False ] ]
 ;
 
 value take_off g =
   match g.rogue.armor with
   [ Some (_, a) ->
       if a.ar_is_cursed then
-        message g
-          (fun lang → transl lang "You can't, it appears to be cursed.") False
-          True
+        message g (fun lang → transl lang "You can't, it appears to be cursed.") False
       else do {
         Monster.mv_aquators g;
         unwear g;
@@ -702,12 +656,11 @@ value take_off g =
           (fun lang →
              let msg = transl lang "Was wearing" ^ " " ^ armor_desc g a in
              etransl msg ^ ".")
-          False True;
+          False;
         print_stats g STAT_ARMOR;
         Move.reg_move g
       }
-  | None ->
-      message g (fun lang → transl lang "Not wearing any" ^ ".") False True ]
+  | None -> message g (fun lang → transl lang "Not wearing any" ^ ".") False ]
 ;
 
 value do_put_on g ring on_left =
@@ -724,7 +677,6 @@ value do_put_on g ring on_left =
 value put_on_ring g =
   if g.rogue.r_rings = 2 then
     message g (fun lang → transl lang "Wearing two rings already.") False
-      True
   else
     let ch =
       pack_letter g (transl g.lang "Put on what?")
@@ -740,17 +692,15 @@ value put_on_ring g =
           match obj.ob_kind with
           [ Ring ring ->
               if ring.rg_in_use <> None then
-                message g
-                  (fun lang → transl lang "That ring is already being worn.")
-                  False True
+                message g (fun lang → transl lang "That ring is already being worn.")
+                  False
               else
                 let ch =
                   if g.rogue.r_rings = 1 then
                     if g.rogue.left_ring <> None then translc g.lang 'r'
                     else translc g.lang 'l'
                   else do {
-                    message g (fun lang → transl lang "Left or right hand?")
-                      False False;
+                    message g (fun lang → transl lang "Left or right hand?") False;
                     let rec loop () =
                       let ch = rgetchar g in
                       if ch <> ROGUE_KEY_CANCEL && ch <> translc g.lang 'r' &&
@@ -773,25 +723,27 @@ value put_on_ring g =
                     (fun lang →
                        let desc = get_desc g lang obj True in
                        etransl desc)
-                    False True;
+                    False;
                   Move.reg_move g
                 }
-          | _ ->
-              message g (fun lang → transl lang "That's not a ring!") False
-                True ] ]
+          | _ -> message g (fun lang → transl lang "That's not a ring!") False ] ]
 ;
 
 value inv_rings g = do {
   if g.rogue.r_rings = 0 then
-    message g (fun lang → transl lang "Not wearing any rings.") False True
+    message g (fun lang → transl lang "Not wearing any rings.") False
   else do {
     match g.rogue.left_ring with
     [ Some ring ->
-        message g (fun lang → etransl (ring_desc g ring True)) False True
+        message g
+          (fun lang → etransl (ring_desc g ring True))
+          False
     | None -> () ];
     match g.rogue.right_ring with
     [ Some ring ->
-        message g (fun lang → etransl (ring_desc g ring True)) False True
+        message g
+          (fun lang → etransl (ring_desc g ring True))
+          False
     | None -> () ]
   };
   if g.wizard then
@@ -804,7 +756,7 @@ value inv_rings g = do {
         r.ring_exp (if r.r_see_invisible then 1 else 0)
         (if r.maintain_armor then 1 else 0) r.auto_search
     in
-    message g (fun lang → buf) False False
+    message g (fun lang → buf) False
   else ()
 };
 
@@ -816,7 +768,7 @@ value remove_ring g =
     else if g.rogue.left_ring = None && g.rogue.right_ring <> None then
       (False, True)
     else do {
-      message g (fun lang → transl lang "Left or right hand?") False False;
+      message g (fun lang → transl lang "Left or right hand?") False;
       let rec loop () =
         let ch = rgetchar g in
         if ch <> ROGUE_KEY_CANCEL && ch <> translc g.lang 'r' && ch <> '\r' &&
@@ -843,15 +795,13 @@ value remove_ring g =
         | None -> assert False ]
     in
     if ring.rg_is_cursed then
-      message g
-        (fun lang → transl lang "You can't, it appears to be cursed.") False
-        True
+      message g (fun lang → transl lang "You can't, it appears to be cursed.") False
     else do {
       un_put_on g ring;
       message g
         (fun lang →
            let msg = transl lang "Removed" ^ " " ^ ring_desc g ring False in
-           etransl msg) False True;
+           etransl msg) False;
       Move.reg_move g
     }
   else ()

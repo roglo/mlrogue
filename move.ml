@@ -32,7 +32,6 @@ value unhallucinate g = do {
   g.rogue.halluc := 0;
   relight g;
   message g (fun lang → transl lang "Everything looks so boring now.") True
-    True
 };
 
 value hallucinate g =
@@ -62,7 +61,7 @@ value hallucinate g =
 
 value unblind g = do {
   g.rogue.blind := 0;
-  message g (fun lang → transl lang "The veil of darkness lifts.") True True;
+  message g (fun lang → transl lang "The veil of darkness lifts.") True;
   relight g;
   if g.rogue.halluc > 0 then hallucinate g else ();
   if g.rogue.detect_monster then show_monsters g else ()
@@ -75,7 +74,7 @@ value unconfuse g = do {
     (fun lang → sprintf (ftransl lang "You feel less %s now.")
        (if g.rogue.halluc > 0 then transl lang "trippy"
         else transl lang "confused"))
-    True True
+    True
 };
 
 value darken_room g rn =
@@ -145,7 +144,7 @@ value take_a_nap g = do {
   if not (fast g) then Unix.sleep 1 else ();
   for i = 1 to get_rand 2 5 do { Monster.mv_mons g };
   if not (fast g) then Unix.sleep 1 else ();
-  message g (fun lang → transl lang "You can move again.") False True
+  message g (fun lang → transl lang "You can move again.") False
 };
 
 value trap_player g row col =
@@ -155,7 +154,7 @@ value trap_player g row col =
       let rogue = g.rogue in
       g.dungeon.(row).(col) land_eq lnot HIDDEN;
       if rand_percent (rogue.exp + rogue.ring_exp) then
-        message g (fun lang → transl lang "The trap failed.") True True
+        message g (fun lang → transl lang "The trap failed.") True
       else
         match t with
         [ TrapDoor -> do {
@@ -163,12 +162,12 @@ value trap_player g row col =
             g.new_level_message := transl g.lang (Level.trap_mess t)
           }
         | BearTrap -> do {
-            message g (fun lang → transl lang (Level.trap_mess t)) True True;
+            message g (fun lang → transl lang (Level.trap_mess t)) True;
             g.rogue.bear_trap := get_rand 4 7
           }
         | TeleTrap -> do { Curses.mvaddch rogue.row rogue.col '^'; tele g }
         | DartTrap -> do {
-            message g (fun lang → transl lang (Level.trap_mess t)) True True;
+            message g (fun lang → transl lang (Level.trap_mess t)) True;
             rogue.hp_current sub_eq get_damage g (1, 6, None) True;
             rogue.hp_current := max 0 rogue.hp_current;
             if not rogue.sustain_strength && rand_percent 40 &&
@@ -182,11 +181,11 @@ value trap_player g row col =
             else ()
           }
         | SleepingGasTrap -> do {
-            message g (fun lang → transl lang (Level.trap_mess t)) True True;
+            message g (fun lang → transl lang (Level.trap_mess t)) True;
             take_a_nap g
           }
         | RustTrap -> do {
-            message g (fun lang → transl lang (Level.trap_mess t)) True True;
+            message g (fun lang → transl lang (Level.trap_mess t)) True;
             Monster.rust g None
           } ]
     } ]
@@ -289,31 +288,31 @@ value rec check_hunger g messages_only =
   let fainted =
     if rogue.moves_left = HUNGRY then do {
       g.hunger_str := "hungry";
-      message g (fun lang → transl lang "hungry") False True;
+      message g (fun lang → transl lang "hungry") False;
       print_stats g STAT_HUNGER;
       False
     }
     else if rogue.moves_left = WEAK then do {
       g.hunger_str := "weak";
-      message g (fun lang → transl lang "weak") True True;
+      message g (fun lang → transl lang "weak") True;
       print_stats g STAT_HUNGER;
       False
     }
     else if rogue.moves_left <= FAINT then do {
       if rogue.moves_left = FAINT then do {
         g.hunger_str := "faint";
-        message g (fun lang → transl lang "faint") True True;
+        message g (fun lang → transl lang "faint") True;
         print_stats g STAT_HUNGER
       }
       else ();
       let n = get_rand 0 (FAINT - rogue.moves_left) in
       if n > 0 then do {
         if rand_percent 40 then rogue.moves_left ++ else ();
-        message g (fun lang → transl lang "you faint" ^ ".") True True;
+        message g (fun lang → transl lang "you faint" ^ ".") True;
         for i = 0 to n - 1 do {
           if coin_toss () then Monster.mv_mons g else ();
         };
-        message g (fun lang → transl lang "You can move again.") True True;
+        message g (fun lang → transl lang "You can move again.") True
       }
       else ();
       True
@@ -409,8 +408,7 @@ and reg_move_and_check_fainted g = do {
   if g.rogue.levitate > 0 then do {
     g.rogue.levitate --;
     if g.rogue.levitate = 0 then do {
-      message g (fun lang → transl lang "You float gently to the ground.")
-        True True;
+      message g (fun lang → transl lang "You float gently to the ground.") True;
       if g.dungeon.(g.rogue.row).(g.rogue.col) land TRAP <> 0 then
         trap_player g g.rogue.row g.rogue.col
       else ()
@@ -421,8 +419,7 @@ and reg_move_and_check_fainted g = do {
   if g.rogue.haste_self > 0 then do {
     g.rogue.haste_self --;
     if g.rogue.haste_self = 0 then
-      message g (fun lang → transl lang "You feel yourself slowing down.")
-        False True
+      message g (fun lang → transl lang "You feel yourself slowing down.") False
     else ()
   }
   else ();
@@ -476,9 +473,8 @@ and search g n is_auto =
                       if g.dungeon.(row).(col) land TRAP <> 0 then
                         match trap_at g row col with
                         [ Some t ->
-                            message g
-                              (fun lang → transl lang (Level.trap_string t))
-                              True True
+                            message g (fun lang → transl lang (Level.trap_string t))
+                              True
                         | None -> () ]
                       else ();
                       shown + 1
@@ -512,8 +508,7 @@ value rec list_remove x =
 
 value ask_pick_up_scroll g = do {
   check_message g;
-  message g (fun lang → transl lang "Really pick up scroll? (y/n)") True
-    False;
+  message g (fun lang → transl lang "Really pick up scroll? (y/n)") True;
   let yes =
     loop () where rec loop () =
       let r = rgetchar g in
@@ -533,9 +528,8 @@ value pick_up g row col =
       else True
     in
     if pick_it_up then do {
-      message g
-        (fun lang → transl lang "The scroll turns to dust as you pick it up.")
-        False True;
+      message g (fun lang → transl lang "The scroll turns to dust as you pick it up.")
+        False;
       g.dungeon.(row).(col) land_eq lnot OBJECT;
       g.level_objects := list_remove obj g.level_objects;
       g.id_scrolls.(Object.int_of_scroll ScareMonster) := Identified;
@@ -552,7 +546,7 @@ value pick_up g row col =
     (Some (obj, None), True)
   }
   else if pack_count g (Some obj) >= MAX_PACK_COUNT then do {
-    message g (fun lang → transl lang "Pack too full.") True True;
+    message g (fun lang → transl lang "Pack too full.") True;
     (None, True)
   }
   else do {
@@ -575,11 +569,11 @@ value one_move g dirch pickup =
     g.dungeon.(row).(col) land MONSTER = 0
   then do {
     if g.rogue.being_held then
-      message g (fun lang → transl lang "You are being held.") True True
+      message g (fun lang → transl lang "You are being held.") True
     else do {
       message g
         (fun lang → transl lang "You are still stuck in the bear trap.")
-        False True;
+        False;
       reg_move g
     };
     MoveFailed
@@ -636,9 +630,9 @@ value one_move g dirch pickup =
               (fun lang →
                  let desc = etransl (get_desc g lang obj True) in
                  sprintf "%s (%c)" desc c)
-              True True
+              True
         | Some (obj, None) ->
-            message g (fun lang → get_desc g lang obj True) True True
+            message g (fun lang → get_desc g lang obj True) True
         | None ->
             if not status then ()
             else
@@ -650,7 +644,7 @@ value one_move g dirch pickup =
                        (get_desc g lang obj False)
                    in
                    etransl msg)
-                True True ];
+                True ];
         reg_move g
       }
       else do {
@@ -662,7 +656,7 @@ value one_move g dirch pickup =
                  (get_desc g lang obj False)
              in
              etransl msg)
-          True True;
+          True;
         reg_move g
       };
       StoppedOnSomething
@@ -813,8 +807,7 @@ value move_onto g =
   loop True (rgetchar g) where rec loop first_miss ch =
     if not (is_direction ch) then do {
       if ch = ROGUE_KEY_MOVE then () else sound_bell ();
-      if first_miss then
-        message g (fun lang → transl lang "Direction?") False False
+      if first_miss then message g (fun lang → transl lang "Direction?") False
       else ();
       loop False (rgetchar g)
     }
@@ -825,7 +818,7 @@ value move_onto g =
 ;
 
 value id_trap g = do {
-  message g (fun lang → transl lang "Direction?") True False;
+  message g (fun lang → transl lang "Direction?") True;
   let dir =
     loop () where rec loop () =
       let dir = rgetchar g in
@@ -841,15 +834,14 @@ value id_trap g = do {
        g.dungeon.(row).(col) land HIDDEN = 0
     then
       match trap_at g row col with
-      [ Some t ->
-          message g (fun lang → transl lang (Level.trap_string t)) False True
+      [ Some t -> message g (fun lang → transl lang (Level.trap_string t)) False
       | None -> () ]
-    else message g (fun lang → transl lang "No trap there.") False True
+    else message g (fun lang → transl lang "No trap there.") False
 };
 
 value kick_into_pack g =
   if g.dungeon.(g.rogue.row).(g.rogue.col) land OBJECT = 0 then
-    message g (fun lang → transl lang "Nothing here.") False True
+    message g (fun lang → transl lang "Nothing here.") False
   else do {
     let (obj, status) = pick_up g g.rogue.row g.rogue.col in
     match obj with
@@ -857,9 +849,9 @@ value kick_into_pack g =
         message g
           (fun lang →
              let desc = get_desc g lang obj True in
-             sprintf "%s (%c)" (etransl desc) c) True True
+             sprintf "%s (%c)" (etransl desc) c) True
     | Some (obj, None) ->
-        message g (fun lang → get_desc g lang obj True) True True
+        message g (fun lang → get_desc g lang obj True) True
     | None -> () ];
     match (obj, status) with
     [ (Some _, _) | (_, False) -> reg_move g
@@ -874,8 +866,7 @@ value fight g to_the_death = do {
       let ch = rgetchar g in
       if not (is_direction ch) then do {
         sound_bell ();
-        if first_miss then
-          message g (fun lang → transl lang "Direction?") False False
+        if first_miss then message g (fun lang → transl lang "Direction?") False
         else ();
         loop False
       }
@@ -887,7 +878,7 @@ value fight g to_the_death = do {
     let (row, col) = get_dir_rc ch rogue.row rogue.col False in
     let c = Curses.mvinch row col in
     if c < 'A' || c > 'Z' || not (can_move g rogue.row rogue.col row col) then
-      message g (fun lang → transl lang "I see no monster there.") False True
+      message g (fun lang → transl lang "I see no monster there.") False
     else do {
       let monster = monster_at g row col in
       rogue.fight_monster := Some monster;

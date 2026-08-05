@@ -25,7 +25,7 @@ value check_imitator g monster =
              sprintf (ftransl lang "Wait, that's a %s!")
                (transl lang (Monster.mon_name g monster))
            in
-           etransl mess) True True
+           etransl mess) True
     }
     else ();
     True
@@ -166,7 +166,7 @@ value mon_damage g monster damage = do {
       (fun lang →
          let mn = transl lang (Monster.mon_name g monster) in
          let msg = sprintf (ftransl lang "Defeated the %s.") mn in
-         hit_mess lang ^ etransl msg) True True;
+         hit_mess lang ^ etransl msg) True;
     g.hit_message := fun _ → "";
     add_exp g monster.mn_kill_exp hp_raise;
     take_from_monsters g monster;
@@ -285,7 +285,7 @@ value zap_monster g monster wand =
            IMITATES lor CONFUSES lor SEEKS_GOLD lor HOLDS)
     }
   | DoNothing ->
-      message g (fun lang → transl lang "Nothing happens" ^ ".") False True ]
+      message g (fun lang → transl lang "Nothing happens" ^ ".") False ]
 ;
 
 value get_zapped_monster g dir =
@@ -308,8 +308,7 @@ value zap g = do {
       let ch = rgetchar g in
       if not (is_direction ch) then do {
         sound_bell ();
-        if first_miss then
-          message g (fun lang → transl lang "Direction?") False False
+        if first_miss then message g (fun lang → transl lang "Direction?") False
         else ();
         loop False
       }
@@ -332,7 +331,6 @@ value zap g = do {
       | Some {ob_kind = Wand w} -> do {
           if w.wa_hits = 0 then
             message g (fun lang → transl lang "Nothing happens" ^ ".") False
-              True
           else do {
             w.wa_hits --;
             match get_zapped_monster g dir with
@@ -346,9 +344,7 @@ value zap g = do {
           True
         }
       | Some _ -> do {
-          message g
-            (fun lang → transl lang "You can't zap with that" ^ ".") False
-            True;
+          message g (fun lang → transl lang "You can't zap with that" ^ ".") False;
           False
         } ]
     }
@@ -524,7 +520,7 @@ value flop_weapon g obj row col =
          in
          obj.ob_quantity := t;
          etransl msg
-       }) False True
+       }) False
   }
 ;
 
