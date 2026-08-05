@@ -218,7 +218,7 @@ value add_exp g e promotion = do {
       Dialogue.message g
         (fun lang →
            sprintf (ftransl lang "Welcome to experience level %d!") i)
-        False;
+        False True;
       let hp = promotion g in
       rogue.hp_current add_eq hp;
       rogue.hp_max add_eq hp;
@@ -591,7 +591,7 @@ value get_letter_object g ch mess_try_again =
         (fun lang →
            if mess_try_again then transl lang "No such item. Try again."
            else transl lang "No such item.")
-        False;
+        False False;
       None
     } ]
 ;

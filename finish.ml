@@ -40,8 +40,8 @@ value win_message g =
       with
       [ End_of_file -> () ];
       close_in ic;
-      message g (fun _ → "") True;
-      message g (fun _ → "") True
+      message g (fun _ → "") True False;
+      message g (fun _ → "") True False
     }
   | None -> do {
       Curses.clear ();
@@ -53,8 +53,8 @@ value win_message g =
       f 17 11 "Congratulations,  you have  been admitted  to  the";
       f 18 11 "Fighters' Guild.   You return home,  sell all your";
       f 19 11 "treasures at great profit and retire into comfort.";
-      message g (fun _ → "") False;
-      message g (fun _ → "") False
+      message g (fun _ → "") False False;
+      message g (fun _ → "") False False
     } ]
 ;
 
@@ -119,7 +119,7 @@ value sell_pack g = do {
       2 (List.sort (fun (a, _) (b, _) -> compare a b) g.rogue.pack)
   in
   Curses.refresh ();
-  message g (fun _ → "") False
+  message g (fun _ → "") False False
 };
 
 DEFINE MAXRANK = 15;
@@ -298,7 +298,7 @@ value win g = do {
   id_all g (List.map snd g.rogue.pack);
   sell_pack g;
   put_scores g.lang g.score_only (Some (g, Win));
-  message g (fun _ → "") False;
+  message g (fun _ → "") False False;
   check_message g;
   clean_up ""
 };
@@ -399,10 +399,10 @@ value killed_by g death = do {
       center 21 (if g.nick_name <> "" then g.nick_name else g.login_name);
       center 22 buf;
       check_message g;
-      message g (fun _ → "") False
+      message g (fun _ → "") False False
     }
-  | _ -> message g (fun _ → buf ^ ".") False ];
-  message g (fun _ → "") False;
+  | _ -> message g (fun _ → buf ^ ".") False True ];
+  message g (fun _ → "") False False;
   let pack_opt =
     if g.rogue.pack <> [] && has_unidentifed_objects g g.rogue.pack then
       let pack = List.filter (select_unidentified g) g.rogue.pack in
@@ -433,7 +433,7 @@ value killed_by g death = do {
     | Some _ | None -> () ]
   };
   put_scores g.lang g.score_only (Some (g, death));
-  message g (fun _ → "") False;
+  message g (fun _ → "") False False;
   check_message g;
   clean_up ""
 };

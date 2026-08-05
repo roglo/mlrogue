@@ -352,7 +352,7 @@ value utf8_string_length s =
     else loop (i + 1) (len + 1)
 ;
 
-value message g msg_fun intrpt = do {
+value message g msg_fun intrpt record = do {
   let msg = msg_fun g.lang in
   if intrpt then g.interrupted := True else ();
   if not g.msg_cleared then do {
@@ -364,7 +364,7 @@ value message g msg_fun intrpt = do {
     else g.same_msg := 0
   }
   else g.same_msg := 0;
-  g.msg_line := msg_fun;
+  if record then g.msg_line := msg_fun else ();
   Curses.mvaddstr (MIN_ROW - 1) 0 msg;
   if g.same_msg > 0 then do {
     let buf = sprintf " (%d)" (g.same_msg + 1) in
@@ -388,7 +388,7 @@ value remessage g =
         | None → String.sub lang 0 2 ^ "," ^ lang
         end
       else "en";
-    message g g.msg_line False;
+    message g g.msg_line False True;
 (*
     g.lang := lang;
 *)
@@ -398,7 +398,7 @@ value remessage g =
 
 value inv_sel g pack mask prompt term =
   if pack = [] then do {
-    message g (fun lang → transl lang "Your pack is empty.") True;
+    message g (fun lang → transl lang "Your pack is empty.") True True;
     None
   }
   else do {
@@ -637,13 +637,13 @@ value is_pack_letter g ch mask =
 value pack_letter g prompt mask =
   let tmask = mask in
   if not (mask_pack g.rogue.pack mask) then do {
-    message g (fun lang → transl lang "Nothing appropriate.") False;
+    message g (fun lang → transl lang "Nothing appropriate.") False True;
     ROGUE_KEY_CANCEL
   }
   else do {
     let ch =
       loop () where rec loop () = do {
-        message g (fun _ → prompt) False;
+        message g (fun _ → prompt) False True;
         let (ch, mask) =
           loop1 () where rec loop1 () =
             let ch = rgetchar g in
@@ -697,12 +697,13 @@ value wizard_sel create list =
 
 value new_object_for_wizard g =
   if Imisc.pack_count g None >= MAX_PACK_COUNT then
-    message g (fun lang → transl lang "Pack full.") False
+    message g (fun lang → transl lang "Pack full.") False True
   else
     let obj_sel = "!?:)]=/," in
     loop () where rec loop () = do {
       message g
-        (fun lang → transl lang "Which object kind" ^ " " ^ obj_sel) False;
+        (fun lang → transl lang "Which object kind" ^ " " ^ obj_sel) False
+        False;
       let ch =
         loop () where rec loop () =
           let ch = rgetchar g in
@@ -770,7 +771,7 @@ value new_object_for_wizard g =
                   (fun lang →
                      let desc = etransl (get_desc g lang obj True) in
                      sprintf "%s (%c)" desc c)
-                  False
+                  False True
               with
               [ Not_found -> lloop ch ] ]
       in

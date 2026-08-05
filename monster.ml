@@ -269,7 +269,7 @@ value m_confuse g monster =
          etransl
            (sprintf (ftransl lang "The gaze of the %s has confused you.")
              (transl lang (mon_name g monster))))
-      True;
+      True True;
     True
   }
   else False
@@ -305,7 +305,7 @@ value sting g monster =
            etransl
              (sprintf (ftransl g.lang "The %s's bite has weakened you.")
                 (transl g.lang (mon_name g monster))))
-        False;
+        False True;
       rogue.str_current --;
       print_stats g STAT_STRENGTH
     }
@@ -323,14 +323,14 @@ value rust g monster =
             if monster.mn_flags land RUST_VANISHED = 0 then do {
               message g
                 (fun lang → transl lang "The rust vanishes instantly.")
-                False;
+                False True;
               monster.mn_flags or_eq RUST_VANISHED
             }
             else ()
         | None -> () ]
       else do {
         a.ar_enchant --;
-        message g (fun lang → transl lang "Your armor weakens.") False;
+        message g (fun lang → transl lang "Your armor weakens.") False True;
         print_stats g STAT_ARMOR
       } ]
 ;
@@ -352,7 +352,7 @@ value drain_life g =
   else do {
     let n = get_rand 1 3 in
     if n <> 2 || not rogue.sustain_strength then
-      message g (fun lang → transl lang "You feel weaker.") False
+      message g (fun lang → transl lang "You feel weaker.") False True
     else ();
     if n <> 2 then do {
       rogue.hp_max --;
@@ -394,7 +394,7 @@ value steal_gold g monster =
     let amount = get_rand (g.cur_level * 10) (g.cur_level * 30) in
     let amount = min amount g.rogue.gold in
     g.rogue.gold sub_eq amount;
-    message g (fun lang → transl lang "Your purse feels lighter.") False;
+    message g (fun lang → transl lang "Your purse feels lighter.") False True;
     print_stats g STAT_GOLD;
     disappear g monster
   }
@@ -432,7 +432,7 @@ value steal_item g monster =
           (fun lang →
              etransl
                (transl lang "She stole" ^ " " ^ get_desc g lang obj1 False))
-          False;
+          False True;
         if obj1.ob_quantity = obj.ob_quantity then take_from_pack g ch
         else obj.ob_quantity --
       };
@@ -669,7 +669,7 @@ and mon_hit g monster other flame = do {
                (if other <> "" then other else mn)
            in
            hit_mess lang ^ etransl msg)
-        True;
+        True True;
       g.hit_message := fun _ → ""
     }
     else ()
@@ -684,7 +684,7 @@ and mon_hit g monster other flame = do {
                (if other <> "" then other else mn)
            in
            hit_mess lang ^ etransl msg)
-        True;
+        True True;
       show_rogue g;
       g.hit_message := fun _ → ""
     }
@@ -740,7 +740,7 @@ and freeze g monster =
     let freeze_percent = freeze_percent - rogue.hp_max / 3 in
     if freeze_percent > 10 then do {
       monster.mn_flags or_eq FREEZING_ROGUE;
-      message g (fun lang → transl lang "You are frozen.") True;
+      message g (fun lang → transl lang "You are frozen.") True True;
       let n = get_rand 4 8 in
       for i = 0 to n - 1 do { mv_mons g };
       if rand_percent freeze_percent then do {
@@ -748,7 +748,7 @@ and freeze g monster =
         Finish.killed_by g Hypothermia
       }
       else do {
-        message g (fun lang → transl lang "You can move again.") True;
+        message g (fun lang → transl lang "You can move again.") True True;
         monster.mn_flags land_eq lnot FREEZING_ROGUE
       }
     }
