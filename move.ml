@@ -508,7 +508,7 @@ value rec list_remove x =
 
 value ask_pick_up_scroll g = do {
   check_message g;
-  message g (fun lang → transl lang "Really pick up scroll? (y/n)") True;
+  message_norec g (fun lang → transl lang "Really pick up scroll? (y/n)") True;
   let yes =
     loop () where rec loop () =
       let r = rgetchar g in

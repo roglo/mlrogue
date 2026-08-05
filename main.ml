@@ -129,7 +129,7 @@ value show_traps g =
 ;
 
 value get_input_line g prompt insert if_cancelled do_echo = do {
-  message g (fun _ → prompt) False;
+  message_norec g (fun _ → prompt) False;
   let n = Ustring.length (Ustring.of_string prompt) in
   let (i, buf) =
     if insert <> "" then do {
@@ -427,7 +427,7 @@ value quit g from_intrpt =
   let yes =
     if g.ask_quit then do {
       check_message g;
-      message g (fun lang → transl lang "Really quit? (y/n)") True;
+      message_norec g (fun lang → transl lang "Really quit? (y/n)") True;
       if rgetchar g <> translc g.lang 'y' then do {
         (* ... *)
         check_message g;

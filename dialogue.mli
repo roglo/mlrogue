@@ -12,6 +12,7 @@ value rgetchar : game -> char;
 value sound_bell : unit -> unit;
 
 value message : game → (string -> string) -> bool -> unit;
+value message_norec : game → (string -> string) -> bool -> unit;
 value remessage : game -> unit;
 value check_message : game -> unit;
 

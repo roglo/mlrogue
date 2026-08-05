@@ -352,7 +352,7 @@ value utf8_string_length s =
     else loop (i + 1) (len + 1)
 ;
 
-value message g msg_fun intrpt = do {
+value gen_message g msg_fun intrpt record = do {
   let msg = msg_fun g.lang in
   if intrpt then g.interrupted := True else ();
   if not g.msg_cleared then do {
@@ -364,7 +364,7 @@ value message g msg_fun intrpt = do {
     else g.same_msg := 0
   }
   else g.same_msg := 0;
-  g.msg_line := msg_fun;
+  if record then g.msg_line := msg_fun else ();
   Curses.mvaddstr (MIN_ROW - 1) 0 msg;
   if g.same_msg > 0 then do {
     let buf = sprintf " (%d)" (g.same_msg + 1) in
@@ -378,14 +378,20 @@ value message g msg_fun intrpt = do {
   g.msg_col := g.msg_col + utf8_string_length msg;
 };
 
+value message g msg_fun intrpt = gen_message g msg_fun intrpt True;
+value message_norec g msg_fun intrpt = gen_message g msg_fun intrpt False;
+
 value remessage g =
   if g.msg_line g.lang <> "" then do {
     let lang = g.lang in
     g.lang :=
       if String.length lang > 1 then
         match try Some (String.index lang ',') with [ Not_found → None ] with
-        | Some i → String.sub lang (i + 1) (String.length lang - i - 1)
-        | None → String.sub lang 0 2 ^ "," ^ lang
+        | Some i →
+            String.sub lang (i + 1) (String.length lang - i - 1) ^ "," ^
+            String.sub lang 0 i
+        | None →
+            String.sub lang 0 2 ^ "," ^ lang
         end
       else "en";
     message g g.msg_line False;
