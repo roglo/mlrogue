@@ -342,6 +342,7 @@ en: Defeated the %s.
 fr: Vous avez vaincu @(n?:le?':m?e :a )%s.
 fr-tt: Tu as vaincu👍@(n?:le?':m?e :a )%s.
 zh: 你击败了%s
+zh-py: 你击败了 (nǐ jí bài le) %s
 
     diamond
 en: diamond
@@ -405,6 +406,7 @@ de: Emu@(n)
 en: emu@(n)
 fr: émeu@(me)
 zh: 鸸鹋
+zh-py: 鸸鹋 (ér miáo)
 
     entitled:
 de: betitelt:
