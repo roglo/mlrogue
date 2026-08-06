@@ -300,6 +300,8 @@ fr: @(s?:de )cerisier@(2-)
     Choose:
 en: Choose:
 fr: Choisissez :
+zh: 选择：
+zh-py: xuǎn zé:
 
     chrome
 de: Chrom@(k)
@@ -320,6 +322,8 @@ fr: @(s?:de )cobalt@(2-)
     confused
 en: confused
 fr: déconcerté
+zh: 困惑
+zh-py: kùn huò
 
     copper
 en: copper
@@ -1432,6 +1436,8 @@ fr: Trappe.
     trippy
 en: trippy
 fr: chtarbé
+zh: 迷幻
+zh-py: mí huàn
 
     troll
 en: troll
@@ -1722,6 +1728,8 @@ zh-py: nǐ gǎn jué hǎo xiàng yǒu rén zài shǒu hù nǐ.
 en: You feel confused.
 fr: Vous vous sentez déconcerté.
 fr-tt: Tu te sens déconcerté.
+zh: 你感到困惑。
+zh-py: nǐ gǎn dào kùn huò.
 
     You feel in touch with the universal oneness.
 en: You feel in touch with the universal oneness.
@@ -1732,6 +1740,8 @@ fr-tt: Tu te sens en connexion avec l'Unité Universelle.
 en: You feel less %s now.
 fr: Vous vous sentez moins %s maintenant.
 fr-tt: Tu te sens moins %s maintenant.
+zh: 你现在不那么%s了。
+zh-py: nǐ xiàn zài bù nà me %s le.
 
     You feel stronger now, what bulging muscles!
 en: You feel stronger now, what bulging muscles!
