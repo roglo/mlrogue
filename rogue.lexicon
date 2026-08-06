@@ -808,6 +808,7 @@ zh: @(2-)附魔武器
 en: of extra healing
 fr: de guérison supplémentaire
 zh: @(2-)强效治疗
+zh-py: @(3--)qiáng xiào zhì liáo
 
     of hallucination
 en: of hallucination
@@ -826,6 +827,7 @@ fr: d'accélération
 en: of healing
 fr: de guérison
 zh: @(2-)治疗
+zh: @(3--)zhì liáo
 
     of hold monster
 en: of hold monster
@@ -867,7 +869,7 @@ fr: de protection d'armure
 en: of poison
 fr: de poison
 zh: @(1-)毒
-zh-py: @(2-)dú
+zh-py: @(3--)dú
 
     of polymorph
 en: of polymorph
