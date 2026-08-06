@@ -31,6 +31,7 @@ en:  -- Press space to continue --
 fr:  -- Tapez espace pour continuer --
 fr-tt:  -- Tape espace pour continuer --
 zh:  -- 按空格继续 --
+zh-py: -- àn kòng gé jì xù --
 
     %d pieces of gold.
 de: %d Goldstücke.
@@ -195,6 +196,7 @@ en: being worn
 fr: sur vous
 fr-tt: sur toi
 zh: 穿着
+zh-py: chuān zhuó
 
     birch
 en: birch
@@ -305,6 +307,7 @@ de: durchsichtig@(p?e:m?A?en:er:f?e:n?es)
 en: clear
 fr: transparent@(m?:e)@(p?s:)@(1-)
 zh: 无色
+zh-py: wú sè
 
     cobalt
 en: cobalt
@@ -491,6 +494,7 @@ de: streunend@(A?en:er) Kobold@(m)
 en: hobgoblin
 fr: lutin vagabond@(m)
 zh: 大地精
+zh-py: dai chi sei
 
     hungry
 de: hunger
@@ -593,6 +597,7 @@ fr: @(s?:avec un )lapi-lazuli@(3-)
 en: leather armor
 fr: une armure de cuir
 zh: 皮甲
+zh-py: pí jiǎ
 
     Left or right hand?
 en: Left or right hand?
@@ -607,6 +612,7 @@ de: Niveau: 99 Gld: 999999 LP: 999(999) Str: 99(99) Arm: 99 Exp: 21/10000000
 en: Level: 99 Gold: 999999 Hp: 999(999) Str: 99(99) Arm: 99 Exp: 21/10000000
 fr: Niveau: 99 Or: 999999 Pv: 999(999) Forc: 99(99) Arm: 99 Exp: 21/10000000
 zh: 等级: 99 金币: 999999 生命: 999(999) 力量: 99(99) 防御: 99 经验: 21/10000000
+zh-py: Level: 99 Gold: 999999 Hp: 999(999) Str: 99(99) Arm: 99 Exp: 21/10000000
 
     long sword
 de: langes Schwert@(n)
@@ -974,7 +980,7 @@ fr: @(s?:de )pin@(2-)
 de: rosarot@(p?e:m?A?en:er:f?e:n?es)
 en: pink
 fr: rose@(p?s:)@(1-)
-zh: 粉红色药水
+zh: 粉红色
 
     plaid
 de: scottisch@(p?e:m?A?en:er:f?e:n?es)
@@ -1001,6 +1007,7 @@ de: Tr@(p?ä:a)nk@(p?e:)@(m)
 en: potion@(p?s:)
 fr: potion@(p?s:)
 zh: 药水@(&)
+zh-py: yào shuǐ
 
     purple
 de: purpurrot@(p?e:m?A?en:er:f?e:n?es)
@@ -1097,6 +1104,7 @@ zh: 戒指
 en: ring mail
 fr: une armure à anneaux
 zh: 环甲
+zh-py: huán jiǎ
 
     rings
 en: rings
@@ -1279,6 +1287,7 @@ de: D@(m?er:f?ie:as) %s blitzt ab.
 en: The %s misses.
 fr: @(n?:Le?':m?e :a )%s rate.@(M)
 zh: %s未命中。
+zh-py: %s mi mei chū
 
     The %s vanishes as it hits the ground.
 en: The %s vanishes as it hits the ground.
