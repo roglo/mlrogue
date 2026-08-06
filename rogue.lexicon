@@ -721,6 +721,8 @@ fr-tt: Tu ne brandis aucune arme.
 en: Not wizard anymore.
 fr: Vous n'êtes plus sorcier.
 fr-tt: Tu n'es plus sorcier.
+zh: 你不再是巫师了。
+zh-py: nǐ bù zài shì wū shī le.
 
     Nothing appropriate.
 de: Nichts angemessen.
@@ -828,7 +830,7 @@ fr: d'accélération
 en: of healing
 fr: de guérison
 zh: @(2-)治疗
-zh: @(3--)zhì liáo
+zh-py: @(3--)zhì liáo
 
     of hold monster
 en: of hold monster
@@ -899,6 +901,8 @@ zh-py: jiě chú zǔ zhòu juàn zhóu
     of restore strength
 en: of restore strength
 fr: de restauration de la force
+zh: @(1-)恢复力量
+zh-py: @(3--)huī fù lì liàng
 
     of scare monster
 en: of scare monster
@@ -1060,12 +1064,14 @@ zh-py: shí yīng
 en: Quit
 fr: Parti
 zh: 退出@(&)
+zh-py: tuì chū
 
     quit
 de: verlassen@(1--)
 en: quit
 fr: parti
 zh: 退出@(&)
+zh-py: tuì chū
 
     r
 en: r
@@ -1104,6 +1110,7 @@ fr: Vraiment prendre le parchemin? (o/n)
 en: Really quit? (y/n)
 fr: Vraiment partir ? (o/n)
 zh: 确定退出吗？(y/n)
+zh-py: què dìng tuì chū ma? (y/n)
 
     red
 de: rot@(p?e:m?A?en:er:f?e:n?es)
@@ -1243,6 +1250,8 @@ fr: @(M?Q:q)uelque chose@(n)
     Sorry
 en: Sorry
 fr: Désolé
+zh: 抱歉
+zh-py: bào qiàn
 
     splint mail
 en: splint mail
@@ -1504,6 +1513,8 @@ zh-py: dá dào jīng yàn děng jí %d!
     Welcome, mighty wizard!
 en: Welcome, mighty wizard!
 fr: Bienvenue, puissant sorcier !
+zh: 欢迎，强大的巫师！
+zh-py: huān yíng, qiáng dà de wū shī!
 
     What a trippy feeling.
 en: What a trippy feeling.
@@ -1561,6 +1572,8 @@ zh: ，持有护身符
     Wizard's password:
 en: Wizard's password:
 fr: Mot de passe sorcier :
+zh: 巫师密码：
+zh-py: wū shī mì mǎ:
 
     wooden
 en: wooden
