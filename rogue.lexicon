@@ -39,7 +39,7 @@ de: %d Goldstücke.
 en: %d pieces of gold.
 fr: %d pièces d'or.
 zh: %d枚金币。
-zh-py: %d méi jīn bì。
+zh-py: %d méi jīn bì.
 
     %d rations of
 de: %d rationen@(1-)@(&)
@@ -174,6 +174,7 @@ fr: @(s?:de )balsa@(2-)
 en: banded mail
 fr: une armure à bandes
 zh: 带甲
+zh-py: dài jiǎ
 
     bat
 de: Fledermaus@(f)
@@ -254,7 +255,7 @@ de: Nennen was?
 en: Call what?
 fr: Appeler quoi ?
 zh: 给什么起名？
-zh-py: gěi shénme qǐ míng？
+zh-py: gěi shénme qǐ míng?
 
     called
 de: gennant
@@ -359,11 +360,13 @@ fr: @(s?:avec un )diamant@(3-)
 en: Died of hypothermia
 fr: Mort d'hypothermie
 zh: 冻死
+zh-py: dòng sǐ
 
     died of hypothermia
 en: died of hypothermia
 fr: mort d'hypothermie
 zh: 冻死
+zh-py: dòng sǐ
 
     Died of starvation
 en: Died of starvation
@@ -377,7 +380,7 @@ fr: mort de faim
 en: Direction?
 fr: Direction ?
 zh: 方向？
-zh-py: fāng xiàng？
+zh-py: fāng xiàng?
 
     dragon
 de: Drache@(m)
@@ -485,7 +488,7 @@ de: trifft.
 en: hit.
 fr: touche.
 zh: 中了你。
-zh-py: zhōng le nǐ。
+zh-py: zhōng le nǐ.
 
     Hmm ... this potion tastes like %sjuice.
 en: Hmm ... this potion tastes like %sjuice.
@@ -524,6 +527,7 @@ de: Eisungeheuer
 en: ice monster@(n)
 fr: monstre de glace@(m)
 zh: 冰怪
+zh-py: bīng guài
 
     in hand
 de: in Hand
@@ -566,12 +570,14 @@ de: Durch@(A) %s getötet
 en: Killed by %s
 fr: Tué par %s
 zh: 被%s杀死
+zh-py: bèi%s shā sǐ
 
     killed by %s
 de: durch@(A) %s getötet
 en: killed by %s
 fr: tué par %s
 zh: 被%s杀死
+zh-py: bèi%s shā sǐ
 
     Killed by a dart
 en: Killed by a dart
@@ -652,7 +658,7 @@ de: blitzt ab.
 en: misses.
 fr: rate.
 zh: 未命中。
-zh-py: wèi mìng zhòng。
+zh-py: wèi mìng zhòng.
 
     moved onto %s
 de: Auf@(A) %s gegangen
@@ -855,6 +861,7 @@ fr: de protection d'armure
 en: of poison
 fr: de poison
 zh: @(1-)毒
+zh-py: @(1-)dú
 
     of polymorph
 en: of polymorph
@@ -875,7 +882,7 @@ fr: de régénération
     of remove curse
 en: of remove curse
 fr: de désenvoûtement
-zh: 解除诅咒卷轴
+zh: 解除诅咒
 zh-py: jiě chú zǔ zhòu juàn zhóu
 
     of restore strength
@@ -1060,6 +1067,7 @@ de: Rang   Pktstnd Name
 en: Rank   Score   Name
 fr: Rang   Score   Nom
 zh: 排名    分数   名字
+zh-py: páimíng  fēnshù  míngzì
 
     rattlesnake
 de: Klapperschange@(f)
@@ -1130,12 +1138,14 @@ fr: @(s?:avec un )saphir@(3-)
 en: scale mail
 fr: une armure d'écailles
 zh: 鳞甲
+zh: lín jiǎ
 
     scroll@(p?s:)
 de: Pergament@(p?e:)@(m)
 en: scroll@(p?s:)
 fr: parchemin@(p?s:)@(m)
 zh: 卷轴
+zh-py: juàn zhóu
 
     scroll@(p?s:) entitled: %s
 de: betitelt Pergament@(m)@(p?e:): %s
@@ -1206,7 +1216,7 @@ fr: d@(m?u:e la)
 en: some food
 fr: de la nourriture
 zh: 食物
-zh-py: shíwù
+zh-py: shí wù
 
     some gold
 en: some gold
@@ -1261,7 +1271,7 @@ fr: @(s?:de )tek@(2-)
 en: Teleport trap.
 fr: Piège à téléportation.
 zh: 传送陷阱。
-zh-py: huán sòng xiàn jǐng。
+zh-py: huán sòng xiàn jǐng.
 
     That ring is already being worn.
 en: That ring is already being worn.
@@ -1284,7 +1294,7 @@ en: The %s hit.
 fr: @(n?:Le?':m?e :a )%s touche.@(M)
 fr-cr: %s la touche.
 zh: %s击中了你。
-zh-py: %s jī zhòng le nǐ。
+zh-py: %s jī zhòng le nǐ.
 
     The %s misses.
 de: D@(m?er:f?ie:as) %s blitzt ab.
@@ -1303,7 +1313,7 @@ en: The %s's bite has weakened you.
 fr: La morsure d@(e?e l':m?u :e la )%s vous affaiblit.
 fr-tt: La morsure d@(e?e l':m?u :e la )%s t'affaiblit.
 zh: %s的咬击让你变弱了。
-zh-py: %s de yǎo jī ràng nǐ biàn ruò le。
+zh-py: %s de yǎo jī ràng nǐ biàn ruò le.
 
     The Amulet of Yendor
 en: The Amulet of Yendor
@@ -1389,6 +1399,7 @@ fr: @(s?:de )titane@(2-)
 en: Top  Rogueists
 fr: Meilleurs  Roguistes
 zh: Rogue高手
+zh: Rogue gāo shǒu
 
     Trap door.
 en: Trap door.
@@ -1497,6 +1508,7 @@ fr-tt: Que veux-tu identifier ?
 en: Which object kind
 fr: Quel type d'objet
 zh: 物品种类
+zh-py: wù pǐn zhǒng lèi
 
     white
 de: weiss@(p?e:m?A?en:er:f?e:n?es)
@@ -1523,6 +1535,7 @@ de: mit %d Goldstücke
 en: with %d gold
 fr: avec %d pièces d'or
 zh: ，携带%d枚金币
+zh-py: , xié dài %d méi jīnbì
 
     with amulet
 de: mit Amulett
@@ -1580,6 +1593,7 @@ en: You are frozen.
 fr: Vous êtes gelé.
 fr-tt: Tu es gelé.
 zh: 你被冻住了。
+zh-py: nǐ bèi dòng zhù le.
 
     You are still stuck in the bear trap.
 en: You are still stuck in the bear trap.
@@ -1673,7 +1687,7 @@ en: You feel as though someone is watching over you.
 fr: Vous avez l'impression que quelqu'un veille sur vous.
 fr-tt: Tu as l'impression que quelqu'un veille sur toi.
 zh: 你感觉好像有人在守护你。
-zh-py: nǐ gǎn jué hǎo xiàng yǒu rén zài shǒu hù nǐ。
+zh-py: nǐ gǎn jué hǎo xiàng yǒu rén zài shǒu hù nǐ.
 
     You feel confused.
 en: You feel confused.
@@ -1758,7 +1772,7 @@ en: You hit.
 fr: Vous touchez.
 fr-tt: Tu touches.
 zh: 你命中了。
-zh-py: nǐ mìng zhòng le。
+zh-py: nǐ mìng zhòng le.
 
     You miss.
 de: Sie blizten ab.
@@ -1766,7 +1780,7 @@ en: You miss.
 fr: Vous ratez.
 fr-tt: Tu rates.
 zh: 你未命中。
-zh-py: nǐ wèi mìng zhòng。
+zh-py: nǐ wèi mìng zhòng.
 
     You start to float in the air.
 en: You start to float in the air.
