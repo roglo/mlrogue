@@ -115,7 +115,8 @@ value apply_potion g =
     }
   | RestoreStrength -> do {
       g.rogue.str_current := g.rogue.str_max;
-      message g (fun lang → transl lang "This tastes great, you feel warm all over.")
+      message g
+        (fun lang → transl lang "This tastes great, you feel warm all over.")
         False
     }
   | Healing -> do {

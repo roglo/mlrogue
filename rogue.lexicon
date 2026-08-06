@@ -814,6 +814,7 @@ zh-py: @(3--)qiáng xiào zhì liáo
 en: of hallucination
 fr: hallucinogène
 zh: @(2-)幻觉
+zh-py: @(3--)huàn jué
 
     of haste monster
 en: of haste monster
@@ -1043,6 +1044,7 @@ de: Trinken was?
 en: Quaff what?
 fr: Boire quoi ?
 zh: 喝什么？
+zh-py: hē shén me?
 
     quagga
 en: quagga
@@ -1386,6 +1388,8 @@ fr: Ce parchemin semble montrer un plan.
 en: This tastes great, you feel warm all over.
 fr: C'est délicieux, vous vous sentez tout chaud.
 fr-tt: C'est délicieux, tu te sens tout chaud.
+zh: 味道很好，你感到全身暖洋洋的。
+zh-py: wèi dào hěn hǎo, nǐ gǎn dào quán shēn nuǎn yáng yáng de.
 
     Throw what?
 de: Schießen was?
@@ -1721,6 +1725,7 @@ en: You feel stronger now, what bulging muscles!
 fr: Vous vous sentez fort, quels gros muscles !
 fr-tt: Tu te sens fort, quels gros muscles !
 zh: 你感觉更强壮了，多么结实的肌肉啊！
+zh-py: Nǐ gǎn jué gèng qiáng zhuàng le, duō me jiē shi de jī ròu a!
 
     You feel very sick now.
 en: You feel very sick now.

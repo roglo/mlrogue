@@ -323,7 +323,8 @@ value discovered_kind g title name id tab = do {
 value discovered g =
   let obj_sel = "!?=/" in
   loop_ok () where rec loop_ok () = do {
-    message g (fun lang → transl lang "Which object kind" ^ " " ^ obj_sel) False;
+    message_norec g
+      (fun lang → transl lang "Which object kind" ^ " " ^ obj_sel) False;
     let ch =
       loop () where rec loop () =
         let ch = rgetchar g in
