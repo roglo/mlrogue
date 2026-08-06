@@ -10,6 +10,7 @@ de:  -- Noch --
 en:  -- More --
 fr:  -- Suite --
 zh:  -- 继续 --
+zh-py:  -- jì xù --
 
      -- Press space or backspace --
 en:  -- Press space or backspace --
@@ -190,6 +191,7 @@ fr: Piège à loup.
 en: beige
 fr: beige@(p?s:)@(1-)
 zh: 米色
+zh-py: mǐ-sè
 
     being worn
 en: being worn
@@ -1369,6 +1371,7 @@ de: Schießen was?
 en: Throw what?
 fr: Lancer quoi ?
 zh: 投掷什么？
+zh-py: tóu zhí shén me?
 
     tiger-eye
 en: tiger-eye
