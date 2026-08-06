@@ -17,6 +17,7 @@ en:  -- Press space or backspace --
 fr:  -- Tapez espace ou efface --
 fr-tt:  -- Tape espace ou efface --
 zh:  -- 按空格或退格 --
+zh-py:  -- àn kòng gé huò tuì gé --
 
      -- Press space or letter --
 de:  -- Tippen Sie Raum oder Letter : .
@@ -759,6 +760,8 @@ fr: d'aggravation des monstres
     of blindness
 en: of blindness
 fr: de cécité
+zh: @(1-)致盲
+zh-py: @(1-)zhì máng
 
     of cancellation
 en: of cancellation
@@ -844,6 +847,8 @@ fr: d'invisibilité
     of levitation
 en: of levitation
 fr: de lévitation
+zh: @(1-)漂浮
+zh-py: @(2-)piāo fú
 
     of magic mapping
 en: of magic mapping
@@ -861,7 +866,7 @@ fr: de protection d'armure
 en: of poison
 fr: de poison
 zh: @(1-)毒
-zh-py: @(1-)dú
+zh-py: @(2-)dú
 
     of polymorph
 en: of polymorph
@@ -874,6 +879,8 @@ fr: de protection d'armure
     of raise level
 en: of raise level
 fr: de passage au niveau supérieur
+zh: @(1-)升级
+zh-py: @(2-)shēng jí
 
     of regeneration
 en: of regeneration
