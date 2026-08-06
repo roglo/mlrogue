@@ -780,6 +780,8 @@ fr: qui déconcerte@(p?nt) les monstres
     of confusion
 en: of confusion
 fr: de confusion
+zh: 混乱药水
+zh-py: @(3--)hùn luàn yào shuǐ
 
     of create monster
 en: of create monster
@@ -788,10 +790,14 @@ fr: de création de monstre
     of detect monster
 en: of detect monster
 fr: de détection des monstres
+zh: 侦测怪物
+zh-py: @(3--)zhēn cè guài wù
 
     of detect things
 en: of detect things
 fr: de détection des objets
+zh: 侦测物品
+zh-py: @(3--)zhēn cè wù pǐn
 
     of dexterity
 en: of dexterity
@@ -829,6 +835,8 @@ fr: d'accélération de monstre
     of haste self
 en: of haste self
 fr: d'accélération
+zh: 加速药水
+zh-py: @(3--)jiā sù
 
     of healing
 en: of healing
@@ -919,6 +927,8 @@ fr: de recherche
     of see invisible
 en: of see invisible
 fr: de vision de l'invisible
+zh: 显形药水
+zh-py: @(3--)xiǎn xíng
 
     of sleep
 en: of sleep
