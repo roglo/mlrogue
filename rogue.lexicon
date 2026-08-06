@@ -1032,6 +1032,7 @@ fr: quartanier@(m)
 en: quartz
 fr: @(s?:avec un )quartz@(3-)
 zh: 石英@(&)
+zh-py: shí yīng
 
     Quit
 en: Quit
@@ -1099,6 +1100,7 @@ de: @(k?r:R)ing@(m)
 en: ring
 fr: bague
 zh: 戒指
+zh-py: jiè zhǐ
 
     ring mail
 en: ring mail
