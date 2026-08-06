@@ -761,7 +761,7 @@ fr: d'aggravation des monstres
 en: of blindness
 fr: de cécité
 zh: @(1-)致盲
-zh-py: @(1-)zhì máng
+zh-py: @(3--)zhì máng
 
     of cancellation
 en: of cancellation
@@ -851,7 +851,7 @@ fr: d'invisibilité
 en: of levitation
 fr: de lévitation
 zh: @(1-)漂浮
-zh-py: @(2-)piāo fú
+zh-py: @(3--)piāo fú
 
     of magic mapping
 en: of magic mapping
@@ -883,7 +883,7 @@ fr: de protection d'armure
 en: of raise level
 fr: de passage au niveau supérieur
 zh: @(1-)升级
-zh-py: @(2-)shēng jí
+zh-py: @(3--)shēng jí
 
     of regeneration
 en: of regeneration
