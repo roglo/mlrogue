@@ -835,7 +835,7 @@ fr: d'accélération de monstre
     of haste self
 en: of haste self
 fr: d'accélération
-zh: 加速药水
+zh: @(1-)加速药水
 zh-py: @(3--)jiā sù
 
     of healing
@@ -907,8 +907,8 @@ fr: de régénération
     of remove curse
 en: of remove curse
 fr: de désenvoûtement
-zh: 解除诅咒
-zh-py: jiě chú zǔ zhòu juàn zhóu
+zh: @(2-)解除诅咒
+zh-py: @(3--)jiě chú zǔ zhòu
 
     of restore strength
 en: of restore strength
@@ -927,7 +927,7 @@ fr: de recherche
     of see invisible
 en: of see invisible
 fr: de vision de l'invisible
-zh: 显形药水
+zh: @(1-)显形
 zh-py: @(3--)xiǎn xíng
 
     of sleep
@@ -958,8 +958,8 @@ fr: de téléportation de monstre
     of teleportation
 en: of teleportation
 fr: de téléportation
-zh: @(2--)传送
-zh-py: @(2--) chuán sòng
+zh: @(2-)传送
+zh-py: @(3--) chuán sòng
 
     Oh wow, everything seems so cosmic.
 en: Oh wow, everything seems so cosmic.
