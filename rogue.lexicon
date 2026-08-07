@@ -763,6 +763,8 @@ fr: d'ornement
     of aggravate monster
 en: of aggravate monster
 fr: d'aggravation des monstres
+zh: @(2-)激怒怪物
+zh-py: @(3--)jī nù guài wù
 
     of blindness
 en: of blindness
@@ -787,6 +789,8 @@ zh-py: @(3--)hùn luàn yào shuǐ
     of create monster
 en: of create monster
 fr: de création de monstre
+zh: @(2-)召唤怪物
+zh-py: @(3--)zhào huàn guài wù
 
     of detect monster
 en: of detect monster
@@ -811,6 +815,8 @@ fr: qui ne fait rien
     of enchant armor
 en: of enchant armor
 fr: d'enchantement d'armure
+zh: @(2-)附魔护甲
+zh-py: @(3--)fù mó hù jiǎ
 
     of enchant weapon
 en: of enchant weapon
@@ -849,10 +855,14 @@ zh-py: @(3--)zhì liáo
     of hold monster
 en: of hold monster
 fr: d'immobilisation de monstre
+zh: @(2-)定身怪物
+zh-py: @(3--)dìng shēn guài wù
 
     of identify
 en: of identify
 fr: d'identification
+zh: @(2-)鉴定
+zh-py: @(3--)jiàn dìng
 
     of increase strength
 en: of increase strength
@@ -873,6 +883,8 @@ zh-py: @(3--)piāo fú
     of magic mapping
 en: of magic mapping
 fr: de plan magique
+zh: @(2-)魔法地图
+zh-py: @(3--)mó fǎ dì tú
 
     of magic missile
 en: of magic missile
@@ -895,6 +907,8 @@ fr: de transformation
     of protect armor
 en: of protect armor
 fr: de protection d'armure
+zh: @(2-)护甲保护
+zh-py: @(3--)hù jiǎ bǎo hù
 
     of raise level
 en: of raise level
@@ -921,6 +935,8 @@ zh-py: @(3--)huī fù lì liàng
     of scare monster
 en: of scare monster
 fr: qui effraie@(p?nt) les monstres
+zh: @(2-)召唤怪物
+zh-py: @(3--)zhào huàn guài wù
 
     of searching
 en: of searching
