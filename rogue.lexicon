@@ -1649,12 +1649,14 @@ en: You begin to feel better.
 fr: Vous commencez à vous sentir mieux.
 fr-tt: Tu commences à te sentir mieux.
 zh: 你开始感觉好些了。
+zh-py: nǐ kāi shǐ gǎn jué hǎo xiē le.
 
     You begin to feel much better.
 en: You begin to feel much better.
 fr: Vous commencez à vous sentir beaucoup mieux.
 fr-tt: Tu commences à te sentir beaucoup mieux.
 zh: 你开始感觉好多了。
+zh-py: nǐ kāi shǐ gǎn jué hǎo duō le.
 
     You can move again.
 de: Sie können sich wieder rühren.
@@ -1765,6 +1767,7 @@ en: You feel very sick now.
 fr: Vous vous sentez vraiment malade, maintenant.
 fr-tt: Tu te sens vraiment malade, maintenant.
 zh: 你现在感觉很不舒服。
+zh-py: nǐ xiàn zài gǎn jué hěn bú shū fú.
 
     You feel weaker.
 en: You feel weaker.
