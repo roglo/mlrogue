@@ -815,6 +815,7 @@ fr: d'enchantement d'armure
 en: of enchant weapon
 fr: d'enchantement d'arme
 zh: @(2-)附魔武器
+zh-py: @(3--)fù mó wǔ qì
 
     of extra healing
 en: of extra healing
@@ -934,6 +935,7 @@ zh-py: @(3--)xiǎn xíng
 en: of sleep
 fr: de sommeil
 zh: @(2-)睡眠
+zh-py: @(3--)shuì mián
 
     of slow digestion
 en: of slow digestion
