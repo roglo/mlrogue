@@ -391,7 +391,90 @@ value gen_message g msg_fun intrpt record = do {
 value message g msg_fun intrpt = gen_message g msg_fun intrpt True;
 value message_norec g msg_fun intrpt = gen_message g msg_fun intrpt False;
 
-value inv_sel g pack mask prompt term =
+value rec scanbrd brd i n =
+  let pp1 = i in
+  let pp2 = try String.index_from brd i ':' with [ Not_found -> -1 ] in
+  if pp2 >= 0 then
+    let pp2 = pp2 + 2 in
+    if n > 0 then
+      let pp2 = try String.index_from brd pp2 ' ' with [ Not_found -> -1 ] in
+      if pp2 >= 0 then scanbrd brd (pp2 + 1) (n - 1) else None
+    else Some (pp1, pp2)
+  else None
+;
+
+value utf8_index_of_index s i =
+  loop 0 0 where rec loop j k =
+    if j = String.length s then failwith "utf8_index_of_index"
+    else if utf8_cont_char s.[j] then loop (j + 1) k
+    else if j = i then k
+    else loop (j + 1) (k + 1)
+;
+
+value pad s n = for i = String.length s to n - 1 do { Curses.addch ' ' };
+
+value print_stats g stat_mask = do {
+  let brd =
+    transl g.lang
+      "Level: 99 Gold: 999999 Hp: 999(999) Str: 99(99) Arm: 99 Exp: 21/10000000"
+  in
+  let row = DROWS - 1 in
+  if stat_mask = STAT_ALL then do {
+    Curses.mvaddstr row 0 "";
+    Curses.clrtoeol ()
+  }
+  else ();
+  let label = stat_mask land STAT_LABEL <> 0 in
+  let pr mask1 start1 b1 pad1 =
+    if stat_mask land mask1 <> 0 then
+      match scanbrd brd 0 start1 with
+      [ Some (p1, p2) -> do {
+          if label then
+            let col = utf8_index_of_index brd p1 in
+            Curses.mvaddnstr row col brd p1 (p2 - p1)
+          else ();
+          let col = utf8_index_of_index brd p2 in
+          Curses.mvaddstr row col b1;
+          pad b1 pad1
+        }
+      | None -> () ]
+    else ()
+  in
+  pr STAT_LEVEL 0 (string_of_int g.cur_level) 2;
+  pr STAT_GOLD 1 (string_of_int g.rogue.gold) 6;
+  pr STAT_HP 2 (sprintf "%d(%d)" g.rogue.hp_current g.rogue.hp_max) 8;
+  pr STAT_STRENGTH 3
+    (sprintf "%d(%d)" (g.rogue.str_current + g.rogue.add_strength)
+       g.rogue.str_max)
+    6;
+  pr STAT_ARMOR 4 (string_of_int (Imisc.get_armor_class g.rogue.armor)) 2;
+  pr STAT_EXP 5 (sprintf "%d/%d" g.rogue.exp g.rogue.exp_points) 11;
+  if stat_mask land STAT_HUNGER <> 0 then do {
+    Curses.mvaddstr row 73
+      (if g.hunger_str <> "" then transl g.lang g.hunger_str else "");
+    Curses.clrtoeol ()
+  }
+  else ();
+  Curses.refresh ()
+};
+
+value switch_lang g = do {
+  g.lang :=
+    if String.length g.lang > 2 then
+      match
+        try Some (String.index g.lang ',') with [ Not_found → None ]
+      with
+      | Some i →
+          String.sub g.lang (i + 1) (String.length g.lang - i - 1) ^ "," ^
+          String.sub g.lang 0 i
+      | None →
+          String.sub g.lang 0 2 ^ "," ^ g.lang
+      end
+    else "en";
+  print_stats g STAT_ALL;
+};
+
+value rec inv_sel g pack mask prompt term =
   if pack = [] then do {
     message g (fun lang → transl lang "Your pack is empty.") True;
     None
@@ -457,11 +540,13 @@ value inv_sel g pack mask prompt term =
     let retc =
       loop () where rec loop () =
         let retc = rgetchar g in
-        try
-          let _ = String.index term retc in
-          retc
-        with
-        [ Not_found -> loop () ]
+        if retc = ROGUE_KEY_REMESSAGE then retc
+        else
+          try
+            let _ = String.index term retc in
+            retc
+          with
+          [ Not_found -> loop () ]
     in
     for i = 0 to len do {
       for j = 0 to maxlen + 1 do {
@@ -472,7 +557,11 @@ value inv_sel g pack mask prompt term =
       Curses.clrtoeol ();
     };
     Curses.color_set (-1) (-1);
-    Some retc
+    if retc = ROGUE_KEY_REMESSAGE then do {
+      switch_lang g;
+      inv_sel g pack mask prompt term
+    }
+    else Some retc
   }
 ;
 
@@ -495,91 +584,10 @@ value utf8_index_from s i c =
     else loop (j + 1) (k + 1)
 ;
 
-value utf8_index_of_index s i =
-  loop 0 0 where rec loop j k =
-    if j = String.length s then failwith "utf8_index_of_index"
-    else if utf8_cont_char s.[j] then loop (j + 1) k
-    else if j = i then k
-    else loop (j + 1) (k + 1)
-;
-
-value rec scanbrd brd i n =
-  let pp1 = i in
-  let pp2 = try String.index_from brd i ':' with [ Not_found -> -1 ] in
-  if pp2 >= 0 then
-    let pp2 = pp2 + 2 in
-    if n > 0 then
-      let pp2 = try String.index_from brd pp2 ' ' with [ Not_found -> -1 ] in
-      if pp2 >= 0 then scanbrd brd (pp2 + 1) (n - 1) else None
-    else Some (pp1, pp2)
-  else None
-;
-
-value pad s n = for i = String.length s to n - 1 do { Curses.addch ' ' };
-
-value print_stats g stat_mask = do {
-  let brd =
-    transl g.lang
-      "Level: 99 Gold: 999999 Hp: 999(999) Str: 99(99) Arm: 99 Exp: 21/10000000"
-  in
-  let row = DROWS - 1 in
-  if stat_mask = STAT_ALL then do {
-    Curses.mvaddstr row 0 "";
-    Curses.clrtoeol ()
-  }
-  else ();
-  let label = stat_mask land STAT_LABEL <> 0 in
-  let pr mask1 start1 b1 pad1 =
-    if stat_mask land mask1 <> 0 then
-      match scanbrd brd 0 start1 with
-      [ Some (p1, p2) -> do {
-          if label then
-            let col = utf8_index_of_index brd p1 in
-            Curses.mvaddnstr row col brd p1 (p2 - p1)
-          else ();
-          let col = utf8_index_of_index brd p2 in
-          Curses.mvaddstr row col b1;
-          pad b1 pad1
-        }
-      | None -> () ]
-    else ()
-  in
-  pr STAT_LEVEL 0 (string_of_int g.cur_level) 2;
-  pr STAT_GOLD 1 (string_of_int g.rogue.gold) 6;
-  pr STAT_HP 2 (sprintf "%d(%d)" g.rogue.hp_current g.rogue.hp_max) 8;
-  pr STAT_STRENGTH 3
-    (sprintf "%d(%d)" (g.rogue.str_current + g.rogue.add_strength)
-       g.rogue.str_max)
-    6;
-  pr STAT_ARMOR 4 (string_of_int (Imisc.get_armor_class g.rogue.armor)) 2;
-  pr STAT_EXP 5 (sprintf "%d/%d" g.rogue.exp g.rogue.exp_points) 11;
-  if stat_mask land STAT_HUNGER <> 0 then do {
-    Curses.mvaddstr row 73
-      (if g.hunger_str <> "" then transl g.lang g.hunger_str else "");
-    Curses.clrtoeol ()
-  }
-  else ();
-  Curses.refresh ()
-};
-
 value remessage g =
   if g.msg_line g.lang <> "" then do {
     if String.length g.lang = 2 then ()
-    else do {
-      g.lang :=
-        if String.length g.lang > 2 then
-          match
-            try Some (String.index g.lang ',') with [ Not_found → None ]
-          with
-          | Some i →
-              String.sub g.lang (i + 1) (String.length g.lang - i - 1) ^ "," ^
-              String.sub g.lang 0 i
-          | None →
-              String.sub g.lang 0 2 ^ "," ^ g.lang
-          end
-        else "en";
-      print_stats g STAT_ALL;
-    };
+    else switch_lang g;
     message g g.msg_line False;
   }
   else ()
