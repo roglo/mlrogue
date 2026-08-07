@@ -410,11 +410,6 @@ value killed_by g death = do {
     else None
   in
   id_all g g.level_objects;
-  let prompt2 =
-    match pack_opt with
-    [ Some _ -> transl g.lang " -- Press space or backspace --"
-    | None -> transl g.lang " -- Press space to continue --" ]
-  in
   let term2 =
     match pack_opt with
     [ Some _ -> " \027\b\127"
@@ -426,7 +421,12 @@ value killed_by g death = do {
     | None -> () ];
     let retc =
       inv_sel g (List.map (fun obj -> ('.', obj)) g.level_objects)
-        (fun _ -> True) prompt2 term2
+        (fun _ -> True)
+        (fun lang →
+           match pack_opt with
+           [ Some _ -> transl lang " -- Press space or backspace --"
+           | None -> transl lang " -- Press space to continue --" ])
+        term2
     in
     match retc with
     [ Some ('\b' | '\127') -> loop ()

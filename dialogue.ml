@@ -504,7 +504,7 @@ value rec inv_sel g pack mask prompt term =
         list ([], 0)
     in
     let len = List.length list in
-    let maxlen = max maxlen (utf8_width prompt) in
+    let maxlen = max maxlen (utf8_width (prompt g.lang)) in
     let col = DCOLS - (maxlen + 2) in
     let saved =
       Array.init (len + 1) (fun _ -> string_make (maxlen + 2) ' ')
@@ -534,7 +534,7 @@ value rec inv_sel g pack mask prompt term =
       | [] -> () ]
     in
     loop 0 list;
-    Curses.mvaddstr len col prompt;
+    Curses.mvaddstr len col (prompt g.lang);
     Curses.clrtoeol ();
     Curses.refresh ();
     let retc =
@@ -567,7 +567,8 @@ value rec inv_sel g pack mask prompt term =
 
 value inventory g pack mask =
   let _ : option char =
-    inv_sel g pack mask (transl g.lang " -- Press space to continue --")
+    inv_sel g pack mask
+      (fun lang → transl lang " -- Press space to continue --")
       " \027"
   in
   ()
@@ -683,7 +684,7 @@ value pack_letter g prompt mask =
               check_message g;
               let cho =
                 inv_sel g g.rogue.pack mask
-                  (transl g.lang " -- Press space or letter --")
+                  (fun lang → transl lang " -- Press space or letter --")
                   " !)]*=?:.abcdefghijklmnopqrstuvwxyz\027"
               in
               match cho with
@@ -784,7 +785,7 @@ value new_object_for_wizard g =
           let sel = sel ^ obj_sel ^ " \027" in
           let retc =
             inv_sel g obj_list (fun _ -> True)
-              (" " ^ transl g.lang "Choose:" ^ " ") sel
+              (fun lang → " " ^ transl g.lang "Choose:" ^ " ") sel
           in
           match retc with
           [ None | Some (' ' | '\027') -> loop ()
