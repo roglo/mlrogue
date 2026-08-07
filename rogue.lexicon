@@ -334,11 +334,13 @@ fr: @(s?:de )cuivre@(2-)
 en: dagger
 fr: poignard@(m)
 zh: 匕首
+zh-py: bǐ shǒu
 
     daggers
 en: daggers
 fr: poignards@(mp)
 zh: 匕首
+zh-py: bǐ shǒu
 
     dart
 de: Stachel@(m)
@@ -1247,6 +1249,7 @@ fr: Piège à gaz soporifique.
 en: slime-mold
 fr: champignon@(m)
 zh: 黏菌
+zh-py: nián jūn
 
     snake
 de: Schlange@(f)
@@ -1290,6 +1293,7 @@ zh-py: bào qiàn
 en: splint mail
 fr: une armure à lamelles
 zh: 板条甲
+zh-py: bǎn tiáo jiǎ
 
     staff
 de: @(k?s:S)tock@(m)
