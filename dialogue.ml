@@ -345,6 +345,16 @@ value utf8_cont_char c =
   Char.code c land 0x80 <> 0 && Char.code c land 0x40 = 0
 ;
 
+value utf8_width s =
+  loop 0 0 where rec loop r i =
+    if i = String.length s then r
+    else if Char.code s.[i] land 0x80 = 0 then loop (r + 1) (i + 1)
+    else if Char.code s.[i] land 0x40 = 0 then loop r (i + 1)
+    else if Char.code s.[i] land 0x20 = 0 then loop (r + 1) (i + 1)
+    else if Char.code s.[i] land 0x10 = 0 then loop (r + 2) (i + 1)
+    else loop (r + 1) (i + 1)
+;
+
 value utf8_string_length s =
   loop 0 0 where rec loop i len =
     if i = String.length s then len
@@ -406,12 +416,12 @@ value inv_sel g pack mask prompt term =
            let s =
              sprintf " %c%c %s" c p (etransl (get_desc g g.lang obj True))
            in
-           let s = Ustring.of_string s in
-           ([s :: list], max maxlen (Ustring.length s)))
+           let t = Ustring.of_string s in
+           ([t :: list], max maxlen (utf8_width s)))
         list ([], 0)
     in
     let len = List.length list in
-    let maxlen = max maxlen (String.length prompt) in
+    let maxlen = max maxlen (utf8_width prompt) in
     let col = DCOLS - (maxlen + 2) in
     let saved =
       Array.init (len + 1) (fun _ -> string_make (maxlen + 2) ' ')

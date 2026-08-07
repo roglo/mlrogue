@@ -780,7 +780,7 @@ fr: qui déconcerte@(p?nt) les monstres
     of confusion
 en: of confusion
 fr: de confusion
-zh: 混乱药水
+zh: @(1-)混乱药水
 zh-py: @(3--)hùn luàn yào shuǐ
 
     of create monster
@@ -790,13 +790,13 @@ fr: de création de monstre
     of detect monster
 en: of detect monster
 fr: de détection des monstres
-zh: 侦测怪物
+zh: @(1-)侦测怪物
 zh-py: @(3--)zhēn cè guài wù
 
     of detect things
 en: of detect things
 fr: de détection des objets
-zh: 侦测物品
+zh: @(1-)侦测物品
 zh-py: @(3--)zhēn cè wù pǐn
 
     of dexterity
