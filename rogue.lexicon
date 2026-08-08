@@ -61,6 +61,8 @@ fr: <%c>, c'est %s
 en: A cloak of darkness falls around you.
 fr: Une cape de ténèbres tombe sur vous.
 fr-tt: Une cape de ténèbres tombe sur toi.
+zh: 一层黑暗笼罩着你。
+zh-py: yì céng hēi’àn lǒng zhào zhe nǐ.
 
     a door
 en: a door
@@ -243,6 +245,7 @@ de: weinrot@(p?e:m?A?en:er:f?e:n?es)
 en: burgundy
 fr: bordeaux@(1-)
 zh: 酒红
+zh-py: jiǔ hóng
 
     Call it:
 de: Nennen es:
@@ -1525,6 +1528,8 @@ de: Sie trageten@(A)
 en: Was wearing
 fr: Vous portiez
 fr-tt: Tu portais
+zh: 曾穿着
+zh-py: céng chuān zhe
 
     weak
 en: weak
@@ -1534,12 +1539,16 @@ fr: faible
 de: Tragen was?
 en: Wear what?
 fr: Porter quoi ?
+zh: 穿什么？
+zh-py: chuān shén me?
 
     Wearing
 de: Sie tragen@(A)
 en: Wearing
 fr: Vous portez
 fr-tt: Tu portes
+zh: 穿着
+zh-py: chuān zhe
 
     Wearing two rings already.
 en: Wearing two rings already.
@@ -1734,6 +1743,8 @@ de: Sie können nicht, es scheint verflucht.
 en: You can't, it appears to be cursed.
 fr: Vous ne pouvez pas, il semble maudit.
 fr-tt: Tu ne peux pas, il semble maudit.
+zh: 你做不到，这东西似乎被诅咒了。
+zh-py: nǐ zuò bú dào, zhè dōng xi sì hū bèi zǔ zhòu le.
 
     you faint
 en: you faint
