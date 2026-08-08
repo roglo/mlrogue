@@ -423,9 +423,9 @@ value apply_scroll g =
           let n = (List.assoc ch g.rogue.pack).ob_quantity in
           let i = int_of_weapon w.we_kind in
           let t = weapon_tab.(i).o_title in
-          let t = transl g.lang (nth_field t (if n <= 1 then 0 else 1)) in
           message g
             (fun lang →
+               let t = transl lang (nth_field t (if n <= 1 then 0 else 1)) in
                let msg =
                  sprintf (ftransl lang "Your %s glow%s %s for a moment.") t
                    (if n <= 1 then "s" else "") (get_ench_color g)

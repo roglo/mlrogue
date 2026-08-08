@@ -229,6 +229,7 @@ de: blau@(p?e:m?A?en:er:f?e:n?es)
 en: blue
 fr: bleu@(m?:e)@(p?s:)@(1-)
 zh: 蓝色
+zh-py: lán sè
 
     bronze
 en: bronze
@@ -1910,6 +1911,7 @@ en: Your %s glow%s %s for a moment.
 fr: Vo@(p?s:tre) %s devien@(p?nen:)t@(_?%s:)@(1-) %s l'espace d'un instant.
 fr-tt: T@(p?es:e?on:m?on:a) %s devien@(p?nen:)t@(_?%s:)@(1-) %s l'espace d'un instant.
 zh: 你的%s@(_?%s:)一瞬间变成%s。
+zh-py: nǐ de %s@(_?%s:) yī shùn jiān biàn chéng %s.
 
     Your acne seems to have disappeared.
 en: Your acne seems to have disappeared.
