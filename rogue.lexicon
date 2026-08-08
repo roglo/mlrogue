@@ -379,10 +379,14 @@ zh-py: dòng sǐ
     Died of starvation
 en: Died of starvation
 fr: Mort de faim
+zh: 饿死
+zh-py: è sǐ
 
     died of starvation
 en: died of starvation
 fr: mort de faim
+zh: 饿死
+zh-py: è sǐ
 
     Direction?
 en: Direction?
@@ -1741,6 +1745,7 @@ en: You fall asleep.
 fr: Vous vous endormez.
 fr-tt: Tu t'endors.
 zh: 你睡着了。
+zh-py: nǐ shuì zhe le.
 
     You feel a strange sense of loss.
 en: You feel a strange sense of loss.
