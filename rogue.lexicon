@@ -288,6 +288,8 @@ fr: @(s?:de )cèdre@(2-)
 de: Zentaur@(m)
 en: centaur
 fr: kroston@(m)
+zh: 半人马
+zh-py: bàn rén mǎ
 
     chain mail
 en: chain mail
@@ -493,6 +495,7 @@ fr: gris@(m?:e)@(p?s:)@(1-)
 en: griffin
 fr: ptérodactyle@(m)
 zh: 狮鹫
+zh: shī jiù
 
     Help file not on line.
 en: Help file not on line.
@@ -756,6 +759,8 @@ zh: 这里什么也没有。
 de: Nymphe@(f)
 en: nymph
 fr: nymphe
+zh: 仙女
+zh-py: xiān nǚ
 
     oak
 en: oak
@@ -993,6 +998,7 @@ zh-py: @(3--) chuán sòng
 en: Oh wow, everything seems so cosmic.
 fr: Oh, la vache, tout parait bizarre.
 zh: 哇，一切看起来都好奇妙。
+zh-py: wa, yī qiè kàn qǐ lái dōu hào qí miào.
 
     on left hand
 en: on left hand
@@ -1016,6 +1022,8 @@ fr: @(s?:avec une )opale@(3-)
     orc@(n)
 en: orc@(n)
 fr: orque@(em)
+zh: 兽人
+zh-py: shòu rén
 
     Pack full.
 en: Pack full.
@@ -1038,6 +1046,8 @@ fr: @(s?:avec une )perle@(3-)
 de: Gespenst@(n)
 en: phantom
 fr: fantôme@(m)
+zh: 幽灵
+zh-py: yōu líng
 
     pine
 en: pine
@@ -1482,6 +1492,8 @@ zh-py: mí huàn
     troll
 en: troll
 fr: troll@(m)
+zh: 巨魔
+zh-py: jù mó
 
     turquoise
 en: turquoise
@@ -1509,6 +1521,8 @@ fr: vampire@(m)
     venus fly-trap
 en: venus fly-trap
 fr: bouledogue@(m)
+zh: 捕蝇草
+zh-py: bǔ yíng cǎo
 
     Wait, that's a %s!
 en: Wait, that's a %s!
@@ -1651,6 +1665,8 @@ fr: jaune@(p?s:)@(1-)
     yeti
 en: yeti
 fr: yéti@(m)
+zh: 雪人
+zh-py: xuě rén
 
     you
 en: you
