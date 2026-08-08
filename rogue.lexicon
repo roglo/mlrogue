@@ -673,6 +673,7 @@ de: Qualle@(f)
 en: medusa
 fr: méduse
 zh: 美杜莎
+zh: měi dù shā
 
     misses.
 de: blitzt ab.
@@ -1520,6 +1521,8 @@ fr: Valeur     Objet
 de: Vampir@(m)
 en: vampire
 fr: vampire@(m)
+zh: 吸血鬼
+zh-py: xī xuè guǐ
 
     venus fly-trap
 en: venus fly-trap
@@ -1653,6 +1656,8 @@ fr: @(s?:de )bois@(2-)
     wraith
 en: wraith
 fr: incube@(me)
+zh: 幽魂
+zh-py: yōu hún
 
     xeroc
 en: xeroc
@@ -1983,3 +1988,5 @@ fr: Zapper avec quoi ?
     zombie
 en: zombie
 fr: zombie@(m)
+zh: 僵尸
+zh-py: jiāng shī
