@@ -633,6 +633,8 @@ fr: Main droite ou gauche ?
     leprechaun
 en: leprechaun
 fr: hamadryas@(me)
+zh: 小妖精
+zh-py: xiǎo yāo jīng
 
     Level: 99 Gold: 999999 Hp: 999(999) Str: 99(99) Arm: 99 Exp: 21/10000000
 de: Niveau: 99 Gld: 999999 LP: 999(999) Str: 99(99) Arm: 99 Exp: 21/10000000
@@ -1528,6 +1530,8 @@ zh-py: bǔ yíng cǎo
     Wait, that's a %s!
 en: Wait, that's a %s!
 fr: Hé, c'est un@(m?:e) %s !
+zh: 等等，那是%s！
+zh-py: děng děng, nà shì %s!
 
     walnut
 en: walnut
@@ -1653,6 +1657,8 @@ fr: incube@(me)
     xeroc
 en: xeroc
 fr: copieur@(m)
+zh: 拟形怪
+zh-py: nǐ xíng guài
 
     y
 en: y
@@ -1948,6 +1954,8 @@ fr-tt: Ton sac est vide.
 en: Your purse feels lighter.
 fr: Votre bourse parait plus légère.
 fr-tt: Ta bourse parait plus légère.
+zh: 你的钱袋变轻了。
+zh-py: nǐ de qián dài biàn qīng le
 
     Your skin crawls.
 en: Your skin crawls.
