@@ -309,7 +309,8 @@ value discovered_kind g title name id tab = do {
   let ch =
     loop () where rec loop () =
       let ch = rgetchar g in
-      if String.contains "!?=/ \027" ch then ch else loop ()
+      if ch = ROGUE_KEY_REMESSAGE then ch
+      else if String.contains "!?=/ \027" ch then ch else loop ()
   in
   for i = 0 to len do {
     for j = 0 to maxlen + 1 do {
@@ -334,7 +335,7 @@ value discovered g =
     if ch = '\027' || ch = ' ' then ()
     else
       let rec loop ch =
-        let ch =
+        let ch2 =
           match ch with
           [ '!' ->
               let name _ = "potion@(p?s:)" in
@@ -354,7 +355,11 @@ value discovered g =
                 g.id_wands wand_tab
           | _ -> ch ]
         in
-        if ch = '\027' || ch = ' ' then loop_ok () else loop ch
+        if ch2 = ROGUE_KEY_REMESSAGE then do {
+          switch_lang g;
+          loop ch;
+        }
+        else if ch2 = '\027' || ch2 = ' ' then loop_ok () else loop ch2
       in
       loop ch
   }

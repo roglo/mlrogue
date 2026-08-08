@@ -26,4 +26,6 @@ value pack_letter : game → string → (object_kind → bool) → char;
 value inventory :
   game → list (char * objet) → (object_kind → bool) → unit;
 
+value switch_lang : game → unit;
+
 value new_object_for_wizard : game → unit;
