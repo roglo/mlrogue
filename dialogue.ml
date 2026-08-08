@@ -329,8 +329,6 @@ value rgetchar g =
 
 value sound_bell () = do { print_char (CTRL 'g'); flush stdout };
 
-value wait_for_ack g = while rgetchar g <> ' ' do { () };
-
 value check_message g =
   if g.msg_cleared then ()
   else do {
@@ -368,7 +366,7 @@ value gen_message g msg_fun intrpt record = do {
   if not g.msg_cleared then do {
     Curses.mvaddstr (MIN_ROW - 1) g.msg_col (transl g.lang " -- More --");
     Curses.refresh ();
-    wait_for_ack g;
+    while rgetchar g <> ' ' do { () };
     check_message g;
     if msg <> "" && msg = g.msg_line g.lang then g.same_msg ++
     else g.same_msg := 0
