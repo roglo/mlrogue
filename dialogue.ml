@@ -686,7 +686,7 @@ value pack_letter g prompt mask =
   else do {
     let ch =
       loop () where rec loop () = do {
-        message_norec g (fun _ → prompt) False;
+        message_norec g prompt False;
         let (ch, mask) =
           loop1 () where rec loop1 () =
             let ch = rgetchar g in

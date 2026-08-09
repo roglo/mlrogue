@@ -76,7 +76,9 @@ value drop g =
   else if g.rogue.pack = [] then
     message g (fun lang → transl lang "You have nothing to drop.") False
   else
-    let ch = pack_letter g (transl g.lang "Drop what?") (fun _ -> True) in
+    let ch =
+      pack_letter g (fun lang → transl lang "Drop what?") (fun _ -> True)
+    in
     if ch = ROGUE_KEY_CANCEL then ()
     else
       match get_letter_object g ch False with
@@ -190,7 +192,7 @@ value get_input_line g prompt insert if_cancelled do_echo = do {
 
 value call_it g =
   let ch =
-    pack_letter g (transl g.lang "Call what?")
+    pack_letter g (fun lang → transl lang "Call what?")
       (fun
        [ Scroll _ | Potion _ | Wand _ | Ring _ -> True
        | _ -> False ])
@@ -233,7 +235,8 @@ value single_inv g ichar =
     match ichar with
     [ Some ichar -> ichar
     | None ->
-        pack_letter g (transl g.lang "Inventory what?") (fun _ -> True) ]
+        pack_letter g (fun lang → transl lang "Inventory what?")
+          (fun _ -> True) ]
   in
   if ch = ROGUE_KEY_CANCEL then ()
   else
@@ -392,10 +395,10 @@ value throw g count = do {
   else
     let ch =
       pack_letter g
-        (transl g.lang "Throw what?" ^
-         (if count > 1 then
-            " (" ^ sprintf (ftransl g.lang "%d times") count ^ ")"
-          else ""))
+        (fun lang → transl lang "Throw what?" ^
+           (if count > 1 then
+              " (" ^ sprintf (ftransl lang "%d times") count ^ ")"
+            else ""))
         (fun
          [ Weapon _ -> True
          | _ -> False ])

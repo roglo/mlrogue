@@ -318,7 +318,7 @@ value zap g = do {
   if dir = ROGUE_KEY_CANCEL then False
   else
     let ch =
-      pack_letter g (transl g.lang "Zap with what?")
+      pack_letter g (fun lang → transl lang "Zap with what?")
         (fun
          [ Wand _ -> True
          | _ -> False ])

@@ -21,7 +21,7 @@ value print_stats : game → int → unit;
 value inv_sel :
   game → list (char * objet) → (object_kind → bool) →
     (string → string) → string → option char;
-value pack_letter : game → string → (object_kind → bool) → char;
+value pack_letter : game → (string → string) → (object_kind → bool) → char;
 
 value inventory :
   game → list (char * objet) → (object_kind → bool) → unit;

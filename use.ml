@@ -200,7 +200,7 @@ value apply_potion g =
 
 value quaff g =
   let ch =
-    pack_letter g (transl g.lang "Quaff what?")
+    pack_letter g (fun lang → transl lang "Quaff what?")
       (fun
        [ Potion _ -> True
        | _ -> False ])
@@ -230,7 +230,8 @@ value get_ench_color g =
 value idntfy g =
   loop () where rec loop () =
     let ch =
-      pack_letter g (transl g.lang "What would you like to identify?")
+      pack_letter g
+        (fun lang → transl lang "What would you like to identify?")
         (fun _ -> True)
     in
     if ch = ROGUE_KEY_CANCEL then ()
@@ -501,7 +502,7 @@ value read_scroll g =
     message g (fun lang → transl lang "You can't see to read the scroll.") False
   else
     let ch =
-      pack_letter g (transl g.lang "Read what?")
+      pack_letter g (fun lang → transl lang "Read what?")
         (fun
          [ Scroll _ -> True
          | _ -> False ])
@@ -523,7 +524,7 @@ value read_scroll g =
 
 value eat g =
   let ch =
-    pack_letter g (transl g.lang "Eat what?")
+    pack_letter g (fun lang → transl lang "Eat what?")
       (fun
        [ Food _ -> True
        | _ -> False ])
@@ -576,7 +577,7 @@ value wear g =
         [ Armor _ -> True
         | _ -> False ]
       in
-      let ch = pack_letter g (transl g.lang "Wear what?") mask in
+      let ch = pack_letter g (fun lang → transl lang "Wear what?") mask in
       if ch = ROGUE_KEY_CANCEL then ()
       else
         match get_letter_object g ch False with
@@ -607,10 +608,11 @@ value wield g =
     | None -> False ]
   in
   if cursed then
-    message g (fun lang → transl lang "You can't, it appears to be cursed.") False
+    message g
+      (fun lang → transl lang "You can't, it appears to be cursed.") False
   else
     let ch =
-      pack_letter g (transl g.lang "Wield what?")
+      pack_letter g (fun lang → transl lang "Wield what?")
         (fun
          [ Weapon _ -> True
          | _ -> False ])
@@ -680,7 +682,7 @@ value put_on_ring g =
     message g (fun lang → transl lang "Wearing two rings already.") False
   else
     let ch =
-      pack_letter g (transl g.lang "Put on what?")
+      pack_letter g (fun lang → transl lang "Put on what?")
         (fun
          [ Ring _ -> True
          | _ -> False ])
