@@ -240,6 +240,7 @@ de: braun@(p?e:m?A?en:er:f?e:n?es)
 en: brown
 fr: brune@(p?s:)@(1-)
 zh: 棕色
+zh-py: zōng sè
 
     burgundy
 de: weinrot@(p?e:m?A?en:er:f?e:n?es)
@@ -1447,6 +1448,8 @@ fr: Il y a déjà quelque chose ici.
     This is a scroll of identify.
 en: This is a scroll of identify.
 fr: C'est un parchemin d'identification.
+zh: 这是一张鉴定卷轴。
+zh-py: zhè shì yī zhāng jiàn dìng juàn zhóu.
 
     This scroll seems to have a map on it.
 en: This scroll seems to have a map on it.
@@ -1604,6 +1607,9 @@ fr-tt: Quel caractère veux-tu connaître ?
 en: What would you like to identify?
 fr: Que voulez-vous identifier ?
 fr-tt: Que veux-tu identifier ?
+zh: 你想鉴定什么？
+zh-py: nǐ xiǎng jiàn dìng shén me?
+
 
     Which object kind
 en: Which object kind
@@ -1861,6 +1867,8 @@ fr-tt: Tu tombes dans une trappe.
 en: You float gently to the ground.
 fr: Vous retombez doucement sur le sol.
 fr-tt: Tu retombes doucement sur le sol.
+zh: 你轻轻地飘落到地面。
+zh-py: nǐ qīng qīng de piāo luò dào dì miàn.
 
     You have a strange feeling for a moment, then it passes.
 en: You have a strange feeling for a moment, then it passes.
@@ -1907,6 +1915,8 @@ zh-py: nǐ wèi mìng zhòng.
 en: You start to float in the air.
 fr: Vous commencez à flotter dans l'air.
 fr-tt: Tu commences à flotter dans l'air.
+zh: 你开始在空中漂浮。
+zh-py: nǐ kāi shǐ zài kōng zhōng piāo fú.
 
     You're already wearing some.
 en: You're already wearing some.
