@@ -1935,6 +1935,8 @@ de: Ihre Rüstung wird %swährend eines Moments.
 en: Your armor glows %sfor a moment.
 fr: Votre armure devient@(1-) %sl'espace d'un instant.
 fr-tt: Ton armure devient@(1-) %sl'espace d'un instant.
+zh: 你的护甲%s发光了一会儿。
+zh-py: nǐ de hù jiǎ %s fā guāng le yī huìr.
 
     Your armor is covered by a shimmering gold shield.
 en: Your armor is covered by a shimmering gold shield.
