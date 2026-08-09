@@ -591,14 +591,14 @@ de: Durch@(A) %s getötet
 en: Killed by %s
 fr: Tué par %s
 zh: 被%s杀死
-zh-py: bèi%s shā sǐ
+zh-py: bèi %s shā sǐ
 
     killed by %s
 de: durch@(A) %s getötet
 en: killed by %s
 fr: tué par %s
 zh: 被%s杀死
-zh-py: bèi%s shā sǐ
+zh-py: bèi %s shā sǐ
 
     Killed by a dart
 en: Killed by a dart

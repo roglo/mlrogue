@@ -356,22 +356,24 @@ value select_unidentified g (_, obj) =
 
 value killed_by g death = do {
   if death <> Quit then g.rogue.gold := g.rogue.gold * 9 / 10 else ();
-  let buf =
-    match death with
-    [ Monster mon_name ->
-        let art = transl g.lang "a@(n?n)" in
-        let s = if art = "" then "" else art ^ " " in
-        sprintf (ftransl g.lang "Killed by %s") (s ^ transl g.lang mon_name)
-    | Hypothermia -> transl g.lang "Died of hypothermia"
-    | Starvation -> transl g.lang "Died of starvation"
-    | PoisonDart -> transl g.lang "Killed by a dart"
-    | Quit -> transl g.lang "Quit"
-    | Win -> "win?" ]
+  let buf lang =
+    let buf =
+      match death with
+      [ Monster mon_name ->
+          let art = transl lang "a@(n?n)" in
+          let s = if art = "" then "" else art ^ " " in
+          sprintf (ftransl lang "Killed by %s") (s ^ transl g.lang mon_name)
+      | Hypothermia -> transl lang "Died of hypothermia"
+      | Starvation -> transl lang "Died of starvation"
+      | PoisonDart -> transl lang "Killed by a dart"
+      | Quit -> transl lang "Quit"
+      | Win -> "win?" ]
+    in
+    let buf =
+      buf ^ " " ^ sprintf (ftransl lang "with %d gold") g.rogue.gold
+    in
+    etransl buf
   in
-  let buf =
-    buf ^ " " ^ sprintf (ftransl g.lang "with %d gold") g.rogue.gold
-  in
-  let buf = etransl buf in
   match death with
   [ Monster _ | Hypothermia | Starvation | PoisonDart
     when g.show_skull -> do {
@@ -397,11 +399,11 @@ value killed_by g death = do {
       Curses.mvaddstr 18 27 "    \\_           _/";
       Curses.mvaddstr 19 27 "      ~---------~";
       center 21 (if g.nick_name <> "" then g.nick_name else g.login_name);
-      center 22 buf;
+      center 22 (buf g.lang);
       check_message g;
       message g (fun _ → "") False
     }
-  | _ -> message g (fun _ → buf ^ ".") False ];
+  | _ -> message g (fun lang → buf lang ^ ".") False ];
   message g (fun _ → "") False;
   let pack_opt =
     if g.rogue.pack <> [] && has_unidentifed_objects g g.rogue.pack then
