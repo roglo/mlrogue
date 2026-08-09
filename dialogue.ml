@@ -360,35 +360,6 @@ value utf8_string_length s =
     else loop (i + 1) (len + 1)
 ;
 
-value gen_message g msg_fun intrpt record = do {
-  let msg = msg_fun g.lang in
-  if intrpt then g.interrupted := True else ();
-  if not g.msg_cleared then do {
-    Curses.mvaddstr (MIN_ROW - 1) g.msg_col (transl g.lang " -- More --");
-    Curses.refresh ();
-    while rgetchar g <> ' ' do { () };
-    check_message g;
-    if msg <> "" && msg = g.msg_line g.lang then g.same_msg ++
-    else g.same_msg := 0
-  }
-  else g.same_msg := 0;
-  if record then g.msg_line := msg_fun else ();
-  Curses.mvaddstr (MIN_ROW - 1) 0 msg;
-  if g.same_msg > 0 then do {
-    let buf = sprintf " (%d)" (g.same_msg + 1) in
-    Curses.addstr buf;
-    g.msg_col := String.length buf
-  }
-  else g.msg_col := 0;
-  Curses.addch ' ';
-  Curses.refresh ();
-  g.msg_cleared := False;
-  g.msg_col := g.msg_col + utf8_string_length msg;
-};
-
-value message g msg_fun intrpt = gen_message g msg_fun intrpt True;
-value message_norec g msg_fun intrpt = gen_message g msg_fun intrpt False;
-
 value rec scanbrd brd i n =
   let pp1 = i in
   let pp2 = try String.index_from brd i ':' with [ Not_found -> -1 ] in
@@ -471,6 +442,52 @@ value switch_lang g = do {
     else "en";
   print_stats g STAT_ALL;
 };
+
+value rec gen_message g msg_fun intrpt record = do {
+  let msg = msg_fun g.lang in
+  if intrpt then g.interrupted := True else ();
+  let change_lang =
+    if not g.msg_cleared then do {
+      Curses.mvaddstr (MIN_ROW - 1) g.msg_col (transl g.lang " -- More --");
+      Curses.refresh ();
+      let change_lang =
+        loop () where rec loop () =
+          let ch = rgetchar g in
+          if ch = ' ' then False
+          else if ch = ROGUE_KEY_REMESSAGE then True
+          else loop ()
+      in
+      check_message g;
+      if msg <> "" && msg = g.msg_line g.lang then g.same_msg ++
+      else g.same_msg := 0;
+      change_lang
+    }
+    else do {
+      g.same_msg := 0;
+      False
+    }
+  in
+  if record then g.msg_line := msg_fun else ();
+  Curses.mvaddstr (MIN_ROW - 1) 0 msg;
+  if g.same_msg > 0 then do {
+    let buf = sprintf " (%d)" (g.same_msg + 1) in
+    Curses.addstr buf;
+    g.msg_col := String.length buf
+  }
+  else g.msg_col := 0;
+  Curses.addch ' ';
+  Curses.refresh ();
+  g.msg_cleared := False;
+  g.msg_col := g.msg_col + utf8_string_length msg;
+  if change_lang then do {
+    switch_lang g;
+    gen_message g msg_fun intrpt record
+  }
+  else ();
+};
+
+value message g msg_fun intrpt = gen_message g msg_fun intrpt True;
+value message_norec g msg_fun intrpt = gen_message g msg_fun intrpt False;
 
 value rec inv_sel g pack mask prompt term =
   if pack = [] then do {

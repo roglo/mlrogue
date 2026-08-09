@@ -1215,7 +1215,7 @@ fr: @(s?:avec un )saphir@(3-)
 en: scale mail
 fr: une armure d'écailles
 zh: 鳞甲
-zh: lín jiǎ
+zh-py: lín jiǎ
 
     scroll@(p?s:)
 de: Pergament@(p?e:)@(m)
