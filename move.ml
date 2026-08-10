@@ -734,9 +734,10 @@ value next_to_something g drow dcol =
       else False
 ;
 
-value get_room_number_not_maze g =
+value get_room_number_not_maze gg =
+  let g = gg.game_v in
   if g.rogue.blind = 0 then
-    match get_room_number g g.rogue.row g.rogue.col with
+    match get_room_number gg g.rogue.row g.rogue.col with
     [ Some i ->
         let is_room = g.rooms.(i).is_room land R_ROOM <> 0 in
         let is_maze = g.rooms.(i).is_room land R_MAZE <> 0 in
@@ -745,18 +746,19 @@ value get_room_number_not_maze g =
   else None
 ;
 
-value multiple_move_rogue g dirch =
+value multiple_move_rogue gg dirch =
+  let g = gg.game_v in
   match dirch with
   [ ROGUE_KEY_WEST_CTRL | ROGUE_KEY_SOUTH_CTRL | ROGUE_KEY_NORTH_CTRL |
     ROGUE_KEY_EAST_CTRL | ROGUE_KEY_NORTHWEST_CTRL |
     ROGUE_KEY_NORTHEAST_CTRL | ROGUE_KEY_SOUTHEAST_CTRL |
     ROGUE_KEY_SOUTHWEST_CTRL ->
       let monsters_in_room =
-        match get_room_number_not_maze g with
+        match get_room_number_not_maze gg with
         [ Some rn ->
             List.filter
               (fun monster ->
-                 match get_room_number g monster.mn_row monster.mn_col with
+                 match get_room_number gg monster.mn_row monster.mn_col with
                  [ Some rn2 -> rn = rn2
                  | None -> False ])
               g.level_monsters
@@ -766,21 +768,21 @@ value multiple_move_rogue g dirch =
       loop tmpdirch where rec loop tmpdirch =
         let row = g.rogue.row in
         let col = g.rogue.col in
-        let m = one_move g tmpdirch True in
+        let m = one_move gg tmpdirch True in
         match m with
         [ MoveFailed ->
             if g.dungeon.(row).(col) land TUNNEL <> 0 then
               match tmpdirch with
               [ ROGUE_KEY_WEST | ROGUE_KEY_EAST ->
-                  let dir1 = if is_passable g (row - 1) col then 1 else 0 in
-                  let dir2 = if is_passable g (row + 1) col then 1 else 0 in
+                  let dir1 = if is_passable gg (row - 1) col then 1 else 0 in
+                  let dir2 = if is_passable gg (row + 1) col then 1 else 0 in
                   if dir1 + dir2 = 1 then
                     loop
                       (if dir1 = 1 then ROGUE_KEY_NORTH else ROGUE_KEY_SOUTH)
                   else ()
               | ROGUE_KEY_NORTH | ROGUE_KEY_SOUTH ->
-                  let dir1 = if is_passable g row (col - 1) then 1 else 0 in
-                  let dir2 = if is_passable g row (col + 1) then 1 else 0 in
+                  let dir1 = if is_passable gg row (col - 1) then 1 else 0 in
+                  let dir2 = if is_passable gg row (col + 1) then 1 else 0 in
                   if dir1 + dir2 = 1 then
                     loop (if dir1 = 1 then ROGUE_KEY_WEST else ROGUE_KEY_EAST)
                   else ()
@@ -789,13 +791,13 @@ value multiple_move_rogue g dirch =
         | StoppedOnSomething -> ()
         | Moved ->
             if not g.interrupted && not (next_to_something g row col) then
-              match get_room_number_not_maze g with
+              match get_room_number_not_maze gg with
               [ Some rn ->
                   let new_monster_appeared =
                     List.exists
                       (fun monster ->
                          match
-                           get_room_number g monster.mn_row monster.mn_col
+                           get_room_number gg monster.mn_row monster.mn_col
                          with
                          [ Some rn2 ->
                              rn = rn2 &&
@@ -812,7 +814,7 @@ value multiple_move_rogue g dirch =
     ROGUE_KEY_SOUTHWEST_SHIFT ->
       let c = Char.chr (Char.code dirch - Char.code 'A' + Char.code 'a') in
       loop g.rogue.hp_current where rec loop hp =
-        if one_move g c True = Moved then
+        if one_move gg c True = Moved then
           if g.rogue.hp_current < hp then () else loop g.rogue.hp_current
         else ()
   | _ -> invalid_arg "multiple_move_rogue" ]
@@ -837,14 +839,15 @@ value move_onto g =
     }
 ;
 
-value id_trap g = do {
-  message g (fun lang → transl lang "Direction?") True;
+value id_trap gg = do {
+  let g = gg.game_v in
+  message gg (fun lang → transl lang "Direction?") True;
   let dir =
     loop () where rec loop () =
-      let dir = rgetchar g in
+      let dir = rgetchar gg in
       if not (is_direction dir) then do { sound_bell (); loop () } else dir
   in
-  check_message g;
+  check_message gg;
   if dir = ROGUE_KEY_CANCEL then ()
   else
     let row = g.rogue.row in
@@ -853,68 +856,72 @@ value id_trap g = do {
     if g.dungeon.(row).(col) land TRAP <> 0 &&
        g.dungeon.(row).(col) land HIDDEN = 0
     then
-      match trap_at g row col with
-      [ Some t -> message g (fun lang → transl lang (Level.trap_string t)) False
+      match trap_at gg row col with
+      [ Some t ->
+          message gg (fun lang → transl lang (Level.trap_string t)) False
       | None -> () ]
-    else message g (fun lang → transl lang "No trap there.") False
+    else message gg (fun lang → transl lang "No trap there.") False
 };
 
-value kick_into_pack g =
+value kick_into_pack gg =
+  let g = gg.game_v in
   if g.dungeon.(g.rogue.row).(g.rogue.col) land OBJECT = 0 then
-    message g (fun lang → transl lang "Nothing here.") False
+    message gg (fun lang → transl lang "Nothing here.") False
   else do {
-    let (obj, status) = pick_up g g.rogue.row g.rogue.col in
+    let (obj, status) = pick_up gg g.rogue.row g.rogue.col in
     match obj with
     [ Some (obj, Some c) ->
-        message g
+        message gg
           (fun lang →
-             let desc = get_desc g lang obj True in
+             let desc = get_desc gg lang obj True in
              sprintf "%s (%c)" (etransl desc) c) True
     | Some (obj, None) ->
-        message g (fun lang → get_desc g lang obj True) True
+        message gg (fun lang → get_desc gg lang obj True) True
     | None -> () ];
     match (obj, status) with
-    [ (Some _, _) | (_, False) -> reg_move g
+    [ (Some _, _) | (_, False) -> reg_move gg
     | _ -> () ]
   }
 ;
 
-value fight g to_the_death = do {
+value fight gg to_the_death = do {
+  let g = gg.game_v in
   let rogue = g.rogue in
   let ch =
     loop True where rec loop first_miss =
-      let ch = rgetchar g in
+      let ch = rgetchar gg in
       if not (is_direction ch) then do {
         sound_bell ();
-        if first_miss then message g (fun lang → transl lang "Direction?") False
+        if first_miss then
+          message gg (fun lang → transl lang "Direction?") False
         else ();
         loop False
       }
       else ch
   in
-  check_message g;
+  check_message gg;
   if ch = ROGUE_KEY_CANCEL then ()
   else
     let (row, col) = get_dir_rc ch rogue.row rogue.col False in
     let c = Curses.mvinch row col in
-    if c < 'A' || c > 'Z' || not (can_move g rogue.row rogue.col row col) then
-      message g (fun lang → transl lang "I see no monster there.") False
+    if c < 'A' || c > 'Z' || not (can_move gg rogue.row rogue.col row col) then
+      message gg (fun lang → transl lang "I see no monster there.") False
     else do {
-      let monster = monster_at g row col in
+      let monster = monster_at gg row col in
       rogue.fight_monster := Some monster;
       let possible_damage =
         if monster.mn_flags land STATIONARY = 0 then
-          get_damage g monster.mn_damage False * 2
+          get_damage gg monster.mn_damage False * 2
         else monster.mn_stationary_damage - 1
       in
       loop () where rec loop () = do {
-        one_move_rogue g ch False;
+        one_move_rogue gg ch False;
         if not to_the_death && rogue.hp_current <= possible_damage ||
            g.interrupted || g.dungeon.(row).(col) land MONSTER = 0 ||
            rogue.confused > 0
         then
           rogue.fight_monster := None
-        else if monster_at g row col <> monster then
+        else if monster_at gg row col <> monster then
           rogue.fight_monster := None
         else loop ()
       }
