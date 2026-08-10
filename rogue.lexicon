@@ -10,18 +10,22 @@ de:  -- Noch --
 en:  -- More --
 fr:  -- Suite --
 zh:  -- 继续 --
+zh-py:  -- jì xù --
 
      -- Press space or backspace --
 en:  -- Press space or backspace --
 fr:  -- Tapez espace ou efface --
 fr-tt:  -- Tape espace ou efface --
 zh:  -- 按空格或退格 --
+zh-py:  -- àn kòng gé huò tuì gé --
 
      -- Press space or letter --
 de:  -- Tippen Sie Raum oder Letter : .
 en:  -- Press space or letter --
 fr:  -- Tapez espace ou lettre : .
 fr-tt:  -- Tape espace ou lettre : .
+zh: -- 按空格或字母: .
+zh-py: -- àn kōng gé huò zì mǔ: .
 
      -- Press space to continue --
 de:  -- Tippen Sie Raum um zu weitermachen --
@@ -29,13 +33,14 @@ en:  -- Press space to continue --
 fr:  -- Tapez espace pour continuer --
 fr-tt:  -- Tape espace pour continuer --
 zh:  -- 按空格继续 --
+zh-py: -- àn kòng gé jì xù --
 
     %d pieces of gold.
 de: %d Goldstücke.
 en: %d pieces of gold.
 fr: %d pièces d'or.
 zh: %d枚金币。
-zh-py: %d枚金币 (méi jīn bì)。
+zh-py: %d méi jīn bì.
 
     %d rations of
 de: %d rationen@(1-)@(&)
@@ -56,6 +61,8 @@ fr: <%c>, c'est %s
 en: A cloak of darkness falls around you.
 fr: Une cape de ténèbres tombe sur vous.
 fr-tt: Une cape de ténèbres tombe sur toi.
+zh: 一层黑暗笼罩着你。
+zh-py: yì céng hēi’àn lǒng zhào zhe nǐ.
 
     a door
 en: a door
@@ -153,14 +160,14 @@ de: Pfeil@(m)
 en: arrow
 fr: flèche
 zh: 箭
-zh-py: 箭 (jiàn)
+zh-py: jiàn
 
     arrows
 de: Pfeile@(m)
 en: arrows
 fr: flèches@(p)
 zh: 箭
-zh-py: 箭 (jiàn)
+zh-py: jiàn
 
     balsa
 en: balsa
@@ -170,6 +177,7 @@ fr: @(s?:de )balsa@(2-)
 en: banded mail
 fr: une armure à bandes
 zh: 带甲
+zh-py: dài jiǎ
 
     bat
 de: Fledermaus@(f)
@@ -177,7 +185,7 @@ en: bat
 fr: wombat@(m)
 fr-cr: wonbat@(m)
 zh: 蝙蝠
-zh-py: 蝙蝠 (biān fú)
+zh-py: biān fú
 
     Bear trap.
 en: Bear trap.
@@ -187,12 +195,14 @@ fr: Piège à loup.
 en: beige
 fr: beige@(p?s:)@(1-)
 zh: 米色
+zh-py: mǐ-sè
 
     being worn
 en: being worn
 fr: sur vous
 fr-tt: sur toi
 zh: 穿着
+zh-py: chuān zhuó
 
     birch
 en: birch
@@ -219,6 +229,7 @@ de: blau@(p?e:m?A?en:er:f?e:n?es)
 en: blue
 fr: bleu@(m?:e)@(p?s:)@(1-)
 zh: 蓝色
+zh-py: lán sè
 
     bronze
 en: bronze
@@ -229,33 +240,35 @@ de: braun@(p?e:m?A?en:er:f?e:n?es)
 en: brown
 fr: brune@(p?s:)@(1-)
 zh: 棕色
+zh-py: zōng sè
 
     burgundy
 de: weinrot@(p?e:m?A?en:er:f?e:n?es)
 en: burgundy
 fr: bordeaux@(1-)
 zh: 酒红
+zh-py: jiǔ hóng
 
     Call it:
 de: Nennen es:
 en: Call it:
 fr: L'appeler :
 zh: 给它起名：
-zh-py: 给它起名 (gěi tā qǐ míng)：
+zh-py: gěi tā qǐ míng：
 
     Call what?
 de: Nennen was?
 en: Call what?
 fr: Appeler quoi ?
 zh: 给什么起名？
-zh-py: 给什么起名 (gěi shénme qǐ míng)？
+zh-py: gěi shénme qǐ míng?
 
     called
 de: gennant
 en: called
 fr: appelé@(m?:e)@(p?s)
 zh: 叫做
-zh-py: 叫做 (jiào zuò)
+zh-py: jiào zuò
 
     cannot open file
 en: cannot open file
@@ -277,13 +290,15 @@ fr: @(s?:de )cèdre@(2-)
 de: Zentaur@(m)
 en: centaur
 fr: kroston@(m)
+zh: 半人马
+zh-py: bàn rén mǎ
 
     chain mail
 en: chain mail
 fr: une cotte de mailles
 fr-cr: yon rad may
 zh: 锁子甲
-zh-py: 锁子甲(suǒ zǐ jiǎ)
+zh-py: suǒ zǐ jiǎ
 
     cherry
 en: cherry
@@ -292,6 +307,9 @@ fr: @(s?:de )cerisier@(2-)
     Choose:
 en: Choose:
 fr: Choisissez :
+fr-tt: Choisis :
+zh: 选择：
+zh-py: xuǎn zé:
 
     chrome
 de: Chrom@(k)
@@ -303,6 +321,7 @@ de: durchsichtig@(p?e:m?A?en:er:f?e:n?es)
 en: clear
 fr: transparent@(m?:e)@(p?s:)@(1-)
 zh: 无色
+zh-py: wú sè
 
     cobalt
 en: cobalt
@@ -311,6 +330,8 @@ fr: @(s?:de )cobalt@(2-)
     confused
 en: confused
 fr: déconcerté
+zh: 困惑
+zh-py: kùn huò
 
     copper
 en: copper
@@ -320,11 +341,13 @@ fr: @(s?:de )cuivre@(2-)
 en: dagger
 fr: poignard@(m)
 zh: 匕首
+zh-py: bǐ shǒu
 
     daggers
 en: daggers
 fr: poignards@(mp)
 zh: 匕首
+zh-py: bǐ shǒu
 
     dart
 de: Stachel@(m)
@@ -342,6 +365,7 @@ en: Defeated the %s.
 fr: Vous avez vaincu @(n?:le?':m?e :a )%s.
 fr-tt: Tu as vaincu👍@(n?:le?':m?e :a )%s.
 zh: 你击败了%s
+zh-py: nǐ jí bài le %s
 
     diamond
 en: diamond
@@ -351,25 +375,31 @@ fr: @(s?:avec un )diamant@(3-)
 en: Died of hypothermia
 fr: Mort d'hypothermie
 zh: 冻死
+zh-py: dòng sǐ
 
     died of hypothermia
 en: died of hypothermia
 fr: mort d'hypothermie
 zh: 冻死
+zh-py: dòng sǐ
 
     Died of starvation
 en: Died of starvation
 fr: Mort de faim
+zh: 饿死
+zh-py: è sǐ
 
     died of starvation
 en: died of starvation
 fr: mort de faim
+zh: 饿死
+zh-py: è sǐ
 
     Direction?
 en: Direction?
 fr: Direction ?
 zh: 方向？
-zh-py: 方向 (fāng xiàng)？
+zh-py: fāng xiàng?
 
     dragon
 de: Drache@(m)
@@ -405,6 +435,7 @@ de: Emu@(n)
 en: emu@(n)
 fr: émeu@(me)
 zh: 鸸鹋
+zh-py: ér miáo
 
     entitled:
 de: betitelt:
@@ -424,20 +455,20 @@ fr: épuisé
 en: File name?
 fr: Nom du fichier ?
 zh: 文件名？
-zh-py: 文件名 (wén jiàn míng)？
+zh-py: wén jiàn míng？
 
     flame
 en: flame
 fr: flamme
 zh: 火焰
-zh-py: 火焰 (huǒ yàn)
+zh-py: huǒ yàn
 
     food
 de: Nahrung@(f)
 en: food
 fr: nourriture
 zh: 食物
-zh-py: 食物 (shíwù)
+zh-py: shí wù
 
     Game not saved.
 en: Game not saved.
@@ -456,6 +487,7 @@ de: grün@(p?e:m?A?en:er:f?e:n?es)
 en: green
 fr: vert@(m?:e)@(p?s:)@(1-)
 zh: 绿色
+zh-py: lǜ sè
 
     grey
 de: grau@(p?e:m?A?en:er:f?e:n?es)
@@ -466,6 +498,7 @@ fr: gris@(m?:e)@(p?s:)@(1-)
 en: griffin
 fr: ptérodactyle@(m)
 zh: 狮鹫
+zh: shī jiù
 
     Help file not on line.
 en: Help file not on line.
@@ -476,7 +509,7 @@ de: trifft.
 en: hit.
 fr: touche.
 zh: 中了你。
-zh-py: 中了你 (zhōng le nǐ)。
+zh-py: zhōng le nǐ.
 
     Hmm ... this potion tastes like %sjuice.
 en: Hmm ... this potion tastes like %sjuice.
@@ -487,6 +520,7 @@ de: streunend@(A?en:er) Kobold@(m)
 en: hobgoblin
 fr: lutin vagabond@(m)
 zh: 大地精
+zh-py: dai chi sei
 
     hungry
 de: hunger
@@ -514,18 +548,21 @@ de: Eisungeheuer
 en: ice monster@(n)
 fr: monstre de glace@(m)
 zh: 冰怪
+zh-py: bīng guài
 
     in hand
 de: in Hand
 en: in hand
 fr: en main
 zh: (手持)
-zh-py: (手持) (shǒuchí)
+zh-py: shǒu chí
 
     In use
 de: Still in Hand
 en: In use
 fr: Déjà en main
+zh: 已在手中
+zh-py: yǐ zài shǒu zhōng
 
     Inventory what?
 en: Inventory what?
@@ -549,18 +586,21 @@ de: Turmfalke@(m)@(A?n)
 en: kestrel
 fr: xénique@(m)
 zh: 红隼
+zh-py: hóng sǔn
 
     Killed by %s
 de: Durch@(A) %s getötet
 en: Killed by %s
 fr: Tué par %s
 zh: 被%s杀死
+zh-py: bèi %s shā sǐ
 
     killed by %s
 de: durch@(A) %s getötet
 en: killed by %s
 fr: tué par %s
 zh: 被%s杀死
+zh-py: bèi %s shā sǐ
 
     Killed by a dart
 en: Killed by a dart
@@ -588,6 +628,7 @@ fr: @(s?:avec un )lapi-lazuli@(3-)
 en: leather armor
 fr: une armure de cuir
 zh: 皮甲
+zh-py: pí jiǎ
 
     Left or right hand?
 en: Left or right hand?
@@ -596,12 +637,15 @@ fr: Main droite ou gauche ?
     leprechaun
 en: leprechaun
 fr: hamadryas@(me)
+zh: 小妖精
+zh-py: xiǎo yāo jīng
 
     Level: 99 Gold: 999999 Hp: 999(999) Str: 99(99) Arm: 99 Exp: 21/10000000
 de: Niveau: 99 Gld: 999999 LP: 999(999) Str: 99(99) Arm: 99 Exp: 21/10000000
 en: Level: 99 Gold: 999999 Hp: 999(999) Str: 99(99) Arm: 99 Exp: 21/10000000
 fr: Niveau: 99 Or: 999999 Pv: 999(999) Forc: 99(99) Arm: 99 Exp: 21/10000000
 zh: 等级: 99 金币: 999999 生命: 999(999) 力量: 99(99) 防御: 99 经验: 21/10000000
+zh-py: Level: 99 Gold: 999999 Hp: 999(999) Str: 99(99) Arm: 99 Exp: 21/10000000
 
     long sword
 de: langes Schwert@(n)
@@ -613,7 +657,7 @@ de: Keule@(f)
 en: mace
 fr: massue
 zh: 钉头锤
-zh-py: 钉头锤 (dīngtóu chuí)
+zh-py: dīng tóu chuí
 
     magnesium
 en: magnesium
@@ -633,13 +677,14 @@ de: Qualle@(f)
 en: medusa
 fr: méduse
 zh: 美杜莎
+zh: měi dù shā
 
     misses.
 de: blitzt ab.
 en: misses.
 fr: rate.
 zh: 未命中。
-zh-py: 未命中 (wèi mìng zhòng)。
+zh-py: wèi mìng zhòng.
 
     moved onto %s
 de: Auf@(A) %s gegangen
@@ -647,7 +692,7 @@ en: Moved onto %s
 fr: Vous passez sur %s
 fr-tt: Tu passes sur %s
 zh: 你走到了%s上
-zh-py: 你走到了 (nǐ zǒu dào le) %s 上 (shàng)
+zh-py: nǐ zǒu dào le %s shàng
 
     Must be played on a %d x %d or better screen
 en: Must be played on a %d x %d or better screen
@@ -701,6 +746,8 @@ fr-tt: Tu ne brandis aucune arme.
 en: Not wizard anymore.
 fr: Vous n'êtes plus sorcier.
 fr-tt: Tu n'es plus sorcier.
+zh: 你不再是巫师了。
+zh-py: nǐ bù zài shì wū shī le.
 
     Nothing appropriate.
 de: Nichts angemessen.
@@ -720,6 +767,8 @@ zh: 这里什么也没有。
 de: Nymphe@(f)
 en: nymph
 fr: nymphe
+zh: 仙女
+zh-py: xiān nǚ
 
     oak
 en: oak
@@ -736,10 +785,14 @@ fr: d'ornement
     of aggravate monster
 en: of aggravate monster
 fr: d'aggravation des monstres
+zh: @(2-)激怒怪物
+zh-py: @(3--)jī nù guài wù
 
     of blindness
 en: of blindness
 fr: de cécité
+zh: @(1-)致盲
+zh-py: @(3--)zhì máng
 
     of cancellation
 en: of cancellation
@@ -752,18 +805,26 @@ fr: qui déconcerte@(p?nt) les monstres
     of confusion
 en: of confusion
 fr: de confusion
+zh: @(1-)混乱药水
+zh-py: @(3--)hùn luàn yào shuǐ
 
     of create monster
 en: of create monster
 fr: de création de monstre
+zh: @(2-)召唤怪物
+zh-py: @(3--)zhào huàn guài wù
 
     of detect monster
 en: of detect monster
 fr: de détection des monstres
+zh: @(1-)侦测怪物
+zh-py: @(3--)zhēn cè guài wù
 
     of detect things
 en: of detect things
 fr: de détection des objets
+zh: @(1-)侦测物品
+zh-py: @(3--)zhēn cè wù pǐn
 
     of dexterity
 en: of dexterity
@@ -776,21 +837,26 @@ fr: qui ne fait rien
     of enchant armor
 en: of enchant armor
 fr: d'enchantement d'armure
+zh: @(2-)附魔护甲
+zh-py: @(3--)fù mó hù jiǎ
 
     of enchant weapon
 en: of enchant weapon
 fr: d'enchantement d'arme
 zh: @(2-)附魔武器
+zh-py: @(3--)fù mó wǔ qì
 
     of extra healing
 en: of extra healing
 fr: de guérison supplémentaire
 zh: @(2-)强效治疗
+zh-py: @(3--)qiáng xiào zhì liáo
 
     of hallucination
 en: of hallucination
 fr: hallucinogène
 zh: @(2-)幻觉
+zh-py: @(3--)huàn jué
 
     of haste monster
 en: of haste monster
@@ -799,24 +865,32 @@ fr: d'accélération de monstre
     of haste self
 en: of haste self
 fr: d'accélération
+zh: @(1-)加速药水
+zh-py: @(3--)jiā sù
 
     of healing
 en: of healing
 fr: de guérison
 zh: @(2-)治疗
+zh-py: @(3--)zhì liáo
 
     of hold monster
 en: of hold monster
 fr: d'immobilisation de monstre
+zh: @(2-)定身怪物
+zh-py: @(3--)dìng shēn guài wù
 
     of identify
 en: of identify
 fr: d'identification
+zh: @(2-)鉴定
+zh-py: @(3--)jiàn dìng
 
     of increase strength
 en: of increase strength
 fr: d'augmentation de force
 zh: @(2-)增加力量
+zh-py: @(3--)zēng jiā lì liàng
 
     of invisibility
 en: of invisibility
@@ -825,10 +899,14 @@ fr: d'invisibilité
     of levitation
 en: of levitation
 fr: de lévitation
+zh: @(1-)漂浮
+zh-py: @(3--)piāo fú
 
     of magic mapping
 en: of magic mapping
 fr: de plan magique
+zh: @(2-)魔法地图
+zh-py: @(3--)mó fǎ dì tú
 
     of magic missile
 en: of magic missile
@@ -842,6 +920,7 @@ fr: de protection d'armure
 en: of poison
 fr: de poison
 zh: @(1-)毒
+zh-py: @(3--)dú
 
     of polymorph
 en: of polymorph
@@ -850,10 +929,14 @@ fr: de transformation
     of protect armor
 en: of protect armor
 fr: de protection d'armure
+zh: @(2-)护甲保护
+zh-py: @(3--)hù jiǎ bǎo hù
 
     of raise level
 en: of raise level
 fr: de passage au niveau supérieur
+zh: @(1-)升级
+zh-py: @(3--)shēng jí
 
     of regeneration
 en: of regeneration
@@ -862,16 +945,20 @@ fr: de régénération
     of remove curse
 en: of remove curse
 fr: de désenvoûtement
-zh: 解除诅咒卷轴
-zh-py: 解除诅咒卷轴 (jiě chú zǔ zhòu juàn zhóu)
+zh: @(2-)解除诅咒
+zh-py: @(3--)jiě chú zǔ zhòu
 
     of restore strength
 en: of restore strength
 fr: de restauration de la force
+zh: @(1-)恢复力量
+zh-py: @(3--)huī fù lì liàng
 
     of scare monster
 en: of scare monster
 fr: qui effraie@(p?nt) les monstres
+zh: @(2-)召唤怪物
+zh-py: @(3--)zhào huàn guài wù
 
     of searching
 en: of searching
@@ -880,11 +967,14 @@ fr: de recherche
     of see invisible
 en: of see invisible
 fr: de vision de l'invisible
+zh: @(1-)显形
+zh-py: @(3--)xiǎn xíng
 
     of sleep
 en: of sleep
 fr: de sommeil
 zh: @(2-)睡眠
+zh-py: @(3--)shuì mián
 
     of slow digestion
 en: of slow digestion
@@ -909,13 +999,14 @@ fr: de téléportation de monstre
     of teleportation
 en: of teleportation
 fr: de téléportation
-zh: @(2--)传送
-zh-py: @(2--)传送 (chuán sòng)
+zh: @(2-)传送
+zh-py: @(3--) chuán sòng
 
     Oh wow, everything seems so cosmic.
 en: Oh wow, everything seems so cosmic.
 fr: Oh, la vache, tout parait bizarre.
 zh: 哇，一切看起来都好奇妙。
+zh-py: wa, yī qiè kàn qǐ lái dōu hào qí miào.
 
     on left hand
 en: on left hand
@@ -926,6 +1017,7 @@ de: im Niveau %d
 en: on level %d
 fr: au niveau %d
 zh: 在第%d层
+zh-py: zài dì %d céng
 
     on right hand
 en: on right hand
@@ -938,6 +1030,8 @@ fr: @(s?:avec une )opale@(3-)
     orc@(n)
 en: orc@(n)
 fr: orque@(em)
+zh: 兽人
+zh-py: shòu rén
 
     Pack full.
 en: Pack full.
@@ -960,6 +1054,8 @@ fr: @(s?:avec une )perle@(3-)
 de: Gespenst@(n)
 en: phantom
 fr: fantôme@(m)
+zh: 幽灵
+zh-py: yōu líng
 
     pine
 en: pine
@@ -969,7 +1065,7 @@ fr: @(s?:de )pin@(2-)
 de: rosarot@(p?e:m?A?en:er:f?e:n?es)
 en: pink
 fr: rose@(p?s:)@(1-)
-zh: 粉红色药水
+zh: 粉红色
 
     plaid
 de: scottisch@(p?e:m?A?en:er:f?e:n?es)
@@ -981,6 +1077,7 @@ zh: 格子
 en: plate mail
 fr: une armure de plates
 zh: 板甲
+zh-py: bǎn jiǎ
 
     platinum
 en: platinum
@@ -995,6 +1092,7 @@ de: Tr@(p?ä:a)nk@(p?e:)@(m)
 en: potion@(p?s:)
 fr: potion@(p?s:)
 zh: 药水@(&)
+zh-py: yào shuǐ
 
     purple
 de: purpurrot@(p?e:m?A?en:er:f?e:n?es)
@@ -1010,6 +1108,7 @@ de: Trinken was?
 en: Quaff what?
 fr: Boire quoi ?
 zh: 喝什么？
+zh-py: hē shén me?
 
     quagga
 en: quagga
@@ -1019,17 +1118,20 @@ fr: quartanier@(m)
 en: quartz
 fr: @(s?:avec un )quartz@(3-)
 zh: 石英@(&)
+zh-py: shí yīng
 
     Quit
 en: Quit
 fr: Parti
 zh: 退出@(&)
+zh-py: tuì chū
 
     quit
 de: verlassen@(1--)
 en: quit
 fr: parti
 zh: 退出@(&)
+zh-py: tuì chū
 
     r
 en: r
@@ -1044,18 +1146,21 @@ de: Rang   Pktstnd Name
 en: Rank   Score   Name
 fr: Rang   Score   Nom
 zh: 排名    分数   名字
+zh-py: páimíng  fēnshù  míngzì
 
     rattlesnake
 de: Klapperschange@(f)
 en: rattlesnake
 fr: renard@(m)
 zh: 响尾蛇
-zh-py: 响尾蛇 (xiǎng wěi shé)
+zh-py: xiǎng wěi shé
 
     Read what?
 de: Lesen was?
 en: Read what?
 fr: Lire quoi ?
+zh: 读什么？
+zh-py: dú shén me?
 
     Really pick up scroll? (y/n)
 en: Really pick up scroll? (y/n)
@@ -1065,6 +1170,7 @@ fr: Vraiment prendre le parchemin? (o/n)
 en: Really quit? (y/n)
 fr: Vraiment partir ? (o/n)
 zh: 确定退出吗？(y/n)
+zh-py: què dìng tuì chū ma? (y/n)
 
     red
 de: rot@(p?e:m?A?en:er:f?e:n?es)
@@ -1084,11 +1190,13 @@ de: @(k?r:R)ing@(m)
 en: ring
 fr: bague
 zh: 戒指
+zh-py: jiè zhǐ
 
     ring mail
 en: ring mail
 fr: une armure à anneaux
 zh: 环甲
+zh-py: huán jiǎ
 
     rings
 en: rings
@@ -1110,19 +1218,21 @@ fr: @(s?:avec un )saphir@(3-)
 en: scale mail
 fr: une armure d'écailles
 zh: 鳞甲
+zh-py: lín jiǎ
 
     scroll@(p?s:)
 de: Pergament@(p?e:)@(m)
 en: scroll@(p?s:)
 fr: parchemin@(p?s:)@(m)
 zh: 卷轴
+zh-py: juàn zhóu
 
     scroll@(p?s:) entitled: %s
 de: betitelt Pergament@(m)@(p?e:): %s
 en: scroll@(p?s:) entitled: %s
 fr: parchemin@(m)@(p?s:) intitulé@(p?s:) : %s
 zh: 题为%s的卷轴
-zh-py: 题为 (tí wéi) %s 的卷轴 (de juàn zhóu)
+zh-py: tí wéi %s de juàn zhóu
 
     She stole
 de: Sie hat gestohlen@(A)@(1--)
@@ -1134,19 +1244,19 @@ de: kurz@(A?en:er) Bogen@(m)
 en: short bow
 fr: arc court@(me)
 zh: 短弓
-zh-py: 短弓 (duǎn gōng)
+zh-py: duǎn gōng
 
     shuriken
 en: shuriken
 fr: churikène
 zh: 手里剑
-zh-py: 手里剑 (shǒu lǐ jiàn)
+zh-py: shǒu lǐ jiàn
 
     shurikens
 en: shurikens
 fr: churikènes@(p)
 zh: 手里剑
-zh-py: 手里剑 (shǒu lǐ jiàn)
+zh-py: shǒu lǐ jiàn
 
     silicon
 en: silicon
@@ -1164,12 +1274,14 @@ fr: Piège à gaz soporifique.
 en: slime-mold
 fr: champignon@(m)
 zh: 黏菌
+zh-py: nián jūn
 
     snake
 de: Schlange@(f)
 en: snake
 fr: serpent@(m)
 zh: 蛇
+zh-py: shé
 
     Some
 de:
@@ -1185,7 +1297,7 @@ fr: d@(m?u:e la)
 en: some food
 fr: de la nourriture
 zh: 食物
-zh-py: 食物 (shíwù)
+zh-py: shí wù
 
     some gold
 en: some gold
@@ -1199,11 +1311,14 @@ fr: @(M?Q:q)uelque chose@(n)
     Sorry
 en: Sorry
 fr: Désolé
+zh: 抱歉
+zh-py: bào qiàn
 
     splint mail
 en: splint mail
 fr: une armure à lamelles
 zh: 板条甲
+zh-py: bǎn tiáo jiǎ
 
     staff
 de: @(k?s:S)tock@(m)
@@ -1240,7 +1355,7 @@ fr: @(s?:de )tek@(2-)
 en: Teleport trap.
 fr: Piège à téléportation.
 zh: 传送陷阱。
-zh-py: 传送陷阱 (huán sòng xiàn jǐng)。
+zh-py: huán sòng xiàn jǐng.
 
     That ring is already being worn.
 en: That ring is already being worn.
@@ -1263,13 +1378,14 @@ en: The %s hit.
 fr: @(n?:Le?':m?e :a )%s touche.@(M)
 fr-cr: %s la touche.
 zh: %s击中了你。
-zh-py: %s 击中了 (jī zhòng le) 你 (nǐ)。
+zh-py: %s jī zhòng le nǐ.
 
     The %s misses.
 de: D@(m?er:f?ie:as) %s blitzt ab.
 en: The %s misses.
 fr: @(n?:Le?':m?e :a )%s rate.@(M)
 zh: %s未命中。
+zh-py: %s mi mei chū
 
     The %s vanishes as it hits the ground.
 en: The %s vanishes as it hits the ground.
@@ -1281,7 +1397,7 @@ en: The %s's bite has weakened you.
 fr: La morsure d@(e?e l':m?u :e la )%s vous affaiblit.
 fr-tt: La morsure d@(e?e l':m?u :e la )%s t'affaiblit.
 zh: %s的咬击让你变弱了。
-zh-py: %s的咬击让你变弱了 (de yǎo jī ràng nǐ biàn ruò le)。
+zh-py: %s de yǎo jī ràng nǐ biàn ruò le.
 
     The Amulet of Yendor
 en: The Amulet of Yendor
@@ -1334,6 +1450,8 @@ fr: Il y a déjà quelque chose ici.
     This is a scroll of identify.
 en: This is a scroll of identify.
 fr: C'est un parchemin d'identification.
+zh: 这是一张鉴定卷轴。
+zh-py: zhè shì yī zhāng jiàn dìng juàn zhóu.
 
     This scroll seems to have a map on it.
 en: This scroll seems to have a map on it.
@@ -1343,12 +1461,15 @@ fr: Ce parchemin semble montrer un plan.
 en: This tastes great, you feel warm all over.
 fr: C'est délicieux, vous vous sentez tout chaud.
 fr-tt: C'est délicieux, tu te sens tout chaud.
+zh: 味道很好，你感到全身暖洋洋的。
+zh-py: wèi dào hěn hǎo, nǐ gǎn dào quán shēn nuǎn yáng yáng de.
 
     Throw what?
 de: Schießen was?
 en: Throw what?
 fr: Lancer quoi ?
 zh: 投掷什么？
+zh-py: tóu zhí shén me?
 
     tiger-eye
 en: tiger-eye
@@ -1366,6 +1487,7 @@ fr: @(s?:de )titane@(2-)
 en: Top  Rogueists
 fr: Meilleurs  Roguistes
 zh: Rogue高手
+zh-py: Rogue gāo shǒu
 
     Trap door.
 en: Trap door.
@@ -1374,10 +1496,14 @@ fr: Trappe.
     trippy
 en: trippy
 fr: chtarbé
+zh: 迷幻
+zh-py: mí huàn
 
     troll
 en: troll
 fr: troll@(m)
+zh: 巨魔
+zh-py: jù mó
 
     turquoise
 en: turquoise
@@ -1387,6 +1513,7 @@ fr: @(s?:avec une )turquoise@(3-)
 en: two-handed sword
 fr: épée à deux mains@(ef)
 zh: 双手剑
+zh-py: shuāng shǒu jiàn
 
     Unknown command
 en: Unknown command
@@ -1400,14 +1527,20 @@ fr: Valeur     Objet
 de: Vampir@(m)
 en: vampire
 fr: vampire@(m)
+zh: 吸血鬼
+zh-py: xī xuè guǐ
 
     venus fly-trap
 en: venus fly-trap
 fr: bouledogue@(m)
+zh: 捕蝇草
+zh-py: bǔ yíng cǎo
 
     Wait, that's a %s!
 en: Wait, that's a %s!
 fr: Hé, c'est un@(m?:e) %s !
+zh: 等等，那是%s！
+zh-py: děng děng, nà shì %s!
 
     walnut
 en: walnut
@@ -1423,6 +1556,8 @@ de: Sie trageten@(A)
 en: Was wearing
 fr: Vous portiez
 fr-tt: Tu portais
+zh: 曾穿着
+zh-py: céng chuān zhe
 
     weak
 en: weak
@@ -1432,12 +1567,16 @@ fr: faible
 de: Tragen was?
 en: Wear what?
 fr: Porter quoi ?
+zh: 穿什么？
+zh-py: chuān shén me?
 
     Wearing
 de: Sie tragen@(A)
 en: Wearing
 fr: Vous portez
 fr-tt: Tu portes
+zh: 穿着
+zh-py: chuān zhe
 
     Wearing two rings already.
 en: Wearing two rings already.
@@ -1449,10 +1588,13 @@ de: Wilkommen in Erfahrungniveau %d!
 en: Welcome to experience level %d!
 fr: Bienvenue au niveau d'expérience %d !
 zh: 达到经验等级%d！
+zh-py: dá dào jīng yàn děng jí %d!
 
     Welcome, mighty wizard!
 en: Welcome, mighty wizard!
 fr: Bienvenue, puissant sorcier !
+zh: 欢迎，强大的巫师！
+zh-py: huān yíng, qiáng dà de wū shī!
 
     What a trippy feeling.
 en: What a trippy feeling.
@@ -1467,11 +1609,14 @@ fr-tt: Quel caractère veux-tu connaître ?
 en: What would you like to identify?
 fr: Que voulez-vous identifier ?
 fr-tt: Que veux-tu identifier ?
+zh: 你想鉴定什么？
+zh-py: nǐ xiǎng jiàn dìng shén me?
 
     Which object kind
 en: Which object kind
 fr: Quel type d'objet
 zh: 物品种类
+zh-py: wù pǐn zhǒng lèi
 
     white
 de: weiss@(p?e:m?A?en:er:f?e:n?es)
@@ -1483,6 +1628,7 @@ de: Zücken was?
 en: Wield what?
 fr: Brandir quoi ?
 zh: 装备什么？
+zh-py: zhuāng bèi shén me?
 
     Wielding
 de: Sie zücken@(A)
@@ -1490,13 +1636,14 @@ en: Wielding
 fr: Vous brandissez
 fr-tt: Tu brandis
 zh: 装备着
-zh-py: 装备着 (huāng bèi zhe)
+zh-py: huāng bèi zhe
 
     with %d gold
 de: mit %d Goldstücke
 en: with %d gold
 fr: avec %d pièces d'or
 zh: ，携带%d枚金币
+zh-py: , xié dài %d méi jīnbì
 
     with amulet
 de: mit Amulett
@@ -1507,6 +1654,8 @@ zh: ，持有护身符
     Wizard's password:
 en: Wizard's password:
 fr: Mot de passe sorcier :
+zh: 巫师密码：
+zh-py: wū shī mì mǎ:
 
     wooden
 en: wooden
@@ -1515,10 +1664,14 @@ fr: @(s?:de )bois@(2-)
     wraith
 en: wraith
 fr: incube@(me)
+zh: 幽魂
+zh-py: yōu hún
 
     xeroc
 en: xeroc
 fr: copieur@(m)
+zh: 拟形怪
+zh-py: nǐ xíng guài
 
     y
 en: y
@@ -1532,6 +1685,8 @@ fr: jaune@(p?s:)@(1-)
     yeti
 en: yeti
 fr: yéti@(m)
+zh: 雪人
+zh-py: xuě rén
 
     you
 en: you
@@ -1554,6 +1709,7 @@ en: You are frozen.
 fr: Vous êtes gelé.
 fr-tt: Tu es gelé.
 zh: 你被冻住了。
+zh-py: nǐ bèi dòng zhù le.
 
     You are still stuck in the bear trap.
 en: You are still stuck in the bear trap.
@@ -1565,12 +1721,14 @@ en: You begin to feel better.
 fr: Vous commencez à vous sentir mieux.
 fr-tt: Tu commences à te sentir mieux.
 zh: 你开始感觉好些了。
+zh-py: nǐ kāi shǐ gǎn jué hǎo xiē le.
 
     You begin to feel much better.
 en: You begin to feel much better.
 fr: Vous commencez à vous sentir beaucoup mieux.
 fr-tt: Tu commences à te sentir beaucoup mieux.
 zh: 你开始感觉好多了。
+zh-py: nǐ kāi shǐ gǎn jué hǎo duō le.
 
     You can move again.
 de: Sie können sich wieder rühren.
@@ -1578,6 +1736,7 @@ en: You can move again.
 fr: Vous pouvez bouger de nouveau.
 fr-tt: Tu peux bouger de nouveau.
 zh: 你又可以行动了。
+zh-py: nǐ yòu kě yǐ xíng dòng le.
 
     You can't drink that!
 de: Sie konnen das nich trinken!
@@ -1620,6 +1779,8 @@ de: Sie können nicht, es scheint verflucht.
 en: You can't, it appears to be cursed.
 fr: Vous ne pouvez pas, il semble maudit.
 fr-tt: Tu ne peux pas, il semble maudit.
+zh: 你做不到，这东西似乎被诅咒了。
+zh-py: nǐ zuò bú dào, zhè dōng xi sì hū bèi zǔ zhòu le.
 
     you faint
 en: you faint
@@ -1631,6 +1792,7 @@ en: You fall asleep.
 fr: Vous vous endormez.
 fr-tt: Tu t'endors.
 zh: 你睡着了。
+zh-py: nǐ shuì zhe le.
 
     You feel a strange sense of loss.
 en: You feel a strange sense of loss.
@@ -1647,12 +1809,14 @@ en: You feel as though someone is watching over you.
 fr: Vous avez l'impression que quelqu'un veille sur vous.
 fr-tt: Tu as l'impression que quelqu'un veille sur toi.
 zh: 你感觉好像有人在守护你。
-zh-py: 你感觉好像有人在守护你 (nǐ gǎn jué hǎo xiàng yǒu rén zài shǒu hù nǐ)。
+zh-py: nǐ gǎn jué hǎo xiàng yǒu rén zài shǒu hù nǐ.
 
     You feel confused.
 en: You feel confused.
 fr: Vous vous sentez déconcerté.
 fr-tt: Tu te sens déconcerté.
+zh: 你感到困惑。
+zh-py: nǐ gǎn dào kùn huò.
 
     You feel in touch with the universal oneness.
 en: You feel in touch with the universal oneness.
@@ -1663,18 +1827,22 @@ fr-tt: Tu te sens en connexion avec l'Unité Universelle.
 en: You feel less %s now.
 fr: Vous vous sentez moins %s maintenant.
 fr-tt: Tu te sens moins %s maintenant.
+zh: 你现在不那么%s了。
+zh-py: nǐ xiàn zài bù nà me %s le.
 
     You feel stronger now, what bulging muscles!
 en: You feel stronger now, what bulging muscles!
 fr: Vous vous sentez fort, quels gros muscles !
 fr-tt: Tu te sens fort, quels gros muscles !
 zh: 你感觉更强壮了，多么结实的肌肉啊！
+zh-py: Nǐ gǎn jué gèng qiáng zhuàng le, duō me jiē shi de jī ròu a!
 
     You feel very sick now.
 en: You feel very sick now.
 fr: Vous vous sentez vraiment malade, maintenant.
 fr-tt: Tu te sens vraiment malade, maintenant.
 zh: 你现在感觉很不舒服。
+zh-py: nǐ xiàn zài gǎn jué hěn bú shū fú.
 
     You feel weaker.
 en: You feel weaker.
@@ -1700,6 +1868,8 @@ fr-tt: Tu tombes dans une trappe.
 en: You float gently to the ground.
 fr: Vous retombez doucement sur le sol.
 fr-tt: Tu retombes doucement sur le sol.
+zh: 你轻轻地飘落到地面。
+zh-py: nǐ qīng qīng de piāo luò dào dì miàn.
 
     You have a strange feeling for a moment, then it passes.
 en: You have a strange feeling for a moment, then it passes.
@@ -1732,7 +1902,7 @@ en: You hit.
 fr: Vous touchez.
 fr-tt: Tu touches.
 zh: 你命中了。
-zh-py: 你命中了 (nǐ mìng zhòng le)。
+zh-py: nǐ mìng zhòng le.
 
     You miss.
 de: Sie blizten ab.
@@ -1740,12 +1910,14 @@ en: You miss.
 fr: Vous ratez.
 fr-tt: Tu rates.
 zh: 你未命中。
-zh-py: 你未命中 (nǐ wèi mìng zhòng)。
+zh-py: nǐ wèi mìng zhòng.
 
     You start to float in the air.
 en: You start to float in the air.
 fr: Vous commencez à flotter dans l'air.
 fr-tt: Tu commences à flotter dans l'air.
+zh: 你开始在空中漂浮。
+zh-py: nǐ kāi shǐ zài kōng zhōng piāo fú.
 
     You're already wearing some.
 en: You're already wearing some.
@@ -1762,6 +1934,7 @@ en: Your %s glow%s %s for a moment.
 fr: Vo@(p?s:tre) %s devien@(p?nen:)t@(_?%s:)@(1-) %s l'espace d'un instant.
 fr-tt: T@(p?es:e?on:m?on:a) %s devien@(p?nen:)t@(_?%s:)@(1-) %s l'espace d'un instant.
 zh: 你的%s@(_?%s:)一瞬间变成%s。
+zh-py: nǐ de %s@(_?%s:) yī shùn jiān biàn chéng %s.
 
     Your acne seems to have disappeared.
 en: Your acne seems to have disappeared.
@@ -1773,6 +1946,8 @@ de: Ihre Rüstung wird %swährend eines Moments.
 en: Your armor glows %sfor a moment.
 fr: Votre armure devient@(1-) %sl'espace d'un instant.
 fr-tt: Ton armure devient@(1-) %sl'espace d'un instant.
+zh: 你的护甲%s发光了一会儿。
+zh-py: nǐ de hù jiǎ %s fā guāng le yī huìr.
 
     Your armor is covered by a shimmering gold shield.
 en: Your armor is covered by a shimmering gold shield.
@@ -1798,6 +1973,8 @@ fr-tt: Ton sac est vide.
 en: Your purse feels lighter.
 fr: Votre bourse parait plus légère.
 fr-tt: Ta bourse parait plus légère.
+zh: 你的钱袋变轻了。
+zh-py: nǐ de qián dài biàn qīng le
 
     Your skin crawls.
 en: Your skin crawls.
@@ -1825,3 +2002,5 @@ fr: Zapper avec quoi ?
     zombie
 en: zombie
 fr: zombie@(m)
+zh: 僵尸
+zh-py: jiāng shī
