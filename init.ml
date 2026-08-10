@@ -248,11 +248,12 @@ value make_scroll_titles g =
   }
 ;
 
-value player_init g = do {
+value player_init gg = do {
+  let g = gg.game_v in
   g.rogue.pack := [];
   let _ : (char * objet) =
     let ob = Object.get_food (Some Ration) in
-    Imisc.add_to_pack g ob
+    Imisc.add_to_pack gg ob
   in
   let a =
     {ar_kind = Ringmail; ar_class = 3; ar_is_cursed = False;
@@ -261,9 +262,9 @@ value player_init g = do {
   in
   let (c, _) =
     let ob = Object.create_obj (Armor a) 1 in
-    Imisc.add_to_pack g ob
+    Imisc.add_to_pack gg ob
   in
-  Imisc.do_wear g c a;
+  Imisc.do_wear gg c a;
   let w =
     {we_kind = Mace; we_damage = (2, 3, None); we_quiver = 0;
      we_is_cursed = False; we_has_been_uncursed = False; we_hit_enchant = 1;

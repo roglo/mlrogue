@@ -443,7 +443,8 @@ value switch_lang g = do {
   print_stats g STAT_ALL;
 };
 
-value rec gen_message g msg_fun intrpt record = do {
+value rec gen_message gg msg_fun intrpt record = do {
+  let g = gg.game_v in
   let msg = msg_fun g.lang in
   if intrpt then g.interrupted := True else ();
   let change_lang =
@@ -459,12 +460,12 @@ value rec gen_message g msg_fun intrpt record = do {
           else loop ()
       in
       check_message g;
-      if msg <> "" && msg = g.msg_line g.lang then g.same_msg ++
-      else g.same_msg := 0;
+      if msg <> "" && msg = gg.msg_line g.lang then gg.same_msg ++
+      else gg.same_msg := 0;
       change_lang
     }
     else do {
-      g.same_msg := 0;
+      gg.same_msg := 0;
       False
     }
   in

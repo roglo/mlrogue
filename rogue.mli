@@ -229,7 +229,7 @@ type fighter =
 
 type id = [ Unidentified of string | Called of string | Identified ];
 
-type game =
+type game_v =
   { saved_uid : int;
     true_uid : int;
     cur_level : mutable int;
@@ -257,9 +257,7 @@ type game =
     level_monsters : mutable list monster;
     new_level_message : mutable string;
     hunger_str : mutable string;
-    hit_message : mutable string → string;
     msg_cleared : mutable bool;
-    msg_line : mutable string → string;
     msg_col : mutable int;
     same_msg : mutable int;
     m_moves : mutable int;
@@ -276,6 +274,12 @@ type game =
     traps : array (option trap);
     dungeon : array (array int);
     env : Efield.t Rfield.env }
+;
+
+type game =
+  { game_v : game_v;
+    hit_message : mutable string → string;
+    msg_line : mutable string → string }
 ;
 
 type ending =

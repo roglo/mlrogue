@@ -404,6 +404,7 @@ value gr_ring rkind =
 ;
 
 value gr_object g =
+  let g = g.game_v in
   if g.foods < g.cur_level / 2 then do {
     g.foods := g.foods + 1;
     get_food None

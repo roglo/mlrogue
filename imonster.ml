@@ -130,6 +130,7 @@ value mon_tab =
 value nb_monsters = Array.length mon_tab;
 
 value gr_monster g shlev =
+  let g = g.game_v in
   let mn =
     loop () where rec loop () =
       let mn = get_rand 0 (nb_monsters - 1) in

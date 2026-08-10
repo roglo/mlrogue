@@ -16,6 +16,7 @@ value rand_percent p = get_rand 1 100 <= p;
 value coin_toss () = Random.int 2 = 0;
 
 value get_room_number g row col =
+  let g = g.game_v in
   loop_i 0 where rec loop_i i =
     if i < MAXROOMS then
       if row >= g.rooms.(i).top_row && row <= g.rooms.(i).bottom_row &&
@@ -25,13 +26,14 @@ value get_room_number g row col =
     else None
 ;
 
-value gr_row_col g mask m =
+value gr_row_col gg mask m =
+  let g = gg.game_v in
   loop m where rec loop i =
     if m > 0 && i < 0 then raise Not_found
     else
       let r = get_rand MIN_ROW (DROWS - 2) in
       let c = get_rand 0 (DCOLS - 1) in
-      match get_room_number g r c with
+      match get_room_number gg r c with
       [ None -> loop (i - 1)
       | Some rn ->
           if g.dungeon.(r).(c) land mask = 0 ||
@@ -43,6 +45,7 @@ value gr_row_col g mask m =
 ;
 
 value has_amulet g =
+  let g = g.game_v in
   List.exists (fun (_, ob) -> ob.ob_kind = Amulet) g.rogue.pack
 ;
 
@@ -52,21 +55,26 @@ value gr_obj_char () =
   rs.[r]
 ;
 
-value hp_raise g = if g.wizard then 10 else get_rand 3 10;
+value hp_raise g =
+  let g = g.game_v in
+  if g.wizard then 10 else get_rand 3 10
+;
 
 value rogue_is_around g row col =
+  let g = g.game_v in
   let rdif = row - g.rogue.row in
   let cdif = col - g.rogue.col in
   rdif >= -1 && rdif <= 1 && cdif >= -1 && cdif <= 1
 ;
 
-value rogue_can_see g row col =
+value rogue_can_see gg row col =
+  let g = gg.game_v in
   if g.rogue.blind = 0 then
-    match get_room_number g row col with
+    match get_room_number gg row col with
     [ Some rn ->
         g.cur_room = Some rn && g.rooms.(rn).is_room land R_MAZE = 0 ||
-        rogue_is_around g row col
-    | None -> rogue_is_around g row col ]
+        rogue_is_around gg row col
+    | None -> rogue_is_around gg row col ]
   else False
 ;
 
@@ -85,6 +93,7 @@ value get_damage g (n, d, kl) r =
 ;
 
 value rand_around g i r c = do {
+  let g = g.game_v in
   if i = 0 then do {
     f_int.Efield.set g.env "rand_around_row" r;
     f_int.Efield.set g.env "rand_around_col" c;
@@ -132,6 +141,7 @@ value rec nth_field s n =
 ;
 
 value pack_count g new_obj =
+  let g = g.game_v in
   loop 0 g.rogue.pack where rec loop count =
     fun
     [ [(_, obj) :: pack] ->
@@ -178,6 +188,7 @@ value first_avail_ichar pack =
 ;
 
 value add_to_pack g obj = do {
+  let g = g.game_v in
   let (rpack, pack) = insert_object obj g.rogue.pack in
   let (obj, c, pack) =
     match pack with
@@ -191,12 +202,14 @@ value add_to_pack g obj = do {
 };
 
 value do_wear g c a = do {
+  let g = g.game_v in
   g.rogue.armor := Some (c, a);
   a.ar_in_use := True;
   a.ar_identified := True;
 };
 
 value do_wield g c w = do {
+  let g = g.game_v in
   g.rogue.weapon := Some (c, w);
   w.we_in_use := True;
 };
@@ -216,8 +229,9 @@ value string_eq s i t j =
     else False
 ;
 
-value aim_monster g monster =
-  let rn = get_room_number g monster.mn_row monster.mn_col in
+value aim_monster gg monster =
+  let g = gg.game_v in
+  let rn = get_room_number gg monster.mn_row monster.mn_col in
   let r = get_rand 0 12 in
   loop 0 where rec loop i =
     if i < 4 then
@@ -232,12 +246,13 @@ value aim_monster g monster =
     else ()
 ;
 
-value put_m_at g row col monster = do {
+value put_m_at gg row col monster = do {
+  let g = gg.game_v in
   monster.mn_row := row;
   monster.mn_col := col;
   g.dungeon.(row).(col) := g.dungeon.(row).(col) lor MONSTER;
   g.level_monsters := g.level_monsters @ [monster];
-  aim_monster g monster;
+  aim_monster gg monster;
 };
 
 value wake_up monster =

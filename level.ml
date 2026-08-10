@@ -530,8 +530,9 @@ value place_at g obj row col = do {
   g.level_objects := g.level_objects @ [obj]
 };
 
-value rand_place g obj =
-  let (row, col, _) = gr_row_col g (FLOOR lor TUNNEL) 0 in
+value rand_place gg obj =
+  let g = gg.game_v in
+  let (row, col, _) = gr_row_col gg (FLOOR lor TUNNEL) 0 in
   place_at g obj row col
 ;
 
@@ -594,7 +595,8 @@ value gr_room g =
     if g.rooms.(i).is_room land (R_ROOM lor R_MAZE) = 0 then loop () else i
 ;
 
-value party_objects g rn =
+value party_objects gg rn =
+  let g = gg.game_v in
   let rm = g.rooms.(rn) in
   let nn =
     (rm.bottom_row - rm.top_row - 1) * (rm.right_col - rm.left_col - 1)
@@ -614,7 +616,7 @@ value party_objects g rn =
             g.dungeon.(row).(col) = FLOOR || g.dungeon.(row).(col) = TUNNEL
           in
           if found then do {
-            let obj = Object.gr_object g in
+            let obj = Object.gr_object gg in
             place_at g obj row col;
             loop_i (nf + 1) (i + 1)
           }
@@ -637,6 +639,7 @@ value no_room_for_monster g rn =
 ;
 
 value party_monsters g rn n =
+  let g = g.game_v in
   let rm = g.rooms.(rn) in
   let n = n + n in
   let shift_lev = g.cur_level mod 3 in
