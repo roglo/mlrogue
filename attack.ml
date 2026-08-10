@@ -12,18 +12,19 @@ open Misc;
 open Printf;
 open Translate;
 
-value check_imitator g monster =
+value check_imitator gg monster =
+  let g = gg.game_v in
   if monster.mn_flags land IMITATES <> 0 then do {
     wake_up monster;
     if g.rogue.blind = 0 then do {
       Curses.mvaddch monster.mn_row monster.mn_col
-        (get_dungeon_char g monster.mn_row monster.mn_col);
-      check_message g;
-      message g
+        (get_dungeon_char gg monster.mn_row monster.mn_col);
+      check_message gg;
+      message gg
         (fun lang →
            let mess =
              sprintf (ftransl lang "Wait, that's a %s!")
-               (transl lang (Monster.mon_name g monster))
+               (transl lang (Monster.mon_name gg monster))
            in
            etransl mess) True
     }
@@ -70,8 +71,9 @@ value damage_for_strength g =
   else 8
 ;
 
-value get_weapon_damage g weapon =
-  let damage = get_w_damage g weapon in
+value get_weapon_damage gg weapon =
+  let g = gg.game_v in
+  let damage = get_w_damage gg weapon in
   let damage = damage + damage_for_strength g in
   damage + (g.rogue.exp + g.rogue.ring_exp - g.rogue.r_rings + 1) / 2
 ;
@@ -86,7 +88,8 @@ value coughable g row col =
   else False
 ;
 
-value cough_up g monster =
+value cough_up gg monster =
+  let g = gg.game_v in
   if g.cur_level < g.max_level then ()
   else
     let obj =
@@ -94,7 +97,7 @@ value cough_up g monster =
         let q = get_rand (g.cur_level * 15) (g.cur_level * 30) in
         Some (Object.get_gold (Some q))
       else if not (rand_percent monster.mn_drop_percent) then None
-      else Some (Object.gr_object g)
+      else Some (Object.gr_object gg)
     in
     match obj with
     [ Some obj ->
@@ -139,12 +142,12 @@ value cough_up g monster =
             else do {
               let r = get_rand 0 (List.length list - 1) in
               let (row, col) = List.nth list r in
-              Level.place_at g obj row col;
+              Level.place_at gg obj row col;
               if row <> g.rogue.row || col <> g.rogue.col then
                 if g.dungeon.(row).(col) land MONSTER = 0 then
-                  Curses.mvaddch row col (get_dungeon_char g row col)
+                  Curses.mvaddch row col (get_dungeon_char gg row col)
                 else
-                  let mon = monster_at g row col in
+                  let mon = monster_at gg row col in
                   mon.mn_trail_char := get_mask_char obj
               else ()
             }
@@ -152,24 +155,25 @@ value cough_up g monster =
     | None -> () ]
 ;
 
-value mon_damage g monster damage = do {
+value mon_damage gg monster damage = do {
+  let g = gg.game_v in
   monster.mn_hp_to_kill sub_eq damage;
   if monster.mn_hp_to_kill <= 0 then do {
     let row = monster.mn_row in
     let col = monster.mn_col in
     g.dungeon.(row).(col) land_eq lnot MONSTER;
-    Curses.mvaddch row col (get_dungeon_char g row col);
+    Curses.mvaddch row col (get_dungeon_char gg row col);
     g.rogue.fight_monster := None;
-    cough_up g monster;
-    let hit_mess = g.hit_message in
-    message g
+    cough_up gg monster;
+    let hit_mess = gg.hit_message in
+    message gg
       (fun lang →
-         let mn = transl lang (Monster.mon_name g monster) in
+         let mn = transl lang (Monster.mon_name gg monster) in
          let msg = sprintf (ftransl lang "Defeated the %s.") mn in
          hit_mess lang ^ etransl msg) True;
-    g.hit_message := fun _ → "";
-    add_exp g monster.mn_kill_exp hp_raise;
-    take_from_monsters g monster;
+    gg.hit_message := fun _ → "";
+    add_exp gg monster.mn_kill_exp hp_raise;
+    take_from_monsters gg monster;
     if monster.mn_flags land HOLDS <> 0 then g.rogue.being_held := False
     else ();
     False
@@ -179,8 +183,9 @@ value mon_damage g monster damage = do {
 
 value check_gold_seeker g monster = monster.mn_flags land_eq lnot SEEKS_GOLD;
 
-value rogue_hit g monster force_hit =
-  if check_imitator g monster then ()
+value rogue_hit gg monster force_hit =
+  let g = gg.game_v in
+  if check_imitator gg monster then ()
   else do {
     let hit_chance =
       if force_hit then 100 else get_hit_chance g g.rogue.weapon
@@ -188,17 +193,17 @@ value rogue_hit g monster force_hit =
     let hit_chance = if g.wizard then hit_chance * 2 else hit_chance in
     if not (rand_percent hit_chance) then
       if g.rogue.fight_monster = None then
-        g.hit_message := fun lang → etransl (transl lang "You miss.") ^ " "
+        gg.hit_message := fun lang → etransl (transl lang "You miss.") ^ " "
       else ()
     else
-      let damage = get_weapon_damage g g.rogue.weapon in
+      let damage = get_weapon_damage gg g.rogue.weapon in
       let damage = if g.wizard then damage * 3 else damage in
-      if mon_damage g monster damage then
+      if mon_damage gg monster damage then
         if g.rogue.fight_monster = None then do {
-          g.hit_message := fun lang → etransl (transl lang "You hit.") ^ " ";
+          gg.hit_message := fun lang → etransl (transl lang "You hit.") ^ " ";
           let row = monster.mn_row in
           let col = monster.mn_col in
-          show_monster g row col monster (gmc g monster);
+          show_monster gg row col monster (gmc gg monster);
         }
         else ()
       else ();
@@ -207,11 +212,12 @@ value rogue_hit g monster force_hit =
   }
 ;
 
-value tele_away g monster = do {
+value tele_away gg monster = do {
+  let g = gg.game_v in
   if monster.mn_flags land HOLDS <> 0 then g.rogue.being_held := False
   else ();
   let (row, col, _) =
-    gr_row_col g (FLOOR lor TUNNEL lor STAIRS lor OBJECT) 0
+    gr_row_col gg (FLOOR lor TUNNEL lor STAIRS lor OBJECT) 0
   in
   Curses.mvaddch monster.mn_row monster.mn_col monster.mn_trail_char;
   g.dungeon.(monster.mn_row).(monster.mn_col) land_eq lnot MONSTER;
@@ -219,16 +225,17 @@ value tele_away g monster = do {
   monster.mn_col := col;
   g.dungeon.(row).(col) or_eq MONSTER;
   monster.mn_trail_char := Curses.mvinch row col;
-  if g.rogue.detect_monster || rogue_can_see g row col then
+  if g.rogue.detect_monster || rogue_can_see gg row col then
 (*
     Curses.mvaddch row col (gmc g monster)
 *)
-    show_monster g row col monster (gmc g monster)
+    show_monster gg row col monster (gmc gg monster)
 (**)
   else ()
 };
 
-value zap_monster g monster wand =
+value zap_monster gg monster wand =
+  let g = gg.game_v in
   let row = monster.mn_row in
   let col = monster.mn_col in
   match wand with
@@ -243,7 +250,7 @@ value zap_monster g monster wand =
       if monster.mn_flags land SLOWED <> 0 then
         monster.mn_flags land_eq lnot SLOWED
       else monster.mn_flags or_eq HASTED
-  | TeleportAway -> tele_away g monster
+  | TeleportAway -> tele_away gg monster
   | ConfuseMonster -> do {
       monster.mn_flags or_eq CONFUSED;
       monster.mn_moves_confused add_eq get_rand 12 22
@@ -253,18 +260,18 @@ value zap_monster g monster wand =
       if monster.mn_flags land HOLDS <> 0 then g.rogue.being_held := False
       else ();
       let tc = monster.mn_trail_char in
-      take_from_monsters g monster;
-      let monster = Imonster.gr_monster g None in
+      take_from_monsters gg monster;
+      let monster = Imonster.gr_monster gg None in
       monster.mn_row := row;
       monster.mn_col := col;
       g.level_monsters := g.level_monsters @ [monster];
       monster.mn_trail_char := tc;
       if monster.mn_flags land IMITATES = 0 then wake_up monster else ();
-      if g.rogue.detect_monster || rogue_can_see g row col then
+      if g.rogue.detect_monster || rogue_can_see gg row col then
 (*
         Curses.mvaddch row col (gmc g monster)
 *)
-        show_monster g row col monster (gmc g monster)
+        show_monster gg row col monster (gmc gg monster)
 (**)
       else ()
     }
@@ -272,7 +279,7 @@ value zap_monster g monster wand =
       monster.mn_flags or_eq ASLEEP lor NAPPING;
       monster.mn_nap_length := get_rand 3 6
     }
-  | MagicMissile -> rogue_hit g monster True
+  | MagicMissile -> rogue_hit gg monster True
   | Cancellation -> do {
       if monster.mn_flags land HOLDS <> 0 then g.rogue.being_held := False
       else ();
@@ -285,7 +292,7 @@ value zap_monster g monster wand =
            IMITATES lor CONFUSES lor SEEKS_GOLD lor HOLDS)
     }
   | DoNothing ->
-      message g (fun lang → transl lang "Nothing happens" ^ ".") False ]
+      message gg (fun lang → transl lang "Nothing happens" ^ ".") False ]
 ;
 
 value get_zapped_monster g dir =
