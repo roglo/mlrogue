@@ -524,15 +524,15 @@ value fill_out_level g = do {
 };
 
 value place_at g obj row col = do {
+  let g = g.game_v in
   obj.ob_row := row;
   obj.ob_col := col;
   g.dungeon.(row).(col) or_eq OBJECT;
   g.level_objects := g.level_objects @ [obj]
 };
 
-value rand_place gg obj =
-  let g = gg.game_v in
-  let (row, col, _) = gr_row_col gg (FLOOR lor TUNNEL) 0 in
+value rand_place g obj =
+  let (row, col, _) = gr_row_col g (FLOOR lor TUNNEL) 0 in
   place_at g obj row col
 ;
 
@@ -617,7 +617,7 @@ value party_objects gg rn =
           in
           if found then do {
             let obj = Object.gr_object gg in
-            place_at g obj row col;
+            place_at gg obj row col;
             loop_i (nf + 1) (i + 1)
           }
           else loop_j nf (j + 1)
@@ -638,8 +638,8 @@ value no_room_for_monster g rn =
     else True
 ;
 
-value party_monsters g rn n =
-  let g = g.game_v in
+value party_monsters gg rn n =
+  let g = gg.game_v in
   let rm = g.rooms.(rn) in
   let n = n + n in
   let shift_lev = g.cur_level mod 3 in
@@ -654,11 +654,11 @@ value party_monsters g rn n =
             if g.dungeon.(row).(col) land MONSTER = 0 &&
                g.dungeon.(row).(col) land (FLOOR lor TUNNEL) <> 0
             then do {
-              let monster = Imonster.gr_monster g (Some shift_lev) in
+              let monster = Imonster.gr_monster gg (Some shift_lev) in
               if monster.mn_flags land IMITATES = 0 then
                 monster.mn_flags or_eq WAKENS
               else ();
-              put_m_at g row col monster;
+              put_m_at gg row col monster;
               loop_i (i + 1)
             }
             else loop_j (j + 1)
@@ -668,11 +668,12 @@ value party_monsters g rn n =
     else ()
 ;
 
-value make_party g = do {
+value make_party gg = do {
+  let g = gg.game_v in
   let rn = gr_room g in
   g.party_room := Some rn;
-  let n = if rand_percent 99 then party_objects g rn else 11 in
-  if rand_percent 99 then party_monsters g rn n else ()
+  let n = if rand_percent 99 then party_objects gg rn else 11 in
+  if rand_percent 99 then party_monsters gg rn n else ()
 };
 
 value next_party g =
@@ -683,14 +684,16 @@ value next_party g =
   get_rand (n + 1) (n + PARTY_TIME)
 ;
 
-value plant_gold g row col is_maze =
+value plant_gold gg row col is_maze =
+  let g = gg.game_v in
   let q = get_rand (2 * g.cur_level) (16 * g.cur_level) in
   let q = if is_maze then q + q / 2 else q in
   let obj = Object.get_gold (Some q) in
-  place_at g obj row col
+  place_at gg obj row col
 ;
 
-value put_gold g =
+value put_gold gg =
+  let g = gg.game_v in
   for i = 0 to MAXROOMS - 1 do {
     let rn = g.rooms.(i) in
     let is_maze = rn.is_room land R_MAZE <> 0 in
@@ -704,7 +707,7 @@ value put_gold g =
           let col = get_rand (rn.left_col + 1) (rn.right_col - 1) in
           if g.dungeon.(row).(col) = FLOOR || g.dungeon.(row).(col) = TUNNEL
           then
-            plant_gold g row col is_maze
+            plant_gold gg row col is_maze
           else loop (j + 1)
       in
       loop 0
@@ -712,7 +715,8 @@ value put_gold g =
   }
 ;
 
-value put_objects g =
+value put_objects gg =
+  let g = gg.game_v in
   if g.cur_level < g.max_level then ()
   else do {
     let n = if coin_toss () then get_rand 2 4 else get_rand 3 5 in
@@ -720,19 +724,20 @@ value put_objects g =
       loop n where rec loop n = if rand_percent 33 then loop (n + 1) else n
     in
     if g.cur_level = g.party_counter then do {
-      make_party g;
+      make_party gg;
       g.party_counter := next_party g
     }
     else ();
     for i = 0 to n - 1 do {
-      let obj = Object.gr_object g in
-      rand_place g obj;
+      let obj = Object.gr_object gg in
+      rand_place gg obj;
     };
-    put_gold g
+    put_gold gg
   }
 ;
 
-value add_traps g =
+value add_traps gg =
+  let g = gg.game_v in
   let n =
     if g.cur_level <= 2 then 0
     else if g.cur_level <= 7 then get_rand 0 2
@@ -766,14 +771,14 @@ value add_traps g =
                 else (tries, row, col)
             in
             if tries >= 15 then
-              let (row, col, _) = gr_row_col g (FLOOR lor MONSTER) 0 in
+              let (row, col, _) = gr_row_col gg (FLOOR lor MONSTER) 0 in
               (row, col)
             else (row, col)
         | None ->
-            let (row, col, _) = gr_row_col g (FLOOR lor MONSTER) 0 in
+            let (row, col, _) = gr_row_col gg (FLOOR lor MONSTER) 0 in
             (row, col) ]
       else
-        let (row, col, _) = gr_row_col g (FLOOR lor MONSTER) 0 in
+        let (row, col, _) = gr_row_col gg (FLOOR lor MONSTER) 0 in
         (row, col)
     in
     let trap = {trap_type = tt; trap_row = row; trap_col = col} in
@@ -782,8 +787,9 @@ value add_traps g =
   }
 ;
 
-value put_stairs g =
-  let (row, col, _) = gr_row_col g (FLOOR lor TUNNEL) 0 in
+value put_stairs gg =
+  let g = gg.game_v in
+  let (row, col, _) = gr_row_col gg (FLOOR lor TUNNEL) 0 in
   g.dungeon.(row).(col) or_eq STAIRS
 ;
 
@@ -800,18 +806,19 @@ value put_mons g =
   }
 ;
 
-value put_player g nr = do {
+value put_player gg nr = do {
+  let g = gg.game_v in
   let (row, col, rn) =
     match nr with
     [ Some nr ->
         loop nr 0 0 0 where rec loop rn row col misses =
           if misses < 2 && rn = nr then
             let (row, col, rn) =
-              gr_row_col g (FLOOR lor TUNNEL lor OBJECT lor STAIRS) 0
+              gr_row_col gg (FLOOR lor TUNNEL lor OBJECT lor STAIRS) 0
             in
             loop rn row col (misses + 1)
           else (row, col, rn)
-    | None -> gr_row_col g (FLOOR lor TUNNEL lor OBJECT lor STAIRS) 0 ]
+    | None -> gr_row_col gg (FLOOR lor TUNNEL lor OBJECT lor STAIRS) 0 ]
   in
   g.rogue.row := row;
   g.rogue.col := col;
@@ -819,7 +826,8 @@ value put_player g nr = do {
     if g.dungeon.(row).(col) land TUNNEL <> 0 then None else Some rn
 };
 
-value create g = do {
+value create gg = do {
+  let g = gg.game_v in
   if g.cur_level < LAST_DUNGEON then g.cur_level ++ else ();
   if g.cur_level > g.max_level then g.max_level := g.cur_level else ();
   let rec loop () = do {
@@ -829,11 +837,11 @@ value create g = do {
   }
   in
   loop ();
-  if not (has_amulet g) && g.cur_level >= AMULET_LEVEL then put_amulet g
+  if not (has_amulet gg) && g.cur_level >= AMULET_LEVEL then put_amulet gg
   else ();
-  put_objects g;
-  put_stairs g;
-  add_traps g;
-  put_mons g;
-  put_player g g.party_room
+  put_objects gg;
+  put_stairs gg;
+  add_traps gg;
+  put_mons gg;
+  put_player gg g.party_room
 };

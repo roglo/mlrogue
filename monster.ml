@@ -10,7 +10,8 @@ open Misc;
 open Printf;
 open Translate;
 
-value mon_can_go g monster row col =
+value mon_can_go gg monster row col =
+  let g = gg.game_v in
   let dr = monster.mn_row - row in
   let dc = monster.mn_col - col in
   if dr >= 2 || dr <= -2 then False
@@ -21,7 +22,7 @@ value mon_can_go g monster row col =
   then
     False
   else if
-    not (is_passable g row col) || g.dungeon.(row).(col) land MONSTER <> 0
+    not (is_passable gg row col) || g.dungeon.(row).(col) land MONSTER <> 0
   then
     False
   else if
@@ -46,7 +47,7 @@ value mon_can_go g monster row col =
     in
     if not r then False
     else if g.dungeon.(row).(col) land OBJECT <> 0 then
-      match object_at g row col with
+      match object_at gg row col with
       [ {ob_kind = Scroll ScareMonster} -> False
       | _ -> True ]
     else True

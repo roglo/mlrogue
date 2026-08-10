@@ -20,6 +20,7 @@ value level_points =
 ;
 
 value is_passable g row col =
+  let g = g.game_v in
   if row < MIN_ROW || row > DROWS - 2 || col < 0 || col > DCOLS - 1 then False
   else if g.dungeon.(row).(col) land HIDDEN <> 0 then
     if g.dungeon.(row).(col) land TRAP <> 0 then True else False
@@ -33,6 +34,7 @@ value is_passable g row col =
 ;
 
 value object_at g row col =
+  let g = g.game_v in
   try
     List.find (fun ob -> ob.ob_row = row && ob.ob_col = col) g.level_objects
   with
@@ -40,6 +42,7 @@ value object_at g row col =
 ;
 
 value monster_at g row col =
+  let g = g.game_v in
   try
     List.find (fun mn -> mn.mn_row = row && mn.mn_col = col) g.level_monsters
   with
@@ -47,6 +50,7 @@ value monster_at g row col =
 ;
 
 value trap_at g row col =
+  let g = g.game_v in
   loop_i 0 where rec loop_i i =
     if i < MAX_TRAPS then
       match g.traps.(i) with
@@ -58,6 +62,7 @@ value trap_at g row col =
 ;
 
 value gold_at g row col =
+  let g = g.game_v in
   try
     let obj =
       List.find (fun ob -> ob.ob_row = row && ob.ob_col = col) g.level_objects
@@ -67,30 +72,35 @@ value gold_at g row col =
   [ Not_found -> False ]
 ;
 
-value imitating g row col =
+value imitating gg row col =
+  let g = gg.game_v in
   if g.dungeon.(row).(col) land MONSTER <> 0 then
-    let monster = monster_at g row col in
+    let monster = monster_at gg row col in
     if monster.mn_flags land IMITATES <> 0 then True else False
   else False
 ;
 
 value take_from_pack g ch =
+  let g = g.game_v in
   g.rogue.pack := List.filter (fun (c, _) -> ch <> c) g.rogue.pack
 ;
 
 value take_from_monsters g monster =
+  let g = g.game_v in
   g.level_monsters :=
     List.filter (fun mn -> mn.mn_unique_id <> monster.mn_unique_id)
       g.level_monsters
 ;
 
 value tgmc g c =
+  let g = g.game_v in
   let t = fast_transl g.lang "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in
   let m = Char.code c - Char.code 'A' in
   if String.length t = 26 && t.[m] >= 'A' && t.[m] <= 'Z' then t.[m] else c
 ;
 
 value itgmc g ch =
+  let g = g.game_v in
   let t = fast_transl g.lang "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in
   loop_c 'A' where rec loop_c c =
     if c > 'Z' then ch
@@ -103,7 +113,8 @@ value itgmc g ch =
       if cc = ch then c else loop_c (Char.chr (Char.code c + 1))
 ;
 
-value gmc g monster =
+value gmc gg monster =
+  let g = gg.game_v in
   if not
        (g.rogue.detect_monster || g.rogue.see_invisible ||
         g.rogue.r_see_invisible) &&
@@ -112,7 +123,7 @@ value gmc g monster =
   then
     monster.mn_trail_char
   else if monster.mn_flags land IMITATES <> 0 then monster.mn_disguise
-  else tgmc g monster.mn_char
+  else tgmc gg monster.mn_char
 ;
 
 value get_mask_char obj =
@@ -128,10 +139,11 @@ value get_mask_char obj =
   | Weapon _ -> ')' ]
 ;
 
-value get_dungeon_char g row col =
+value get_dungeon_char gg row col =
+  let g = gg.game_v in
   let mask = g.dungeon.(row).(col) in
-  if mask land MONSTER <> 0 then gmc g (monster_at g row col)
-  else if mask land OBJECT <> 0 then get_mask_char (object_at g row col)
+  if mask land MONSTER <> 0 then gmc gg (monster_at gg row col)
+  else if mask land OBJECT <> 0 then get_mask_char (object_at gg row col)
   else if mask land STAIRS <> 0 then '%'
   else if mask land TUNNEL <> 0 && mask land HIDDEN = 0 then '#'
   else if mask land HORWALL <> 0 then '-'
@@ -157,6 +169,7 @@ value get_exp_level e =
 ;
 
 value show_rogue g = do {
+  let g = g.game_v in
   let rogue = g.rogue in
 (*
   if rogue.hp_current <= rogue.hp_max / 2 then Curses.color_set 1 (-1)
@@ -207,7 +220,8 @@ value show_trap i j t = do {
 *)
 };
 
-value add_exp g e promotion = do {
+value add_exp gg e promotion = do {
+  let g = gg.game_v in
   let rogue = g.rogue in
   rogue.exp_points add_eq e;
   if rogue.exp_points >= level_points.(rogue.exp - 1) then do {
@@ -215,22 +229,22 @@ value add_exp g e promotion = do {
     if rogue.exp_points > MAX_EXP then rogue.exp_points := MAX_EXP + 1
     else ();
     for i = rogue.exp + 1 to new_exp do {
-      Dialogue.message g
+      Dialogue.message gg
         (fun lang →
            sprintf (ftransl lang "Welcome to experience level %d!") i)
         False;
-      let hp = promotion g in
+      let hp = promotion gg in
       rogue.hp_current add_eq hp;
       rogue.hp_max add_eq hp;
       rogue.exp := i;
-      Dialogue.print_stats g (STAT_HP lor STAT_EXP);
-      show_rogue g;
+      Dialogue.print_stats gg (STAT_HP lor STAT_EXP);
+      show_rogue gg;
     }
   }
-  else Dialogue.print_stats g STAT_EXP
+  else Dialogue.print_stats gg STAT_EXP
 };
 
-type saved = (game * array (array char));
+type saved = (game_v * array (array char));
 value save_magic = "RGSV0006";
 
 module OLD_GAME =
@@ -286,59 +300,62 @@ module OLD_GAME =
 ;
 
 value g_of_old_g g =
-  {saved_uid = g.OLD_GAME.saved_uid;
-   true_uid = g.OLD_GAME.true_uid;
-   cur_level = g.OLD_GAME.cur_level;
-   max_level = g.OLD_GAME.max_level;
-   cur_room = g.OLD_GAME.cur_room;
-   lang = g.OLD_GAME.lang;
-   score_only = g.OLD_GAME.score_only;
-   save_file = g.OLD_GAME.save_file;
-   nick_name = g.OLD_GAME.nick_name;
-   login_name = g.OLD_GAME.login_name;
-   fruit = g.OLD_GAME.fruit;
-   ask_quit = g.OLD_GAME.ask_quit;
-   show_skull = g.OLD_GAME.show_skull;
-   jump = g.OLD_GAME.jump;
-   party_counter = g.OLD_GAME.party_counter;
-   party_room = g.OLD_GAME.party_room;
-   foods = g.OLD_GAME.foods;
-   r_de = g.OLD_GAME.r_de;
-   trap_door = g.OLD_GAME.trap_door;
-   interrupted = g.OLD_GAME.interrupted;
-   reg_search = g.OLD_GAME.reg_search;
-   monsters_count = g.OLD_GAME.monsters_count;
-   mon_disappeared = g.OLD_GAME.mon_disappeared;
-   level_objects = g.OLD_GAME.level_objects;
-   level_monsters = g.OLD_GAME.level_monsters;
-   new_level_message = g.OLD_GAME.new_level_message;
-   hunger_str = g.OLD_GAME.hunger_str;
-   hit_message = g.OLD_GAME.hit_message;
-   msg_cleared = g.OLD_GAME.msg_cleared;
-   msg_line = g.OLD_GAME.msg_line;
-   msg_col = g.OLD_GAME.msg_col;
-   same_msg = g.OLD_GAME.same_msg;
-   m_moves = g.OLD_GAME.m_moves;
-   wizard = g.OLD_GAME.wizard;
-   experimented_pick_up_scare_monster =
-     g.OLD_GAME.experimented_pick_up_scare_monster;
-   rogue = g.OLD_GAME.rogue;
-   random_rooms = g.OLD_GAME.random_rooms;
-   id_potions = g.OLD_GAME.id_potions;
-   id_rings = g.OLD_GAME.id_rings;
-   id_scrolls = g.OLD_GAME.id_scrolls;
-   id_wands = g.OLD_GAME.id_wands;
-   is_wood = g.OLD_GAME.is_wood;
-   rooms = g.OLD_GAME.rooms;
-   traps = g.OLD_GAME.traps;
-   dungeon = g.OLD_GAME.dungeon;
-   env = Efield.make ()}
+  let new_g =
+    {saved_uid = g.OLD_GAME.saved_uid;
+     true_uid = g.OLD_GAME.true_uid;
+     cur_level = g.OLD_GAME.cur_level;
+     max_level = g.OLD_GAME.max_level;
+     cur_room = g.OLD_GAME.cur_room;
+     lang = g.OLD_GAME.lang;
+     score_only = g.OLD_GAME.score_only;
+     save_file = g.OLD_GAME.save_file;
+     nick_name = g.OLD_GAME.nick_name;
+     login_name = g.OLD_GAME.login_name;
+     fruit = g.OLD_GAME.fruit;
+     ask_quit = g.OLD_GAME.ask_quit;
+     show_skull = g.OLD_GAME.show_skull;
+     jump = g.OLD_GAME.jump;
+     party_counter = g.OLD_GAME.party_counter;
+     party_room = g.OLD_GAME.party_room;
+     foods = g.OLD_GAME.foods;
+     r_de = g.OLD_GAME.r_de;
+     trap_door = g.OLD_GAME.trap_door;
+     interrupted = g.OLD_GAME.interrupted;
+     reg_search = g.OLD_GAME.reg_search;
+     monsters_count = g.OLD_GAME.monsters_count;
+     mon_disappeared = g.OLD_GAME.mon_disappeared;
+     level_objects = g.OLD_GAME.level_objects;
+     level_monsters = g.OLD_GAME.level_monsters;
+     new_level_message = g.OLD_GAME.new_level_message;
+     hunger_str = g.OLD_GAME.hunger_str;
+     msg_cleared = g.OLD_GAME.msg_cleared;
+     msg_col = g.OLD_GAME.msg_col;
+     same_msg = g.OLD_GAME.same_msg;
+     m_moves = g.OLD_GAME.m_moves;
+     wizard = g.OLD_GAME.wizard;
+     experimented_pick_up_scare_monster =
+       g.OLD_GAME.experimented_pick_up_scare_monster;
+     rogue = g.OLD_GAME.rogue;
+     random_rooms = g.OLD_GAME.random_rooms;
+     id_potions = g.OLD_GAME.id_potions;
+     id_rings = g.OLD_GAME.id_rings;
+     id_scrolls = g.OLD_GAME.id_scrolls;
+     id_wands = g.OLD_GAME.id_wands;
+     is_wood = g.OLD_GAME.is_wood;
+     rooms = g.OLD_GAME.rooms;
+     traps = g.OLD_GAME.traps;
+     dungeon = g.OLD_GAME.dungeon;
+     env = Efield.make ()}
+  in
+  {game_v = new_g; hit_message = g.OLD_GAME.hit_message;
+   msg_line = g.OLD_GAME.msg_line}
 ;
 
 type old_saved = (OLD_GAME.t * array (array char));
 value old_save_magic = "RGSV0004";
 
 value save_into_file g fname = do {
+  let g = g.game_v in
   if g.score_only then
     f_random.Efield.set g.env "random" (Some (Random.get_state ()))
   else ();
@@ -351,17 +368,18 @@ value save_into_file g fname = do {
   close_out oc
 };
 
-value display_dungeon g buf =
+value display_dungeon gg buf =
+  let g = gg.game_v in
   for i = 0 to Array.length buf - 1 do {
     let line = buf.(i) in
     for j = 0 to Array.length line - 1 do {
       if line.(j) >= 'A' && line.(j) <= 'Z' &&
          g.dungeon.(i).(j) land MONSTER <> 0
       then
-        let monster = monster_at g i j in
-        show_monster g i j monster (gmc g monster)
+        let monster = monster_at gg i j in
+        show_monster gg i j monster (gmc gg monster)
       else if line.(j) = '^' then
-        match trap_at g i j with
+        match trap_at gg i j with
         [ Some trap -> show_trap i j trap
         | None -> Curses.mvaddch i j line.(j) ]
       else Curses.mvaddch i j line.(j);
@@ -376,11 +394,12 @@ value restore fname = do {
   let b = string_of_bytes b in
   if b = save_magic then do {
     let (g, buf) = (input_value ic : saved) in
-    display_dungeon g buf;
-    show_rogue g;
+    let gg = {game_v = g; hit_message _ = ""; msg_line _ = ""} in
+    display_dungeon gg buf;
+    show_rogue gg;
     close_in ic;
     Sys.remove fname;
-    g
+    gg
   }
   else if b = old_save_magic then do {
     let (old_g, buf) = (input_value ic : old_saved) in
@@ -433,8 +452,9 @@ value is_direction =
   | _ -> False ]
 ;
 
-value can_move g row1 col1 row2 col2 =
-  if not (is_passable g row2 col2) then False
+value can_move gg row1 col1 row2 col2 =
+  let g = gg.game_v in
+  if not (is_passable gg row2 col2) then False
   else if row1 <> row2 && col1 <> col2 then
     if g.dungeon.(row1).(col1) land DOOR <> 0 ||
        g.dungeon.(row2).(col2) land DOOR <> 0 ||
@@ -445,59 +465,63 @@ value can_move g row1 col1 row2 col2 =
   else True
 ;
 
-value light_passage g row col =
+value light_passage gg row col =
+  let g = gg.game_v in
   if g.rogue.blind > 0 then ()
   else
     let i_end = if row < DROWS - 2 then 1 else 0 in
     let j_end = if col < DCOLS - 1 then 1 else 0 in
     for i = if row > MIN_ROW then -1 else 0 to i_end do {
       for j = if col > 0 then -1 else 0 to j_end do {
-        if can_move g row col (row + i) (col + j) then
+        if can_move gg row col (row + i) (col + j) then
           let i = row + i in
           let j = col + j in
           if g.dungeon.(i).(j) land MONSTER <> 0 then
-            let monster = monster_at g i j in
-            show_monster g i j monster (gmc g monster)
-          else Curses.mvaddch i j (get_dungeon_char g i j)
+            let monster = monster_at gg i j in
+            show_monster gg i j monster (gmc gg monster)
+          else Curses.mvaddch i j (get_dungeon_char gg i j)
         else ();
       };
     }
 ;
 
-value light_up_room g rn =
+value light_up_room gg rn =
+  let g = gg.game_v in
   if g.rogue.blind = 0 then do {
     let rm = g.rooms.(rn) in
     for i = rm.top_row to rm.bottom_row do {
       for j = rm.left_col to rm.right_col do {
         if g.dungeon.(i).(j) land MONSTER <> 0 then do {
-          let monster = monster_at g i j in
+          let monster = monster_at gg i j in
           g.dungeon.(i).(j) land_eq lnot MONSTER;
-          monster.mn_trail_char := get_dungeon_char g i j;
+          monster.mn_trail_char := get_dungeon_char gg i j;
           g.dungeon.(i).(j) or_eq MONSTER;
-          show_monster g i j monster (gmc g monster)
+          show_monster gg i j monster (gmc gg monster)
         }
         else
-          let ch = get_dungeon_char g i j in
+          let ch = get_dungeon_char gg i j in
           if ch = '^' then
-            match trap_at g i j with
+            match trap_at gg i j with
             [ Some t -> show_trap i j t
             | None -> Curses.mvaddch i j ch ]
           else Curses.mvaddch i j ch
       };
     };
-    show_rogue g;
+    show_rogue gg;
   }
   else ()
 ;
 
-value relight g = do {
+value relight gg = do {
+  let g = gg.game_v in
   match g.cur_room with
-  [ None -> light_passage g g.rogue.row g.rogue.col
-  | Some rn -> light_up_room g rn ];
-  show_rogue g;
+  [ None -> light_passage gg g.rogue.row g.rogue.col
+  | Some rn -> light_up_room gg rn ];
+  show_rogue gg;
 };
 
 value ring_stats g = do {
+  let g = g.game_v in
   g.rogue.stealthy := 0;
   g.rogue.r_rings := 0;
   g.rogue.e_rings := 0;
@@ -533,26 +557,29 @@ value ring_stats g = do {
 };
 
 value unwield g =
+  let g = g.game_v in
   match g.rogue.weapon with
   [ Some (_, w) -> do { w.we_in_use := False; g.rogue.weapon := None }
   | None -> () ]
 ;
 
 value unwear g =
+  let g = g.game_v in
   match g.rogue.armor with
   [ Some (_, a) -> do { a.ar_in_use := False; g.rogue.armor := None }
   | None -> () ]
 ;
 
-value un_put_on g ring = do {
+value un_put_on gg ring = do {
+  let g = gg.game_v in
   match ring.rg_in_use with
   [ Some LeftHand -> g.rogue.left_ring := None
   | Some RightHand -> g.rogue.right_ring := None
   | None -> () ];
   ring.rg_in_use := None;
-  ring_stats g;
-  Dialogue.print_stats g STAT_STRENGTH;
-  relight g
+  ring_stats gg;
+  Dialogue.print_stats gg STAT_STRENGTH;
+  relight gg
 };
 
 value vanish g ch obj =
@@ -567,14 +594,15 @@ value vanish g ch obj =
   }
 ;
 
-value show_monsters g = do {
+value show_monsters gg = do {
+  let g = gg.game_v in
   g.rogue.detect_monster := True;
   if g.rogue.blind > 0 then ()
   else
     List.iter
       (fun monster -> do {
-         show_monster g monster.mn_row monster.mn_col monster
-           (tgmc g monster.mn_char);
+         show_monster gg monster.mn_row monster.mn_col monster
+           (tgmc gg monster.mn_char);
          if monster.mn_flags land IMITATES <> 0 then do {
            monster.mn_flags land_eq lnot IMITATES;
            monster.mn_flags or_eq WAKENS
@@ -584,10 +612,11 @@ value show_monsters g = do {
       g.level_monsters
 };
 
-value get_letter_object g ch mess_try_again =
+value get_letter_object gg ch mess_try_again =
+  let g = gg.game_v in
   try Some (List.assoc ch g.rogue.pack) with
   [ Not_found -> do {
-      Dialogue.message g
+      Dialogue.message gg
         (fun lang →
            if mess_try_again then transl lang "No such item. Try again."
            else transl lang "No such item.")
@@ -596,4 +625,7 @@ value get_letter_object g ch mess_try_again =
     } ]
 ;
 
-value fast g = f_bool.Efield.get g.env "fast" False;
+value fast g =
+  let g = g.game_v in
+  f_bool.Efield.get g.env "fast" False
+;

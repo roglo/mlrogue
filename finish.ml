@@ -15,7 +15,8 @@ value string_create = Bytes.create;
 value string_length = Bytes.length;
 value string_of_bytes = Bytes.to_string;
 
-value win_message g =
+value win_message gg =
+  let g = gg.game_v in
   let f = Curses.mvaddstr in
   match try Some (open_in "rogue.win") with [ Sys_error _ -> None ] with
   [ Some ic -> do {
@@ -40,8 +41,8 @@ value win_message g =
       with
       [ End_of_file -> () ];
       close_in ic;
-      message g (fun _ → "") True;
-      message g (fun _ → "") True
+      message gg (fun _ → "") True;
+      message gg (fun _ → "") True
     }
   | None -> do {
       Curses.clear ();
@@ -53,8 +54,8 @@ value win_message g =
       f 17 11 "Congratulations,  you have  been admitted  to  the";
       f 18 11 "Fighters' Guild.   You return home,  sell all your";
       f 19 11 "treasures at great profit and retire into comfort.";
-      message g (fun _ → "") False;
-      message g (fun _ → "") False
+      message gg (fun _ → "") False;
+      message gg (fun _ → "") False
     } ]
 ;
 
@@ -98,7 +99,8 @@ value get_value g obj =
   | _ -> 0 ]
 ;
 
-value sell_pack g = do {
+value sell_pack gg = do {
+  let g = gg.game_v in
   Curses.clear ();
   Curses.mvaddstr 1 0 (transl g.lang "Value      Item");
   let _ =
@@ -110,7 +112,7 @@ value sell_pack g = do {
              let v = max 10 (get_value g obj) in
              g.rogue.gold add_eq v;
              if row < DROWS then
-               let d = get_desc g g.lang obj True in
+               let d = get_desc gg g.lang obj True in
                let line = sprintf "%5d      %s" v (etransl d) in
                Curses.mvaddstr row 0 line
              else ();
@@ -119,7 +121,7 @@ value sell_pack g = do {
       2 (List.sort (fun (a, _) (b, _) -> compare a b) g.rogue.pack)
   in
   Curses.refresh ();
-  message g (fun _ → "") False
+  message gg (fun _ → "") False
 };
 
 DEFINE MAXRANK = 15;
@@ -235,14 +237,15 @@ value put_scores lang score_only g_ending = do {
   let scores = read_scores () in
   let (scores, n) =
     match g_ending with
-    [ Some (g, ending) -> do {
+    [ Some (gg, ending) -> do {
         (* ... *)
+        let g = gg.game_v in
         Curses.refresh ();
         let score =
           {sc_score = g.rogue.gold;
            sc_name = if g.nick_name <> "" then g.nick_name else g.login_name;
            sc_ending = ending; sc_level = g.max_level;
-           sc_with_amulet = has_amulet g}
+           sc_with_amulet = has_amulet gg}
         in
         if f_bool.Efield.get g.env "batch" False then do {
           let s = ending_reason_line lang score in
@@ -292,14 +295,14 @@ value put_scores lang score_only g_ending = do {
   Curses.refresh ()
 };
 
-value win g = do {
-  (* ... *)
-  win_message g;
+value win gg = do {
+  let g = gg.game_v in
+  win_message gg;
   id_all g (List.map snd g.rogue.pack);
-  sell_pack g;
-  put_scores g.lang g.score_only (Some (g, Win));
-  message g (fun _ → "") False;
-  check_message g;
+  sell_pack gg;
+  put_scores g.lang g.score_only (Some (gg, Win));
+  message gg (fun _ → "") False;
+  check_message gg;
   clean_up ""
 };
 
@@ -354,7 +357,8 @@ value select_unidentified g (_, obj) =
   | Food _ | Gold | Amulet -> False ]
 ;
 
-value killed_by g death = do {
+value killed_by gg death = do {
+  let g = gg.game_v in
   if death <> Quit then g.rogue.gold := g.rogue.gold * 9 / 10 else ();
   let buf lang =
     let buf =
@@ -400,11 +404,11 @@ value killed_by g death = do {
       Curses.mvaddstr 19 27 "      ~---------~";
       center 21 (if g.nick_name <> "" then g.nick_name else g.login_name);
       center 22 (buf g.lang);
-      check_message g;
-      message g (fun _ → "") False
+      check_message gg;
+      message gg (fun _ → "") False
     }
-  | _ -> message g (fun lang → buf lang ^ ".") False ];
-  message g (fun _ → "") False;
+  | _ -> message gg (fun lang → buf lang ^ ".") False ];
+  message gg (fun _ → "") False;
   let pack_opt =
     if g.rogue.pack <> [] && has_unidentifed_objects g g.rogue.pack then
       let pack = List.filter (select_unidentified g) g.rogue.pack in
@@ -419,10 +423,10 @@ value killed_by g death = do {
   in
   loop () where rec loop () = do {
     match pack_opt with
-    [ Some pack -> inventory g pack (fun _ -> True)
+    [ Some pack -> inventory gg pack (fun _ -> True)
     | None -> () ];
     let retc =
-      inv_sel g (List.map (fun obj -> ('.', obj)) g.level_objects)
+      inv_sel gg (List.map (fun obj -> ('.', obj)) g.level_objects)
         (fun _ -> True)
         (fun lang →
            match pack_opt with
@@ -434,8 +438,8 @@ value killed_by g death = do {
     [ Some ('\b' | '\127') -> loop ()
     | Some _ | None -> () ]
   };
-  put_scores g.lang g.score_only (Some (g, death));
-  message g (fun _ → "") False;
-  check_message g;
+  put_scores g.lang g.score_only (Some (gg, death));
+  message gg (fun _ → "") False;
+  check_message gg;
   clean_up ""
 };
