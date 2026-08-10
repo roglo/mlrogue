@@ -292,36 +292,37 @@ value heal gg =
 ;
 (**)
 
-value rec check_hunger g messages_only =
+value rec check_hunger gg messages_only =
+  let g = gg.game_v in
   let rogue = g.rogue in
   let fainted =
     if rogue.moves_left = HUNGRY then do {
       g.hunger_str := "hungry";
-      message g (fun lang → transl lang "hungry") False;
-      print_stats g STAT_HUNGER;
+      message gg (fun lang → transl lang "hungry") False;
+      print_stats gg STAT_HUNGER;
       False
     }
     else if rogue.moves_left = WEAK then do {
       g.hunger_str := "weak";
-      message g (fun lang → transl lang "weak") True;
-      print_stats g STAT_HUNGER;
+      message gg (fun lang → transl lang "weak") True;
+      print_stats gg STAT_HUNGER;
       False
     }
     else if rogue.moves_left <= FAINT then do {
       if rogue.moves_left = FAINT then do {
         g.hunger_str := "faint";
-        message g (fun lang → transl lang "faint") True;
-        print_stats g STAT_HUNGER
+        message gg (fun lang → transl lang "faint") True;
+        print_stats gg STAT_HUNGER
       }
       else ();
       let n = get_rand 0 (FAINT - rogue.moves_left) in
       if n > 0 then do {
         if rand_percent 40 then rogue.moves_left ++ else ();
-        message g (fun lang → transl lang "you faint" ^ ".") True;
+        message gg (fun lang → transl lang "you faint" ^ ".") True;
         for i = 0 to n - 1 do {
-          if coin_toss () then Monster.mv_mons g else ();
+          if coin_toss () then Monster.mv_mons gg else ();
         };
-        message g (fun lang → transl lang "You can move again.") True
+        message gg (fun lang → transl lang "You can move again.") True
       }
       else ();
       True
@@ -329,7 +330,7 @@ value rec check_hunger g messages_only =
     else False
   in
   if messages_only then fainted
-  else if rogue.moves_left <= STARVE then Finish.killed_by g Starvation
+  else if rogue.moves_left <= STARVE then Finish.killed_by gg Starvation
   else do {
     match rogue.e_rings with
     [ (-2) -> ()
@@ -337,13 +338,13 @@ value rec check_hunger g messages_only =
     | 0 -> rogue.moves_left --
     | 1 -> do {
         rogue.moves_left --;
-        let _ : bool = check_hunger g True in
+        let _ : bool = check_hunger gg True in
         ();
         rogue.moves_left sub_eq rogue.moves_left mod 2
       }
     | 2 -> do {
         rogue.moves_left --;
-        let _ : bool = check_hunger g True in
+        let _ : bool = check_hunger gg True in
         ();
         rogue.moves_left --
       }
@@ -389,37 +390,39 @@ value wanderer g =
 value rec reg_move g =
   let _ : bool = reg_move_and_check_fainted g in
   ()
-and reg_move_and_check_fainted g = do {
+and reg_move_and_check_fainted gg = do {
+  let g = gg.game_v in
   let fainted =
     if g.rogue.moves_left <= HUNGRY || g.cur_level >= g.max_level then
-      check_hunger g False
+      check_hunger gg False
     else False
   in
-  Monster.mv_mons g;
+  Monster.mv_mons gg;
   g.m_moves ++;
-  if g.m_moves >= 120 then do { g.m_moves := 0; wanderer g } else ();
+  if g.m_moves >= 120 then do { g.m_moves := 0; wanderer gg } else ();
   if g.rogue.halluc > 0 then do {
     g.rogue.halluc --;
-    if g.rogue.halluc = 0 then unhallucinate g else hallucinate g
+    if g.rogue.halluc = 0 then unhallucinate gg else hallucinate gg
   }
   else ();
   if g.rogue.blind > 0 then do {
     g.rogue.blind --;
-    if g.rogue.blind = 0 then unblind g else ()
+    if g.rogue.blind = 0 then unblind gg else ()
   }
   else ();
   if g.rogue.confused > 0 then do {
     g.rogue.confused --;
-    if g.rogue.confused = 0 then unconfuse g else ()
+    if g.rogue.confused = 0 then unconfuse gg else ()
   }
   else ();
   if g.rogue.bear_trap > 0 then g.rogue.bear_trap -- else ();
   if g.rogue.levitate > 0 then do {
     g.rogue.levitate --;
     if g.rogue.levitate = 0 then do {
-      message g (fun lang → transl lang "You float gently to the ground.") True;
+      message gg
+       (fun lang → transl lang "You float gently to the ground.") True;
       if g.dungeon.(g.rogue.row).(g.rogue.col) land TRAP <> 0 then
-        trap_player g g.rogue.row g.rogue.col
+        trap_player gg g.rogue.row g.rogue.col
       else ()
     }
     else ()
@@ -428,15 +431,17 @@ and reg_move_and_check_fainted g = do {
   if g.rogue.haste_self > 0 then do {
     g.rogue.haste_self --;
     if g.rogue.haste_self = 0 then
-      message g (fun lang → transl lang "You feel yourself slowing down.") False
+      message gg (fun lang → transl lang "You feel yourself slowing down.")
+        False
     else ()
   }
   else ();
-  heal g;
-  if g.rogue.auto_search > 0 then search g g.rogue.auto_search True else ();
+  heal gg;
+  if g.rogue.auto_search > 0 then search gg g.rogue.auto_search True else ();
   fainted
 }
-and search g n is_auto =
+and search gg n is_auto =
+  let g = gg.game_v in
   let found =
     loop_i 0 (-1) where rec loop_i found i =
       if i <= 1 then
@@ -477,12 +482,13 @@ and search g n is_auto =
                       if g.rogue.blind = 0 &&
                          (row <> g.rogue.row || col <> g.rogue.col)
                       then
-                        Curses.mvaddch row col (get_dungeon_char g row col)
+                        Curses.mvaddch row col (get_dungeon_char gg row col)
                       else ();
                       if g.dungeon.(row).(col) land TRAP <> 0 then
-                        match trap_at g row col with
+                        match trap_at gg row col with
                         [ Some t ->
-                            message g (fun lang → transl lang (Level.trap_string t))
+                            message gg
+                              (fun lang → transl lang (Level.trap_string t))
                               True
                         | None -> () ]
                       else ();
@@ -499,7 +505,7 @@ and search g n is_auto =
         else do {
           if not is_auto then do {
             g.reg_search := not g.reg_search;
-            if g.reg_search then reg_move g else ()
+            if g.reg_search then reg_move gg else ()
           }
           else ();
           loop_s shown (s + 1)
