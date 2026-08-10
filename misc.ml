@@ -244,9 +244,6 @@ value add_exp gg e promotion = do {
   else Dialogue.print_stats gg STAT_EXP
 };
 
-type saved = (game_v * array (array char));
-value save_magic = "RGSV0006";
-
 module OLD_GAME =
   struct
     type t =
@@ -277,9 +274,9 @@ module OLD_GAME =
         level_monsters : mutable list monster;
         new_level_message : mutable string;
         hunger_str : mutable string;
-        hit_message : mutable string → string;
+        hit_message : mutable string;
         msg_cleared : mutable bool;
-        msg_line : mutable string → string;
+        msg_line : mutable string;
         msg_col : mutable int;
         same_msg : mutable int;
         m_moves : mutable int;
@@ -294,10 +291,17 @@ module OLD_GAME =
         is_wood : array bool;
         rooms : array room;
         traps : array (option trap);
-        dungeon : array (array int) }
+        dungeon : array (array int);
+        env : Efield.t Rfield.env }
     ;
   end
 ;
+
+type saved = (game_v * array (array char));
+value save_magic = "RGSV0007";
+
+type old_saved = (OLD_GAME.t * array (array char));
+value old_save_magic = "RGSV0006";
 
 value g_of_old_g g =
   let new_g =
@@ -347,12 +351,8 @@ value g_of_old_g g =
      dungeon = g.OLD_GAME.dungeon;
      env = Efield.make ()}
   in
-  {game_v = new_g; hit_message = g.OLD_GAME.hit_message;
-   msg_line = g.OLD_GAME.msg_line}
+  {game_v = new_g; hit_message _ = ""; msg_line _ = ""}
 ;
-
-type old_saved = (OLD_GAME.t * array (array char));
-value old_save_magic = "RGSV0004";
 
 value save_into_file g fname = do {
   let g = g.game_v in
