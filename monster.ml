@@ -465,10 +465,12 @@ value get_closer row col trow tcol =
   (row, col)
 ;
 
-value move_confused g monster =
+value move_confused gg monster =
+  let g = gg.game_v in
   if monster.mn_flags land ASLEEP = 0 then do {
     monster.mn_moves_confused --;
-    if monster.mn_moves_confused <= 0 then monster.mn_flags land_eq lnot CONFUSED
+    if monster.mn_moves_confused <= 0 then
+      monster.mn_flags land_eq lnot CONFUSED
     else ();
     if monster.mn_flags land STATIONARY <> 0 then coin_toss ()
     else if rand_percent 15 then True
@@ -477,16 +479,17 @@ value move_confused g monster =
       let col = monster.mn_col in
       loop_i 0 where rec loop_i i =
         if i < 9 then
-          let (row, col) = rand_around g i row col in
+          let (row, col) = rand_around gg i row col in
           if row = g.rogue.row && col = g.rogue.col then False
-          else if mtry g monster row col then True
+          else if mtry gg monster row col then True
           else loop_i (i + 1)
         else False
   }
   else False
 ;
 
-value rec mv_mons g =
+value rec mv_mons gg =
+  let g = gg.game_v in
   if g.rogue.haste_self mod 2 = 1 then ()
   else
     List.iter
@@ -501,7 +504,7 @@ value rec mv_mons g =
            let nm =
              if monster.mn_flags land HASTED <> 0 then do {
                g.mon_disappeared := False;
-               mv_monster g monster g.rogue.row g.rogue.col None;
+               mv_monster gg monster g.rogue.row g.rogue.col None;
                if g.mon_disappeared then 1 else 0
              }
              else 2
@@ -515,7 +518,7 @@ value rec mv_mons g =
            in
            let nm =
              if nm <> 1 && monster.mn_flags land CONFUSED <> 0 &&
-                move_confused g monster
+                move_confused gg monster
              then
                1
              else nm
@@ -524,20 +527,21 @@ value rec mv_mons g =
              let flew =
                if monster.mn_flags land FLIES <> 0 &&
                   monster.mn_flags land NAPPING = 0 &&
-                  not (mon_can_go g monster g.rogue.row g.rogue.col)
+                  not (mon_can_go gg monster g.rogue.row g.rogue.col)
                then do {
-                 mv_monster g monster g.rogue.row g.rogue.col init_pos;
+                 mv_monster gg monster g.rogue.row g.rogue.col init_pos;
                  True
                }
                else False
              in
-             if not (flew && mon_can_go g monster g.rogue.row g.rogue.col)
+             if not (flew && mon_can_go gg monster g.rogue.row g.rogue.col)
              then
-               mv_monster g monster g.rogue.row g.rogue.col init_pos
+               mv_monster gg monster g.rogue.row g.rogue.col init_pos
              else ()
            else ())
       g.level_monsters
-and mv_monster g monster row col init_pos_opt =
+and mv_monster gg monster row col init_pos_opt =
+  let g = gg.game_v in
   if monster.mn_flags land ASLEEP <> 0 then
     if monster.mn_flags land NAPPING <> 0 then do {
       monster.mn_nap_length --;
@@ -547,7 +551,7 @@ and mv_monster g monster row col init_pos_opt =
     }
     else if
       monster.mn_flags land WAKENS <> 0 &&
-      rogue_is_around g monster.mn_row monster.mn_col &&
+      rogue_is_around gg monster.mn_row monster.mn_col &&
       rand_percent
         (if g.rogue.stealthy > 0 then
            WAKE_PERCENT / (STEALTH_FACTOR + g.rogue.stealthy)
