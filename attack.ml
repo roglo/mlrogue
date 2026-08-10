@@ -480,7 +480,8 @@ value extract_copy_of_weapon obj =
   {(obj) with ob_kind = copy_object_kind obj.ob_kind; ob_quantity = 1}
 ;
 
-value flop_weapon g obj row col =
+value flop_weapon gg obj row col =
+  let g = gg.game_v in
   let (found, i, row, col) =
     loop row col 0 where rec loop row col i =
       if i < 9 && row < DROWS - 1 && row >= MIN_ROW && col < DCOLS &&
@@ -489,7 +490,7 @@ value flop_weapon g obj row col =
          lnot (FLOOR lor TUNNEL lor DOOR lor MONSTER) <>
            0
       then
-        let (row, col) = rand_around g i row col in
+        let (row, col) = rand_around gg i row col in
         let i = i + 1 in
         if row > DROWS - 2 || row < MIN_ROW || col > DCOLS - 1 || col < 0 ||
            g.dungeon.(row).(col) = 0 ||
@@ -503,15 +504,15 @@ value flop_weapon g obj row col =
   in
   if found || i = 0 then do {
     let new_obj = extract_copy_of_weapon obj in
-    Level.place_at g new_obj row col;
-    if rogue_can_see g row col && (row <> g.rogue.row || col <> g.rogue.col)
+    Level.place_at gg new_obj row col;
+    if rogue_can_see gg row col && (row <> g.rogue.row || col <> g.rogue.col)
     then do {
       let mon = g.dungeon.(row).(col) land MONSTER in
       g.dungeon.(row).(col) land_eq lnot MONSTER;
-      let dch = get_dungeon_char g row col in
+      let dch = get_dungeon_char gg row col in
       if mon <> 0 then do {
         let mch = Curses.mvinch row col in
-        let monster = monster_at g row col in
+        let monster = monster_at gg row col in
         monster.mn_trail_char := dch;
         if mch < 'A' || mch > 'Z' then Curses.mvaddch row col dch else ()
       }
@@ -521,13 +522,13 @@ value flop_weapon g obj row col =
     else ()
   }
   else do {
-    message g
+    message gg
       (fun lang → do {
          let t = obj.ob_quantity in
          obj.ob_quantity := 1;
          let msg =
            sprintf (ftransl lang "The %s vanishes as it hits the ground.")
-             (name_of g obj)
+             (name_of gg obj)
          in
          obj.ob_quantity := t;
          etransl msg
@@ -535,45 +536,47 @@ value flop_weapon g obj row col =
   }
 ;
 
-value one_throw g dir (ch, obj) = do {
+value one_throw gg dir (ch, obj) = do {
+  let g = gg.game_v in
   let rogue = g.rogue in
   let row = rogue.row in
   let col = rogue.col in
   let just_once =
     match obj with
     [ {ob_kind = Weapon {we_in_use = True}; ob_quantity = 1} -> do {
-        unwield g;
+        unwield gg;
         True
       }
     | {ob_kind = Armor {ar_in_use = True}} -> do {
-        Monster.mv_aquators g;
-        unwear g;
-        print_stats g STAT_ARMOR;
+        Monster.mv_aquators gg;
+        unwear gg;
+        print_stats gg STAT_ARMOR;
         True
       }
     | {ob_kind = Ring ({rg_in_use = Some _} as r)} -> do {
-        un_put_on g r;
+        un_put_on gg r;
         True
       }
     | _ -> False ]
   in
-  let (monster, row, col) = get_thrown_at_monster g obj dir row col in
-  show_rogue g;
+  let (monster, row, col) = get_thrown_at_monster gg obj dir row col in
+  show_rogue gg;
   Curses.refresh ();
-  if rogue_can_see g row col && (row <> rogue.row || col <> rogue.col) then
-    Curses.mvaddch row col (get_dungeon_char g row col)
+  if rogue_can_see gg row col && (row <> rogue.row || col <> rogue.col) then
+    Curses.mvaddch row col (get_dungeon_char gg row col)
   else ();
   let just_once =
     match monster with
     [ Some monster -> do {
         wake_up monster;
         check_gold_seeker g monster;
-        if not (throw_at_monster g monster obj) then flop_weapon g obj row col
+        if not (throw_at_monster gg monster obj) then
+          flop_weapon gg obj row col
         else ();
         True
       }
-    | None -> do { flop_weapon g obj row col; just_once } ]
+    | None -> do { flop_weapon gg obj row col; just_once } ]
   in
-  vanish g ch obj;
+  vanish gg ch obj;
   just_once
 };
