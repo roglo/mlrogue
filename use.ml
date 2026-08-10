@@ -695,21 +695,23 @@ value wield gg =
                    etransl msg) False ] ]
 ;
 
-value take_off g =
+value take_off gg =
+  let g = gg.game_v in
   match g.rogue.armor with
   [ Some (_, a) ->
       if a.ar_is_cursed then
-        message gg (fun lang → transl lang "You can't, it appears to be cursed.") False
+        message gg
+          (fun lang → transl lang "You can't, it appears to be cursed.") False
       else do {
-        Monster.mv_aquators g;
-        unwear g;
+        Monster.mv_aquators gg;
+        unwear gg;
         message gg
           (fun lang →
-             let msg = transl lang "Was wearing" ^ " " ^ armor_desc g a in
+             let msg = transl lang "Was wearing" ^ " " ^ armor_desc gg a in
              etransl msg ^ ".")
           False;
         print_stats gg STAT_ARMOR;
-        Move.reg_move g
+        Move.reg_move gg
       }
   | None -> message gg (fun lang → transl lang "Not wearing any" ^ ".") False ]
 ;
@@ -725,7 +727,8 @@ value do_put_on g ring on_left =
   }
 ;
 
-value put_on_ring g =
+value put_on_ring gg =
+  let g = gg.game_v in
   if g.rogue.r_rings = 2 then
     message gg (fun lang → transl lang "Wearing two rings already.") False
   else
@@ -737,13 +740,14 @@ value put_on_ring g =
     in
     if ch = ROGUE_KEY_CANCEL then ()
     else
-      match get_letter_object g ch False with
+      match get_letter_object gg ch False with
       [ None -> ()
       | Some obj ->
           match obj.ob_kind with
           [ Ring ring ->
               if ring.rg_in_use <> None then
-                message gg (fun lang → transl lang "That ring is already being worn.")
+                message gg
+                  (fun lang → transl lang "That ring is already being worn.")
                   False
               else
                 let ch =
@@ -751,9 +755,10 @@ value put_on_ring g =
                     if g.rogue.left_ring <> None then translc g.lang 'r'
                     else translc g.lang 'l'
                   else do {
-                    message gg (fun lang → transl lang "Left or right hand?") False;
+                    message gg
+                      (fun lang → transl lang "Left or right hand?") False;
                     let rec loop () =
-                      let ch = rgetchar g in
+                      let ch = rgetchar gg in
                       if ch <> ROGUE_KEY_CANCEL && ch <> translc g.lang 'r' &&
                          ch <> translc g.lang 'l'
                       then
@@ -767,35 +772,36 @@ value put_on_ring g =
                 else do {
                   do_put_on g ring (ch = translc g.lang 'l');
                   check_message gg;
-                  ring_stats g;
+                  ring_stats gg;
                   print_stats gg STAT_STRENGTH;
-                  relight g;
+                  relight gg;
                   message gg
                     (fun lang →
                        let desc = get_desc gg lang obj True in
                        etransl desc)
                     False;
-                  Move.reg_move g
+                  Move.reg_move gg
                 }
           | _ ->
               message gg (fun lang → transl lang "That's not a ring!")
                 False ] ]
 ;
 
-value inv_rings g = do {
+value inv_rings gg = do {
+  let g = gg.game_v in
   if g.rogue.r_rings = 0 then
     message gg (fun lang → transl lang "Not wearing any rings.") False
   else do {
     match g.rogue.left_ring with
     [ Some ring ->
         message gg
-          (fun lang → etransl (ring_desc g ring True))
+          (fun lang → etransl (ring_desc gg ring True))
           False
     | None -> () ];
     match g.rogue.right_ring with
     [ Some ring ->
         message gg
-          (fun lang → etransl (ring_desc g ring True))
+          (fun lang → etransl (ring_desc gg ring True))
           False
     | None -> () ]
   };
@@ -813,9 +819,10 @@ value inv_rings g = do {
   else ()
 };
 
-value remove_ring g =
+value remove_ring gg =
+  let g = gg.game_v in
   let (left, right) =
-    if g.rogue.r_rings = 0 then do { inv_rings g; (False, False) }
+    if g.rogue.r_rings = 0 then do { inv_rings gg; (False, False) }
     else if g.rogue.left_ring <> None && g.rogue.right_ring = None then
       (True, False)
     else if g.rogue.left_ring = None && g.rogue.right_ring <> None then
@@ -823,7 +830,7 @@ value remove_ring g =
     else do {
       message gg (fun lang → transl lang "Left or right hand?") False;
       let rec loop () =
-        let ch = rgetchar g in
+        let ch = rgetchar gg in
         if ch <> ROGUE_KEY_CANCEL && ch <> translc g.lang 'r' && ch <> '\r' &&
            ch <> translc g.lang 'l'
         then
@@ -848,14 +855,15 @@ value remove_ring g =
         | None -> assert False ]
     in
     if ring.rg_is_cursed then
-      message gg (fun lang → transl lang "You can't, it appears to be cursed.") False
+      message gg
+        (fun lang → transl lang "You can't, it appears to be cursed.") False
     else do {
-      un_put_on g ring;
+      un_put_on gg ring;
       message gg
         (fun lang →
-           let msg = transl lang "Removed" ^ " " ^ ring_desc g ring False in
+           let msg = transl lang "Removed" ^ " " ^ ring_desc gg ring False in
            etransl msg) False;
-      Move.reg_move g
+      Move.reg_move gg
     }
   else ()
 ;
