@@ -521,29 +521,33 @@ value rec list_remove x =
   | [] -> [] ]
 ;
 
-value ask_pick_up_scroll g = do {
-  check_message g;
-  message_norec g (fun lang → transl lang "Really pick up scroll? (y/n)") True;
+value ask_pick_up_scroll gg = do {
+  let g = gg.game_v in
+  check_message gg;
+  message_norec gg (fun lang → transl lang "Really pick up scroll? (y/n)")
+    True;
   let yes =
     loop () where rec loop () =
-      let r = rgetchar g in
+      let r = rgetchar gg in
       if r = translc g.lang 'y' then True
       else if r = translc g.lang 'n' then False
       else loop ()
   in
-  check_message g;
+  check_message gg;
   yes
 };
 
-value pick_up g row col =
-  let obj = object_at g row col in
+value pick_up gg row col =
+  let g = gg.game_v in
+  let obj = object_at gg row col in
   if obj.ob_kind = Scroll ScareMonster && obj.ob_picked_up then do {
     let pick_it_up =
-      if g.experimented_pick_up_scare_monster then ask_pick_up_scroll g
+      if g.experimented_pick_up_scare_monster then ask_pick_up_scroll gg
       else True
     in
     if pick_it_up then do {
-      message g (fun lang → transl lang "The scroll turns to dust as you pick it up.")
+      message gg
+        (fun lang → transl lang "The scroll turns to dust as you pick it up.")
         False;
       g.dungeon.(row).(col) land_eq lnot OBJECT;
       g.level_objects := list_remove obj g.level_objects;
@@ -557,122 +561,123 @@ value pick_up g row col =
     g.rogue.gold := min MAX_GOLD (g.rogue.gold + obj.ob_quantity);
     g.dungeon.(row).(col) land_eq lnot OBJECT;
     g.level_objects := list_remove obj g.level_objects;
-    print_stats g STAT_GOLD;
+    print_stats gg STAT_GOLD;
     (Some (obj, None), True)
   }
-  else if pack_count g (Some obj) >= MAX_PACK_COUNT then do {
-    message g (fun lang → transl lang "Pack too full.") True;
+  else if pack_count gg (Some obj) >= MAX_PACK_COUNT then do {
+    message gg (fun lang → transl lang "Pack too full.") True;
     (None, True)
   }
   else do {
     g.dungeon.(row).(col) land_eq lnot OBJECT;
     g.level_objects := list_remove obj g.level_objects;
-    let (c, obj) = add_to_pack g obj in
+    let (c, obj) = add_to_pack gg obj in
     obj.ob_picked_up := True;
     (Some (obj, Some c), True)
   }
 ;
 
-value one_move g dirch pickup =
+value one_move gg dirch pickup =
+  let g = gg.game_v in
   let row = g.rogue.row in
   let col = g.rogue.col in
   let dirch = if g.rogue.confused > 0 then gr_dir () else dirch in
   let (row, col) = get_dir_rc dirch row col True in
-  if not (can_move g g.rogue.row g.rogue.col row col) then MoveFailed
+  if not (can_move gg g.rogue.row g.rogue.col row col) then MoveFailed
   else if
     (g.rogue.being_held || g.rogue.bear_trap > 0) &&
     g.dungeon.(row).(col) land MONSTER = 0
   then do {
     if g.rogue.being_held then
-      message g (fun lang → transl lang "You are being held.") True
+      message gg (fun lang → transl lang "You are being held.") True
     else do {
-      message g
+      message gg
         (fun lang → transl lang "You are still stuck in the bear trap.")
         False;
-      reg_move g
+      reg_move gg
     };
     MoveFailed
   }
   else if g.rogue.r_teleport && rand_percent R_TELE_PERCENT then do {
-    tele g;
+    tele gg;
     StoppedOnSomething
   }
   else if g.dungeon.(row).(col) land MONSTER <> 0 then do {
-    Attack.rogue_hit g (monster_at g row col) False;
-    reg_move g;
+    Attack.rogue_hit gg (monster_at gg row col) False;
+    reg_move gg;
     MoveFailed
   }
   else do {
     if g.dungeon.(row).(col) land DOOR <> 0 then
       match g.cur_room with
       [ None ->
-          match get_room_number g row col with
+          match get_room_number gg row col with
           [ Some rn -> do {
               g.cur_room := Some rn;
-              light_up_room g rn;
-              wake_room g rn True row col
+              light_up_room gg rn;
+              wake_room gg rn True row col
             }
           | None -> assert False ]
-      | Some _ -> light_passage g row col ]
+      | Some _ -> light_passage gg row col ]
     else if
       g.dungeon.(g.rogue.row).(g.rogue.col) land DOOR <> 0 &&
       g.dungeon.(row).(col) land TUNNEL <> 0
     then
       match g.cur_room with
       [ Some rn -> do {
-          light_passage g row col;
-          wake_room g rn False g.rogue.row g.rogue.col;
-          darken_room g rn;
+          light_passage gg row col;
+          wake_room gg rn False g.rogue.row g.rogue.col;
+          darken_room gg rn;
           g.cur_room := None
         }
       | None -> assert False ]
     else if g.dungeon.(row).(col) land TUNNEL <> 0 then
-      light_passage g row col
+      light_passage gg row col
     else ();
     Curses.mvaddch g.rogue.row g.rogue.col
-      (get_dungeon_char g g.rogue.row g.rogue.col);
+      (get_dungeon_char gg g.rogue.row g.rogue.col);
     g.rogue.row := row;
     g.rogue.col := col;
-    show_rogue g;
+    show_rogue gg;
     if not g.jump then Curses.refresh () else ();
     if g.dungeon.(row).(col) land OBJECT <> 0 then do {
-      if g.rogue.levitate > 0 && pickup then reg_move g
+      if g.rogue.levitate > 0 && pickup then reg_move gg
       else if pickup then do {
-        let (obj, status) = pick_up g row col in
+        let (obj, status) = pick_up gg row col in
         match obj with
         [ Some (obj, Some c) ->
-            message g
+            message gg
               (fun lang →
-                 let desc = etransl (get_desc g lang obj True) in
+                 let desc = etransl (get_desc gg lang obj True) in
                  sprintf "%s (%c)" desc c)
               True
         | Some (obj, None) ->
-            message g (fun lang → get_desc g lang obj True) True
+            message gg (fun lang → get_desc gg lang obj True) True
         | None ->
             if not status then ()
             else
-              let obj = object_at g row col in
-              message g
+              let obj = object_at gg row col in
+              message gg
                 (fun lang →
                    let msg =
                      sprintf (ftransl lang "moved onto %s")
-                       (get_desc g lang obj False)
+                       (get_desc gg lang obj False)
                    in
                    etransl msg)
                 True ];
-        reg_move g
+        reg_move gg
       }
       else do {
-        let obj = object_at g row col in
-        message g
+        let obj = object_at gg row col in
+        message gg
           (fun lang →
              let msg =
                sprintf (ftransl lang "moved onto %s")
-                 (get_desc g lang obj False)
+                 (get_desc gg lang obj False)
              in
              etransl msg)
           True;
-        reg_move g
+        reg_move gg
       };
       StoppedOnSomething
     }
@@ -680,13 +685,13 @@ value one_move g dirch pickup =
       g.dungeon.(row).(col) land (DOOR lor STAIRS lor TRAP) <> 0
     then do {
       if g.rogue.levitate = 0 && g.dungeon.(row).(col) land TRAP <> 0 then
-        trap_player g row col
+        trap_player gg row col
       else ();
-      reg_move g;
+      reg_move gg;
       StoppedOnSomething
     }
     else
-      let fainted = reg_move_and_check_fainted g in
+      let fainted = reg_move_and_check_fainted gg in
       if fainted || g.rogue.confused > 0 then StoppedOnSomething else Moved
   }
 ;
