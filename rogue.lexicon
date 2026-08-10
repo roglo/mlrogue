@@ -154,6 +154,8 @@ fr: aquator@(me)
 de: Rüstung@(f)
 en: armor
 fr: armure@(e)
+zh: 护甲
+zh-py: hù jiǎ
 
     arrow
 de: Pfeil@(m)
@@ -412,11 +414,15 @@ zh-py: lóng
 de: Werfen was?
 en: Drop what?
 fr: Jeter quoi ?
+zh: 丢什么？
+zh-py: diū shén me?
 
     Dropped
 de: Sie haben geworfen@(A)@(1--)
 en: Dropped
 fr: Jeté
+zh: 丢下了
+zh-py: diū xià le
 
     Eat what?
 en: Eat what?
@@ -499,7 +505,7 @@ fr: gris@(m?:e)@(p?s:)@(1-)
 en: griffin
 fr: ptérodactyle@(m)
 zh: 狮鹫
-zh: shī jiù
+zh-py: shī jiù
 
     Help file not on line.
 en: Help file not on line.
@@ -581,6 +587,7 @@ fr: @(s?:d')ivoire@(1-)
 en: jabberwock
 fr: jaguar@(m)
 zh: 炸脖龙
+zh-py: zhà bó lóng
 
     kestrel
 de: Turmfalke@(m)@(A?n)
@@ -678,7 +685,7 @@ de: Qualle@(f)
 en: medusa
 fr: méduse
 zh: 美杜莎
-zh: měi dù shā
+zh-py: měi dù shā
 
     misses.
 de: blitzt ab.
@@ -1391,6 +1398,8 @@ zh-py: %s mi mei chū
     The %s vanishes as it hits the ground.
 en: The %s vanishes as it hits the ground.
 fr: L@(e?':m?e :a )%s s'évanouit en touchant le sol.
+zh: %s落地时消失了。
+zh-py: %s luò dì shí xiāo shī le.
 
     The %s's bite has weakened you.
 de: Der Biss @(f?der:des) %s@(f?:s) hat Sie geschwächt.
@@ -1413,6 +1422,8 @@ fr: L'amulette de Yendor
 en: The gaze of the %s has confused you.
 fr: Le regard d@(e?e l':m?u :e la )%s vous a déconcerté.
 fr-tt: Le regard d@(e?e l':m?u :e la )%s t'a déconcerté.
+zh: %s的目光让你困惑了。
+zh-py: %s de mù guāng ràng nǐ kùn huò le.
 
     The monster freezes.
 en: The monster freezes.
