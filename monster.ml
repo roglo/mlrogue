@@ -573,7 +573,7 @@ and mv_monster gg monster row col init_pos_opt =
   else if monster.mn_flags land CONFUSES <> 0 && m_confuse gg monster then
     ()
   else if mon_can_go gg monster g.rogue.row g.rogue.col then
-    mon_hit gg monster "" False
+    mon_hit gg monster (fun _ → "") False
   else if monster.mn_flags land FLAMES <> 0 && flame_broil gg monster then
     ()
   else if monster.mn_flags land SEEKS_GOLD <> 0 && seek_gold gg monster then
@@ -674,7 +674,7 @@ and mon_hit gg monster other flame = do {
   let hit_chance = if g.wizard then hit_chance / 2 else hit_chance in
   if rogue.fight_monster = None then g.interrupted := True else ();
   let hit_chance =
-    if other <> "" then
+    if other g.lang <> "" then
       hit_chance - (rogue.exp + rogue.ring_exp - rogue.r_rings)
     else hit_chance
   in
@@ -684,6 +684,7 @@ and mon_hit gg monster other flame = do {
       message gg
         (fun lang →
            let mn = transl lang (mon_name gg monster) in
+           let other = other lang in
            let msg =
              sprintf (ftransl lang "The %s misses.")
                (if other <> "" then other else mn)
@@ -699,6 +700,7 @@ and mon_hit gg monster other flame = do {
       message gg
         (fun lang →
            let mn = transl lang (mon_name gg monster) in
+           let other = other lang in
            let msg =
              sprintf (ftransl lang "The %s hit.")
                (if other <> "" then other else mn)
@@ -713,7 +715,7 @@ and mon_hit gg monster other flame = do {
       if monster.mn_flags land STATIONARY = 0 then
         let damage = get_damage gg monster.mn_damage True in
         let damage =
-          if other <> "" && flame then
+          if other g.lang <> "" && flame then
             max 1 (damage - get_armor_class rogue.armor)
           else damage
         in
@@ -856,7 +858,7 @@ and flame_broil gg monster =
         }
       }
       else ();
-      mon_hit gg monster (transl g.lang "flame") True;
+      mon_hit gg monster (fun lang → transl lang "flame") True;
       True
     }
 ;
