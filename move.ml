@@ -28,13 +28,15 @@ value gr_dir () =
   | _ -> assert False ]
 ;
 
-value unhallucinate g = do {
+value unhallucinate gg = do {
+  let g = gg.game_v in
   g.rogue.halluc := 0;
-  relight g;
-  message g (fun lang → transl lang "Everything looks so boring now.") True
+  relight gg;
+  message gg (fun lang → transl lang "Everything looks so boring now.") True
 };
 
-value hallucinate g =
+value hallucinate gg =
+  let g = gg.game_v in
   if g.rogue.blind > 0 then ()
   else do {
     List.iter
@@ -53,31 +55,34 @@ value hallucinate g =
          let ch = Curses.mvinch monster.mn_row monster.mn_col in
          if ch >= 'A' && ch <= 'Z' then
            let ch = Char.chr (get_rand (Char.code 'A') (Char.code 'Z')) in
-           Curses.addch (tgmc g ch)
+           Curses.addch (tgmc gg ch)
          else ())
       g.level_monsters
   }
 ;
 
-value unblind g = do {
+value unblind gg = do {
+  let g = gg.game_v in
   g.rogue.blind := 0;
-  message g (fun lang → transl lang "The veil of darkness lifts.") True;
-  relight g;
-  if g.rogue.halluc > 0 then hallucinate g else ();
-  if g.rogue.detect_monster then show_monsters g else ()
+  message gg (fun lang → transl lang "The veil of darkness lifts.") True;
+  relight gg;
+  if g.rogue.halluc > 0 then hallucinate gg else ();
+  if g.rogue.detect_monster then show_monsters gg else ()
 };
 
-value unconfuse g = do {
+value unconfuse gg = do {
+  let g = gg.game_v in
   g.rogue.confused := 0;
-  show_rogue g;
-  message g
+  show_rogue gg;
+  message gg
     (fun lang → sprintf (ftransl lang "You feel less %s now.")
        (if g.rogue.halluc > 0 then transl lang "trippy"
         else transl lang "confused"))
     True
 };
 
-value darken_room g rn =
+value darken_room gg rn =
+  let g = gg.game_v in
   for i = g.rooms.(rn).top_row + 1 to g.rooms.(rn).bottom_row - 1 do {
     for j = g.rooms.(rn).left_col + 1 to g.rooms.(rn).right_col - 1 do {
       if g.rogue.blind > 0 then Curses.mvaddch i j ' '
@@ -85,11 +90,11 @@ value darken_room g rn =
         g.dungeon.(i).(j) land (OBJECT lor STAIRS) = 0 &&
         not (g.rogue.detect_monster && g.dungeon.(i).(j) land MONSTER <> 0)
       then do {
-        if not (imitating g i j) then Curses.mvaddch i j ' ' else ();
+        if not (imitating gg i j) then Curses.mvaddch i j ' ' else ();
         if g.dungeon.(i).(j) land TRAP <> 0 &&
            g.dungeon.(i).(j) land HIDDEN = 0
         then
-          match trap_at g i j with
+          match trap_at gg i j with
           [ Some t -> show_trap i j t
           | None -> Curses.mvaddch i j '^' ]
         else ()
@@ -99,7 +104,8 @@ value darken_room g rn =
   }
 ;
 
-value wake_room g rn entering row col =
+value wake_room gg rn entering row col =
+  let g = gg.game_v in
   let wake_percent =
     if g.party_room = Some rn then PARTY_WAKE_PERCENT else WAKE_PERCENT
   in
@@ -111,7 +117,7 @@ value wake_room g rn entering row col =
   List.iter
     (fun monster ->
        let in_room =
-         get_room_number g monster.mn_row monster.mn_col = Some rn
+         get_room_number gg monster.mn_row monster.mn_col = Some rn
        in
        if in_room then do {
          monster.mn_target := if entering then None else Some (row, col);
@@ -124,16 +130,17 @@ value wake_room g rn entering row col =
     g.level_monsters
 ;
 
-value tele g = do {
-  let dc = get_dungeon_char g g.rogue.row g.rogue.col in
+value tele gg = do {
+  let g = gg.game_v in
+  let dc = get_dungeon_char gg g.rogue.row g.rogue.col in
   Curses.mvaddch g.rogue.row g.rogue.col dc;
   match g.cur_room with
-  [ Some rn -> if rn >= 0 then darken_room g rn else ()
+  [ Some rn -> if rn >= 0 then darken_room gg rn else ()
   | None -> () ];
-  Level.put_player g (get_room_number g g.rogue.row g.rogue.col);
-  relight g;
+  Level.put_player gg (get_room_number gg g.rogue.row g.rogue.col);
+  relight gg;
   match g.cur_room with
-  [ Some rn -> wake_room g rn True g.rogue.row g.rogue.col
+  [ Some rn -> wake_room gg rn True g.rogue.row g.rogue.col
   | None -> () ];
   g.rogue.being_held := False;
   g.rogue.bear_trap := 0;
@@ -147,14 +154,15 @@ value take_a_nap g = do {
   message g (fun lang → transl lang "You can move again.") False
 };
 
-value trap_player g row col =
-  match trap_at g row col with
+value trap_player gg row col =
+  let g = gg.game_v in
+  match trap_at gg row col with
   [ None -> ()
   | Some t -> do {
       let rogue = g.rogue in
       g.dungeon.(row).(col) land_eq lnot HIDDEN;
       if rand_percent (rogue.exp + rogue.ring_exp) then
-        message g (fun lang → transl lang "The trap failed.") True
+        message gg (fun lang → transl lang "The trap failed.") True
       else
         match t with
         [ TrapDoor -> do {
@@ -162,31 +170,31 @@ value trap_player g row col =
             g.new_level_message := transl g.lang (Level.trap_mess t)
           }
         | BearTrap -> do {
-            message g (fun lang → transl lang (Level.trap_mess t)) True;
+            message gg (fun lang → transl lang (Level.trap_mess t)) True;
             g.rogue.bear_trap := get_rand 4 7
           }
-        | TeleTrap -> do { Curses.mvaddch rogue.row rogue.col '^'; tele g }
+        | TeleTrap -> do { Curses.mvaddch rogue.row rogue.col '^'; tele gg }
         | DartTrap -> do {
-            message g (fun lang → transl lang (Level.trap_mess t)) True;
-            rogue.hp_current sub_eq get_damage g (1, 6, None) True;
+            message gg (fun lang → transl lang (Level.trap_mess t)) True;
+            rogue.hp_current sub_eq get_damage gg (1, 6, None) True;
             rogue.hp_current := max 0 rogue.hp_current;
             if not rogue.sustain_strength && rand_percent 40 &&
                rogue.str_current >= 3
             then
               rogue.str_current --
             else ();
-            print_stats g (STAT_HP lor STAT_STRENGTH);
-            show_rogue g;
-            if rogue.hp_current <= 0 then Finish.killed_by g PoisonDart
+            print_stats gg (STAT_HP lor STAT_STRENGTH);
+            show_rogue gg;
+            if rogue.hp_current <= 0 then Finish.killed_by gg PoisonDart
             else ()
           }
         | SleepingGasTrap -> do {
-            message g (fun lang → transl lang (Level.trap_mess t)) True;
-            take_a_nap g
+            message gg (fun lang → transl lang (Level.trap_mess t)) True;
+            take_a_nap gg
           }
         | RustTrap -> do {
-            message g (fun lang → transl lang (Level.trap_mess t)) True;
-            Monster.rust g None
+            message gg (fun lang → transl lang (Level.trap_mess t)) True;
+            Monster.rust gg None
           } ]
     } ]
 ;
@@ -234,7 +242,8 @@ value heal =
 ;
 *)
 
-value heal g =
+value heal gg =
+  let g = gg.game_v in
   if g.rogue.hp_current = g.rogue.hp_max then do {
     f_int.Efield.set g.env "heal_c" 0
   }
@@ -275,8 +284,8 @@ value heal g =
       if alt then g.rogue.hp_current ++ else ();
       g.rogue.hp_current add_eq g.rogue.regeneration;
       g.rogue.hp_current := min g.rogue.hp_max g.rogue.hp_current;
-      print_stats g STAT_HP;
-      show_rogue g
+      print_stats gg STAT_HP;
+      show_rogue gg
     }
     else ()
   }
