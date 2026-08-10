@@ -53,10 +53,11 @@ value mon_can_go gg monster row col =
     else True
 ;
 
-value mon_sees g monster row col =
-  match get_room_number g row col with
+value mon_sees gg monster row col =
+  let g = gg.game_v in
+  match get_room_number gg row col with
   [ Some rn ->
-      if get_room_number g monster.mn_row monster.mn_col = Some rn &&
+      if get_room_number gg monster.mn_row monster.mn_col = Some rn &&
          g.rooms.(rn).is_room land R_MAZE = 0
       then
         True
@@ -85,14 +86,15 @@ value get_oth_room g rn row col =
   else None
 ;
 
-value dr_course g monster entering =
+value dr_course gg monster entering =
+  let g = gg.game_v in
   let row = monster.mn_row in
   let col = monster.mn_col in
   let rogue = g.rogue in
-  if mon_sees g monster rogue.row rogue.col then monster.mn_target := None
+  if mon_sees gg monster rogue.row rogue.col then monster.mn_target := None
   else
     let rn =
-      match get_room_number g row col with
+      match get_room_number gg row col with
       [ Some rn -> rn
       | None -> assert False ]
     in
@@ -173,7 +175,8 @@ value dr_course g monster entering =
       monster.mn_target := get_oth_room g rn row col
 ;
 
-value move_mon_to g monster row col = do {
+value move_mon_to gg monster row col = do {
+  let g = gg.game_v in
   let mrow = monster.mn_row in
   let mcol = monster.mn_col in
   g.dungeon.(mrow).(mcol) land_eq lnot MONSTER;
@@ -181,23 +184,23 @@ value move_mon_to g monster row col = do {
   let c = Curses.mvinch mrow mcol in
   if c >= 'A' && c <= 'Z' then do {
     if not g.rogue.detect_monster then ()
-    else if rogue_can_see g mrow mcol then ()
+    else if rogue_can_see gg mrow mcol then ()
     else if monster.mn_trail_char = '.' then monster.mn_trail_char := ' '
     else ();
     Curses.mvaddch mrow mcol monster.mn_trail_char
   }
   else ();
   monster.mn_trail_char := Curses.mvinch row col;
-  if g.rogue.blind = 0 && (g.rogue.detect_monster || rogue_can_see g row col)
+  if g.rogue.blind = 0 && (g.rogue.detect_monster || rogue_can_see gg row col)
   then
     if monster.mn_flags land INVISIBLE = 0 || g.rogue.detect_monster ||
        g.rogue.see_invisible || g.rogue.r_see_invisible
     then
-      show_monster g row col monster (gmc g monster)
+      show_monster gg row col monster (gmc gg monster)
     else ()
   else ();
   if g.dungeon.(row).(col) land DOOR <> 0 then
-    match get_room_number g row col with
+    match get_room_number gg row col with
     [ Some rn ->
         if g.cur_room <> Some rn && g.dungeon.(mrow).(mcol) = FLOOR &&
            g.rogue.blind = 0
@@ -209,7 +212,7 @@ value move_mon_to g monster row col = do {
   monster.mn_row := row;
   monster.mn_col := col;
   if g.dungeon.(row).(col) land DOOR <> 0 then
-    dr_course g monster (g.dungeon.(mrow).(mcol) land TUNNEL <> 0)
+    dr_course gg monster (g.dungeon.(mrow).(mcol) land TUNNEL <> 0)
   else ()
 };
 
@@ -223,7 +226,8 @@ value mtry g monster row col =
     False
 ;
 
-value flit g monster =
+value flit gg monster =
+  let g = gg.game_v in
   if not (rand_percent FLIT_PERCENT) then False
   else if rand_percent 10 then True
   else
@@ -231,14 +235,15 @@ value flit g monster =
     let col = monster.mn_col in
     loop_i 0 where rec loop_i i =
       if i < 9 then
-        let (row, col) = rand_around g i row col in
+        let (row, col) = rand_around gg i row col in
         if row = g.rogue.row && col = g.rogue.col then loop_i (i + 1)
-        else if mtry g monster row col then True
+        else if mtry gg monster row col then True
         else loop_i (i + 1)
       else True
 ;
 
-value mon_name g monster =
+value mon_name gg monster =
+  let g = gg.game_v in
   if g.rogue.blind > 0 ||
      monster.mn_flags land INVISIBLE <> 0 &&
      not
@@ -248,15 +253,16 @@ value mon_name g monster =
     "something"
   else if g.rogue.halluc > 0 then
     let ch = get_rand (Char.code 'A') (Char.code 'Z') - Char.code 'A' in
-    Imonster.visible_mon_name g ch
+    Imonster.visible_mon_name gg ch
   else
     let ch = Char.code monster.mn_char - Char.code 'A' in
-    Imonster.visible_mon_name g ch
+    Imonster.visible_mon_name gg ch
 ;
 
-value confuse g = do {
+value confuse gg = do {
+  let g = gg.game_v in
   g.rogue.confused add_eq get_rand 12 22;
-  show_rogue g
+  show_rogue gg
 };
 
 value m_confuse g monster =
@@ -276,21 +282,23 @@ value m_confuse g monster =
   else False
 ;
 
-value rogue_damage g d monster =
+value rogue_damage gg d monster =
+  let g = gg.game_v in
   if d >= g.rogue.hp_current then do {
     g.rogue.hp_current := 0;
-    print_stats g STAT_HP;
+    print_stats gg STAT_HP;
     let i = Char.code monster.mn_char - Char.code 'A' in
-    Finish.killed_by g (Monster (Imonster.visible_mon_name g i))
+    Finish.killed_by gg (Monster (Imonster.visible_mon_name gg i))
   }
   else do {
     g.rogue.hp_current sub_eq d;
-    print_stats g STAT_HP;
-    show_rogue g
+    print_stats gg STAT_HP;
+    show_rogue gg
   }
 ;
 
-value sting g monster =
+value sting gg monster =
+  let g = gg.game_v in
   let rogue = g.rogue in
   if rogue.str_current <= 3 || g.rogue.sustain_strength then ()
   else
@@ -301,19 +309,20 @@ value sting g monster =
       else sting_chance
     in
     if rand_percent sting_chance then do {
-      message g
+      message gg
         (fun lang →
            etransl
              (sprintf (ftransl g.lang "The %s's bite has weakened you.")
-                (transl g.lang (mon_name g monster))))
+                (transl g.lang (mon_name gg monster))))
         False;
       rogue.str_current --;
-      print_stats g STAT_STRENGTH
+      print_stats gg STAT_STRENGTH
     }
     else ()
 ;
 
-value rust g monster =
+value rust gg monster =
+  let g = gg.game_v in
   match g.rogue.armor with
   [ None | Some (_, {ar_kind = Leather}) -> ()
   | Some (_, a) ->
@@ -322,7 +331,7 @@ value rust g monster =
         match monster with
         [ Some monster ->
             if monster.mn_flags land RUST_VANISHED = 0 then do {
-              message g
+              message gg
                 (fun lang → transl lang "The rust vanishes instantly.")
                 False;
               monster.mn_flags or_eq RUST_VANISHED
@@ -331,35 +340,37 @@ value rust g monster =
         | None -> () ]
       else do {
         a.ar_enchant --;
-        message g (fun lang → transl lang "Your armor weakens.") False;
-        print_stats g STAT_ARMOR
+        message gg (fun lang → transl lang "Your armor weakens.") False;
+        print_stats gg STAT_ARMOR
       } ]
 ;
 
-value disappear g monster = do {
+value disappear gg monster = do {
+  let g = gg.game_v in
   let row = monster.mn_row in
   let col = monster.mn_col in
   g.dungeon.(row).(col) land_eq lnot MONSTER;
-  if rogue_can_see g row col then
-    Curses.mvaddch row col (get_dungeon_char g row col)
+  if rogue_can_see gg row col then
+    Curses.mvaddch row col (get_dungeon_char gg row col)
   else ();
-  take_from_monsters g monster;
+  take_from_monsters gg monster;
   g.mon_disappeared := True
 };
 
-value drain_life g =
+value drain_life gg =
+  let g = gg.game_v in
   let rogue = g.rogue in
   if rand_percent 60 || rogue.hp_max <= 30 || rogue.hp_current < 10 then ()
   else do {
     let n = get_rand 1 3 in
     if n <> 2 || not rogue.sustain_strength then
-      message g (fun lang → transl lang "You feel weaker.") False
+      message gg (fun lang → transl lang "You feel weaker.") False
     else ();
     if n <> 2 then do {
       rogue.hp_max --;
       rogue.hp_current --;
       rogue.less_hp ++;
-      show_rogue g;
+      show_rogue gg;
     }
     else ();
     if n <> 1 then
@@ -369,35 +380,37 @@ value drain_life g =
       }
       else ()
     else ();
-    print_stats g (STAT_STRENGTH lor STAT_HP)
+    print_stats gg (STAT_STRENGTH lor STAT_HP)
   }
 ;
 
-value drop_level g =
+value drop_level gg =
+  let g = gg.game_v in
   let rogue = g.rogue in
   if rand_percent 80 || rogue.exp <= 5 then ()
   else do {
     rogue.exp_points := level_points.(rogue.exp - 2) - get_rand 9 29;
     rogue.exp sub_eq 2;
-    let hp = hp_raise g in
+    let hp = hp_raise gg in
     rogue.hp_current sub_eq hp;
     if rogue.hp_current <= 0 then rogue.hp_current := 1 else ();
     rogue.hp_max sub_eq hp;
     if rogue.hp_max <= 0 then rogue.hp_max := 1 else ();
-    add_exp g 1 (fun _ -> 0);
-    show_rogue g
+    add_exp gg 1 (fun _ -> 0);
+    show_rogue gg
   }
 ;
 
-value steal_gold g monster =
+value steal_gold gg monster =
+  let g = gg.game_v in
   if g.rogue.gold <= 0 || rand_percent 10 then ()
   else do {
     let amount = get_rand (g.cur_level * 10) (g.cur_level * 30) in
     let amount = min amount g.rogue.gold in
     g.rogue.gold sub_eq amount;
-    message g (fun lang → transl lang "Your purse feels lighter.") False;
-    print_stats g STAT_GOLD;
-    disappear g monster
+    message gg (fun lang → transl lang "Your purse feels lighter.") False;
+    print_stats gg STAT_GOLD;
+    disappear gg monster
   }
 ;
 
@@ -409,7 +422,8 @@ value in_use obj =
   | _ -> False ]
 ;
 
-value steal_item g monster =
+value steal_item gg monster =
+  let g = gg.game_v in
   if rand_percent 15 then ()
   else do {
     if g.rogue.pack = [] then ()
@@ -429,15 +443,15 @@ value steal_item g monster =
              [ Weapon _ -> obj.ob_quantity
              | _ -> 1 ]}
         in
-        message g
+        message gg
           (fun lang →
              etransl
-               (transl lang "She stole" ^ " " ^ get_desc g lang obj1 False))
+               (transl lang "She stole" ^ " " ^ get_desc gg lang obj1 False))
           False;
-        if obj1.ob_quantity = obj.ob_quantity then take_from_pack g ch
+        if obj1.ob_quantity = obj.ob_quantity then take_from_pack gg ch
         else obj.ob_quantity --
       };
-    disappear g monster
+    disappear gg monster
   }
 ;
 
