@@ -140,7 +140,6 @@ value show_traps g =
 ;
 
 value get_input_line gg prompt insert if_cancelled do_echo = do {
-  let g = gg.game_v in
   message_norec gg (fun _ → prompt) False;
   let n = Ustring.length (Ustring.of_string prompt) in
   let (i, buf) =
@@ -243,7 +242,6 @@ value call_it gg =
 ;
 
 value single_inv gg ichar =
-  let g = gg.game_v in
   let ch =
     match ichar with
     [ Some ichar -> ichar
@@ -477,7 +475,6 @@ value quit gg from_intrpt =
 ;
 
 value unknown_command gg ch =
-  let g = gg.game_v in
   let s =
     if Char.code ch <= 26 then
       sprintf "ctrl-%c" (Char.chr (Char.code ch + Char.code 'a' - 1))
@@ -509,7 +506,6 @@ value wizardize gg =
 ;
 
 value msg_is gg ch s =
-  let g = gg.game_v in
   message gg
     (fun lang → etransl (sprintf (ftransl lang "<%c> is %s") ch s) ^ ".")
     False
@@ -661,7 +657,8 @@ value instructions gg =
       message gg (fun lang → transl lang "Help file not on line.") False ]
 ;
 
-value change_lang g =
+value change_lang gg =
+  let g = gg.game_v in
   let q = transl g.lang "Language:" in
   let q = if g.lang = "" then q else q ^ " (" ^ g.lang ^ ")" in
   let new_lang = get_input_line gg q "" "" True in
@@ -674,16 +671,17 @@ value change_lang g =
          if mon.mn_flags land IMITATES <> 0 then ()
          else if
            g.rogue.blind = 0 && g.rogue.detect_monster ||
-           rogue_can_see g mon.mn_row mon.mn_col
+           rogue_can_see gg mon.mn_row mon.mn_col
          then
-           show_monster g mon.mn_row mon.mn_col mon (tgmc g mon.mn_char)
+           show_monster gg mon.mn_row mon.mn_col mon (tgmc gg mon.mn_char)
          else ())
       g.level_monsters
   }
   else ()
 ;
 
-value save_game g =
+value save_game gg =
+  let g = gg.game_v in
   let fname =
     get_input_line gg (transl g.lang "File name?") g.save_file
       (transl g.lang "Game not saved.") True
@@ -691,13 +689,14 @@ value save_game g =
   if fname <> "" then do {
     check_message gg;
     message gg (fun _ → fname) False;
-    save_into_file g fname;
+    save_into_file gg fname;
     Finish.clean_up ""
   }
   else ()
 ;
 
-value show_average_hp g =
+value show_average_hp gg =
+  let g = gg.game_v in
   let rogue = g.rogue in
   let real_average =
     if g.rogue.exp = 1 then 0
@@ -720,12 +719,13 @@ value show_average_hp g =
     False
 ;
 
-value backup_if_required g =
+value backup_if_required gg =
+  let g = gg.game_v in
   match f_backup.Efield.get g.env "backup" None with
   [ Some (fname, time) -> do {
       if time mod 1000 = 0 then do {
         let fname = sprintf "%s.%d" fname (time / 1000 mod 5) in
-        Misc.save_into_file g fname
+        Misc.save_into_file gg fname
       }
       else ();
       f_backup.Efield.set g.env "backup" (Some (fname, time + 1))
@@ -733,18 +733,19 @@ value backup_if_required g =
   | None -> () ]
 ;
 
-value rec play_level g = do {
+value rec play_level gg = do {
+  let g = gg.game_v in
   g.interrupted := False;
-  if g.hit_message gg.lang <> "" then do {
-    message gg g.hit_message True;
-    g.hit_message := fun _ → ""
+  if gg.hit_message g.lang <> "" then do {
+    message gg gg.hit_message True;
+    gg.hit_message := fun _ → ""
   }
   else ();
   if g.trap_door then g.trap_door := False
   else do {
     Curses.move g.rogue.row g.rogue.col;
     Curses.refresh ();
-    backup_if_required g;
+    backup_if_required gg;
     let ch = rgetchar gg in
     check_message gg;
     let (count, ch) =
@@ -764,20 +765,20 @@ value rec play_level g = do {
     in
     let cont =
       match ch with
-      [ ROGUE_KEY_DROP_CHECK -> not (drop_check g)
-      | ROGUE_KEY_CHECK_UP -> not (check_up g)
+      [ ROGUE_KEY_DROP_CHECK -> not (drop_check gg)
+      | ROGUE_KEY_CHECK_UP -> not (check_up gg)
       | _ -> do {
           match ch with
-          [ ROGUE_KEY_INSTRUCTIONS -> instructions g
-          | ROGUE_KEY_REST -> rest g (max 1 count)
-          | ROGUE_KEY_SEARCH -> Move.search g (max 1 count) False
-          | ROGUE_KEY_INVENTORY -> inventory g g.rogue.pack (fun _ -> True)
-          | ROGUE_KEY_FIGHT -> Move.fight g False
-          | ROGUE_KEY_FIGHT_TO_DEATH -> Move.fight g True
+          [ ROGUE_KEY_INSTRUCTIONS -> instructions gg
+          | ROGUE_KEY_REST -> rest gg (max 1 count)
+          | ROGUE_KEY_SEARCH -> Move.search gg (max 1 count) False
+          | ROGUE_KEY_INVENTORY -> inventory gg g.rogue.pack (fun _ -> True)
+          | ROGUE_KEY_FIGHT -> Move.fight gg False
+          | ROGUE_KEY_FIGHT_TO_DEATH -> Move.fight gg True
           | ROGUE_KEY_NORTH | ROGUE_KEY_SOUTH | ROGUE_KEY_EAST |
             ROGUE_KEY_WEST | ROGUE_KEY_NORTHEAST | ROGUE_KEY_NORTHWEST |
             ROGUE_KEY_SOUTHEAST | ROGUE_KEY_SOUTHWEST ->
-              Move.one_move_rogue g ch True
+              Move.one_move_rogue gg ch True
           | ROGUE_KEY_WEST_SHIFT | ROGUE_KEY_SOUTH_SHIFT |
             ROGUE_KEY_NORTH_SHIFT | ROGUE_KEY_EAST_SHIFT |
             ROGUE_KEY_NORTHWEST_SHIFT | ROGUE_KEY_NORTHEAST_SHIFT |
@@ -786,73 +787,73 @@ value rec play_level g = do {
             ROGUE_KEY_NORTH_CTRL | ROGUE_KEY_EAST_CTRL |
             ROGUE_KEY_NORTHWEST_CTRL | ROGUE_KEY_NORTHEAST_CTRL |
             ROGUE_KEY_SOUTHEAST_CTRL | ROGUE_KEY_SOUTHWEST_CTRL ->
-              Move.multiple_move_rogue g ch
-          | ROGUE_KEY_EAT -> Use.eat g
-          | ROGUE_KEY_QUAFF -> Use.quaff g
-          | ROGUE_KEY_READ -> Use.read_scroll g
-          | ROGUE_KEY_MOVE -> Move.move_onto g
-          | ROGUE_KEY_DROP -> drop g
-          | ROGUE_KEY_PUT_ON_RING -> Use.put_on_ring g
-          | ROGUE_KEY_REMOVE_RING -> Use.remove_ring g
+              Move.multiple_move_rogue gg ch
+          | ROGUE_KEY_EAT -> Use.eat gg
+          | ROGUE_KEY_QUAFF -> Use.quaff gg
+          | ROGUE_KEY_READ -> Use.read_scroll gg
+          | ROGUE_KEY_MOVE -> Move.move_onto gg
+          | ROGUE_KEY_DROP -> drop gg
+          | ROGUE_KEY_PUT_ON_RING -> Use.put_on_ring gg
+          | ROGUE_KEY_REMOVE_RING -> Use.remove_ring gg
           | ROGUE_KEY_REMESSAGE -> remessage gg
-          | ROGUE_KEY_WIZARDIZE -> wizardize g
-          | ROGUE_KEY_INV_ARMOR -> inv_armor g
-          | ROGUE_KEY_INV_WEAPON -> inv_weapon g
-          | ROGUE_KEY_INV_RINGS -> Use.inv_rings g
-          | ROGUE_KEY_ID_TRAP -> Move.id_trap g
-          | ROGUE_KEY_SINGLE_INV -> single_inv g None
-          | ROGUE_KEY_DISCOVERED -> discovered g
-          | ROGUE_KEY_CHANGE_LANG -> change_lang g
-          | ROGUE_KEY_TAKE_OFF -> Use.take_off g
-          | ROGUE_KEY_WEAR -> Use.wear g
-          | ROGUE_KEY_WIELD -> Use.wield g
-          | ROGUE_KEY_CALL -> call_it g
-          | ROGUE_KEY_ZAPP -> if Attack.zap g then Move.reg_move gg else ()
-          | ROGUE_KEY_THROW -> throw g (max 1 count)
+          | ROGUE_KEY_WIZARDIZE -> wizardize gg
+          | ROGUE_KEY_INV_ARMOR -> inv_armor gg
+          | ROGUE_KEY_INV_WEAPON -> inv_weapon gg
+          | ROGUE_KEY_INV_RINGS -> Use.inv_rings gg
+          | ROGUE_KEY_ID_TRAP -> Move.id_trap gg
+          | ROGUE_KEY_SINGLE_INV -> single_inv gg None
+          | ROGUE_KEY_DISCOVERED -> discovered gg
+          | ROGUE_KEY_CHANGE_LANG -> change_lang gg
+          | ROGUE_KEY_TAKE_OFF -> Use.take_off gg
+          | ROGUE_KEY_WEAR -> Use.wear gg
+          | ROGUE_KEY_WIELD -> Use.wield gg
+          | ROGUE_KEY_CALL -> call_it gg
+          | ROGUE_KEY_ZAPP -> if Attack.zap gg then Move.reg_move gg else ()
+          | ROGUE_KEY_THROW -> throw gg (max 1 count)
           | ROGUE_KEY_VERSION ->
               message gg
                 (fun _ →
                    sprintf "mlrogue %s (%s %s)" version g.nick_name
                      g.login_name)
                 False
-          | ROGUE_KEY_QUIT -> quit g False
+          | ROGUE_KEY_QUIT -> quit gg False
           | ROGUE_KEY_NOP | ROGUE_KEY_CANCEL -> ()
           | ROGUE_KEY_WIZ_INVENTORY ->
               if g.wizard then
-                inventory g (List.map (fun obj -> ('.', obj)) g.level_objects)
+                inventory gg (List.map (fun obj -> ('.', obj)) g.level_objects)
                   (fun _ -> True)
-              else unknown_command g ch
+              else unknown_command gg ch
           | ROGUE_KEY_WIZ_MAGIC_MAP ->
-              if g.wizard then Use.draw_magic_map g True
-              else unknown_command g ch
+              if g.wizard then Use.draw_magic_map gg True
+              else unknown_command gg ch
           | ROGUE_KEY_WIZ_SHOW_TRAPS ->
-              if g.wizard then show_traps g else unknown_command g ch
+              if g.wizard then show_traps g else unknown_command gg ch
           | ROGUE_KEY_WIZ_SHOW_OBJS ->
-              if g.wizard then Use.show_objects g else unknown_command g ch
-          | ROGUE_KEY_SHOW_AV_HP -> show_average_hp g
+              if g.wizard then Use.show_objects gg else unknown_command gg ch
+          | ROGUE_KEY_SHOW_AV_HP -> show_average_hp gg
           | ROGUE_KEY_WIZ_NEW_OBJ ->
-              if g.wizard then new_object_for_wizard g
-              else unknown_command g ch
+              if g.wizard then new_object_for_wizard gg
+              else unknown_command gg ch
           | ROGUE_KEY_WIZ_SHOW_MONST ->
-              if g.wizard then show_monsters g else unknown_command g ch
-          | ROGUE_KEY_SAVE_GAME -> save_game g
-          | ROGUE_KEY_PICK_UP -> Move.kick_into_pack g
-          | ROGUE_KEY_WHATISIT -> whatisit g
-          | _ -> unknown_command g ch ];
+              if g.wizard then show_monsters gg else unknown_command gg ch
+          | ROGUE_KEY_SAVE_GAME -> save_game gg
+          | ROGUE_KEY_PICK_UP -> Move.kick_into_pack gg
+          | ROGUE_KEY_WHATISIT -> whatisit gg
+          | _ -> unknown_command gg ch ];
           True
         } ]
     in
-    if cont then play_level g else ()
+    if cont then play_level gg else ()
   }
 };
 
-value rec game_loop g = do {
+value rec game_loop gg = do {
   print_stats gg STAT_ALL;
-  play_level g;
+  play_level gg;
   Curses.clear ();
-  Level.create g;
-  init_display g;
-  game_loop g
+  Level.create gg;
+  init_display gg;
+  game_loop gg
 };
 
 value handle_game g =
@@ -890,20 +891,22 @@ value main () = do {
          DROWS DCOLS)
   else ();
   match init with
-  [ Init.NewGame g -> do {
+  [ Init.NewGame gg -> do {
+      let g = gg.game_v in
       f_player_species.Efield.set g.env "player_species" player_spec;
       f_backup.Efield.set g.env "backup" backup_opt;
       f_bool.Efield.set g.env "no handle robot" nhr;
       f_bool.Efield.set g.env "fast" fast;
       f_bool.Efield.set g.env "batch" batch;
-      Level.create g;
-      init_display g;
+      Level.create gg;
+      init_display gg;
       if no_record_score then g.score_only := True else ();
-      game g
+      game gg
     }
   | Init.RestoreGame rest_file ->
       match try Left (Misc.restore rest_file) with exc -> Right exc with
-      [ Left g -> do {
+      [ Left gg -> do {
+          let g = gg.game_v in
           if no_record_score then g.score_only := True else ();
           if g.score_only then
             match f_random.Efield.get g.env "random" None with
@@ -944,8 +947,8 @@ value main () = do {
           f_bool.Efield.set g.env "break" False;
           f_bool.Efield.set g.env "failed" False;
           g.msg_cleared := False;
-          ring_stats g;
-          game g
+          ring_stats gg;
+          game gg
         }
       | Right (Sys_error _ | Failure _) ->
           Finish.clean_up
