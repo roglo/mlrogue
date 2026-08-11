@@ -357,11 +357,15 @@ zh-py: bǐ shǒu
 de: Stachel@(m)
 en: dart
 fr: dard@(m)
+zh: 镖
+zh-py: biāo
 
     darts
 de: Stacheln@(mp)
 en: darts
 fr: dards@(mp)
+zh: 镖
+zh-py: biāo
 
     Defeated the %s.
 de: Sie haben d@(m?en:f?ie:as) %s besiegt.
@@ -482,6 +486,8 @@ zh-py: shí wù
     Game not saved.
 en: Game not saved.
 fr: Fichier non sauvé.
+zh: 文件未保存。
+zh-py: wén jiàn wèi bǎo cún.
 
     garnet
 en: garnet
@@ -502,6 +508,8 @@ zh-py: lǜ sè
 de: grau@(p?e:m?A?en:er:f?e:n?es)
 en: grey
 fr: gris@(m?:e)@(p?s:)@(1-)
+zh: 灰色
+zh-py: huī sè
 
     griffin
 en: griffin
@@ -1284,6 +1292,8 @@ fr: @(s?:de )silicone@(2-)
     silver
 en: silver
 fr: @(s?:d')argent@(1-)
+zh: 银
+zh-py: yín
 
     Sleeping gas trap.
 en: Sleeping gas trap.
@@ -1326,6 +1336,8 @@ fr: de l'or
 de: Etwas@(n)
 en: something
 fr: @(M?Q:q)uelque chose@(n)
+zh: 什么东西
+zh-py: shén me dōng xi
 
     Sorry
 en: Sorry
@@ -2025,6 +2037,8 @@ zh: 嗯，真香！
     Zap with what?
 en: Zap with what?
 fr: Zapper avec quoi ?
+zh: 用什么？
+zh-py: yòng shén me
 
     zombie
 en: zombie

@@ -140,8 +140,9 @@ value show_traps g =
 ;
 
 value get_input_line gg prompt insert if_cancelled do_echo = do {
-  message_norec gg (fun _ → prompt) False;
-  let n = Ustring.length (Ustring.of_string prompt) in
+  let g = gg.game_v in
+  message_norec gg prompt False;
+  let n = Ustring.length (Ustring.of_string (prompt g.lang)) in
   let (i, buf) =
     if insert <> "" then do {
       Curses.mvaddstr 0 (n + 1) insert;
@@ -193,7 +194,7 @@ value get_input_line gg prompt insert if_cancelled do_echo = do {
       else buf
   in
   if ch = ROGUE_KEY_CANCEL || Ustring.is_empty buf then do {
-    if if_cancelled <> "" then message gg (fun _ → if_cancelled) False else ();
+    if if_cancelled g.lang <> "" then message gg if_cancelled False else ();
     ""
   }
   else Ustring.to_string buf
@@ -232,7 +233,10 @@ value call_it gg =
               | Called s -> s
               | Identified -> "" ]
             in
-            let buf = get_input_line gg (transl g.lang "Call it:") s "" True in
+            let buf =
+              get_input_line gg (fun lang → transl lang "Call it:")
+                (s) (fun _ → "") True
+            in
             if buf <> "" then id.(i) := Called buf else ()
         | None ->
             message gg
@@ -492,7 +496,8 @@ value wizardize gg =
   }
   else
     let buf =
-      get_input_line gg (transl g.lang "Wizard's password:") "" "" False
+      get_input_line gg (fun lang → transl lang "Wizard's password:") ""
+        (fun _ → "") False
     in
     if buf = "password" then do {
       g.wizard := True;
@@ -656,9 +661,13 @@ value instructions gg =
 
 value change_lang gg =
   let g = gg.game_v in
-  let q = transl g.lang "Language:" in
-  let q = if g.lang = "" then q else q ^ " (" ^ g.lang ^ ")" in
-  let new_lang = get_input_line gg q "" "" True in
+  let new_lang =
+    get_input_line gg
+      (fun lang →
+         let q = transl lang "Language:" in
+         if lang = "" then q else q ^ " (" ^ lang ^ ")")
+      "" (fun _ → "") True
+  in
   if new_lang <> "" && new_lang <> g.lang then do {
     g.lang := new_lang;
     clear_lexicon ();
@@ -680,8 +689,8 @@ value change_lang gg =
 value save_game gg =
   let g = gg.game_v in
   let fname =
-    get_input_line gg (transl g.lang "File name?") g.save_file
-      (transl g.lang "Game not saved.") True
+    get_input_line gg (fun lang → transl lang "File name?") g.save_file
+      (fun lang → transl lang "Game not saved.") True
   in
   if fname <> "" then do {
     check_message gg;
