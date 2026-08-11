@@ -47,6 +47,7 @@ de: %d rationen@(1-)@(&)
 en: %d rations of
 fr: %d rations de
 zh: %d份
+zh-py: %d fèn
 
     %d times
 en: %d times
@@ -1083,6 +1084,7 @@ de: rosarot@(p?e:m?A?en:er:f?e:n?es)
 en: pink
 fr: rose@(p?s:)@(1-)
 zh: 粉红色
+zh-py: fěn hóng sè
 
     plaid
 de: scottisch@(p?e:m?A?en:er:f?e:n?es)
