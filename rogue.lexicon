@@ -118,7 +118,8 @@ fr: une arme
 de: Ein@(f?e)
 en: A@(n?n)
 fr: Un@(m?:e)
-zh:
+zh: @(&)
+zh-py: @(&)
 
     a@(n?n)
 de: ein@(f?e:A?m?en)
@@ -574,6 +575,8 @@ zh-py: yǐ zài shǒu zhōng
     Inventory what?
 en: Inventory what?
 fr: Inventorier quoi ?
+zh: 查看什么？
+zh-py: chá kàn shén me?
 
     iron
 en: iron
@@ -717,6 +720,8 @@ fr: @(s?:de )nickel@(2-)
     No such item.
 en: No such item.
 fr: Il n'y en a pas.
+zh: 没有这样的物品。
+zh-py: méi yǒu zhè yàng de wù pǐn.
 
     No such item. Try again.
 en: No such item. Try again.
@@ -919,6 +924,8 @@ zh-py: @(3--)mó fǎ dì tú
     of magic missile
 en: of magic missile
 fr: de missile magique
+zh: 魔法飞弹
+zh-py: mó fǎ fēi dàn
 
     of maintain armor
 en: of maintain armor
@@ -987,6 +994,8 @@ zh-py: @(3--)shuì mián
     of slow digestion
 en: of slow digestion
 fr: de digestion lente
+zh: @(2-)缓慢消化
+zh-py: @(3--)huǎn màn xiāo huà
 
     of slow monster
 en: of slow monster
@@ -1562,6 +1571,8 @@ fr: @(s?:de )noyer@(2-)
 de: @(k?s:S)tab@(m)
 en: wand
 fr: baguette
+zh: 魔杖
+zh-py: mó zhàng
 
     Was wearing
 de: Sie trageten@(A)
