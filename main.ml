@@ -457,9 +457,7 @@ value quit gg from_intrpt =
       check_message gg;
       message_norec gg (fun lang → transl lang "Really quit? (y/n)") True;
       if rgetchar gg <> translc g.lang 'y' then do {
-        (* ... *)
         check_message gg;
-        (* ... *)
         False
       }
       else True
@@ -467,7 +465,6 @@ value quit gg from_intrpt =
     else True
   in
   if yes then do {
-    (* ... *)
     check_message gg;
     Finish.killed_by gg Quit
   }

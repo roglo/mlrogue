@@ -457,7 +457,7 @@ value rec gen_message gg msg_fun intrpt record = do {
   if intrpt then g.interrupted := True else ();
   let change_lang =
     if not g.msg_cleared then do {
-      Curses.mvaddstr (MIN_ROW - 1) 0 (msg ^ transl g.lang " -- More --");
+      Curses.mvaddstr (MIN_ROW - 1) g.msg_col (transl g.lang " -- More --");
       Curses.clrtoeol ();
       Curses.refresh ();
       let change_lang =
