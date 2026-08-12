@@ -463,6 +463,8 @@ fr: Tout parait ennuyeux, maintenant.
     faint
 en: faint
 fr: épuisé
+zh: 虚脱
+zh-py: xū tuō
 
     File name?
 en: File name?
@@ -543,6 +545,8 @@ zh-py: dai chi sei
 de: hunger
 en: hungry
 fr: faim
+zh: 饿了
+zh-py: è le
 
     I don't know what <%c> is either
 en: I don't know what <%c> is either
@@ -1603,6 +1607,8 @@ zh-py: céng chuān zhe
     weak
 en: weak
 fr: faible
+zh: 虚弱
+zh-py: xū ruò
 
     Wear what?
 de: Tragen was?
@@ -1827,6 +1833,8 @@ zh-py: nǐ zuò bú dào, zhè dōng xi sì hū bèi zǔ zhòu le.
 en: you faint
 fr: Vous vous écroulez
 fr-tt: Tu t'écroules
+zh: 你昏倒了
+zh-py: nǐ hūn dǎo le
 
     You fall asleep.
 en: You fall asleep.

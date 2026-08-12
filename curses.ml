@@ -244,23 +244,40 @@ value cflush () = do {
 
 (* *)
 
-value adduch c = do {
+value utf8_char_width u =
+  let s = u.utf8_v in
+  if String.length s = 0 then 0
+  else if Char.code s.[0] land 0x80 = 0 then 1
+  else if Char.code s.[0] land 0x40 = 0 then 0
+  else if Char.code s.[0] land 0x20 = 0 then 1
+  else if Char.code s.[0] land 0x10 = 0 then 2
+  else 1
+;
+
+value adduch u = do {
   if check d.nrow d.ncol then do {
-    string_set d.bnew.(d.nrow) d.ncol c;
+    string_set d.bnew.(d.nrow) d.ncol u;
     d.anew.(d.nrow).(d.ncol) := d.attr_set
   }
   else ();
-  d.ncol := d.ncol + 1
+  d.ncol := d.ncol + 1;
+  let cw = utf8_char_width u in
+  if cw = 2 && check d.nrow (d.ncol + 1) then do {
+    string_set d.bnew.(d.nrow) d.ncol {utf8_v = ""};
+    d.anew.(d.nrow).(d.ncol) := d.attr_set;
+    d.ncol := d.ncol + 1
+  }
+  else ()
 };
 
 value addch c = adduch (utf8_of_char c);
 
 value addstr s =
   loop 0 where rec loop i =
-    if i = String.length s then ()
+    if i >= String.length s then ()
     else do {
-      let (c, i) = utf8_of_substring s i in
-      adduch c;
+      let (u, i) = utf8_of_substring s i in
+      adduch u;
       loop i
     }
 ;
@@ -356,9 +373,7 @@ value mvaddnstr row col s i len = do {
     if n = len then ()
     else do {
       let (uc, k) = utf8_of_substring s (i + j) in
-      string_set d.bnew.(d.nrow) d.ncol uc;
-      d.anew.(d.nrow).(d.ncol) := d.attr_set;
-      d.ncol := d.ncol + 1;
+      adduch uc;
       loop (k - i) (n + 1)
     }
 };
@@ -370,9 +385,7 @@ value mvaddstr row col s = do {
     if j = String.length s then ()
     else if check d.nrow d.ncol then do {
       let (uc, k) = utf8_of_substring s j in
-      string_set d.bnew.(d.nrow) d.ncol uc;
-      d.anew.(d.nrow).(d.ncol) := d.attr_set;
-      d.ncol := d.ncol + 1;
+      adduch uc;
       loop k
     }
     else ()
