@@ -366,18 +366,6 @@ value utf8_string_length s =
     else loop (i + 1) (len + 1)
 ;
 
-value rec scanbrd brd i n =
-  let pp1 = i in
-  let pp2 = try String.index_from brd i ':' with [ Not_found -> -1 ] in
-  if pp2 >= 0 then
-    let pp2 = pp2 + 2 in
-    if n > 0 then
-      let pp2 = try String.index_from brd pp2 ' ' with [ Not_found -> -1 ] in
-      if pp2 >= 0 then scanbrd brd (pp2 + 1) (n - 1) else None
-    else Some (pp1, pp2)
-  else None
-;
-
 value utf8_index_of_index s i =
   loop 0 0 where rec loop j k =
     if j = String.length s then failwith "utf8_index_of_index"
@@ -400,29 +388,29 @@ value print_stats g stat_mask = do {
     Curses.clrtoeol ()
   }
   else ();
-(*
-Curses.mvaddstr row 0 brd;
-Curses.move row 0;
-let brd' = Curses.instr () in
-for i = 0 to Array.length brd' - 1 do {
-  Printf.eprintf "%s/" brd'.(i);
-};
-Printf.eprintf "\n%!";
-*)
   let label = stat_mask land STAT_LABEL <> 0 in
+  if label then Curses.mvaddstr row 0 brd else ();
+  Curses.move row 0;
+   let brd' = Curses.instr () in
   let pr mask1 start1 b1 pad1 =
     if stat_mask land mask1 <> 0 then
-      match scanbrd brd 0 start1 with
-      [ Some (p1, p2) -> do {
-          if label then
-            let col = utf8_index_of_index brd p1 in
-            Curses.mvaddnstr row col brd p1 (p2 - p1)
-          else ();
-          let col = utf8_index_of_index brd p2 in
-          Curses.mvaddstr row col b1;
-          pad b1 pad1
-        }
-      | None -> () ]
+      loop 0 0 where rec loop n i =
+        if i = Array.length brd' then ()
+        else if brd'.(i) = ":" then
+          if n = start1 then do {
+            Curses.move row (i + 2);
+            loop 0 where rec loop j =
+              if j = String.length b1 then ()
+              else do {
+                Curses.addch b1.[j];
+                loop (j + 1);
+              };
+            pad b1 pad1
+          }
+          else
+            loop (n + 1) (i + 1)
+        else
+          loop n (i + 1)
     else ()
   in
   pr STAT_LEVEL 0 (string_of_int g.cur_level) 2;
