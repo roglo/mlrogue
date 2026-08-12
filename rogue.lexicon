@@ -801,6 +801,8 @@ zh-py: xiān nǚ
     oak
 en: oak
 fr: @(s?:de )chêne@(2-)
+zh: 橡木
+zh-py: xiàng mù
 
     of add strength
 en: of add strength
@@ -1361,10 +1363,14 @@ zh-py: bǎn tiáo jiǎ
 de: @(k?s:S)tock@(m)
 en: staff
 fr: bâton@(m)
+zh: 法杖
+zh-py: fǎ zhàng
 
     staffs and wands
 en: staffs and wands
 fr: bâtons et baguettes
+zh: 法杖和魔杖
+zh-py: fǎ zhàng hé mó zhàng
 
     stairs
 en: stairs

@@ -610,7 +610,7 @@ value utf8_index_from s i c =
 
 value remessage gg =
   let g = gg.game_v in
-  if gg.msg_line g.lang <> "" then do {
+  if True || gg.msg_line g.lang <> "" then do {
     if String.length g.lang = 2 then ()
     else switch_lang gg;
     message gg gg.msg_line False;
