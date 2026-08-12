@@ -132,15 +132,18 @@ value cprint_string s = if d.no_output then () else print_string s;
 
 value move_to_pos n an row col = do {
 (* doesn't work if the beginning of the line hold caracters which
-   take more than 1 column
-    printf "\027[%d;%dH" (row + 1) (col + 1);
+   take more than 1 column...
+   but may work now since I changed things (chinese characters
+   may take several columns...
 *)
+    printf "\027[%d;%dH" (row + 1) (col + 1);
+(*
   printf "\027[%d;1H" (row + 1);
   for k = 0 to col - 1 do {
     set_attr an.(k);
     print_encode_char (string_get n k);
   }
-(**)
+*)
 };
 
 value update (c : array _) (n : array _) ac an i jbeg j = do {
