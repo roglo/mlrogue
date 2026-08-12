@@ -403,6 +403,12 @@ value mvinch row col = do {
   else ' '
 };
 
+value instr () =
+  let a = d.bnew.(d.nrow) in
+  Array.map (fun u -> u.utf8_v)
+    (Array.sub a d.ncol (Array.length a - d.ncol))
+;
+
 value refresh () = do { cflush (); flush stdout };
 
 value standend () = d.attr_set := no_attr;

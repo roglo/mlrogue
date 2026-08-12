@@ -400,6 +400,15 @@ value print_stats g stat_mask = do {
     Curses.clrtoeol ()
   }
   else ();
+(*
+Curses.mvaddstr row 0 brd;
+Curses.move row 0;
+let brd' = Curses.instr () in
+for i = 0 to Array.length brd' - 1 do {
+  Printf.eprintf "%s/" brd'.(i);
+};
+Printf.eprintf "\n%!";
+*)
   let label = stat_mask land STAT_LABEL <> 0 in
   let pr mask1 start1 b1 pad1 =
     if stat_mask land mask1 <> 0 then
