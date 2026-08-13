@@ -47,6 +47,7 @@ de: %d rationen@(1-)@(&)
 en: %d rations of
 fr: %d rations de
 zh: %d份
+zh-py: %d fèn
 
     %d times
 en: %d times
@@ -118,7 +119,8 @@ fr: une arme
 de: Ein@(f?e)
 en: A@(n?n)
 fr: Un@(m?:e)
-zh:
+zh: @(&)
+zh-py: @(&)
 
     a@(n?n)
 de: ein@(f?e:A?m?en)
@@ -355,11 +357,15 @@ zh-py: bǐ shǒu
 de: Stachel@(m)
 en: dart
 fr: dard@(m)
+zh: 镖
+zh-py: biāo
 
     darts
 de: Stacheln@(mp)
 en: darts
 fr: dards@(mp)
+zh: 镖
+zh-py: biāo
 
     Defeated the %s.
 de: Sie haben d@(m?en:f?ie:as) %s besiegt.
@@ -457,6 +463,8 @@ fr: Tout parait ennuyeux, maintenant.
     faint
 en: faint
 fr: épuisé
+zh: 虚脱
+zh-py: xū tuō
 
     File name?
 en: File name?
@@ -480,6 +488,8 @@ zh-py: shí wù
     Game not saved.
 en: Game not saved.
 fr: Fichier non sauvé.
+zh: 文件未保存。
+zh-py: wén jiàn wèi bǎo cún.
 
     garnet
 en: garnet
@@ -500,6 +510,8 @@ zh-py: lǜ sè
 de: grau@(p?e:m?A?en:er:f?e:n?es)
 en: grey
 fr: gris@(m?:e)@(p?s:)@(1-)
+zh: 灰色
+zh-py: huī sè
 
     griffin
 en: griffin
@@ -533,6 +545,8 @@ zh-py: dai chi sei
 de: hunger
 en: hungry
 fr: faim
+zh: 饿了
+zh-py: è le
 
     I don't know what <%c> is either
 en: I don't know what <%c> is either
@@ -574,6 +588,8 @@ zh-py: yǐ zài shǒu zhōng
     Inventory what?
 en: Inventory what?
 fr: Inventorier quoi ?
+zh: 查看什么？
+zh-py: chá kàn shén me?
 
     iron
 en: iron
@@ -670,6 +686,8 @@ zh-py: dīng tóu chuí
     magnesium
 en: magnesium
 fr: @(s?:de )magnésium@(2-)
+zh: 镁
+zh-py: měi
 
     mahogany
 de: Mahagoni@(k)
@@ -717,6 +735,8 @@ fr: @(s?:de )nickel@(2-)
     No such item.
 en: No such item.
 fr: Il n'y en a pas.
+zh: 没有这样的物品。
+zh-py: méi yǒu zhè yàng de wù pǐn.
 
     No such item. Try again.
 en: No such item. Try again.
@@ -781,6 +801,8 @@ zh-py: xiān nǚ
     oak
 en: oak
 fr: @(s?:de )chêne@(2-)
+zh: 橡木
+zh-py: xiàng mù
 
     of add strength
 en: of add strength
@@ -919,6 +941,8 @@ zh-py: @(3--)mó fǎ dì tú
     of magic missile
 en: of magic missile
 fr: de missile magique
+zh: 魔法飞弹
+zh-py: mó fǎ fēi dàn
 
     of maintain armor
 en: of maintain armor
@@ -987,6 +1011,8 @@ zh-py: @(3--)shuì mián
     of slow digestion
 en: of slow digestion
 fr: de digestion lente
+zh: @(2-)缓慢消化
+zh-py: @(3--)huǎn màn xiāo huà
 
     of slow monster
 en: of slow monster
@@ -1074,6 +1100,7 @@ de: rosarot@(p?e:m?A?en:er:f?e:n?es)
 en: pink
 fr: rose@(p?s:)@(1-)
 zh: 粉红色
+zh-py: fěn hóng sè
 
     plaid
 de: scottisch@(p?e:m?A?en:er:f?e:n?es)
@@ -1273,6 +1300,8 @@ fr: @(s?:de )silicone@(2-)
     silver
 en: silver
 fr: @(s?:d')argent@(1-)
+zh: 银
+zh-py: yín
 
     Sleeping gas trap.
 en: Sleeping gas trap.
@@ -1315,6 +1344,8 @@ fr: de l'or
 de: Etwas@(n)
 en: something
 fr: @(M?Q:q)uelque chose@(n)
+zh: 什么东西
+zh-py: shén me dōng xi
 
     Sorry
 en: Sorry
@@ -1332,10 +1363,14 @@ zh-py: bǎn tiáo jiǎ
 de: @(k?s:S)tock@(m)
 en: staff
 fr: bâton@(m)
+zh: 法杖
+zh-py: fǎ zhàng
 
     staffs and wands
 en: staffs and wands
 fr: bâtons et baguettes
+zh: 法杖和魔杖
+zh-py: fǎ zhàng hé mó zhàng
 
     stairs
 en: stairs
@@ -1468,6 +1503,8 @@ zh-py: zhè shì yī zhāng jiàn dìng juàn zhóu.
     This scroll seems to have a map on it.
 en: This scroll seems to have a map on it.
 fr: Ce parchemin semble montrer un plan.
+zh: 这张卷轴上似乎有一张地图。
+zh-py: zhè zhāng juàn zhóu shàng sì hū yǒu yì zhāng dì tú.
 
     This tastes great, you feel warm all over.
 en: This tastes great, you feel warm all over.
@@ -1562,6 +1599,8 @@ fr: @(s?:de )noyer@(2-)
 de: @(k?s:S)tab@(m)
 en: wand
 fr: baguette
+zh: 魔杖
+zh-py: mó zhàng
 
     Was wearing
 de: Sie trageten@(A)
@@ -1574,6 +1613,8 @@ zh-py: céng chuān zhe
     weak
 en: weak
 fr: faible
+zh: 虚弱
+zh-py: xū ruò
 
     Wear what?
 de: Tragen was?
@@ -1798,6 +1839,8 @@ zh-py: nǐ zuò bú dào, zhè dōng xi sì hū bèi zǔ zhòu le.
 en: you faint
 fr: Vous vous écroulez
 fr-tt: Tu t'écroules
+zh: 你昏倒了
+zh-py: nǐ hūn dǎo le
 
     You fall asleep.
 en: You fall asleep.
@@ -1810,6 +1853,8 @@ zh-py: nǐ shuì zhe le.
 en: You feel a strange sense of loss.
 fr: Vous avez l'étrange impression d'avoir raté quelque chose.
 fr-tt: Tu as l'étrange impression d'avoir raté quelque chose.
+zh: 你有一种奇怪的失落感。
+zh-py: nǐ yǒu yì zhǒng qí guài de shī luò gǎn.
 
     You feel a wrenching sensation in your gut.
 en: You feel a wrenching sensation in your gut.
@@ -2010,6 +2055,8 @@ zh: 嗯，真香！
     Zap with what?
 en: Zap with what?
 fr: Zapper avec quoi ?
+zh: 用什么？
+zh-py: yòng shén me
 
     zombie
 en: zombie
