@@ -409,7 +409,11 @@ value throw_at_monster gg monster obj = do {
           ()
     | _ ->
         let _ : bool = mon_damage gg monster damage in
-        () ];
+        if g.rogue.blind = 0 && g.rogue.detect_monster then
+          let row = monster.mn_row in
+          let col = monster.mn_col in
+          show_monster gg row col monster (gmc gg monster)
+        else () ];
     True
   }
 };
