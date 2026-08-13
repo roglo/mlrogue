@@ -875,16 +875,21 @@ value fight g to_the_death = do {
           get_damage g monster.mn_damage False * 2
         else monster.mn_stationary_damage - 1
       in
-      loop () where rec loop () = do {
-        one_move_rogue g ch False;
-        if not to_the_death && rogue.hp_current <= possible_damage ||
-           g.interrupted || g.dungeon.(row).(col) land MONSTER = 0 ||
-           rogue.confused > 0
-        then
+      loop 0 where rec loop i =
+        if i > 100 then
+          (* seems that it sometimes loops when having a ring of teleport
+             I don't know why *)
           rogue.fight_monster := None
-        else if monster_at g row col <> monster then
-          rogue.fight_monster := None
-        else loop ()
-      }
+        else do {
+          one_move_rogue g ch False;
+          if not to_the_death && rogue.hp_current <= possible_damage ||
+             g.interrupted || g.dungeon.(row).(col) land MONSTER = 0 ||
+             rogue.confused > 0
+          then
+            rogue.fight_monster := None
+          else if monster_at g row col <> monster then
+            rogue.fight_monster := None
+          else loop (i + 1)
+        }
     }
 };
