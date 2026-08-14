@@ -32,6 +32,8 @@ value unhallucinate gg = do {
   let g = gg.game_v in
   g.rogue.halluc := 0;
   relight gg;
+  if g.rogue.blind = 0 && g.rogue.detect_monster then show_monsters gg
+  else ();
   message gg (fun lang → transl lang "Everything looks so boring now.") True
 };
 
