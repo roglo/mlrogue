@@ -31,6 +31,8 @@ value gr_dir () =
 value unhallucinate g = do {
   g.rogue.halluc := 0;
   relight g;
+  if g.rogue.blind = 0 && g.rogue.detect_monster then show_monsters g
+  else ();
   message g (transl g.lang "Everything looks so boring now.") True
 };
 
