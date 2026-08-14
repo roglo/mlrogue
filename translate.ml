@@ -342,7 +342,7 @@ value etransl str =
   eval_shift str
 ;
 
-value clear_lexicon lang = do {
+value clear_lexicon () = do {
   Hashtbl.clear lexicon;
   lexicon_mtime.val := 0.0;
 };
@@ -350,7 +350,7 @@ value clear_lexicon lang = do {
 value gen_transl glang str = do {
   if Sys.file_exists lex then
     let stbuf = Unix.stat lex in
-    if stbuf.Unix.st_mtime > lexicon_mtime.val then do {
+    if stbuf.Unix.st_mtime > lexicon_mtime.val || lang.val <> glang then do {
       lang.val := glang;
       Hashtbl.clear lexicon;
       lexicon_mtime.val := stbuf.Unix.st_mtime;

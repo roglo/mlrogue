@@ -6,7 +6,7 @@ value transl : string -> string -> string;
 value ftransl : string -> format 'a 'b 'c -> format 'a 'b 'c;
 value translc : string -> char -> char;
 value etransl : string -> string;
-value clear_lexicon : string -> unit;
+value clear_lexicon : unit -> unit;
 
 value fast_transl : string -> string -> string;
   (* like [transl] but don't check lexicon file change; interesting

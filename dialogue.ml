@@ -19,6 +19,7 @@ value string_set = Bytes.set;
 value string_of_bytes = Bytes.to_string;
 
 value armor_desc g a =
+  let g = g.game_v in
   let i = int_of_armor a.ar_kind in
   let t = transl g.lang armor_tab.(i).o_title in
   let t =
@@ -30,7 +31,8 @@ value armor_desc g a =
   if a.ar_in_use then sprintf "%s %s" t (transl g.lang "being worn") else t
 ;
 
-value name_of g obj =
+value name_of gg obj =
+  let g = gg.game_v in
   match obj.ob_kind with
   [ Scroll _ ->
       (if obj.ob_quantity > 1 then "@(p)" else "") ^
@@ -55,6 +57,7 @@ value name_of g obj =
 ;
 
 value ring_desc g r cap =
+  let g = g.game_v in
   let i = int_of_ring r.rg_kind in
   let name = transl g.lang "ring" in
   let na = if cap then transl g.lang "A@(n?n)" else transl g.lang "a@(n?n)" in
@@ -102,76 +105,77 @@ value weapon_desc g obj w cap =
   if w.we_in_use then t ^ " " ^ transl g.lang "in hand" else t
 ;
 
-value get_desc g obj cap =
+value get_desc gg lang obj cap =
+  let g = gg.game_v in
   match obj.ob_kind with
-  [ Amulet -> transl g.lang "The amulet of Yendor"
-  | Gold -> sprintf (ftransl g.lang "%d pieces of gold.") obj.ob_quantity
-  | Armor a -> armor_desc g a
+  [ Amulet -> transl lang "The amulet of Yendor"
+  | Gold -> sprintf (ftransl lang "%d pieces of gold.") obj.ob_quantity
+  | Armor a -> armor_desc gg a
   | Food Fruit ->
       let art =
-        if cap then transl g.lang "A@(n?n)" else transl g.lang "a@(n?n)"
+        if cap then transl lang "A@(n?n)" else transl lang "a@(n?n)"
       in
-      (if art = "" then "" else art ^ " ") ^ name_of g obj
+      (if art = "" then "" else art ^ " ") ^ name_of gg obj
   | Food Ration ->
       let s =
         if obj.ob_quantity > 1 then
-          sprintf (ftransl g.lang "%d rations of") obj.ob_quantity
-        else if cap then transl g.lang "Some"
-        else transl g.lang "some"
+          sprintf (ftransl lang "%d rations of") obj.ob_quantity
+        else if cap then transl lang "Some"
+        else transl lang "some"
       in
-      if s = "" then transl g.lang "food"
-      else s ^ " " ^ transl g.lang "food"
+      if s = "" then transl lang "food"
+      else s ^ " " ^ transl lang "food"
   | Potion p ->
       let i = int_of_potion p in
       let name =
         (if obj.ob_quantity = 1 then "" else "@(p)") ^
-        transl g.lang "potion@(p?s:)"
+        transl lang "potion@(p?s:)"
       in
       let na =
         if obj.ob_quantity = 1 then
-          if cap then transl g.lang "A@(n?n)" else transl g.lang "a@(n?n)"
+          if cap then transl lang "A@(n?n)" else transl lang "a@(n?n)"
          else string_of_int obj.ob_quantity
       in
       (if na = "" then "" else na ^ " ") ^
       (match (g.id_potions.(i), g.wizard) with
-       [ (Unidentified s, False) -> transl g.lang s ^ " " ^ name
-       | (Called s, False) -> name ^ " " ^ transl g.lang "called" ^ " " ^ s
+       [ (Unidentified s, False) -> transl lang s ^ " " ^ name
+       | (Called s, False) -> name ^ " " ^ transl lang "called" ^ " " ^ s
        | (Identified, False) | (_, True) ->
-           name ^ " " ^ transl g.lang potion_tab.(i).o_title ])
-  | Ring r -> ring_desc g r cap
+           name ^ " " ^ transl lang potion_tab.(i).o_title ])
+  | Ring r -> ring_desc gg r cap
   | Scroll s ->
       let i = int_of_scroll s in
       let name =
         (if obj.ob_quantity > 1 then "@(p)" else "") ^
-        transl g.lang "scroll@(p?s:)"
+        transl lang "scroll@(p?s:)"
       in
       let na =
         if obj.ob_quantity = 1 then
-           if cap then transl g.lang "A@(n?n)" else transl g.lang "a@(n?n)"
+           if cap then transl lang "A@(n?n)" else transl lang "a@(n?n)"
          else string_of_int obj.ob_quantity
       in
       (if na = "" then "" else na ^ " ") ^
       (match (g.id_scrolls.(i), g.wizard) with
        [ (Unidentified s, False) ->
-           sprintf (ftransl g.lang "scroll@(p?s:) entitled: %s") s ^
+           sprintf (ftransl lang "scroll@(p?s:) entitled: %s") s ^
            (if obj.ob_quantity = 1 then "" else "@(p)")
        | (Called s, False) ->
-            name ^ " " ^ transl g.lang "called" ^ " " ^ s
+            name ^ " " ^ transl lang "called" ^ " " ^ s
        | (Identified, False) | (_, True) ->
            name ^ " " ^
-           sprintf "%s" (transl g.lang scroll_tab.(i).o_title) ])
+           sprintf "%s" (transl lang scroll_tab.(i).o_title) ])
   | Wand w ->
       let i = int_of_wand w.wa_kind in
       let name =
-        if g.is_wood.(i) then transl g.lang "staff" else transl g.lang "wand"
+        if g.is_wood.(i) then transl lang "staff" else transl lang "wand"
       in
       sprintf "%s %s"
-        (if cap then transl g.lang "A@(n?n)" else transl g.lang "a@(n?n)")
+        (if cap then transl lang "A@(n?n)" else transl lang "a@(n?n)")
         (match (g.id_wands.(i), g.wizard) with
-         [ (Unidentified s, False) -> transl g.lang s ^ " " ^ name
-         | (Called s, False) -> name ^ " " ^ transl g.lang "called" ^ " " ^ s
+         [ (Unidentified s, False) -> transl lang s ^ " " ^ name
+         | (Called s, False) -> name ^ " " ^ transl lang "called" ^ " " ^ s
          | (Identified, False) | (_, True) ->
-             sprintf "%s %s%s" name (transl g.lang wand_tab.(i).o_title)
+             sprintf "%s %s%s" name (transl lang wand_tab.(i).o_title)
                (if w.wa_identified || g.wizard then sprintf " [%d]" w.wa_hits
                 else "") ])
   | Weapon w -> weapon_desc g obj w cap ]
@@ -316,6 +320,7 @@ value rgetchar_local_robot g rob = do {
 };
 
 value rgetchar g =
+  let g = g.game_v in
   if f_bool.Efield.get g.env "failed" False then rgetchar_human ()
   else do {
     match f_player_species.Efield.get g.env "player_species" PShuman with
@@ -329,9 +334,8 @@ value rgetchar g =
 
 value sound_bell () = do { print_char (CTRL 'g'); flush stdout };
 
-value wait_for_ack g = while rgetchar g <> ' ' do { () };
-
 value check_message g =
+  let g = g.game_v in
   if g.msg_cleared then ()
   else do {
     Curses.move (MIN_ROW - 1) 0;
@@ -345,6 +349,16 @@ value utf8_cont_char c =
   Char.code c land 0x80 <> 0 && Char.code c land 0x40 = 0
 ;
 
+value utf8_width s =
+  loop 0 0 where rec loop r i =
+    if i = String.length s then r
+    else if Char.code s.[i] land 0x80 = 0 then loop (r + 1) (i + 1)
+    else if Char.code s.[i] land 0x40 = 0 then loop r (i + 1)
+    else if Char.code s.[i] land 0x20 = 0 then loop (r + 1) (i + 1)
+    else if Char.code s.[i] land 0x10 = 0 then loop (r + 2) (i + 1)
+    else loop (r + 1) (i + 1)
+;
+
 value utf8_string_length s =
   loop 0 0 where rec loop i len =
     if i = String.length s then len
@@ -352,17 +366,115 @@ value utf8_string_length s =
     else loop (i + 1) (len + 1)
 ;
 
-value message g msg intrpt = do {
-  if intrpt then g.interrupted := True else ();
-  if not g.msg_cleared then do {
-    Curses.mvaddstr (MIN_ROW - 1) g.msg_col (transl g.lang " -- More --");
-    Curses.refresh ();
-    wait_for_ack g;
-    check_message g;
-    if msg <> "" && msg = g.msg_line then g.same_msg ++ else g.same_msg := 0
+value utf8_index_of_index s i =
+  loop 0 0 where rec loop j k =
+    if j = String.length s then failwith "utf8_index_of_index"
+    else if utf8_cont_char s.[j] then loop (j + 1) k
+    else if j = i then k
+    else loop (j + 1) (k + 1)
+;
+
+value pad s n = for i = String.length s to n - 1 do { Curses.addch ' ' };
+
+value print_stats g stat_mask = do {
+  let g = g.game_v in
+  let brd =
+    transl g.lang
+      "Level: 99 Gold: 999999 Hp: 999(999) Str: 99(99) Arm: 99 Exp: 21/10000000"
+  in
+  let row = DROWS - 1 in
+  if stat_mask = STAT_ALL then do {
+    Curses.mvaddstr row 0 "";
+    Curses.clrtoeol ()
   }
-  else g.same_msg := 0;
-  g.msg_line := msg;
+  else ();
+  let label = stat_mask land STAT_LABEL <> 0 in
+  if label then Curses.mvaddstr row 0 brd else ();
+  Curses.move row 0;
+   let brd' = Curses.instr () in
+  let pr mask1 start1 b1 pad1 =
+    if stat_mask land mask1 <> 0 then
+      loop 0 0 where rec loop n i =
+        if i = Array.length brd' then ()
+        else if brd'.(i) = ":" then
+          if n = start1 then do {
+            Curses.move row (i + 2);
+            loop 0 where rec loop j =
+              if j = String.length b1 then ()
+              else do {
+                Curses.addch b1.[j];
+                loop (j + 1);
+              };
+            pad b1 pad1
+          }
+          else
+            loop (n + 1) (i + 1)
+        else
+          loop n (i + 1)
+    else ()
+  in
+  pr STAT_LEVEL 0 (string_of_int g.cur_level) 2;
+  pr STAT_GOLD 1 (string_of_int g.rogue.gold) 6;
+  pr STAT_HP 2 (sprintf "%d(%d)" g.rogue.hp_current g.rogue.hp_max) 8;
+  pr STAT_STRENGTH 3
+    (sprintf "%d(%d)" (g.rogue.str_current + g.rogue.add_strength)
+       g.rogue.str_max)
+    6;
+  pr STAT_ARMOR 4 (string_of_int (Imisc.get_armor_class g.rogue.armor)) 2;
+  pr STAT_EXP 5 (sprintf "%d/%d" g.rogue.exp g.rogue.exp_points) 11;
+  if stat_mask land STAT_HUNGER <> 0 then do {
+    Curses.mvaddstr row 73
+      (if g.hunger_str <> "" then transl g.lang g.hunger_str else "");
+    Curses.clrtoeol ()
+  }
+  else ();
+  Curses.refresh ()
+};
+
+value switch_lang gg = do {
+  let g = gg.game_v in
+  g.lang :=
+    if String.length g.lang > 2 then
+      match
+        try Some (String.index g.lang ',') with [ Not_found → None ]
+      with
+      | Some i →
+          String.sub g.lang (i + 1) (String.length g.lang - i - 1) ^ "," ^
+          String.sub g.lang 0 i
+      | None →
+          String.sub g.lang 0 2 ^ "," ^ g.lang
+      end
+    else "en";
+  print_stats gg STAT_ALL;
+};
+
+value rec gen_message gg msg_fun intrpt record = do {
+  let g = gg.game_v in
+  let msg = msg_fun g.lang in
+  if intrpt then g.interrupted := True else ();
+  let change_lang =
+    if not g.msg_cleared then do {
+      Curses.mvaddstr (MIN_ROW - 1) g.msg_col (transl g.lang " -- More --");
+      Curses.clrtoeol ();
+      Curses.refresh ();
+      let change_lang =
+        loop () where rec loop () =
+          let ch = rgetchar gg in
+          if ch = ' ' then False
+          else if ch = ROGUE_KEY_REMESSAGE then True
+          else loop ()
+      in
+      check_message gg;
+      if msg <> "" && msg = gg.msg_line g.lang then g.same_msg ++
+      else g.same_msg := 0;
+      change_lang
+    }
+    else do {
+      g.same_msg := 0;
+      False
+    }
+  in
+  if record then gg.msg_line := msg_fun else ();
   Curses.mvaddstr (MIN_ROW - 1) 0 msg;
   if g.same_msg > 0 then do {
     let buf = sprintf " (%d)" (g.same_msg + 1) in
@@ -374,15 +486,20 @@ value message g msg intrpt = do {
   Curses.refresh ();
   g.msg_cleared := False;
   g.msg_col := g.msg_col + utf8_string_length msg;
+  if change_lang then do {
+    switch_lang gg;
+    gen_message gg msg_fun intrpt record
+  }
+  else ();
 };
 
-value remessage g =
-  if g.msg_line <> "" then message g g.msg_line False else ()
-;
+value message g msg_fun intrpt = gen_message g msg_fun intrpt True;
+value message_norec g msg_fun intrpt = gen_message g msg_fun intrpt False;
 
-value inv_sel g pack mask prompt term =
+value rec inv_sel gg pack mask prompt term =
+  let g = gg.game_v in
   if pack = [] then do {
-    message g (transl g.lang "Your pack is empty.") True;
+    message gg (fun lang → transl lang "Your pack is empty.") True;
     None
   }
   else do {
@@ -402,13 +519,15 @@ value inv_sel g pack mask prompt term =
                   else ')'
              | _ -> ')' ]
            in
-           let s = sprintf " %c%c %s" c p (etransl (get_desc g obj True)) in
-           let s = Ustring.of_string s in
-           ([s :: list], max maxlen (Ustring.length s)))
+           let s =
+             sprintf " %c%c %s" c p (etransl (get_desc gg g.lang obj True))
+           in
+           let t = Ustring.of_string s in
+           ([t :: list], max maxlen (utf8_width s)))
         list ([], 0)
     in
     let len = List.length list in
-    let maxlen = max maxlen (String.length prompt) in
+    let maxlen = max maxlen (utf8_width (prompt g.lang)) in
     let col = DCOLS - (maxlen + 2) in
     let saved =
       Array.init (len + 1) (fun _ -> string_make (maxlen + 2) ' ')
@@ -438,17 +557,19 @@ value inv_sel g pack mask prompt term =
       | [] -> () ]
     in
     loop 0 list;
-    Curses.mvaddstr len col prompt;
+    Curses.mvaddstr len col (prompt g.lang);
     Curses.clrtoeol ();
     Curses.refresh ();
     let retc =
       loop () where rec loop () =
-        let retc = rgetchar g in
-        try
-          let _ = String.index term retc in
-          retc
-        with
-        [ Not_found -> loop () ]
+        let retc = rgetchar gg in
+        if retc = ROGUE_KEY_REMESSAGE then retc
+        else
+          try
+            let _ = String.index term retc in
+            retc
+          with
+          [ Not_found -> loop () ]
     in
     for i = 0 to len do {
       for j = 0 to maxlen + 1 do {
@@ -459,13 +580,18 @@ value inv_sel g pack mask prompt term =
       Curses.clrtoeol ();
     };
     Curses.color_set (-1) (-1);
-    Some retc
+    if retc = ROGUE_KEY_REMESSAGE then do {
+      switch_lang gg;
+      inv_sel gg pack mask prompt term
+    }
+    else Some retc
   }
 ;
 
 value inventory g pack mask =
   let _ : option char =
-    inv_sel g pack mask (transl g.lang " -- Press space to continue --")
+    inv_sel g pack mask
+      (fun lang → transl lang " -- Press space to continue --")
       " \027"
   in
   ()
@@ -482,72 +608,15 @@ value utf8_index_from s i c =
     else loop (j + 1) (k + 1)
 ;
 
-value utf8_index_of_index s i =
-  loop 0 0 where rec loop j k =
-    if j = String.length s then failwith "utf8_index_of_index"
-    else if utf8_cont_char s.[j] then loop (j + 1) k
-    else if j = i then k
-    else loop (j + 1) (k + 1)
-;
-
-value rec scanbrd brd i n =
-  let pp1 = i in
-  let pp2 = try String.index_from brd i ':' with [ Not_found -> -1 ] in
-  if pp2 >= 0 then
-    let pp2 = pp2 + 2 in
-    if n > 0 then
-      let pp2 = try String.index_from brd pp2 ' ' with [ Not_found -> -1 ] in
-      if pp2 >= 0 then scanbrd brd (pp2 + 1) (n - 1) else None
-    else Some (pp1, pp2)
-  else None
-;
-
-value pad s n = for i = String.length s to n - 1 do { Curses.addch ' ' };
-
-value print_stats g stat_mask = do {
-  let brd =
-    transl g.lang
-      "Level: 99 Gold: 999999 Hp: 999(999) Str: 99(99) Arm: 99 Exp: 21/10000000"
-  in
-  let row = DROWS - 1 in
-  if stat_mask = STAT_ALL then do {
-    Curses.mvaddstr row 0 "";
-    Curses.clrtoeol ()
+value remessage gg =
+  let g = gg.game_v in
+  if True || gg.msg_line g.lang <> "" then do {
+    if String.length g.lang = 2 then ()
+    else switch_lang gg;
+    message gg gg.msg_line False;
   }
-  else ();
-  let label = stat_mask land STAT_LABEL <> 0 in
-  let pr mask1 start1 b1 pad1 =
-    if stat_mask land mask1 <> 0 then
-      match scanbrd brd 0 start1 with
-      [ Some (p1, p2) -> do {
-          if label then
-            let col = utf8_index_of_index brd p1 in
-            Curses.mvaddnstr row col brd p1 (p2 - p1)
-          else ();
-          let col = utf8_index_of_index brd p2 in
-          Curses.mvaddstr row col b1;
-          pad b1 pad1
-        }
-      | None -> () ]
-    else ()
-  in
-  pr STAT_LEVEL 0 (string_of_int g.cur_level) 2;
-  pr STAT_GOLD 1 (string_of_int g.rogue.gold) 6;
-  pr STAT_HP 2 (sprintf "%d(%d)" g.rogue.hp_current g.rogue.hp_max) 8;
-  pr STAT_STRENGTH 3
-    (sprintf "%d(%d)" (g.rogue.str_current + g.rogue.add_strength)
-       g.rogue.str_max)
-    6;
-  pr STAT_ARMOR 4 (string_of_int (Imisc.get_armor_class g.rogue.armor)) 2;
-  pr STAT_EXP 5 (sprintf "%d/%d" g.rogue.exp g.rogue.exp_points) 11;
-  if stat_mask land STAT_HUNGER <> 0 then do {
-    Curses.mvaddstr row 73
-      (if g.hunger_str <> "" then transl g.lang g.hunger_str else "");
-    Curses.clrtoeol ()
-  }
-  else ();
-  Curses.refresh ()
-};
+  else ()
+;
 
 (* pack select *)
 
@@ -616,19 +685,20 @@ value is_pack_letter g ch mask =
   | _ -> None ]
 ;
 
-value pack_letter g prompt mask =
+value pack_letter gg prompt mask =
+  let g = gg.game_v in
   let tmask = mask in
   if not (mask_pack g.rogue.pack mask) then do {
-    message g (transl g.lang "Nothing appropriate.") False;
+    message gg (fun lang → transl lang "Nothing appropriate.") False;
     ROGUE_KEY_CANCEL
   }
   else do {
     let ch =
       loop () where rec loop () = do {
-        message g prompt False;
+        message_norec gg prompt False;
         let (ch, mask) =
           loop1 () where rec loop1 () =
-            let ch = rgetchar g in
+            let ch = rgetchar gg in
             match is_pack_letter g ch mask with
             [ None -> do { sound_bell (); loop1 () }
             | Some ch_mask -> ch_mask ]
@@ -636,10 +706,10 @@ value pack_letter g prompt mask =
         if ch = ROGUE_KEY_LIST then
           let ch =
             loop mask where rec loop mask = do {
-              check_message g;
+              check_message gg;
               let cho =
-                inv_sel g g.rogue.pack mask
-                  (transl g.lang " -- Press space or letter --")
+                inv_sel gg g.rogue.pack mask
+                  (fun lang → transl lang " -- Press space or letter --")
                   " !)]*=?:.abcdefghijklmnopqrstuvwxyz\027"
               in
               match cho with
@@ -659,7 +729,7 @@ value pack_letter g prompt mask =
         else ch
       }
     in
-    check_message g;
+    check_message gg;
     ch
   }
 ;
@@ -677,23 +747,25 @@ value wizard_sel create list =
   list
 ;
 
-value new_object_for_wizard g =
-  if Imisc.pack_count g None >= MAX_PACK_COUNT then
-    message g (transl g.lang "Pack full.") False
+value new_object_for_wizard gg =
+  let g = gg.game_v in
+  if Imisc.pack_count gg None >= MAX_PACK_COUNT then
+    message gg (fun lang → transl lang "Pack full.") False
   else
     let obj_sel = "!?:)]=/," in
     loop () where rec loop () = do {
-      message g (transl g.lang "Which object kind" ^ " " ^ obj_sel) False;
+      message gg
+        (fun lang → transl lang "Which object kind" ^ " " ^ obj_sel) False;
       let ch =
         loop () where rec loop () =
-          let ch = rgetchar g in
+          let ch = rgetchar gg in
           try
             let _ : int = String.index (obj_sel ^ " \027") ch in
             ch
           with
           [ Not_found -> loop () ]
       in
-      check_message g;
+      check_message gg;
       let rec lloop ch =
         let obj_list =
           match ch with
@@ -738,17 +810,20 @@ value new_object_for_wizard g =
           in
           let sel = sel ^ obj_sel ^ " \027" in
           let retc =
-            inv_sel g obj_list (fun _ -> True)
-              (" " ^ transl g.lang "Choose:" ^ " ") sel
+            inv_sel gg obj_list (fun _ -> True)
+              (fun lang → " " ^ transl g.lang "Choose:" ^ " ") sel
           in
           match retc with
           [ None | Some (' ' | '\027') -> loop ()
           | Some ch ->
               try
                 let obj = List.assoc ch obj_list in
-                let (c, obj) = Imisc.add_to_pack g obj in
-                let desc = etransl (get_desc g obj True) in
-                message g (sprintf "%s (%c)" desc c) False
+                let (c, obj) = Imisc.add_to_pack gg obj in
+                message gg
+                  (fun lang →
+                     let desc = etransl (get_desc gg lang obj True) in
+                     sprintf "%s (%c)" desc c)
+                  False
               with
               [ Not_found -> lloop ch ] ]
       in

@@ -132,15 +132,18 @@ value cprint_string s = if d.no_output then () else print_string s;
 
 value move_to_pos n an row col = do {
 (* doesn't work if the beginning of the line hold caracters which
-   take more than 1 column
-    printf "\027[%d;%dH" (row + 1) (col + 1);
+   take more than 1 column...
+   but may work now since I changed things (chinese characters
+   may take several columns...
 *)
+    printf "\027[%d;%dH" (row + 1) (col + 1);
+(*
   printf "\027[%d;1H" (row + 1);
   for k = 0 to col - 1 do {
     set_attr an.(k);
     print_encode_char (string_get n k);
   }
-(**)
+*)
 };
 
 value update (c : array _) (n : array _) ac an i jbeg j = do {
@@ -244,23 +247,40 @@ value cflush () = do {
 
 (* *)
 
-value adduch c = do {
+value utf8_char_width u =
+  let s = u.utf8_v in
+  if String.length s = 0 then 0
+  else if Char.code s.[0] land 0x80 = 0 then 1
+  else if Char.code s.[0] land 0x40 = 0 then 0
+  else if Char.code s.[0] land 0x20 = 0 then 1
+  else if Char.code s.[0] land 0x10 = 0 then 2
+  else 1
+;
+
+value adduch u = do {
   if check d.nrow d.ncol then do {
-    string_set d.bnew.(d.nrow) d.ncol c;
+    string_set d.bnew.(d.nrow) d.ncol u;
     d.anew.(d.nrow).(d.ncol) := d.attr_set
   }
   else ();
-  d.ncol := d.ncol + 1
+  d.ncol := d.ncol + 1;
+  let cw = utf8_char_width u in
+  if cw = 2 && check d.nrow (d.ncol + 1) then do {
+    string_set d.bnew.(d.nrow) d.ncol {utf8_v = ""};
+    d.anew.(d.nrow).(d.ncol) := d.attr_set;
+    d.ncol := d.ncol + 1
+  }
+  else ()
 };
 
 value addch c = adduch (utf8_of_char c);
 
 value addstr s =
   loop 0 where rec loop i =
-    if i = String.length s then ()
+    if i >= String.length s then ()
     else do {
-      let (c, i) = utf8_of_substring s i in
-      adduch c;
+      let (u, i) = utf8_of_substring s i in
+      adduch u;
       loop i
     }
 ;
@@ -356,9 +376,7 @@ value mvaddnstr row col s i len = do {
     if n = len then ()
     else do {
       let (uc, k) = utf8_of_substring s (i + j) in
-      string_set d.bnew.(d.nrow) d.ncol uc;
-      d.anew.(d.nrow).(d.ncol) := d.attr_set;
-      d.ncol := d.ncol + 1;
+      adduch uc;
       loop (k - i) (n + 1)
     }
 };
@@ -370,9 +388,7 @@ value mvaddstr row col s = do {
     if j = String.length s then ()
     else if check d.nrow d.ncol then do {
       let (uc, k) = utf8_of_substring s j in
-      string_set d.bnew.(d.nrow) d.ncol uc;
-      d.anew.(d.nrow).(d.ncol) := d.attr_set;
-      d.ncol := d.ncol + 1;
+      adduch uc;
       loop k
     }
     else ()
@@ -386,6 +402,12 @@ value mvinch row col = do {
     [ Invalid_argument _ → ' ' ]
   else ' '
 };
+
+value instr () =
+  let a = d.bnew.(d.nrow) in
+  Array.map (fun u -> u.utf8_v)
+    (Array.sub a d.ncol (Array.length a - d.ncol))
+;
 
 value refresh () = do { cflush (); flush stdout };
 

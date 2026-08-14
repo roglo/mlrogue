@@ -15,6 +15,7 @@ value endwin : unit -> unit;
 value getch : unit -> char;
 value home : unit -> unit;
 value initscr : unit -> unit;
+value instr : unit -> array string;
 value lines : unit -> int;
 value move : int -> int -> unit;
 value mvaddch : int -> int -> char -> unit;

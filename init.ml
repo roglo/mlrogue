@@ -248,11 +248,12 @@ value make_scroll_titles g =
   }
 ;
 
-value player_init g = do {
+value player_init gg = do {
+  let g = gg.game_v in
   g.rogue.pack := [];
   let _ : (char * objet) =
     let ob = Object.get_food (Some Ration) in
-    Imisc.add_to_pack g ob
+    Imisc.add_to_pack gg ob
   in
   let a =
     {ar_kind = Ringmail; ar_class = 3; ar_is_cursed = False;
@@ -261,9 +262,9 @@ value player_init g = do {
   in
   let (c, _) =
     let ob = Object.create_obj (Armor a) 1 in
-    Imisc.add_to_pack g ob
+    Imisc.add_to_pack gg ob
   in
-  Imisc.do_wear g c a;
+  Imisc.do_wear gg c a;
   let w =
     {we_kind = Mace; we_damage = (2, 3, None); we_quiver = 0;
      we_is_cursed = False; we_has_been_uncursed = False; we_hit_enchant = 1;
@@ -271,9 +272,9 @@ value player_init g = do {
   in
   let (c, _) =
     let ob = Object.create_obj (Weapon w) 1 in
-    Imisc.add_to_pack g ob
+    Imisc.add_to_pack gg ob
   in
-  Imisc.do_wield g c w;
+  Imisc.do_wield gg c w;
   let w =
     {we_kind = Bow; we_damage = (1, 2, None); we_quiver = 0;
      we_is_cursed = False; we_has_been_uncursed = False; we_hit_enchant = 1;
@@ -281,7 +282,7 @@ value player_init g = do {
   in
   let _ : (char * objet) =
     let ob = Object.create_obj (Weapon w) 1 in
-    Imisc.add_to_pack g ob
+    Imisc.add_to_pack gg ob
   in
   let w =
     {we_kind = Arrow; we_damage = (1, 2, None); we_quiver = 1;
@@ -291,7 +292,7 @@ value player_init g = do {
   let _ : (char * objet) =
     let q = Imisc.get_rand 25 35 in
     let ob = Object.create_obj (Weapon w) q in
-    Imisc.add_to_pack g ob
+    Imisc.add_to_pack gg ob
   in
   ()
 };
@@ -317,26 +318,29 @@ value create_g saved_uid true_uid login_name args opts lang = do {
     if opts.opt_fruit <> "" then opts.opt_fruit else Object.default_fruit
   in
   let env = Efield.make () in
-  {saved_uid = saved_uid; true_uid = true_uid; cur_level = 0; max_level = 1;
-   cur_room = None; lang = lang; score_only = args.arg_score_only;
-   save_file = opts.opt_save_file; nick_name = opts.opt_nick_name;
-   login_name = login_name; fruit = fruit; ask_quit = opts.opt_ask_quit;
-   show_skull = opts.opt_show_skull; jump = opts.opt_jump; party_counter = 0;
-   party_room = None; foods = 0; r_de = None; trap_door = False;
-   interrupted = False; reg_search = False;
-   level_objects = []; level_monsters = []; new_level_message = "";
-   monsters_count = 0; mon_disappeared = False; hunger_str = "";
-   hit_message = ""; msg_line = ""; msg_col = 0; msg_cleared = True;
-   same_msg = 0; m_moves = 0; wizard = False;
-   experimented_pick_up_scare_monster = False; rogue = rogue;
-   random_rooms = [| 3; 7; 5; 2; 0; 6; 1; 4; 8 |];
-   id_potions = Array.make (Array.length Object.potion_tab) Identified;
-   id_rings = Array.make (Array.length Object.ring_tab) Identified;
-   id_scrolls = Array.make (Array.length Object.scroll_tab) Identified;
-   id_wands = Array.make (Array.length Object.wand_tab) Identified;
-   is_wood = Array.make (Array.length Object.wand_tab) False;
-   rooms = Array.init MAXROOMS empty_room; traps = Array.make MAX_TRAPS None;
-   dungeon = Array.make_matrix DROWS DCOLS 0; env = env}
+  let g =
+    {saved_uid = saved_uid; true_uid = true_uid; cur_level = 0; max_level = 1;
+     cur_room = None; lang = lang; score_only = args.arg_score_only;
+     save_file = opts.opt_save_file; nick_name = opts.opt_nick_name;
+     login_name = login_name; fruit = fruit; ask_quit = opts.opt_ask_quit;
+     show_skull = opts.opt_show_skull; jump = opts.opt_jump; party_counter = 0;
+     party_room = None; foods = 0; r_de = None; trap_door = False;
+     interrupted = False; reg_search = False;
+     level_objects = []; level_monsters = []; new_level_message = "";
+     monsters_count = 0; mon_disappeared = False; hunger_str = "";
+     msg_col = 0; msg_cleared = True;
+     same_msg = 0; m_moves = 0; wizard = False;
+     experimented_pick_up_scare_monster = False; rogue = rogue;
+     random_rooms = [| 3; 7; 5; 2; 0; 6; 1; 4; 8 |];
+     id_potions = Array.make (Array.length Object.potion_tab) Identified;
+     id_rings = Array.make (Array.length Object.ring_tab) Identified;
+     id_scrolls = Array.make (Array.length Object.scroll_tab) Identified;
+     id_wands = Array.make (Array.length Object.wand_tab) Identified;
+     is_wood = Array.make (Array.length Object.wand_tab) False;
+     rooms = Array.init MAXROOMS empty_room; traps = Array.make MAX_TRAPS None;
+     dungeon = Array.make_matrix DROWS DCOLS 0; env = env}
+  in
+  {game_v = g; hit_message _ = ""; msg_line _ = ""}
 };
 
 type init =
@@ -386,13 +390,14 @@ value f argv = do {
     if args.arg_score_only then ScoreOnly
     else if args.arg_rest_file <> "" then RestoreGame args.arg_rest_file
     else do {
-      let g = create_g saved_uid true_uid login_name args opts lang in
+      let gg = create_g saved_uid true_uid login_name args opts lang in
+      let g = gg.game_v in
       mix_colours g;
       get_wand_and_ring_materials g;
       make_scroll_titles g;
-      player_init g;
+      player_init gg;
       g.party_counter := Imisc.get_rand 1 PARTY_TIME;
-      NewGame g
+      NewGame gg
     }
   in
   let no_handle_robot = args.arg_no_handle_robot || args.arg_batch in
