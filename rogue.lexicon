@@ -216,6 +216,8 @@ fr: @(s?:de )bouleau@(2-)
 de: schwarz@(p?e:m?A?en:er:f?e:n?es)
 en: black
 fr: noir@(m?:e)@(p?s:)@(1-)
+zh: 黑色
+zh-py: hēi sè
 
 # schwarz@(p?e:m?A?en:er:f?e:n?es):
 #   if p (plural) then e
@@ -727,6 +729,8 @@ fr: Doit être joué sur un écran %d x %d ou plus
     My, that was a yummy %s.
 en: My, that was a yummy %s.
 fr: Hmmm, c'était un@(m?:e) %s vachement bon@(m?:ne).
+zh: 啊，这个%s真好吃。
+zh-py: a, zhè ge %s zhēn hǎo chī.
 
     nickel
 en: nickel
@@ -1133,6 +1137,8 @@ zh-py: yào shuǐ
 de: purpurrot@(p?e:m?A?en:er:f?e:n?es)
 en: purple
 fr: pourpre@(p?s:)@(1-)
+zh: 紫色
+zh-py: zǐ sè
 
     Put on what?
 en: Put on what?
@@ -1675,6 +1681,8 @@ zh-py: wù pǐn zhǒng lèi
 de: weiss@(p?e:m?A?en:er:f?e:n?es)
 en: white
 fr: blanc@(m?:he)@(p?s:)@(1-)
+zh: 白色
+zh-py: bái sè
 
     Wield what?
 de: Zücken was?
@@ -1947,6 +1955,8 @@ fr-tt: Tu entends un faible cri d'angoisse au loin.
 en: You hear a high pitched humming noise.
 fr: Vous entendez un bourdonnement aigu.
 fr-tt: Tu entends un bourdonnement aigu.
+zh: 你听到一阵尖锐的嗡嗡声。
+zh-py: nǐ tīng dào yí zhèn jiān ruì de wēng wēng shēng
 
     You hear a maniacal laughter in the distance.
 en: You hear a maniacal laughter in the distance.
