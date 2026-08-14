@@ -1078,6 +1078,8 @@ fr: Sac plein.
     Pack too full.
 en: Pack too full.
 fr: Sac trop plein.
+zh: 背包太满了。
+zh-py: bèi bāo tài mǎn le.
 
     palm
 en: palm
@@ -1217,6 +1219,8 @@ zh-py: què dìng tuì chū ma? (y/n)
 de: rot@(p?e:m?A?en:er:f?e:n?es)
 en: red
 fr: rouge@(p?s:)@(1-)
+zh: 红色
+zh-py: hóng sè
 
     redwood
 en: redwood
@@ -1483,10 +1487,14 @@ fr: Le flot s'évanouit instantanément
 en: The scroll turns to dust as you pick it up.
 fr: Le parchemin tombe en poussière au moment où vous le prenez.
 fr-tt: Le parchemin tombe en poussière au moment où tu le prends.
+zh: 你拿起卷轴时，它化成了灰。
+zh-py: nǐ ná qǐ juàn zhóu shí, tā huà chéng le huī,
 
     The trap failed.
 en: The trap failed.
 fr: Le piège échoue.
+zh: 陷阱失效了。
+zh-py: xiàn jǐng shī xiào le
 
     The veil of darkness lifts.
 en: The veil of darkness lifts.
@@ -1742,6 +1750,8 @@ fr: o
 de: gelb@(p?e:m?A?en:er:f?e:n?es)
 en: yellow
 fr: jaune@(p?s:)@(1-)
+zh: 黄色
+zh-py: huáng sè
 
     yeti
 en: yeti
@@ -1763,6 +1773,8 @@ fr-tt: Tu es immobilisé.
 en: You are caught in a bear trap.
 fr: Vous êtes pris dans un piège à loup.
 fr-tt: Tu es pris dans un piège à loup.
+zh: 你被捕狼夹夹住了。
+zh-py: nǐ bèi bǔ láng jiā jiā zhù le.
 
     You are frozen.
 de: Sie sind in Eis verwandeln.
@@ -1776,6 +1788,8 @@ zh-py: nǐ bèi dòng zhù le.
 en: You are still stuck in the bear trap.
 fr: Vous êtes toujours retenu dans le piège à loup.
 fr-tt: Tu es toujours retenu dans le piège à loup.
+zh: 你还被捕狼夹夹住。
+zh-py: nǐ hái bèi bǔ láng jiā jiā zhù.
 
     You begin to feel better.
 en: You begin to feel better.
