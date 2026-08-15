@@ -863,6 +863,8 @@ zh-py: @(3--)zhēn cè wù pǐn
     of dexterity
 en: of dexterity
 fr: de dextérité
+zh: @(2-)敏捷
+zh-py: @(3--)mǐn jié
 
     of do nothing
 en: of do nothing
@@ -1246,6 +1248,8 @@ zh-py: huán jiǎ
     rings
 en: rings
 fr: bagues
+zh: 戒指
+zh-py: jiè zhǐ
 
     ruby
 en: ruby
