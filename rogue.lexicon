@@ -77,6 +77,8 @@ fr: un carreau du sol
 en: A gush of water hits you on the head.
 fr: Vous recevez une douche sur la tête.
 fr-tt: Tu reçois une douche sur la tête.
+zh: 一股水流冲到你头上。
+zh-py: yì gǔ shuǐ liú chōng dào nǐ tóu shàng.
 
     A small dart just hit you in the shoulder.
 en: A small dart just hit you in the shoulder.
@@ -151,6 +153,8 @@ zh: 护身符
     aquator@(n)
 en: aquator@(n)
 fr: aquator@(me)
+zh: 水蚀兽
+zh-py: shuǐ shí shòu
 
     armor
 de: Rüstung@(f)
@@ -953,6 +957,8 @@ zh-py: mó fǎ fēi dàn
     of maintain armor
 en: of maintain armor
 fr: de protection d'armure
+zh: @(2-)护甲维护
+zh-py: @(3--)hù jiǎ wéi hù
 
     of poison
 en: of poison
@@ -1102,6 +1108,8 @@ zh-py: yōu líng
     pine
 en: pine
 fr: @(s?:de )pin@(2-)
+zh: 松木
+zh-py: sōng mù
 
     pink
 de: rosarot@(p?e:m?A?en:er:f?e:n?es)
@@ -1115,6 +1123,7 @@ de: scottisch@(p?e:m?A?en:er:f?e:n?es)
 en: plaid
 fr: écossais@(m?:e)@(p?s:)@(1-)
 zh: 格子
+zh-py: gé zǐ
 
     plate mail
 en: plate mail
@@ -1258,6 +1267,8 @@ fr: @(s?:avec un )rubis@(3-)
     Rust trap.
 en: Rust trap.
 fr: Piège douche.
+zh: 淋浴陷阱
+zh-py: lín yù xiàn jǐng
 
     sapphire
 en: sapphire
