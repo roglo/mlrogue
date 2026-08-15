@@ -653,6 +653,8 @@ fr: Langue:
 de: Lapilazuli@(k)@(&)
 en: lapi-lazuli
 fr: @(s?:avec un )lapi-lazuli@(3-)
+zh: 青金石
+zh-py: qīng jīn shí
 
     leather armor
 en: leather armor
@@ -835,6 +837,8 @@ zh-py: @(3--)zhì máng
     of cancellation
 en: of cancellation
 fr: d'annulation
+zh: @(2-)取消能力
+zh-py: @(3--)qǔ xiāo néng lì
 
     of confuse monster
 en: of confuse monster
@@ -951,8 +955,8 @@ zh-py: @(3--)mó fǎ dì tú
     of magic missile
 en: of magic missile
 fr: de missile magique
-zh: 魔法飞弹
-zh-py: mó fǎ fēi dàn
+zh: @(2-)魔法飞弹
+zh-py: @(3--)mó fǎ fēi dàn
 
     of maintain armor
 en: of maintain armor
@@ -1041,6 +1045,8 @@ fr: de maintien de la force
     of teleport away
 en: of teleport away
 fr: de téléportation de monstre
+zh: @(2-)传送怪物
+zh-py: @(3--)chuán sòng guài wù
 
     of teleportation
 en: of teleportation
@@ -1057,6 +1063,8 @@ zh-py: wa, yī qiè kàn qǐ lái dōu hào qí miào.
     on left hand
 en: on left hand
 fr: à la main gauche
+zh: 左手上
+zh-py: zuǒ shǒu shàng
 
     on level %d
 de: im Niveau %d
@@ -1068,6 +1076,8 @@ zh-py: zài dì %d céng
     on right hand
 en: on right hand
 fr: à la main droite
+zh: 右手上
+zh-py: yòu shǒu shàng
 
     opal
 en: opal
@@ -1952,6 +1962,8 @@ fr-tt: Tu sens que tu accélères.
 en: You feel yourself slowing down.
 fr: Vous vous sentez ralentir.
 fr-tt: Tu te sens ralentir.
+zh: 你感觉自己慢下来了。
+zh-py: nǐ gǎn jué zì jǐ màn xià lái le.
 
     You fell down a trap.
 en: You fell down a trap.
