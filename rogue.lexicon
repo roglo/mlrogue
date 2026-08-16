@@ -284,10 +284,6 @@ zh-py: jiào zuò
 en: cannot open file
 fr: impossible d'ouvrir le fichier
 
-    Cannot read/write/create score file.
-en: Cannot read/write/create score file.
-fr: Impossible de lire/d'écrire/de créer le fichier des scores.
-
     carbon
 en: carbon
 fr: @(s?:de )carbone@(2-)
@@ -455,12 +451,6 @@ en: emu@(n)
 fr: émeu@(me)
 zh: 鸸鹋
 zh-py: ér miáo
-
-    entitled:
-de: betitelt:
-en: entitled:
-fr: intitulé@(p?s:) :
-zh: 题为
 
     Everything looks so boring now.
 en: Everything looks so boring now.
