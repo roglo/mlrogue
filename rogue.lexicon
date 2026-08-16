@@ -839,6 +839,8 @@ zh-py: @(3--)qǔ xiāo néng lì
     of confuse monster
 en: of confuse monster
 fr: qui déconcerte@(p?nt) les monstres
+zh: @(2-)迷惑怪物
+zh-py: @(3--)mí huò guài wù
 
     of confusion
 en: of confusion
@@ -873,6 +875,8 @@ zh-py: @(3--)mǐn jié
     of do nothing
 en: of do nothing
 fr: qui ne fait rien
+zh: @(2-)什么也不做
+zh-py: @(3--)shén me yě bù zuò
 
     of enchant armor
 en: of enchant armor
@@ -901,6 +905,8 @@ zh-py: @(3--)huàn jué
     of haste monster
 en: of haste monster
 fr: d'accélération de monstre
+zh: @(2-)加速怪物
+zh-py: @(3--)jiā sù guài wù
 
     of haste self
 en: of haste self
@@ -935,6 +941,8 @@ zh-py: @(3--)zēng jiā lì liàng
     of invisibility
 en: of invisibility
 fr: d'invisibilité
+zh: @(2-)隐形
+zh-py: @(3--)yǐn xíng
 
     of levitation
 en: of levitation
@@ -969,6 +977,8 @@ zh-py: @(3--)dú
     of polymorph
 en: of polymorph
 fr: de transformation
+zh: @(2-)变形
+zh-py: @(3--)biàn xíng
 
     of protect armor
 en: of protect armor
@@ -1031,6 +1041,8 @@ zh-py: @(3--)huǎn màn xiāo huà
     of slow monster
 en: of slow monster
 fr: de ralentissement de monstre
+zh: @(2-)减速怪物
+zh-py: @(3--)jiǎn sù guài wù
 
     of stealth
 en: of stealth

@@ -267,7 +267,10 @@ value confuse gg = do {
 
 value m_confuse g monster =
   if not (rogue_can_see g monster.mn_row monster.mn_col) then False
-  else if rand_percent 45 then do { monster.mn_flags land_eq lnot CONFUSES; False }
+  else if rand_percent 45 then do {
+    monster.mn_flags land_eq lnot CONFUSES;
+    False
+  }
   else if rand_percent 55 then do {
     monster.mn_flags land_eq lnot CONFUSES;
     confuse g;
