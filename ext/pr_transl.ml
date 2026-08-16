@@ -67,7 +67,7 @@ value rec expr e =
   | <:expr< $flo:_$ >> -> ()
   | <:expr< $chr:_$ >> -> ()
   | <:expr< $x$.$y$ >> -> ()
-  | <:expr< assert False >> -> ()
+  | <:expr< assert $e$ >> -> expr e
   | x -> not_impl "expr" x ]
 and binding_list pel = List.iter binding pel
 and binding (p, e) =
