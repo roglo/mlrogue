@@ -65,10 +65,12 @@ init.cmo: efield.cmi imisc.cmi init.cmi object.cmi rfield.cmi robot.cmi \
     rogbotio.cmi rogue.cmi translate.cmi
 init.cmx: efield.cmx imisc.cmx init.cmi object.cmx rfield.cmx robot.cmx \
     rogbotio.cmx rogue.cmi translate.cmx
-dialogue.cmo: curses.cmi dialogue.cmi efield.cmi imisc.cmi object.cmi \
-    rfield.cmi robot.cmi rogbotio.cmi rogue.cmi translate.cmi ustring.cmi
-dialogue.cmx: curses.cmx dialogue.cmi efield.cmx imisc.cmx object.cmx \
-    rfield.cmx robot.cmx rogbotio.cmx rogue.cmi translate.cmx ustring.cmx
+dialogue.cmo: curses.cmi dialogue.cmi efield.cmi imisc.cmi imonster.cmi \
+    object.cmi rfield.cmi robot.cmi rogbotio.cmi rogue.cmi translate.cmi \
+    ustring.cmi
+dialogue.cmx: curses.cmx dialogue.cmi efield.cmx imisc.cmx imonster.cmx \
+    object.cmx rfield.cmx robot.cmx rogbotio.cmx rogue.cmi translate.cmx \
+    ustring.cmx
 misc.cmo: curses.cmi dialogue.cmi efield.cmi imonster.cmi misc.cmi rfield.cmi \
     rogue.cmi translate.cmi
 misc.cmx: curses.cmx dialogue.cmx efield.cmx imonster.cmx misc.cmi rfield.cmx \

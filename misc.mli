@@ -3,7 +3,6 @@
 open Rogue;
 
 value gmc : game -> monster -> char;
-value tgmc : game -> char -> char;
 value itgmc : game -> char -> char;
 
 value level_points : array int;

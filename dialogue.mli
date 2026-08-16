@@ -27,5 +27,7 @@ value inventory :
   game → list (char * objet) → (object_kind → bool) → unit;
 
 value switch_lang : game → unit;
+value tgmc : game → char → char;
+value print_monsters_and_stats : game → unit;
 
 value new_object_for_wizard : game → unit;

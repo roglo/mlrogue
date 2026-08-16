@@ -673,17 +673,7 @@ value change_lang gg =
   if new_lang <> "" && new_lang <> g.lang then do {
     g.lang := new_lang;
     clear_lexicon ();
-    print_stats gg STAT_ALL;
-    List.iter
-      (fun mon ->
-         if mon.mn_flags land IMITATES <> 0 then ()
-         else if
-           g.rogue.blind = 0 && g.rogue.detect_monster ||
-           rogue_can_see gg mon.mn_row mon.mn_col
-         then
-           show_monster gg mon.mn_row mon.mn_col mon (tgmc gg mon.mn_char)
-         else ())
-      g.level_monsters
+    print_monsters_and_stats gg;
   }
   else ()
 ;

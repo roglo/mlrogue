@@ -431,6 +431,40 @@ value print_stats g stat_mask = do {
   Curses.refresh ()
 };
 
+value show_monster g row col monster ch =
+  if ch >= 'A' && ch <= 'Z' then do {
+    let i = Char.code monster.mn_char - Char.code 'A' in
+    let init_hp = Imonster.mon_init_hp g i in
+    let hp = monster.mn_hp_to_kill in
+    if hp < init_hp then Curses.color_set 1 (-1) else ();
+    Curses.mvaddch row col ch;
+    if hp < init_hp then Curses.color_set (-1) (-1) else ();
+  }
+  else Curses.mvaddch row col ch
+;
+
+value tgmc g c =
+  let g = g.game_v in
+  let t = fast_transl g.lang "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in
+  let m = Char.code c - Char.code 'A' in
+  if String.length t = 26 && t.[m] >= 'A' && t.[m] <= 'Z' then t.[m] else c
+;
+
+value print_monsters_and_stats gg = do {
+  let g = gg.game_v in
+  List.iter
+    (fun mon ->
+       if mon.mn_flags land IMITATES <> 0 then ()
+       else if
+         g.rogue.blind = 0 && g.rogue.detect_monster ||
+         Imisc.rogue_can_see gg mon.mn_row mon.mn_col
+       then
+         show_monster gg mon.mn_row mon.mn_col mon (tgmc gg mon.mn_char)
+       else ())
+    g.level_monsters;
+  print_stats gg STAT_ALL;
+};
+
 value switch_lang gg = do {
   let g = gg.game_v in
   g.lang :=
@@ -445,7 +479,7 @@ value switch_lang gg = do {
           String.sub g.lang 0 2 ^ "," ^ g.lang
       end
     else "en";
-  print_stats gg STAT_ALL;
+  print_monsters_and_stats gg;
 };
 
 value rec gen_message gg msg_fun intrpt record = do {

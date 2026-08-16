@@ -92,13 +92,6 @@ value take_from_monsters g monster =
       g.level_monsters
 ;
 
-value tgmc g c =
-  let g = g.game_v in
-  let t = fast_transl g.lang "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in
-  let m = Char.code c - Char.code 'A' in
-  if String.length t = 26 && t.[m] >= 'A' && t.[m] <= 'Z' then t.[m] else c
-;
-
 value itgmc g ch =
   let g = g.game_v in
   let t = fast_transl g.lang "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in
@@ -123,7 +116,7 @@ value gmc gg monster =
   then
     monster.mn_trail_char
   else if monster.mn_flags land IMITATES <> 0 then monster.mn_disguise
-  else tgmc gg monster.mn_char
+  else Dialogue.tgmc gg monster.mn_char
 ;
 
 value get_mask_char obj =
@@ -602,7 +595,7 @@ value show_monsters gg = do {
     List.iter
       (fun monster -> do {
          show_monster gg monster.mn_row monster.mn_col monster
-           (tgmc gg monster.mn_char);
+           (Dialogue.tgmc gg monster.mn_char);
          if monster.mn_flags land IMITATES <> 0 then do {
            monster.mn_flags land_eq lnot IMITATES;
            monster.mn_flags or_eq WAKENS
