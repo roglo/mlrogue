@@ -84,6 +84,8 @@ zh-py: yì gǔ shuǐ liú chōng dào nǐ tóu shàng.
 en: A small dart just hit you in the shoulder.
 fr: Un petit dard vous atteint derrière l'épaule.
 fr-tt: Un petit dard t'atteint derrière l'épaule.
+zh: 一支小镖刚射中了你的肩膀。
+zh-py: yì zhī xiǎo biāo gāng shè zhòng le nǐ de jiān bǎng.
 
     A strange white mist envelops you and you fall asleep.
 en: A strange white mist envelops you and you fall asleep.
@@ -1148,6 +1150,8 @@ fr: @(s?:de )platine@(2-)
     Poison dart trap.
 en: Poison dart trap.
 fr: Piège à dard empoisonné.
+zh: 毒镖陷阱
+zh-py: dú biāo xiàn jǐng
 
     potion@(p?s:)
 de: Tr@(p?ä:a)nk@(p?e:)@(m)
