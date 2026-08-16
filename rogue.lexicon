@@ -823,6 +823,8 @@ zh-py: @(3--)zēng qiáng lì liàng
     of adornment
 en: of adornment
 fr: d'ornement
+zh: @(2-)装饰
+zh-py: @(3--)zhuāng shì
 
     of aggravate monster
 en: of aggravate monster
@@ -1013,11 +1015,13 @@ zh-py: @(3--)zhào huàn guài wù
     of searching
 en: of searching
 fr: de recherche
+zh: @(2-)搜寻
+zh-py: @(3--)sōu xún
 
     of see invisible
 en: of see invisible
 fr: de vision de l'invisible
-zh: @(1-)显形
+zh: @(2-)显形
 zh-py: @(3--)xiǎn xíng
 
     of sleep
@@ -1039,10 +1043,14 @@ fr: de ralentissement de monstre
     of stealth
 en: of stealth
 fr: de discrétion
+zh: @(2-)潜行
+zh-py: @(3--)qián xíng
 
     of sustain strength
 en: of sustain strength
 fr: de maintien de la force
+zh: @(2-)维持力量
+zh-py: @(3--)wéi chí lì liàng
 
     of teleport away
 en: of teleport away

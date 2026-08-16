@@ -303,7 +303,9 @@ value discovered_kind gg title name id tab = do {
             loop_i [(Neutral, name i, s) :: list] (i + 1)
         | _ -> loop_i list (i + 1) ]
   in
-  let list = List.sort compare list in
+  let list =
+    List.sort (fun (i1, _, _) (i2, _, _) → compare i1 i2) list
+  in
   let title = " *** " ^ etransl title ^ " ***" in
   let (list, _) =
     List.fold_right
