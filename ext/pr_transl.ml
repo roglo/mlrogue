@@ -31,12 +31,14 @@ value rec expr e =
   | <:expr< $lid:f$ $_$ ($lid:g$ $_$ $str:s$ $_$) >>
     when List.mem f trace && List.mem g trace ->
       Printf.printf "%s\n" (token_eval_string loc s)
+(*
   | <:expr< $lid:x$ >> when List.mem x trace ->
       let loc = MLast.loc_of_expr e in
       let (fn, ln, bp, ep) = Stdpp.line_of_loc Pcaml.input_file.val loc in
       let fn = if fn = "" then Pcaml.input_file.val else fn in
       Printf.printf "File \"%s\", line %d, characters %d-%d: bad source\n"
         fn ln bp ep
+*)
   | <:expr< let $opt:_$ $list:pel$ in $e$ >> ->
       do { binding_list pel; expr e; () }
   | <:expr< fun [ $list:pel$ ] >> -> List.iter fun_binding pel
