@@ -452,6 +452,7 @@ value tgmc g c =
 
 value print_monsters_and_stats gg = do {
   let g = gg.game_v in
+  print_stats gg STAT_ALL;
   List.iter
     (fun mon ->
        if mon.mn_flags land IMITATES <> 0 then ()
@@ -462,7 +463,6 @@ value print_monsters_and_stats gg = do {
          show_monster gg mon.mn_row mon.mn_col mon (tgmc gg mon.mn_char)
        else ())
     g.level_monsters;
-  print_stats gg STAT_ALL;
 };
 
 value switch_lang gg = do {
