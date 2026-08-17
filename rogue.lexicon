@@ -102,6 +102,8 @@ fr-tt: Un nuage étrange t'enveloppe et tu t'endors.
 de: eine Rüstung
 en: a suit of armour
 fr: une armure complète
+zh: 一套盔甲
+zh-py: yí tào kuī jiǎ
 
     a total winner
 de: ein total Gewinner
@@ -112,6 +114,8 @@ zh: 真正的赢家
     a trap
 en: a trap
 fr: un piège
+zh: 一个陷阱
+zh-py: yí ge xiàn jǐng
 
     a tunnel
 en: a tunnel
@@ -128,6 +132,8 @@ zh-py: mó zhàng huò fǎ zhàng
     a weapon
 en: a weapon
 fr: une arme
+zh: 一件武器
+zh-py: yí jiàn wǔ qì
 
     A@(n?n)
 de: Ein@(f?e)
@@ -1445,6 +1451,8 @@ zh-py: fǎ zhàng hé mó zhàng
     stairs
 en: stairs
 fr: un escalier
+zh: 楼梯
+zh-py: lóu tī
 
     steel
 de: Stahl@(k)
@@ -1517,11 +1525,15 @@ zh-py: %s de yǎo jī ràng nǐ biàn ruò le.
     The Amulet of Yendor
 en: The Amulet of Yendor
 fr: L'Amulette de Yendor
+zh: 耶多护身符
+zh-py: yē duō hù shēn fú
 
     The amulet of Yendor
 de: Das Amulett von Yendor
 en: The amulet of Yendor
 fr: L'amulette de Yendor
+zh: 耶多护身符
+zh-py: yē duō hù shēn fú
 
     The gaze of the %s has confused you.
 en: The gaze of the %s has confused you.
@@ -1827,6 +1839,8 @@ zh-py: xuě rén
 en: you
 fr: vous-même
 fr-tt: toi-même
+zh: 你自己
+zh-py: nǐ zì jǐ
 
     You are being held.
 en: You are being held.
