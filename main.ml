@@ -409,7 +409,8 @@ value throw gg count = do {
       let ch = rgetchar gg in
       if not (is_direction ch) then do {
         sound_bell ();
-        if first_miss then message gg (fun lang → transl lang "Direction?") False
+        if first_miss then
+          message gg (fun lang → transl lang "Direction?") False
         else ();
         loop False
       }
@@ -436,7 +437,8 @@ value throw gg count = do {
       | Some {ob_kind = Armor {ar_is_cursed = True; ar_in_use = True}} |
         Some {ob_kind = Ring {rg_is_cursed = True; rg_in_use = Some _}} |
         Some {ob_kind = Weapon {we_is_cursed = True; we_in_use = True}} ->
-          message gg (fun lang → transl lang "You can't, it appears to be cursed.")
+          message gg
+            (fun lang → transl lang "You can't, it appears to be cursed.")
             False
       | Some {ob_kind = Armor {ar_in_use = True; ar_is_protected = True}} ->
 	  (* prevent to throw by mistake protected used armors *)
