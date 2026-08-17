@@ -114,6 +114,7 @@ de: ein total Gewinner
 en: a total winner
 fr: un gagnant total
 zh: 真正的赢家
+zh-py: zhēn zhèng de yíng jiā
 
     a trap
 en: a trap
@@ -163,10 +164,14 @@ zh-py: ABCDEFGHIJKLMNOPQRSTUVWXYZ
     agate
 en: agate
 fr: @(s?:avec une )agate@(3-)
+zh: 玛瑙@(&)
+zh-py: mǎ nǎo
 
     amethyst
 en: amethyst
 fr: @(s?:avec une )améthyste@(3-)
+zh: 紫水晶@(&)
+zh-py: zǐ shuǐ jīng
 
     amulet
 de: Amulett
@@ -404,6 +409,8 @@ zh-py: nǐ jí bài le %s
     diamond
 en: diamond
 fr: @(s?:avec un )diamant@(3-)
+zh: 钻石@(&)
+zh-py: zuàn shí
 
     Died of hypothermia
 en: Died of hypothermia
@@ -1021,6 +1028,8 @@ zh-py: @(3--)shēng jí
     of regeneration
 en: of regeneration
 fr: de régénération
+zh: 再生
+zh-py: zài shēng
 
     of remove curse
 en: of remove curse
@@ -1147,6 +1156,8 @@ fr: @(s?:de )palmier@(2-)
 de: Perle@(k)
 en: pearl
 fr: @(s?:avec une )perle@(3-)
+zh: 珍珠@(&)
+zh-py: zhēn zhū
 
     phantom
 de: Gespenst@(n)
@@ -1327,6 +1338,8 @@ zh-py: lín yù xiàn jǐng
     sapphire
 en: sapphire
 fr: @(s?:avec un )saphir@(3-)
+zh: 蓝宝石@(&)
+zh-py: lán bǎo shí
 
     scale mail
 en: scale mail
