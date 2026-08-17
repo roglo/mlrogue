@@ -57,6 +57,8 @@ fr: %d fois
 de: <%c> ist %s
 en: <%c> is %s
 fr: <%c>, c'est %s
+zh: <%c>是%s
+zh-py: <%c> shì %s
 
     A cloak of darkness falls around you.
 en: A cloak of darkness falls around you.
@@ -72,6 +74,8 @@ fr: une porte
     a floor tile
 en: a floor tile
 fr: un carreau du sol
+zh: 一块地砖
+zh-py: yí kuài dì zhuān
 
     A gush of water hits you on the head.
 en: A gush of water hits you on the head.
@@ -496,6 +500,8 @@ fr: @(s?:avec un )grenat@(3-)
     gold
 en: gold
 fr: @(s?:d')or@(1-)
+zh: 一些金币
+zh-py: yì xiē jīn bì
 
     green
 de: grün@(p?e:m?A?en:er:f?e:n?es)
@@ -1390,6 +1396,8 @@ zh-py: shí wù
     some gold
 en: some gold
 fr: de l'or
+zh: 一些金币
+zh-py: yì xiē jīn bì
 
     something
 de: Etwas@(n)
@@ -1712,6 +1720,8 @@ fr: Ouah, les mecs !
 en: What character would you like to know?
 fr: Quel caractère voulez-vous connaître ?
 fr-tt: Quel caractère veux-tu connaître ?
+zh: 你想了解哪个字符？
+zh-py: nǐ xiǎng liǎo jiě nǎ ge zì fú?
 
     What would you like to identify?
 en: What would you like to identify?

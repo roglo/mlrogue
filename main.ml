@@ -512,12 +512,12 @@ value wizardize gg =
 
 value msg_is gg ch s =
   message gg
-    (fun lang → etransl (sprintf (ftransl lang "<%c> is %s") ch s) ^ ".")
+    (fun lang →
+       etransl (sprintf (ftransl lang "<%c> is %s") ch (s lang)) ^ ".")
     False
 ;
 
-value whatisit gg = do {
-  let g = gg.game_v in
+value rec whatisit gg = do {
   message gg
     (fun lang → transl lang "What character would you like to know?") False;
   let ch = Curses.getch () in
@@ -526,31 +526,42 @@ value whatisit gg = do {
   [ 'A'..'Z' ->
       let tch = itgmc gg ch in
       let i = Char.code tch - Char.code 'A' in
-      let s = transl g.lang (Imonster.visible_mon_name gg i) in
-      let art = transl g.lang "a@(n?n)" in
-      msg_is gg ch (art ^ " " ^ s)
-  | ROGUE_KEY_CANCEL -> ()
-  | '|' | '-' -> msg_is gg ch (transl g.lang "the wall")
-  | '+' -> msg_is gg ch (transl g.lang "a door")
-  | '#' -> msg_is gg ch (transl g.lang "a tunnel")
-  | '.' -> msg_is gg ch (transl g.lang "a floor tile")
-  | '!' ->
-      let an = transl g.lang "a@(n?n)" in
       msg_is gg ch
-        ((if an = "" then "" else an ^ " ") ^ transl g.lang "potion@(p?s:)")
+        (fun lang →
+           let s = transl lang (Imonster.visible_mon_name gg i) in
+           let art = transl lang "a@(n?n)" in
+           art ^ " " ^ s)
+  | ROGUE_KEY_CANCEL -> ()
+  | ROGUE_KEY_REMESSAGE → do {
+      switch_lang gg;
+      print_monsters_and_stats gg;
+      whatisit gg;
+    }
+  | '|' | '-' -> msg_is gg ch (fun lang → transl lang "the wall")
+  | '+' -> msg_is gg ch (fun lang → transl lang "a door")
+  | '#' -> msg_is gg ch (fun lang → transl lang "a tunnel")
+  | '.' -> msg_is gg ch (fun lang → transl lang "a floor tile")
+  | '!' ->
+      msg_is gg ch
+        (fun lang →
+           let an = transl lang "a@(n?n)" in
+           (if an = "" then "" else an ^ " ") ^ transl lang "potion@(p?s:)")
   | '?' ->
       msg_is gg ch
-        (transl g.lang "a@(n?n)" ^ " " ^ transl g.lang "scroll@(p?s:)")
-  | ')' -> msg_is gg ch (transl g.lang "a weapon")
-  | ']' -> msg_is gg ch (transl g.lang "a suit of armour")
-  | '*' -> msg_is gg ch (transl g.lang "some gold")
-  | ':' -> msg_is gg ch (transl g.lang "some food")
-  | '/' -> msg_is gg ch (transl g.lang "a wand or staff")
-  | '=' -> msg_is gg ch (transl g.lang "a@(n?n)" ^ " " ^ transl g.lang "ring")
-  | ',' -> msg_is gg ch (transl g.lang "The Amulet of Yendor")
-  | '^' -> msg_is gg ch (transl g.lang "a trap")
-  | '%' -> msg_is gg ch (transl g.lang "stairs")
-  | '@' -> msg_is gg ch (transl g.lang "you")
+        (fun lang →
+           transl lang "a@(n?n)" ^ " " ^ transl lang "scroll@(p?s:)")
+  | ')' -> msg_is gg ch (fun lang → transl lang "a weapon")
+  | ']' -> msg_is gg ch (fun lang → transl lang "a suit of armour")
+  | '*' -> msg_is gg ch (fun lang → transl lang "some gold")
+  | ':' -> msg_is gg ch (fun lang → transl lang "some food")
+  | '/' -> msg_is gg ch (fun lang → transl lang "a wand or staff")
+  | '=' ->
+      msg_is gg ch
+        (fun lang → transl lang "a@(n?n)" ^ " " ^ transl lang "ring")
+  | ',' -> msg_is gg ch (fun lang → transl lang "The Amulet of Yendor")
+  | '^' -> msg_is gg ch (fun lang → transl lang "a trap")
+  | '%' -> msg_is gg ch (fun lang → transl lang "stairs")
+  | '@' -> msg_is gg ch (fun lang → transl lang "you")
   | _ ->
       message gg
         (fun lang →
