@@ -680,8 +680,8 @@ value instructions gg = do {
     };
   };
   instructions_loop gg;
-  print_monsters_and_stats gg;
   display_dungeon gg buffer;
+  print_monsters_and_stats gg;
 };
 
 value change_lang gg =
