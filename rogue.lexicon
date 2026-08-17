@@ -244,6 +244,8 @@ zh-py: chuān zhuó
     birch
 en: birch
 fr: @(s?:de )bouleau@(2-)
+zh: 桦木@(&)
+zh-py: huà mù
 
     black
 de: schwarz@(p?e:m?A?en:er:f?e:n?es)
@@ -338,6 +340,8 @@ zh-py: suǒ zǐ jiǎ
     cherry
 en: cherry
 fr: @(s?:de )cerisier@(2-)
+zh: 樱木@(&)
+zh-py: yīng mù
 
     Choose:
 en: Choose:
@@ -629,6 +633,8 @@ fr: @(s?:de )fer@(2-)
     ivory
 en: ivory
 fr: @(s?:d')ivoire@(1-)
+zh: 象牙@(&)
+zh-py: xiàng yá
 
     jabberwock
 en: jabberwock
@@ -1387,7 +1393,9 @@ zh-py: shǒu lǐ jiàn
 
     silicon
 en: silicon
-fr: @(s?:de )silicone@(2-)
+fr: @(s?:de )silicium@(2-)
+zh: 硅@(&)
+zh-py: guī
 
     silver
 en: silver
