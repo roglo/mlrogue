@@ -49,6 +49,32 @@ CTRL-P     Voir message précédent    %>               Descendre d'un niveau
 %@         Changer de langue         %S               Sauver le jeu
 %D         Choses découvertes        %X               Sauver l'écran
 
+zh-py:
+yí dòng
+        àn SHIFT huò CTRL kě chí xù yí dòng zhí dào yù dào       %y %k %u
+        zhàng ài wù                                               \ | /
+                                                                 %h-+- %l
+        %m<dir>  yí dào wù pǐn shàng dàn bù shí qǔ                / | \
+        %,       shí qǔ dāng qián wèi zhì de wù pǐn              %b %j %n
+        %.       xiū xi
+
+mìng lìng jiàn
+%s         sōu suǒ                        %i               chá kàn wù pǐn
+%f         zhàn dòu                       %F               zhàn dòu zhì sǐ
+%e         chī                            %q               hē
+%r         yuè dú juàn zhóu               %d               diū xià
+%P         dài shàng jiè zhǐ              %R               zhāi xià jiè zhǐ
+CTRL-P     chá kàn shàng yì tiáo xiāo xī  %>               xià lóu
+%<         shàng lóu                      %)               wǔ qì
+%]         hù jiǎ                         %=               jiè zhǐ
+%^         biàn rèn xiàn jǐng             %I               jiǎn yào wù pǐn lán
+%T         tuō xià                        %W               chuān dài hù jiǎ
+%w         chí yòng wǔ qì                 %c               mìng míng
+%z         shī fǎ                         %t<direction>    tóu zhì
+%v         bǎn běn                        %Q               tuì chū
+%@         gēng gǎi yǔ yán                %S               bǎo cún yóu xì
+%D         yǐ fā xiàn                     %X               bǎo cún píng mù
+
 zh:
 移动
         按 SHIFT 或 CTRL 可持续移动直到遇到       %y %k %u
