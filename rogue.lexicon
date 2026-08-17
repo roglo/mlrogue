@@ -70,6 +70,8 @@ zh-py: yì céng hēi’àn lǒng zhào zhe nǐ.
     a door
 en: a door
 fr: une porte
+zh: 一扇门
+zh-py: yí shàn mén
 
     a floor tile
 en: a floor tile
@@ -114,10 +116,14 @@ fr: un piège
     a tunnel
 en: a tunnel
 fr: un tunnel
+zh: 一条隧道
+zh-py: yì tiáo suì dào
 
     a wand or staff
 en: a wand or staff
 fr: une baguette ou un bâton
+zh: 魔杖或法杖
+zh-py: mó zhàng huò fǎ zhàng
 
     a weapon
 en: a weapon
@@ -1552,6 +1558,8 @@ fr: Le voile de ténèbres se lève.
     the wall
 en: the wall
 fr: un mur
+zh: 墙
+zh-py: qiáng
 
     There's already something there.
 en: There's already something there.
