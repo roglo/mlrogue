@@ -140,7 +140,8 @@ zh-py: @(&)
 de: ein@(f?e:A?m?en)
 en: a@(n?n)
 fr: un@(m?:e)
-zh:
+zh: @(&)
+zh-py: @(&)
 
     ABCDEFGHIJKLMNOPQRSTUVWXYZ
 de: AFZDEBPHIJTLQNOGMKSRUVWXYC
@@ -1206,7 +1207,9 @@ zh-py: hē shén me?
 
     quagga
 en: quagga
-fr: quartanier@(m)
+fr: quagga@(m)
+zh: 斑驴
+zh-py: bān lǘ
 
     quartz
 en: quartz
