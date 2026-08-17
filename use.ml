@@ -466,7 +466,8 @@ value apply_scroll gg sk =
           if coin_toss () then w.we_hit_enchant ++ else w.we_d_enchant ++;
           w.we_is_cursed := False
         }
-      | None -> message gg (fun lang → transl lang "Your hands tingle.") False ]
+      | None ->
+          message gg (fun lang → transl lang "Your hands tingle.") False ]
   | ProtectArmor ->
       match g.rogue.armor with
       [ Some (_, a) -> do {
@@ -479,7 +480,8 @@ value apply_scroll gg sk =
           a.ar_is_cursed := False
         }
       | None ->
-          message gg (fun lang → transl lang "Your acne seems to have disappeared.")
+          message gg
+            (fun lang → transl lang "Your acne seems to have disappeared.")
             False ]
   | EnchantArmor ->
       match g.rogue.armor with

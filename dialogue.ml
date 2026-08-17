@@ -465,7 +465,7 @@ value print_monsters_and_stats gg = do {
     g.level_monsters;
 };
 
-value switch_lang gg = do {
+value switch_lang gg =
   let g = gg.game_v in
   g.lang :=
     if String.length g.lang > 2 then
@@ -478,9 +478,8 @@ value switch_lang gg = do {
       | None →
           String.sub g.lang 0 2 ^ "," ^ g.lang
       end
-    else "en";
-  print_monsters_and_stats gg;
-};
+    else "en"
+;
 
 value rec gen_message gg msg_fun intrpt record = do {
   let g = gg.game_v in
@@ -522,6 +521,7 @@ value rec gen_message gg msg_fun intrpt record = do {
   g.msg_col := g.msg_col + utf8_string_length msg;
   if change_lang then do {
     switch_lang gg;
+    print_monsters_and_stats gg;
     gen_message gg msg_fun intrpt record
   }
   else ();
@@ -616,6 +616,7 @@ value rec inv_sel gg pack mask prompt term =
     Curses.color_set (-1) (-1);
     if retc = ROGUE_KEY_REMESSAGE then do {
       switch_lang gg;
+      print_monsters_and_stats gg;
       inv_sel gg pack mask prompt term
     }
     else Some retc
@@ -646,7 +647,10 @@ value remessage gg =
   let g = gg.game_v in
   if True || gg.msg_line g.lang <> "" then do {
     if String.length g.lang = 2 then ()
-    else switch_lang gg;
+    else do {
+      switch_lang gg;
+      print_monsters_and_stats gg;
+    };
     message gg gg.msg_line False;
   }
   else ()

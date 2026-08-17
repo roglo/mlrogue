@@ -382,6 +382,7 @@ value discovered gg =
         in
         if ch2 = ROGUE_KEY_REMESSAGE then do {
           switch_lang gg;
+          print_monsters_and_stats gg;
           loop ch;
         }
         else if ch2 = '\027' || ch2 = ' ' then loop_ok () else loop ch2
@@ -618,7 +619,7 @@ value conv_instr s =
     else Buffer.contents b
 ;
 
-value instructions gg =
+value rec instructions_loop gg =
   let g = gg.game_v in
   match try Some (open_in instructions_file) with [ Sys_error _ -> None ] with
   [ Some ic -> do {
@@ -634,12 +635,6 @@ value instructions gg =
         with
         [ End_of_file -> seek_in ic 0 ]
       else ();
-      let buffer = Array.init DROWS (fun _ -> Array.make DCOLS ' ') in
-      for row = 0 to DROWS - 1 do {
-        for col = 0 to DCOLS - 1 do {
-          buffer.(row).(col) := Curses.mvinch row col;
-        };
-      };
       Curses.clear ();
       try
         loop 0 where rec loop i = do {
@@ -654,12 +649,28 @@ value instructions gg =
       [ End_of_file -> () ];
       close_in ic;
       Curses.refresh ();
-      let _ : char = rgetchar gg in
-      display_dungeon gg buffer
+      let c : char = rgetchar gg in
+      if c = ROGUE_KEY_REMESSAGE then do {
+        switch_lang gg;
+        instructions_loop gg;
+      }
+      else ()
     }
   | None ->
       message gg (fun lang → transl lang "Help file not on line.") False ]
 ;
+
+value instructions gg = do {
+  let buffer = Array.init DROWS (fun _ -> Array.make DCOLS ' ') in
+  for row = 0 to DROWS - 1 do {
+    for col = 0 to DCOLS - 1 do {
+      buffer.(row).(col) := Curses.mvinch row col;
+    };
+  };
+  instructions_loop gg;
+  print_monsters_and_stats gg;
+  display_dungeon gg buffer;
+};
 
 value change_lang gg =
   let g = gg.game_v in

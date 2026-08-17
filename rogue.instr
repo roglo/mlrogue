@@ -48,3 +48,29 @@ CTRL-P     Voir message précédent    %>               Descendre d'un niveau
 %v         Version                   %Q               Partir
 %@         Changer de langue         %S               Sauver le jeu
 %D         Choses découvertes        %X               Sauver l'écran
+
+zh:
+移动
+        按 SHIFT 或 CTRL 可持续移动直到遇到       %y %k %u
+        障碍物                                     \ | /
+                                                  %h-+- %l
+        %m<dir>  移到物品上但不拾取                / | \
+        %,       拾取当前位置的物品               %b %j %n
+        %.       休息
+
+命令键
+%s         搜索                    %i               查看物品
+%f         战斗                    %F               战斗至死
+%e         吃                      %q               喝
+%r         阅读卷轴                %d               丢下
+%P         戴上戒指                %R               摘下戒指
+CTRL-P     查看上一条消息          %>               下楼
+%<         上楼                    %)               武器
+%]         护甲                    %=               戒指
+%^         辨认陷阱                %I               简要物品栏
+%T         脱下                    %W               穿戴护甲
+%w         持用武器                %c               命名
+%z         施法                    %t<direction>    投掷
+%v         版本                    %Q               退出
+%@         更改语言                %S               保存游戏
+%D         已发现                  %X               保存屏幕
