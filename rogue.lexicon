@@ -558,9 +558,11 @@ fr: faim
 zh: 饿了
 zh-py: è le
 
-    I don't know what <%c> is either
-en: I don't know what <%c> is either
-fr: Je ne sais pas ce que c'est que <%c>
+    I don't know what <%s> is either
+en: I don't know what <%s> is either
+fr: Je ne sais pas non plus ce que c'est que <%s>
+zh: 我也不知道<%s>是什么
+zh-py: wǒ yě bù zhī dào <%s> shì shén me
 
     I see no monster there.
 en: I see no monster there.

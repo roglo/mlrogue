@@ -565,7 +565,8 @@ value rec whatisit gg = do {
   | _ ->
       message gg
         (fun lang →
-           sprintf (ftransl lang "I don't know what <%c> is either") ch ^ ".")
+           sprintf (ftransl lang "I don't know what <%s> is either")
+             (Char.escaped ch) ^ ".")
         False ]
 };
 
