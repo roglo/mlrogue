@@ -742,6 +742,8 @@ zh-py: pí jiǎ
     Left or right hand?
 en: Left or right hand?
 fr: Main droite ou gauche ?
+zh: 左手还是右手？
+zh-py: zuǒ shǒu hái shì yòu shǒu?
 
     leprechaun
 en: leprechaun
@@ -1285,6 +1287,8 @@ zh-py: zǐ sè
     Put on what?
 en: Put on what?
 fr: Mettre quoi ?
+zh: 戴什么？
+zh-py: dài shén me?
 
     Quaff what?
 de: Trinken was?
