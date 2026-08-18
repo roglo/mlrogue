@@ -491,6 +491,8 @@ zh-py: yú mù
     emerald
 en: emerald
 fr: @(s?:avec une )émeraude@(3-)
+zh: 祖母绿@(&)
+zh-py: zǔ mǔ lǜ
 
     emu@(n)
 de: Emu@(n)
@@ -537,6 +539,8 @@ zh-py: wén jiàn wèi bǎo cún.
     garnet
 en: garnet
 fr: @(s?:avec un )grenat@(3-)
+zh: 石榴石@(&)
+zh-py: shí liú shí
 
     gold
 en: gold
@@ -698,7 +702,7 @@ fr: Langue:
 de: Lapilazuli@(k)@(&)
 en: lapi-lazuli
 fr: @(s?:avec un )lapi-lazuli@(3-)
-zh: 青金石
+zh: 青金石@(&)
 zh-py: qīng jīn shí
 
     leather armor
@@ -728,6 +732,8 @@ zh-py: Level: 99 Gold: 999999 Hp: 999(999) Str: 99(99) Arm: 99 Exp: 21/10000000
 de: langes Schwert@(n)
 en: long sword
 fr: longue épée
+zh: 长剑
+zh-py: cháng jiàn
 
     mace
 de: Keule@(f)
@@ -1354,6 +1360,8 @@ zh-py: jiè zhǐ
     ruby
 en: ruby
 fr: @(s?:avec un )rubis@(3-)
+zh: 红宝石@(&)
+zh-py: hóng bǎo shí
 
     Rust trap.
 en: Rust trap.
@@ -1510,6 +1518,8 @@ zh-py: gāng
     stibotantalite
 en: stibotantalite
 fr: @(s?:avec une )stibiotantalite@(3-)
+zh: 锑钽矿@(&)
+zh-py: tī tān kuàng
 
     Surely you already know what that's called!
 en: Surely you already know what that's called!
