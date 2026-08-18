@@ -620,14 +620,20 @@ zh-py: wǒ yě bù zhī dào <%s> shì shén me
     I see no monster there.
 en: I see no monster there.
 fr: Je ne vois pas de monstre ici.
+zh: 那里没有怪物。
+zh-py: nà lǐ méi yǒu guài wù.
 
     I see no way down.
 en: I see no way down.
 fr: Je ne vois pas de chemin vers le bas.
+zh: 没有向下的路。
+zh-py: méi yǒu xiàng xià de lù.
 
     I see no way up.
 en: I see no way up.
 fr: Je ne vois pas de chemin vers le haut.
+zh: 没有向上的路。
+zh-py: méi yǒu xiàng shàng de lù.
 
     ice monster@(n)
 de: Eisungeheuer
