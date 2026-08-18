@@ -591,9 +591,11 @@ fr: touche.
 zh: 中了你。
 zh-py: zhōng le nǐ.
 
-    Hmm ... this potion tastes like %sjuice.
-en: Hmm ... this potion tastes like %sjuice.
+    Hmm ... this potion tastes like %s juice.
+en: Hmm ... this potion tastes like %s juice.
 fr: Hmm... cette potion a un goût d@(e?':e )%s.
+zh: 嗯……这瓶药水尝起来像%s汁。
+zh-py: èn... zhè píng yào shuǐ cháng qǐ lái xiàng %szhī.
 
     hobgoblin
 de: streunend@(A?en:er) Kobold@(m)

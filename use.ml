@@ -197,9 +197,9 @@ value apply_potion gg pk =
       message gg
         (fun lang →
            let buf =
-             sprintf (ftransl lang "Hmm ... this potion tastes like %sjuice.")
-               (if g.fruit <> default_fruit then g.fruit ^ " "
-               else transl lang g.fruit ^ " ")
+             sprintf (ftransl lang "Hmm ... this potion tastes like %s juice.")
+               (if g.fruit <> default_fruit then g.fruit
+               else transl lang g.fruit)
            in
            etransl buf)
         False;
