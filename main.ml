@@ -668,10 +668,9 @@ value rec instructions_loop gg =
         switch_lang gg;
         instructions_loop gg;
       }
-      else ()
+      else True;
     }
-  | None ->
-      message gg (fun lang → transl lang "Help file not on line.") False ]
+  | None -> False ]
 ;
 
 value instructions gg = do {
@@ -681,9 +680,11 @@ value instructions gg = do {
       buffer.(row).(col) := Curses.mvinch row col;
     };
   };
-  instructions_loop gg;
+  let r = instructions_loop gg in
   display_dungeon gg buffer;
   print_monsters_and_stats gg;
+  if r then ()
+  else message gg (fun lang → transl lang "Help file not on line.") False;
 };
 
 value change_lang gg =

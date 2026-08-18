@@ -581,6 +581,8 @@ zh-py: shī jiù
     Help file not on line.
 en: Help file not on line.
 fr: Fichier d'aide non accessible.
+zh: 帮助文件不可用
+zh-py: bāng zhù wén jiàn bù kě yòng
 
     hit.
 de: trifft.
