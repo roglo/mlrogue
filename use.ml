@@ -796,15 +796,11 @@ value inv_rings gg = do {
   else do {
     match g.rogue.left_ring with
     [ Some ring ->
-        message gg
-          (fun lang → etransl (ring_desc gg ring True))
-          False
+        message gg (fun lang → etransl (ring_desc gg ring True)) False
     | None -> () ];
     match g.rogue.right_ring with
     [ Some ring ->
-        message gg
-          (fun lang → etransl (ring_desc gg ring True))
-          False
+        message gg (fun lang → etransl (ring_desc gg ring True)) False
     | None -> () ]
   };
   if g.wizard then
