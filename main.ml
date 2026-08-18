@@ -139,6 +139,12 @@ value show_traps g =
   }
 ;
 
+value correct_input_char =
+  fun
+  [ 'a'..'z' | 'A'..'Z' | '0'..'9' | '.' | '_' | '-' | ',' → True
+  | _ → False ]
+;
+
 value get_input_line gg prompt insert if_cancelled do_echo = do {
   let g = gg.game_v in
   message_norec gg prompt False;
@@ -172,6 +178,7 @@ value get_input_line gg prompt insert if_cancelled do_echo = do {
             Curses.move (MIN_ROW - 1) (n + 1);
             (Ustring.of_string "", 0)
           }
+          else if not (correct_input_char ch) then (buf, i)
           else if i < MAX_TITLE_LENGTH - 2 then
             if ch <> ' ' || i > 0 then do {
 	      let buf = Ustring.append_char buf ch in
