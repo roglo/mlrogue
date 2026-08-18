@@ -716,11 +716,15 @@ zh-py: bèi fēi biāo shā sǐ
     l
 en: l
 fr: g
+zh: l
+zh-py: l
 
     Language:
 de: Sprache:
 en: Language:
 fr: Langue:
+zh: 语言：
+zh-py: yǔ yán:
 
     lapi-lazuli
 de: Lapilazuli@(k)@(&)
