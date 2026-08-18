@@ -1183,6 +1183,8 @@ zh-py: yòu shǒu shàng
     opal
 en: opal
 fr: @(s?:avec une )opale@(3-)
+zh: 蛋白石@(&)
+zh-py: dàn bái shí
 
     orc@(n)
 en: orc@(n)
@@ -1697,6 +1699,8 @@ zh-py: tóu zhí shén me?
     tiger-eye
 en: tiger-eye
 fr: @(s?:avec un )oeil-de-tigre@(3-)
+zh: 虎眼石@(&)
+zh-py: hǔ yǎn shí
 
     tin
 en: tin
