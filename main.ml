@@ -142,6 +142,7 @@ value show_traps g =
 value correct_input_char =
   fun
   [ 'a'..'z' | 'A'..'Z' | '0'..'9' | '.' | '_' | '-' | ',' → True
+  | ''' → True
   | _ → False ]
 ;
 
