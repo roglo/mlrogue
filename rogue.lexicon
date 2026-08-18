@@ -362,6 +362,8 @@ zh-py: xuǎn zé:
 de: Chrom@(k)
 en: chrome
 fr: @(s?:de )chrome@(2-)
+zh: 铬@(&)
+zh-py: gè
 
     clear
 de: durchsichtig@(p?e:m?A?en:er:f?e:n?es)
@@ -385,6 +387,8 @@ zh-py: kùn huò
     copper
 en: copper
 fr: @(s?:de )cuivre@(2-)
+zh: 铜@(&)
+zh-py: tóng
 
     dagger
 en: dagger
@@ -504,6 +508,8 @@ zh-py: ér miáo
     Everything looks so boring now.
 en: Everything looks so boring now.
 fr: Tout parait ennuyeux, maintenant.
+zh: 现在一切看起来都很无聊。
+zh-py: xiàn zài yí qiè kàn qǐ lái dōu hěn wú liáo.
 
     faint
 en: faint
@@ -745,7 +751,7 @@ zh-py: dīng tóu chuí
     magnesium
 en: magnesium
 fr: @(s?:de )magnésium@(2-)
-zh: 镁
+zh: 镁@(&)
 zh-py: měi
 
     mahogany
@@ -796,6 +802,8 @@ zh-py: a, zhè ge %s zhēn hǎo chī.
     nickel
 en: nickel
 fr: @(s?:de )nickel@(2-)
+zh: 镍@(&)
+zh-py: niè
 
     No such item.
 en: No such item.
@@ -1227,6 +1235,8 @@ zh-py: bǎn jiǎ
     platinum
 en: platinum
 fr: @(s?:de )platine@(2-)
+zh: 铂@(&)
+zh-py: bó
 
     Poison dart trap.
 en: Poison dart trap.
@@ -1428,7 +1438,7 @@ zh-py: guī
     silver
 en: silver
 fr: @(s?:d')argent@(1-)
-zh: 银
+zh: 银@(&)
 zh-py: yín
 
     Sleeping gas trap.
@@ -1528,7 +1538,9 @@ fr-tt: Tu ne sais pas déjà comment ça s'appelle ?
 
     teak
 en: teak
-fr: @(s?:de )tek@(2-)
+fr: @(s?:de )teck@(2-)
+zh: 柚木@(&)
+zh-py: yòu mù
 
     Teleport trap.
 en: Teleport trap.
@@ -1715,6 +1727,8 @@ zh-py: shuāng shǒu jiàn
     Unknown command
 en: Unknown command
 fr: Commande inconnue
+zh: 未知命令
+zh-py: wèi zhī mìng lìng
 
     Value      Item
 en: Value      Item
@@ -1867,6 +1881,8 @@ zh-py: wū shī mì mǎ:
     wooden
 en: wooden
 fr: @(s?:de )bois@(2-)
+zh: 木制@(&)
+zh-py: mù zhì
 
     wraith
 en: wraith
