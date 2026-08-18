@@ -318,6 +318,8 @@ fr: impossible d'ouvrir le fichier
     carbon
 en: carbon
 fr: @(s?:de )carbone@(2-)
+zh: 碳@(&)
+zh-py: tàn
 
     cedar
 en: cedar
@@ -475,6 +477,8 @@ zh: 吃什么？
     elm
 en: elm
 fr: @(s?:d')orme@(1-)
+zh: 榆木@(&)
+zh-py: yú mù
 
     emerald
 en: emerald
@@ -732,6 +736,8 @@ zh-py: měi
 de: Mahagoni@(k)
 en: mahogany
 fr: @(s?:d')acajou@(1-)
+zh: 桃花心木@(&)
+zh-py: táo huā xīn mù
 
     maple
 en: maple
@@ -842,7 +848,7 @@ zh-py: xiān nǚ
     oak
 en: oak
 fr: @(s?:de )chêne@(2-)
-zh: 橡木
+zh: 橡木@(&)
 zh-py: xiàng mù
 
     of add strength
@@ -1671,6 +1677,8 @@ zh-py: jù mó
     turquoise
 en: turquoise
 fr: @(s?:avec une )turquoise@(3-)
+zh: 绿松石@(&)
+zh-py: lǜ sōng shí
 
     two-handed sword
 en: two-handed sword
@@ -1708,6 +1716,8 @@ zh-py: děng děng, nà shì %s!
     walnut
 en: walnut
 fr: @(s?:de )noyer@(2-)
+zh: 胡桃木@(&)
+zh-py: hú táo mù
 
     wand
 de: @(k?s:S)tab@(m)
