@@ -142,7 +142,7 @@ value show_traps g =
 value get_input_line gg prompt insert if_cancelled do_echo = do {
   let g = gg.game_v in
   message_norec gg prompt False;
-  let n = Ustring.length (Ustring.of_string (prompt g.lang)) in
+  let n = Ustring.width (Ustring.of_string (prompt g.lang)) in
   let (i, buf) =
     if insert <> "" then do {
       Curses.mvaddstr 0 (n + 1) insert;

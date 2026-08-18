@@ -6,6 +6,16 @@ value is_empty s = s = "";
 
 value last_char s = if s = "" then '\000' else s.[String.length s - 1];
 
+value width s =
+  loop 0 0 where rec loop r i =
+    if i = String.length s then r
+    else if Char.code s.[i] land 0x80 = 0 then loop (r + 1) (i + 1)
+    else if Char.code s.[i] land 0x40 = 0 then loop r (i + 1)
+    else if Char.code s.[i] land 0x20 = 0 then loop (r + 1) (i + 1)
+    else if Char.code s.[i] land 0x10 = 0 then loop (r + 2) (i + 1)
+    else loop (r + 1) (i + 1)
+;
+
 value length s =
   loop 0 0 where rec loop len i =
     if i = String.length s then len

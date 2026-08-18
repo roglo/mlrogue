@@ -4,6 +4,7 @@ type t = 'abstract;
 
 value of_string : string → t;
 value to_string : t → string;
+value width : t → int;
 value length : t → int;
 value is_empty : t → bool;
 value last_char : t → char;
