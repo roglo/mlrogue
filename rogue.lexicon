@@ -332,6 +332,8 @@ zh-py: tàn
     cedar
 en: cedar
 fr: @(s?:de )cèdre@(2-)
+zh: 雪松木@(&)
+zh-py: xuě sōng mù
 
     centaur
 de: Zentaur@(m)
@@ -1345,6 +1347,8 @@ zh-py: hóng sè
     redwood
 en: redwood
 fr: @(s?:de )séquoia@(2-)
+zh: 红杉木@(&)
+zh-py: hóng shān mù
 
     Removed
 en: Removed
@@ -1691,6 +1695,8 @@ fr: @(s?:d')étain@(1-)
     titanium
 en: titanium
 fr: @(s?:de )titane@(2-)
+zh: 钛@(&)
+zh-py: tài
 
     Top  Rogueists
 en: Top  Rogueists
