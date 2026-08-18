@@ -704,10 +704,14 @@ zh-py: bèi %s shā sǐ
     Killed by a dart
 en: Killed by a dart
 fr: Tué par un dard
+zh: 被飞镖杀死
+zh-py: bèi fēi biāo shā sǐ
 
     killed by a dart
 en: killed by a dart
 fr: tué par un dard
+zh: 被飞镖杀死
+zh-py: bèi fēi biāo shā sǐ
 
     l
 en: l
@@ -1462,6 +1466,8 @@ zh-py: yín
     Sleeping gas trap.
 en: Sleeping gas trap.
 fr: Piège à gaz soporifique.
+zh: 麻醉气体陷阱。
+zh-py: má zuì qì tǐ xiàn jǐng.
 
     slime-mold
 en: slime-mold
