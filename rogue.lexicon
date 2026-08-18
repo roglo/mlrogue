@@ -209,6 +209,8 @@ zh-py: jiàn
     balsa
 en: balsa
 fr: @(s?:de )balsa@(2-)
+zh: 巴沙木@(&)
+zh-py: bā shā mù
 
     banded mail
 en: banded mail
@@ -633,6 +635,8 @@ zh-py: chá kàn shén me?
     iron
 en: iron
 fr: @(s?:de )fer@(2-)
+zh: 铁@(&)
+zh-py: tiě
 
     ivory
 en: ivory
@@ -742,6 +746,8 @@ zh-py: táo huā xīn mù
     maple
 en: maple
 fr: @(s?:d')érable@(1-)
+zh: 枫木@(&)
+zh-py: fēng mù
 
     medusa
 de: Qualle@(f)
