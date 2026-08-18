@@ -279,6 +279,8 @@ zh-py: lán sè
     bronze
 en: bronze
 fr: @(s?:de )bronze@(2-)
+zh: 青铜@(&)
+zh-py: qīng tóng
 
     brown
 de: braun@(p?e:m?A?en:er:f?e:n?es)
@@ -371,6 +373,8 @@ zh-py: wú sè
     cobalt
 en: cobalt
 fr: @(s?:de )cobalt@(2-)
+zh: 钴
+zh-py: gǔ
 
     confused
 en: confused
@@ -537,7 +541,7 @@ fr: @(s?:avec un )grenat@(3-)
     gold
 en: gold
 fr: @(s?:d')or@(1-)
-zh: 一些金币
+zh: 一些金币@(&)
 zh-py: yì xiē jīn bì
 
     green
@@ -1171,6 +1175,8 @@ zh-py: bèi bāo tài mǎn le.
     palm
 en: palm
 fr: @(s?:de )palmier@(2-)
+zh: 棕榈木@(&)
+zh-py: zōng lǘ mù
 
     pearl
 de: Perle@(k)
@@ -1498,6 +1504,8 @@ zh-py: lóu tī
 de: Stahl@(k)
 en: steel
 fr: @(s?:d')acier@(1-)
+zh: 钢@(&)
+zh-py: gāng
 
     stibotantalite
 en: stibotantalite
