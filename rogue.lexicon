@@ -2294,15 +2294,20 @@ fr-tt: Tu as la chair de poule.
 en: Your way is magically blocked.
 fr: Une force magique vous empêche de passer.
 fr-tt: Une force magique t'empêche de passer.
+zh: 你的去路被魔法阻挡了。
+zh-py: nǐ de qù lù bèi mó fǎ zǔ dǎng le.
 
     Yuk, that food tasted awful.
 en: Yuk, that food tasted awful.
 fr: Berk, cette bouffe avait un sale goût.
+zh: 呸，那食物难吃死了。
+zh-py: pēi, nà shí wù nán chī sǐ le.
 
     Yum, that tasted good.
 en: Yum, that tasted good.
 fr: Miam miam, c'était bon.
 zh: 嗯，真香！
+zh-py: Ǹg, zhēn xiāng!
 
     Zap with what?
 en: Zap with what?
