@@ -1681,11 +1681,15 @@ zh-py: %s de mù guāng ràng nǐ kùn huò le.
     The monster freezes.
 en: The monster freezes.
 fr: Le monstre gèle.
+zh: 怪物冻住了。
+zh-py: guài wù dòng zhù le.
 
     The monsters around you freeze.
 en: The monsters around you freeze.
 fr: Les monstres autour de vous gèlent.
 fr-tt: Les monstres autour de toi gèlent.
+zh: 你周围的怪物都冻住了。
+zh-py: nǐ zhōu wéi de guài wù dōu dòng zhù le.
 
     The rust vanishes instantly.
 en: The rust vanishes instantly.
@@ -1717,6 +1721,8 @@ zh-py: qiáng
     There's already something there.
 en: There's already something there.
 fr: Il y a déjà quelque chose ici.
+zh: 这里已经有东西了。
+zh-py: zhè lǐ yǐ jīng yǒu dōng xi le.
 
     This is a scroll of identify.
 en: This is a scroll of identify.
