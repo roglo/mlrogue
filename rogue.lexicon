@@ -1223,6 +1223,8 @@ zh-py: shòu rén
     Pack full.
 en: Pack full.
 fr: Sac plein.
+zh: 背包已满。
+zh-py: bèi bāo yǐ mǎn.
 
     Pack too full.
 en: Pack too full.
@@ -1343,6 +1345,8 @@ zh-py: tuì chū
     r
 en: r
 fr: d
+zh: r
+zh-py: r
 
     R-Hp: %.2d, E-Hp: %.2d (!: %d, V: %d)
 en: R-Hp: %.2d, E-Hp: %.2d (!: %d, V: %d)
@@ -1372,6 +1376,8 @@ zh-py: dú shén me?
     Really pick up scroll? (y/n)
 en: Really pick up scroll? (y/n)
 fr: Vraiment prendre le parchemin? (o/n)
+zh: 确定要捡起卷轴吗？（y/n)
+zh-py: què dìng yào jiǎn qǐ juàn zhóu ma? (y/n)
 
     Really quit? (y/n)
 en: Really quit? (y/n)
