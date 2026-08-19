@@ -1465,6 +1465,8 @@ zh-py: tí wéi %s de juàn zhóu
 de: Sie hat gestohlen@(A)@(1--)
 en: She stole
 fr: Elle vole
+zh: 她偷走了@(&)
+zh-py: tā tōu zǒu le
 
     short bow
 de: kurz@(A?en:er) Bogen@(m)
