@@ -1614,10 +1614,14 @@ zh-py: huán sòng xiàn jǐng.
 en: That ring is already being worn.
 fr: Vous portez déjà cette bague.
 fr-tt: Tu portes déjà cette bague.
+zh: 你已经戴着那枚戒指了。
+zh-py: nǐ yǐ jīng dài zhe nà méi jiè zhǐ le.
 
     That's not a ring!
 en: That's not a ring!
 fr: Ce n'est pas une bague !
+zh: 那不是戒指！
+zh-py: nà bú shì jiè zhǐ!
 
     The %s
 de: D@(m?er:f?ie:as) %s
