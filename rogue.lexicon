@@ -816,6 +816,8 @@ zh-py: nǐ zǒu dào le %s shàng
     Must be played on a %d x %d or better screen
 en: Must be played on a %d x %d or better screen
 fr: Doit être joué sur un écran %d x %d ou plus
+zh: 必须在至少 %d x %d 的屏幕上运行
+zh-py: bì xū zài zhì shǎo %d x %d de píng mù shàng yùn xíng
 
     My, that was a yummy %s.
 en: My, that was a yummy %s.
@@ -838,34 +840,46 @@ zh-py: méi yǒu zhè yàng de wù pǐn.
     No such item. Try again.
 en: No such item. Try again.
 fr: Il n'y en a pas. Merci de réessayer.
+zh: 没有这个物品，请重试。
+zh-py: méi yǒu zhè ge wù pǐn, qǐng chóng shì.
 
     No trap there.
 en: No trap there.
 fr: Pas de piège ici.
+zh: 那里没有陷阱。
+zh-py: nà lǐ méi yǒu xiàn jǐng.
 
     Not wearing any
 de: Sie tragen nichts
 en: Not wearing any
 fr: Vous ne portez rien
 fr-tt: Tu ne portes rien
+zh: 没有穿戴任何护甲
+zh-py: méi yǒu chuān dài rèn hé hù jiǎ
 
     Not wearing any rings.
 de: Sie tragen Keinen Ring.
 en: Not wearing any rings.
 fr: Vous ne portez aucune bague.
 fr-tt: Tu ne portes aucune bague.
+zh: 没有戴任何戒指。
+zh-py: méi yǒu dài rèn hé jiè zhǐ.
 
     Not wearing anything.
 de: Sie tragen keine Rüstung.
 en: Not wearing anything.
 fr: Vous ne portez aucune armure.
 fr-tt: Tu ne portes aucune armure.
+zh: 没有穿任何护甲。
+zh-py: méi yǒu chuān rèn hé hù jiǎ
 
     Not wielding anything.
 de: Sie schwenken keine Waffe.
 en: Not wielding anything.
 fr: Vous ne brandissez aucune arme.
 fr-tt: Tu ne brandis aucune arme.
+zh: 没有持用任何武器。
+zh-py: méi yǒu chí yòng rèn hé wǔ qì.
 
     Not wizard anymore.
 en: Not wizard anymore.
@@ -878,10 +892,14 @@ zh-py: nǐ bù zài shì wū shī le.
 de: Nichts angemessen.
 en: Nothing appropriate.
 fr: Rien d'approprié.
+zh: 没有合适的物品。
+zh-py: méi yǒu hé shì de wù pǐn.
 
     Nothing happens
 en: Nothing happens
 fr: Rien ne se passe
+zh: 什么也没发生
+zh-py: shén me yě méi fā shēng
 
     Nothing here.
 en: Nothing here.
