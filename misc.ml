@@ -296,11 +296,10 @@ module OLD_GAME =
 type saved = (game_v * array (array char));
 value save_magic = "RGSV0008";
 
-type old_saved = (OLD_GAME.t * array (array char));
+type old_saved = (OLD_GAME.v * array (array char));
 value old_save_magic = "RGSV0007";
 
-value g_of_old_g gg =
-  let g = gg.OLD_GAME.game_v in
+value g_of_old_g g =
   let new_g =
     {saved_uid = g.OLD_GAME.saved_uid;
      true_uid = g.OLD_GAME.true_uid;
@@ -347,8 +346,7 @@ value g_of_old_g gg =
      dungeon = g.OLD_GAME.dungeon;
      env = Efield.make ()}
   in
-  {game_v = new_g; hit_message = gg.OLD_GAME.hit_message;
-   msg_line = gg.OLD_GAME.msg_line;
+  {game_v = new_g; hit_message _ = ""; msg_line _ = "";
    new_level_message _ = g.OLD_GAME.new_level_message}
 ;
 
