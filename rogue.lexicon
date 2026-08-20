@@ -2200,6 +2200,8 @@ zh-py: nǐ gǎn jué zì jǐ biàn ruò le.
 en: You feel yourself moving much faster.
 fr: Vous sentez que vous accélérez.
 fr-tt: Tu sens que tu accélères.
+zh: 你感觉自己移动得快多了。
+zh-py: nǐ gǎn jué zì jǐ yí dòng de kuài duō le.
 
     You feel yourself slowing down.
 en: You feel yourself slowing down.
@@ -2212,6 +2214,8 @@ zh-py: nǐ gǎn jué zì jǐ màn xià lái le.
 en: You fell down a trap.
 fr: Vous tombez dans une trappe.
 fr-tt: Tu tombes dans une trappe.
+zh: 你掉进了活板门。
+zh-py: nǐ diào jìn le huó bǎn mén.
 
     You float gently to the ground.
 en: You float gently to the ground.
@@ -2224,6 +2228,8 @@ zh-py: nǐ qīng qīng de piāo luò dào dì miàn.
 en: You have a strange feeling for a moment, then it passes.
 fr: Vous avez une étrange sensation pendant un moment, et puis ça passe.
 fr-tt: Tu as une étrange sensation pendant un moment, et puis ça passe.
+zh: 你有一阵奇怪的感觉，然后就过去了。
+zh-py: nǐ yǒu yí zhèn qí guài de gǎn jué, rán hòu jiù guò qù le.
 
     You have nothing to drop.
 en: You have nothing to drop.
