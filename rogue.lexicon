@@ -1351,6 +1351,8 @@ zh-py: r
     R-Hp: %.2d, E-Hp: %.2d (!: %d, V: %d)
 en: R-Hp: %.2d, E-Hp: %.2d (!: %d, V: %d)
 fr: PV-R: %.2d, PV-E: %.2d (!: %d, V: %d)
+zh: R-Hp: %.2d, E-Hp: %.2d (!: %d, V: %d)
+zh-py: R-Hp: %.2d, E-Hp: %.2d (!: %d, V: %d)
 
     Rank   Score   Name
 de: Rang   Pktstnd Name
