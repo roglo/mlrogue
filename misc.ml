@@ -239,7 +239,7 @@ value add_exp gg e promotion = do {
 
 module OLD_GAME =
   struct
-    type t =
+    type v =
       { saved_uid : int;
         true_uid : int;
         cur_level : mutable int;
@@ -267,9 +267,7 @@ module OLD_GAME =
         level_monsters : mutable list monster;
         new_level_message : mutable string;
         hunger_str : mutable string;
-        hit_message : mutable string;
         msg_cleared : mutable bool;
-        msg_line : mutable string;
         msg_col : mutable int;
         same_msg : mutable int;
         m_moves : mutable int;
@@ -287,16 +285,22 @@ module OLD_GAME =
         dungeon : array (array int);
         env : Efield.t Rfield.env }
     ;
+    type t =
+      { game_v : v;
+        hit_message : mutable string → string;
+        msg_line : mutable string → string }
+    ;
   end
 ;
 
 type saved = (game_v * array (array char));
-value save_magic = "RGSV0007";
+value save_magic = "RGSV0008";
 
 type old_saved = (OLD_GAME.t * array (array char));
-value old_save_magic = "RGSV0006";
+value old_save_magic = "RGSV0007";
 
-value g_of_old_g g =
+value g_of_old_g gg =
+  let g = gg.OLD_GAME.game_v in
   let new_g =
     {saved_uid = g.OLD_GAME.saved_uid;
      true_uid = g.OLD_GAME.true_uid;
@@ -323,7 +327,6 @@ value g_of_old_g g =
      mon_disappeared = g.OLD_GAME.mon_disappeared;
      level_objects = g.OLD_GAME.level_objects;
      level_monsters = g.OLD_GAME.level_monsters;
-     new_level_message = g.OLD_GAME.new_level_message;
      hunger_str = g.OLD_GAME.hunger_str;
      msg_cleared = g.OLD_GAME.msg_cleared;
      msg_col = g.OLD_GAME.msg_col;
@@ -344,7 +347,9 @@ value g_of_old_g g =
      dungeon = g.OLD_GAME.dungeon;
      env = Efield.make ()}
   in
-  {game_v = new_g; hit_message _ = ""; msg_line _ = ""}
+  {game_v = new_g; hit_message = gg.OLD_GAME.hit_message;
+   msg_line = gg.OLD_GAME.msg_line;
+   new_level_message _ = g.OLD_GAME.new_level_message}
 ;
 
 value save_into_file g fname = do {
@@ -387,7 +392,10 @@ value restore fname = do {
   let b = string_of_bytes b in
   if b = save_magic then do {
     let (g, buf) = (input_value ic : saved) in
-    let gg = {game_v = g; hit_message _ = ""; msg_line _ = ""} in
+    let gg =
+      {game_v = g; hit_message _ = ""; msg_line _ = "";
+       new_level_message _ = ""}
+    in
     display_dungeon gg buf;
     show_rogue gg;
     close_in ic;

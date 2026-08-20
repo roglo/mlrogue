@@ -169,7 +169,7 @@ value trap_player gg row col =
         match t with
         [ TrapDoor -> do {
             g.trap_door := True;
-            g.new_level_message := transl g.lang (Level.trap_mess t)
+            gg.new_level_message := fun lang → transl lang (Level.trap_mess t)
           }
         | BearTrap -> do {
             message gg (fun lang → transl lang (Level.trap_mess t)) True;

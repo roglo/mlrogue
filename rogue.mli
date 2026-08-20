@@ -255,7 +255,6 @@ type game_v =
     mon_disappeared : mutable bool;
     level_objects : mutable list objet;
     level_monsters : mutable list monster;
-    new_level_message : mutable string;
     hunger_str : mutable string;
     msg_cleared : mutable bool;
     msg_col : mutable int;
@@ -279,7 +278,8 @@ type game_v =
 type game =
   { game_v : game_v;
     hit_message : mutable string → string;
-    msg_line : mutable string → string }
+    msg_line : mutable string → string;
+    new_level_message : mutable string → string }
 ;
 
 type ending =

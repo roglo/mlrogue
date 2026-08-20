@@ -31,9 +31,9 @@ value init_display gg = do {
   match get_room_number gg row col with
   [ Some rn -> Move.wake_room gg rn True row col
   | None -> () ];
-  if g.new_level_message <> "" then do {
-    message gg (fun _ → g.new_level_message) False;
-    g.new_level_message := ""
+  if gg.new_level_message g.lang <> "" then do {
+    message gg gg.new_level_message False;
+    gg.new_level_message := fun _ → ""
   }
   else ()
 };
@@ -66,8 +66,8 @@ value check_up gg =
   }
   else if g.cur_level = 1 then Finish.win gg
   else do {
-    g.new_level_message :=
-      transl g.lang "You feel a wrenching sensation in your gut.";
+    gg.new_level_message :=
+      fun lang → transl lang "You feel a wrenching sensation in your gut.";
     g.cur_level sub_eq 2;
     True
   }

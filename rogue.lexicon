@@ -1987,6 +1987,8 @@ zh-py: nǐ xíng guài
     y
 en: y
 fr: o
+zh: y
+zh-py: y
 
     yellow
 de: gelb@(p?e:m?A?en:er:f?e:n?es)
@@ -2012,6 +2014,8 @@ zh-py: nǐ zì jǐ
 en: You are being held.
 fr: Vous êtes immobilisé.
 fr-tt: Tu es immobilisé.
+zh: 你被困住了。
+zh-py: nǐ bèi kùn zhù le.
 
     You are caught in a bear trap.
 en: You are caught in a bear trap.
@@ -2126,6 +2130,8 @@ zh-py: nǐ yǒu yì zhǒng qí guài de shī luò gǎn.
 en: You feel a wrenching sensation in your gut.
 fr: Vous avez une sensation d'arrachement dans le ventre.
 fr-tt: Tu as une sensation d'arrachement dans le ventre.
+zh: 你感到腹部一阵撕裂般的感觉。
+zh-py: nǐ gǎn dào fù bù yí zhèn sī liè bān de gǎn jué.
 
     You feel as though someone is watching over you.
 en: You feel as though someone is watching over you.
