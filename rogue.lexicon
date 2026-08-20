@@ -2235,11 +2235,15 @@ zh-py: nǐ yǒu yí zhèn qí guài de gǎn jué, rán hòu jiù guò qù le.
 en: You have nothing to drop.
 fr: Vous n'avez rien à jeter.
 fr-tt: Tu n'as rien à jeter.
+zh: 你没有东西可扔。
+zh-py: nǐ méi yǒu dōng xi kě rēng.
 
     You hear a faint cry of anguish in the distance.
 en: You hear a faint cry of anguish in the distance.
 fr: Vous entendez un faible cri d'angoisse au loin.
 fr-tt: Tu entends un faible cri d'angoisse au loin.
+zh: 你听见远处传来一声微弱的哀鸣。
+zh-py: nǐ tīng jiàn yuǎn chù chuán lái yì shēng wēi ruò de āi míng.
 
     You hear a high pitched humming noise.
 en: You hear a high pitched humming noise.
@@ -2252,6 +2256,8 @@ zh-py: nǐ tīng dào yí zhèn jiān ruì de wēng wēng shēng
 en: You hear a maniacal laughter in the distance.
 fr: Vous entendez des rires maniaques au loin.
 fr-tt: Tu entends des rires maniaques au loin.
+zh: 你听见远处传来疯狂的笑声。
+zh-py: nǐ tīng jiàn yuǎn chù chuán lái fēng kuáng de xiào shēng.
 
     You hit.
 de: Sie treffen.
