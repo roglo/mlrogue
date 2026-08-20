@@ -1525,10 +1525,13 @@ de:
 en: Some
 fr: D@(m?u:e la)
 zh:
+zh-py:
 
     some
 en: some
 fr: d@(m?u:e la)
+zh:
+zh-py:
 
     some food
 en: some food
@@ -1906,6 +1909,8 @@ zh-py: huān yíng, qiáng dà de wū shī!
     What a trippy feeling.
 en: What a trippy feeling.
 fr: Ouah, les mecs !
+zh: 这感觉真迷幻！
+zh-py: zhè gǎn jué zhēn mí huàn!
 
     What character would you like to know?
 en: What character would you like to know?
