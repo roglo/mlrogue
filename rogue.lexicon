@@ -2286,11 +2286,15 @@ zh-py: nǐ kāi shǐ zài kōng zhōng piāo fú.
 en: You're already wearing some.
 fr: Vous en portez déjà.
 fr-tt: Tu en portes déjà.
+zh: 你已经穿着一件了。
+zh-py: nǐ yǐ jīng chuān zhe yí jiàn le.
 
     You're floating in the air!
 en: You're floating in the air!
 fr: Vous flottez dans l'air !
 fr-tt: Tu flottes dans l'air !
+zh: 你正漂浮在空中！
+zh-py: nǐ zhèng piāo fú zài kōng zhōng!
 
     Your %s glow%s %s for a moment.
 en: Your %s glow%s %s for a moment.
@@ -2303,6 +2307,8 @@ zh-py: nǐ de %s@(_?%s:) yī shùn jiān biàn chéng %s.
 en: Your acne seems to have disappeared.
 fr: Votre acné semble avoir disparu.
 fr-tt: Ton acné semble avoir disparu.
+zh: 你的痘痘似乎消失了。
+zh-py: nǐ de dòu dou sì hū xiāo shī le.
 
     Your armor glows %sfor a moment.
 de: Ihre Rüstung wird %swährend eines Moments.
@@ -2343,6 +2349,8 @@ zh-py: nǐ de qián dài biàn qīng le
 en: Your skin crawls.
 fr: Vous avez la chair de poule.
 fr-tt: Tu as la chair de poule.
+zh: 你起鸡皮疙瘩了。
+zh-py: nǐ qǐ jī pí gē da le.
 
     Your way is magically blocked.
 en: Your way is magically blocked.
