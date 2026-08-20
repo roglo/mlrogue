@@ -2322,21 +2322,29 @@ zh-py: nǐ de hù jiǎ %s fā guāng le yī huìr.
 en: Your armor is covered by a shimmering gold shield.
 fr: Votre armure est couverte d'un bouclier d'or.
 fr-tt: Ton armure est couverte d'un bouclier d'or.
+zh: 你的铠甲被一层闪耀的金色护盾覆盖了。
+zh-py: nǐ de kǎi jiǎ bèi yì céng shǎn yào de jīn sè hù dùn fù gài le.
 
     Your armor weakens.
 en: Your armor weakens.
 fr: Votre armure faiblit.
 fr-tt: Ton armure faiblit.
+zh: 你的铠甲变弱了。
+zh-py: nǐ de kǎi jiǎ biàn ruò le.
 
     Your hands tingle.
 en: Your hands tingle.
 fr: Vous sentez des picotements dans les mains.
 fr-tt: Tu sens des picotements dans les mains.
+zh: 你的双手感到一阵刺痛。
+zh-py: nǐ de shuāng shǒu gǎn dào yí zhèn cì tòng.
 
     Your pack is empty.
 en: Your pack is empty.
 fr: Votre sac est vide.
 fr-tt: Ton sac est vide.
+zh: 你的包裹是空的。
+zh-py: nǐ de bāo guǒ shì kōng de.
 
     Your purse feels lighter.
 en: Your purse feels lighter.
