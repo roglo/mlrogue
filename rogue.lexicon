@@ -2066,36 +2066,50 @@ de: Sie konnen das nich trinken!
 en: You can't drink that!
 fr: Vous ne pouvez pas boire ça !
 fr-tt: Tu ne peux pas boire ça !
+zh: 你不能喝那个！
+zh-py: nǐ bù néng hē nà ge!
 
     You can't eat that!
 en: You can't eat that!
 fr: Vous ne pouvez pas manger ça !
 fr-tt: Tu ne peux pas manger ça !
+zh: 你不能吃那个！
+zh-py: nǐ bù néng chī nà ge!
 
     You can't read that!
 en: You can't read that!
 fr: Vous ne pouvez pas lire ça !
 fr-tt: Tu ne peux pas pas lire ça !
+zh: 你不能读那个！
+zh-py: nǐ bù néng dú nà ge!
 
     You can't see to read the scroll.
 en: You can't see to read the scroll.
 fr: Vous ne pouvez pas lire de parchemin : vous ne voyez rien.
 fr-tt: Tu ne peux pas lire de parchemin : tu ne vois rien.
+zh: 你什么也看不见，无法阅读卷轴。
+zh-py: nǐ shén me yě kàn bu jiàn, wú fǎ yuè dú juàn zhóu.
 
     You can't wear that
 en: You can't wear that
 fr: Vous ne pouvez pas porter ça
 fr-tt: Tu ne peux pas porter ça
+zh: 你不能穿那个
+zh-py: nǐ bù néng chuān nà ge
 
     You can't wield %s
 en: You can't wield %s
 fr: Vous ne pouvez pas brandir d@(e?':e )%s
 fr-tt: Tu ne peux pas brandir d@(e?':e )%s
+zh: 你不能使用%s
+zh-py: nǐ bù néng shǐ yòng %s
 
     You can't zap with that
 en: You can't zap with that
 fr: Vous ne pouvez pas zapper avec ça
 fr-tt: Tu ne peux pas pas zapper avec ça
+zh: 你不能用那个施法
+zh-py: nǐ bù néng yòng nà ge shī fǎ
 
     You can't, it appears to be cursed.
 de: Sie können nicht, es scheint verflucht.
