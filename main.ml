@@ -9,7 +9,7 @@ open Rogue;
 open Rfield;
 open Dialogue;
 open Imisc;
-open Misc;
+open Rogue_misc;
 open Object;
 open Printf;
 open Translate;
@@ -757,7 +757,7 @@ value backup_if_required gg =
   [ Some (fname, time) -> do {
       if time mod 1000 = 0 then do {
         let fname = sprintf "%s.%d" fname (time / 1000 mod 5) in
-        Misc.save_into_file gg fname
+        Rogue_misc.save_into_file gg fname
       }
       else ();
       f_backup.Efield.set g.env "backup" (Some (fname, time + 1))
@@ -936,7 +936,7 @@ value main () = do {
       game gg
     }
   | Init.RestoreGame rest_file ->
-      match try Left (Misc.restore rest_file) with exc -> Right exc with
+      match try Left (Rogue_misc.restore rest_file) with exc -> Right exc with
       [ Left gg -> do {
           let g = gg.game_v in
           if no_record_score then g.score_only := True else ();

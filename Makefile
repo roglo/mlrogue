@@ -1,11 +1,13 @@
 # $Id: Makefile,v 1.80 2018/07/20 11:42:16 deraugla Exp $
 
-OCAMLC=ocamlc.opt
-OCAMLOPT=ocamlopt.opt
+OCAMLFIND=ocamlfind
+PACKAGES=camlp-streams,compiler-libs.common,unix
+OCAMLC=$(OCAMLFIND) ocamlc -package $(PACKAGES)
+OCAMLOPT=$(OCAMLFIND) ocamlopt -package $(PACKAGES)
 OCOPTS=
 ROBOBJS=rob_position.cmo rob_misc.cmo rob_object.cmo rob_monster.cmo rob_path.cmo rob_action.cmo robot.cmo
-OBJS=$(ROBOBJS) ustring.cmo efield.cmo rfield.cmo imisc.cmo imonster.cmo object.cmo level.cmo translate.cmo curses.cmo rogbotio.cmo init.cmo dialogue.cmo misc.cmo finish.cmo monster.cmo attack.cmo move.cmo use.cmo main.cmo 
-LIBS=unix.cma -I $$(camlp5 -where) gramlib.cma
+OBJS=$(ROBOBJS) ustring.cmo efield.cmo rfield.cmo imisc.cmo imonster.cmo object.cmo level.cmo translate.cmo curses.cmo rogbotio.cmo init.cmo dialogue.cmo rogue_misc.cmo finish.cmo monster.cmo attack.cmo move.cmo use.cmo main.cmo 
+LIBS=-I $$(camlp5 -where) gramlib.cma
 ROGBOT_OBJS=$(ROBOBJS) rogbot.cmo
 SRCS=$(OBJS:.cmo=.ml)
 ROGBOT_SRCS=rogbot.ml
@@ -70,13 +72,13 @@ rogue.out: $(EXT) $(OBJS)
 	$(OCAMLC) -g $(LIBS) $(OBJS) -o rogue.out
 
 rogue.opt: $(EXT) $(OBJS:.cmo=.cmx)
-	$(OCAMLOPT) $(LIBS:.cma=.cmxa) $(OBJS:.cmo=.cmx) -o $@
+	$(OCAMLOPT) $(LIBS:.cma=.cmxa) $(OBJS:.cmo=.cmx) -linkpkg -o $@
 
 rogbot.out: $(ROGBOT_OBJS)
 	$(OCAMLC) -g $(LIBS) $(ROGBOT_OBJS) -o $@
 
 rogbot.opt: $(ROGBOT_OBJS:.cmo=.cmx)
-	$(OCAMLOPT) $(LIBS:.cma=.cmxa) $(ROGBOT_OBJS:.cmo=.cmx) -o $@
+	$(OCAMLOPT) $(LIBS:.cma=.cmxa) $(ROGBOT_OBJS:.cmo=.cmx) -linkpkg -o $@
 
 $(OBJS) $(OBJS:.cmo=.cmx): $(EXT)
 
