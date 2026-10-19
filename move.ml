@@ -9,7 +9,7 @@ open Rogue;
 open Rfield;
 open Dialogue;
 open Imisc;
-open Misc;
+open Rogue_misc;
 open Printf;
 open Translate;
 

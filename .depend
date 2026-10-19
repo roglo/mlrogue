@@ -5,7 +5,9 @@ imisc.cmi: rogue.cmi
 imonster.cmi: rogue.cmi
 init.cmi: rfield.cmi rogue.cmi
 level.cmi: rogue.cmi
-misc.cmi: rogue.cmi
+rogue_misc.cmo: rogue_misc.cmi
+rogue_misc.cmx: rogue_misc.cmi
+rogue_misc.cmi: rogue.cmi
 monster.cmi: rogue.cmi
 move.cmi: rogue.cmi
 object.cmi: rogue.cmi
@@ -71,37 +73,37 @@ dialogue.cmo: curses.cmi dialogue.cmi efield.cmi imisc.cmi imonster.cmi \
 dialogue.cmx: curses.cmx dialogue.cmi efield.cmx imisc.cmx imonster.cmx \
     object.cmx rfield.cmx robot.cmx rogbotio.cmx rogue.cmi translate.cmx \
     ustring.cmx
-misc.cmo: curses.cmi dialogue.cmi efield.cmi imonster.cmi misc.cmi rfield.cmi \
+misc.cmo: curses.cmi dialogue.cmi efield.cmi imonster.cmi rogue_misc.cmi rfield.cmi \
     rogue.cmi translate.cmi
-misc.cmx: curses.cmx dialogue.cmx efield.cmx imonster.cmx misc.cmi rfield.cmx \
+misc.cmx: curses.cmx dialogue.cmx efield.cmx imonster.cmx rogue_misc.cmi rfield.cmx \
     rogue.cmi translate.cmx
 finish.cmo: curses.cmi dialogue.cmi efield.cmi finish.cmi imisc.cmi \
     object.cmi rfield.cmi rogue.cmi translate.cmi
 finish.cmx: curses.cmx dialogue.cmx efield.cmx finish.cmi imisc.cmx \
     object.cmx rfield.cmx rogue.cmi translate.cmx
 monster.cmo: curses.cmi dialogue.cmi finish.cmi imisc.cmi imonster.cmi \
-    misc.cmi monster.cmi rogue.cmi translate.cmi
+    rogue_misc.cmi monster.cmi rogue.cmi translate.cmi
 monster.cmx: curses.cmx dialogue.cmx finish.cmx imisc.cmx imonster.cmx \
-    misc.cmx monster.cmi rogue.cmi translate.cmx
+    rogue_misc.cmx monster.cmi rogue.cmi translate.cmx
 attack.cmo: attack.cmi curses.cmi dialogue.cmi imisc.cmi imonster.cmi \
-    level.cmi misc.cmi monster.cmi object.cmi rogue.cmi translate.cmi
+    level.cmi rogue_misc.cmi monster.cmi object.cmi rogue.cmi translate.cmi
 attack.cmx: attack.cmi curses.cmx dialogue.cmx imisc.cmx imonster.cmx \
-    level.cmx misc.cmx monster.cmx object.cmx rogue.cmi translate.cmx
+    level.cmx rogue_misc.cmx monster.cmx object.cmx rogue.cmi translate.cmx
 move.cmo: attack.cmi curses.cmi dialogue.cmi efield.cmi finish.cmi imisc.cmi \
-    imonster.cmi level.cmi misc.cmi monster.cmi move.cmi object.cmi \
+    imonster.cmi level.cmi rogue_misc.cmi monster.cmi move.cmi object.cmi \
     rfield.cmi rogue.cmi translate.cmi
 move.cmx: attack.cmx curses.cmx dialogue.cmx efield.cmx finish.cmx imisc.cmx \
-    imonster.cmx level.cmx misc.cmx monster.cmx move.cmi object.cmx \
+    imonster.cmx level.cmx rogue_misc.cmx monster.cmx move.cmi object.cmx \
     rfield.cmx rogue.cmi translate.cmx
-use.cmo: curses.cmi dialogue.cmi imisc.cmi imonster.cmi misc.cmi monster.cmi \
+use.cmo: curses.cmi dialogue.cmi imisc.cmi imonster.cmi rogue_misc.cmi monster.cmi \
     move.cmi object.cmi rogue.cmi translate.cmi use.cmi
-use.cmx: curses.cmx dialogue.cmx imisc.cmx imonster.cmx misc.cmx monster.cmx \
+use.cmx: curses.cmx dialogue.cmx imisc.cmx imonster.cmx rogue_misc.cmx monster.cmx \
     move.cmx object.cmx rogue.cmi translate.cmx use.cmi
 main.cmo: attack.cmi curses.cmi dialogue.cmi efield.cmi finish.cmi imisc.cmi \
-    imonster.cmi init.cmi level.cmi misc.cmi monster.cmi move.cmi object.cmi \
+    imonster.cmi init.cmi level.cmi rogue_misc.cmi monster.cmi move.cmi object.cmi \
     rfield.cmi robot.cmi rogue.cmi translate.cmi use.cmi ustring.cmi
 main.cmx: attack.cmx curses.cmx dialogue.cmx efield.cmx finish.cmx imisc.cmx \
-    imonster.cmx init.cmx level.cmx misc.cmx monster.cmx move.cmx object.cmx \
+    imonster.cmx init.cmx level.cmx rogue_misc.cmx monster.cmx move.cmx object.cmx \
     rfield.cmx robot.cmx rogue.cmi translate.cmx use.cmx ustring.cmx
 rogbot.cmo: robot.cmi
 rogbot.cmx: robot.cmx
@@ -116,8 +118,8 @@ init.cmo: rogue.defo
 level.cmo: rogue.defo
 main.cmo: rogue.defo
 main.cmo: keyboard.defo
-misc.cmo: rogue.defo
-misc.cmo: keyboard.defo
+rogue_misc.cmo: rogue.defo
+rogue_misc.cmo: keyboard.defo
 monster.cmo: rogue.defo
 move.cmo: rogue.defo
 move.cmo: keyboard.defo
@@ -134,8 +136,8 @@ init.cmx: rogue.defo
 level.cmx: rogue.defo
 main.cmx: rogue.defo
 main.cmx: keyboard.defo
-misc.cmx: rogue.defo
-misc.cmx: keyboard.defo
+rogue_misc.cmx: rogue.defo
+rogue_misc.cmx: keyboard.defo
 monster.cmx: rogue.defo
 move.cmx: rogue.defo
 move.cmx: keyboard.defo
